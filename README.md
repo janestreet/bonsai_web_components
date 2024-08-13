@@ -1,2 +1,4 @@
-# bonsai_web_components
-Examples for bonsai_web, a library for building dynamic webapps, using Js_of_ocaml
+# Libraries for Bonsai Web UIs
+
+A collection of libraries with reusable components, vdom helper functions, and other
+useful tools for building web UIs with Bonsai.
