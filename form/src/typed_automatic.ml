@@ -15,7 +15,7 @@ module Record = struct
         | `Dynamic of (Typed_field.Packed.t -> string) Bonsai.t
         ]
 
-    val form_for_field : 'a Typed_field.t -> Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_field : 'a Typed_field.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
   end
 
   let attach_fieldname_to_error name t =
@@ -26,7 +26,7 @@ module Record = struct
     (type a)
     (module M : S with type Typed_field.derived_on = a)
     (* We will do the error tagging ourselves in this function. *)
-      graph
+    (local_ graph)
     =
     Record.make_without_tagging_errors
       (module struct
@@ -43,12 +43,13 @@ module Record = struct
           | `Dynamic f -> f
         ;;
 
-        let form_for_field : type a. a Typed_field.t -> Bonsai.graph -> a Form.t Bonsai.t =
-          fun field graph ->
+        let form_for_field
+          : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+          =
+          fun field (local_ graph) ->
           let form = M.form_for_field field graph in
           let form = Form.Dynamic.error_hint form graph in
-          let%arr form = form
-          and get_label = get_label in
+          let%arr form and get_label in
           let label = get_label { M.Typed_field.Packed.f = T field } in
           Form.Private.suggest_label label form |> attach_fieldname_to_error label
         ;;
@@ -56,7 +57,7 @@ module Record = struct
         type form_of_field_fn =
           { f : 'a. 'a Typed_field.t -> ('a, field_view) Form_manual.t Bonsai.t }
 
-        let finalize_view { f } _graph =
+        let finalize_view { f } (local_ _graph) =
           let all_fields =
             M.Typed_field.Packed.all
             |> List.map ~f:(fun ({ f = T field } as packed) ->
@@ -64,8 +65,7 @@ module Record = struct
               packed, Form.view field)
             |> Bonsai.all
           in
-          let%arr all_fields = all_fields
-          and get_label = get_label in
+          let%arr all_fields and get_label in
           List.map all_fields ~f:(fun (packed, view) ->
             { Form_view.field_name = get_label packed; field_view = view })
           |> Form_view.record
@@ -74,7 +74,11 @@ module Record = struct
       graph
   ;;
 
-  let make_table (type a) (module M : S with type Typed_field.derived_on = a) graph =
+  let make_table
+    (type a)
+    (module M : S with type Typed_field.derived_on = a)
+    (local_ graph)
+    =
     let table =
       Record.make_table
         (module struct
@@ -88,24 +92,22 @@ module Record = struct
             | `Dynamic f -> f
           ;;
 
-          let form_for_field field graph =
+          let form_for_field field (local_ graph) =
             let form =
               let form = M.form_for_field field graph in
               let form = Form.Dynamic.error_hint form graph in
-              let%arr form = form
-              and get_label = get_label in
+              let%arr form and get_label in
               let label = get_label { M.Typed_field.Packed.f = T field } in
               attach_fieldname_to_error label form
             in
-            let%arr form = form in
+            let%arr form in
             Form_manual.map_view form ~f:Form.View.to_vdom
           ;;
         end)
         graph
     in
     let path = Bonsai.path_id graph in
-    let%arr table = table
-    and path = path in
+    let%arr table and path in
     Form_manual.map_view table ~f:(Form.View.of_vdom ~unique_key:path)
   ;;
 end
@@ -120,7 +122,7 @@ module Variant = struct
         | `Dynamic of (Typed_variant.Packed.t -> string) Bonsai.t
         ]
 
-    val form_for_variant : 'a Typed_variant.t -> Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_variant : 'a Typed_variant.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
     val initial_choice : [ `First_constructor | `Empty | `This of Typed_variant.Packed.t ]
   end
 
@@ -140,7 +142,7 @@ module Variant = struct
     val form_for_variant
       :  'a Typed_variant.t
       -> ('a, 'cmp) Bonsai.comparator
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, 'cmp) Set.t Form.t Bonsai.t
   end
 
@@ -155,7 +157,7 @@ module Variant = struct
     ~picker_kind
     ~picker_attr
     ~initial_choice
-    graph
+    (local_ graph)
     =
     let module M_opt = struct
       type t = M.t option [@@deriving sexp, equal, enumerate, compare]
@@ -185,11 +187,11 @@ module Variant = struct
           | `First_constructor | `This _ -> M_opt.all_some
         in
         let path = Bonsai.path_id graph in
-        let%arr picker_value = picker_value
-        and set_picker_value = set_picker_value
-        and path = path
-        and extra_attrs = extra_attrs
-        and to_string = to_string in
+        let%arr picker_value
+        and set_picker_value
+        and path
+        and extra_attrs
+        and to_string in
         let view =
           Vdom_input_widgets.Dropdown.of_values
             (module struct
@@ -214,11 +216,11 @@ module Variant = struct
         picker_value, set_picker_value, view
       | `Radio layout ->
         let path = Bonsai.path_id graph in
-        let%arr picker_value = picker_value
-        and set_picker_value = set_picker_value
-        and extra_attrs = extra_attrs
-        and path = path
-        and to_string = to_string in
+        let%arr picker_value
+        and set_picker_value
+        and extra_attrs
+        and path
+        and to_string in
         let node_fun =
           match layout with
           | `Vertical -> Vdom_input_widgets.Radio_buttons.of_values
@@ -239,9 +241,7 @@ module Variant = struct
         in
         picker_value, set_picker_value, view
     in
-    let%arr picker_value = picker_value
-    and set_picker_value = set_picker_value
-    and view = view in
+    let%arr picker_value and set_picker_value and view in
     let value =
       match picker_value with
       | Some value -> Ok value
@@ -256,7 +256,7 @@ module Variant = struct
     ?(picker = `Dropdown)
     ?picker_attr
     (module M : S with type Typed_variant.derived_on = a)
-    graph
+    (local_ graph)
     =
     Variant.make
       (module struct
@@ -285,15 +285,13 @@ module Variant = struct
             ~initial_choice:M.initial_choice
         ;;
 
-        let finalize_view picker_view selected _graph =
+        let finalize_view picker_view selected (local_ _graph) =
           match%sub selected with
           | Error _ ->
-            let%arr picker_view = picker_view in
+            let%arr picker_view in
             Form_view.variant ~clause_selector:picker_view ~selected_clause:None
           | Ok (field, form) ->
-            let%arr field = field
-            and form = form
-            and picker_view = picker_view in
+            let%arr field and form and picker_view in
             let clause_name = M.Typed_variant.name field in
             Form_view.variant
               ~clause_selector:picker_view
@@ -310,9 +308,9 @@ module Variant = struct
     ?picker_attr
     ?(empty_label = "(none)")
     (module M : S with type Typed_variant.derived_on = a)
-    : Bonsai.graph -> a option Form.t Bonsai.t
+    : local_ Bonsai.graph -> a option Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let module Transformed = struct
       module Original = struct
         type t = M.Typed_variant.derived_on
@@ -347,9 +345,9 @@ module Variant = struct
       ;;
 
       let form_for_variant
-        : type a. a Typed_variant.t -> Bonsai.graph -> a Form.t Bonsai.t
+        : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
         =
-        fun typed_field graph ->
+        fun typed_field (local_ graph) ->
         match typed_field with
         | None -> Bonsai.return (Form.return ())
         | Some subvariant -> M.form_for_variant subvariant graph
@@ -380,9 +378,9 @@ module Variant = struct
   let make_set
     (type a cmp)
     (module M : S_set with type t = a and type comparator_witness = cmp)
-    : Bonsai.graph -> (a, cmp) Set.t Form.t Bonsai.t
+    : local_ Bonsai.graph -> (a, cmp) Set.t Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     Variant.make_set_without_tagging_errors
       (module struct
         include M
@@ -403,14 +401,13 @@ module Variant = struct
           : type a cmp.
             a Typed_variant.t
             -> (a, cmp) Bonsai.comparator
-            -> Bonsai.graph
+            -> local_ Bonsai.graph
             -> (a, cmp) Set.t Form.t Bonsai.t
           =
-          fun variant comparator graph ->
+          fun variant comparator (local_ graph) ->
           let form = M.form_for_variant variant comparator graph in
           let form = Form.Dynamic.error_hint form graph in
-          let%arr form = form
-          and get_label = get_label in
+          let%arr form and get_label in
           let label = get_label { M.Typed_variant.Packed.f = T variant } in
           Form.Private.suggest_label label form |> attach_variant_name_to_error label
         ;;
@@ -421,7 +418,7 @@ module Variant = struct
               'a Typed_variant.t -> ('a, variant_view) Variant.Packed_set_form.t Bonsai.t
           }
 
-        let finalize_view { f } _graph =
+        let finalize_view { f } (local_ _graph) =
           let all_variants =
             M.Typed_variant.Packed.all
             |> List.map ~f:(fun ({ f = T variant } as packed) ->
@@ -429,8 +426,7 @@ module Variant = struct
               packed, Form.view form)
             |> Bonsai.all
           in
-          let%arr all_variants = all_variants
-          and get_label = get_label in
+          let%arr all_variants and get_label in
           List.map all_variants ~f:(fun (packed, view) ->
             { Form_view.field_name = get_label packed; field_view = view })
           |> Form_view.record

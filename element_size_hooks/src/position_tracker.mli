@@ -31,7 +31,7 @@ end
 
 val component
   :  ('key, 'cmp) Bonsai.comparator
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('key, 'cmp) Position_tracker.t Bonsai.t
 
 module For_testing : sig

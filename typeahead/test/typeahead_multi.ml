@@ -13,17 +13,17 @@ let shared_computation =
     ~split:(String.split ~on:',')
 ;;
 
-let view_computation graph =
+let view_computation (local_ graph) =
   let%sub { view; _ } = shared_computation graph in
   view
 ;;
 
-let view_and_set_computation graph =
+let view_and_set_computation (local_ graph) =
   let%sub { view; set_selected = set; _ } = shared_computation graph in
   Bonsai.both view set
 ;;
 
-let view_and_result_computation graph =
+let view_and_result_computation (local_ graph) =
   let%sub { view; selected = result; _ } = shared_computation graph in
   Bonsai.both view result
 ;;
@@ -59,7 +59,7 @@ let%expect_test "Initial multi typeahead state" =
 let%expect_test "Focusing and un-focusing the input shows and hides the datalist when \
                  not in tests"
   =
-  let component graph =
+  let component (local_ graph) =
     let%sub { view; _ } =
       Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
         (module Data)

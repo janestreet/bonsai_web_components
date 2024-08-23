@@ -11,7 +11,7 @@ module Form = Bonsai_web_ui_form.With_automatic_view
 module type Demo = sig
   val name : string
   val description : string
-  val view : Bonsai.graph -> (Vdom.Node.t * string) Bonsai.t
+  val view : local_ Bonsai.graph -> (Vdom.Node.t * string) Bonsai.t
   val selector : string option
   val filter_attrs : (string -> string -> bool) option
 end
@@ -22,12 +22,14 @@ let if_empty_then_none constructor text =
   else constructor [ Vdom.Node.text text ]
 ;;
 
-let wrap_application ?(attr = Bonsai.return Vdom.Attr.empty) ~theme_picker nodes graph =
+let wrap_application
+  ?(attr = Bonsai.return Vdom.Attr.empty)
+  ~theme_picker
+  nodes
+  (local_ graph)
+  =
   let theme = View.Theme.current graph in
-  let%arr nodes = nodes
-  and theme_picker = theme_picker
-  and theme = theme
-  and attr = attr in
+  let%arr nodes and theme_picker and theme and attr in
   Vdom.Node.div
     ~attrs:
       [ Style.app
@@ -43,14 +45,14 @@ let wrap_application ?(attr = Bonsai.return Vdom.Attr.empty) ~theme_picker nodes
     [ theme_picker; Vdom.Node.div ~attrs:[ Style.container ] nodes ]
 ;;
 
-let make_sections ~theme_picker sections graph =
-  let app graph =
+let make_sections ~theme_picker sections (local_ graph) =
+  let app (local_ graph) =
     Bonsai.all
       (List.map sections ~f:(fun (section_title, description, subsections) ->
          let subsections =
            Bonsai.all (List.map subsections ~f:(fun section -> section graph))
          in
-         let%arr subsections = subsections in
+         let%arr subsections in
          Vdom.Node.div
            [ if_empty_then_none Vdom.Node.h1 section_title
            ; if_empty_then_none Vdom.Node.p description
@@ -60,7 +62,7 @@ let make_sections ~theme_picker sections graph =
   wrap_application ~theme_picker (app graph) graph
 ;;
 
-let codemirror ~language ~content graph =
+let codemirror ~language ~content (local_ graph) =
   let open Underlying_codemirror in
   let with_conversion_of_bool b =
     With_conversion.create ~t_to_js:Gen_js_api.Ojs.bool_to_js b
@@ -109,7 +111,7 @@ let codemirror ~language ~content graph =
       ~equal:[%equal: String.t]
       content
       ~callback:
-        (let%map codemirror = codemirror in
+        (let%map codemirror in
          fun demo -> Codemirror.set_lines codemirror (String.split_lines demo))
       graph
   in
@@ -129,7 +131,7 @@ let make_demo'
   ~demo
   ~code
   ()
-  graph
+  (local_ graph)
   =
   let filter_printed_attributes ~key:k ~data:v =
     (not (String.equal k "custom-css-vars"))
@@ -181,10 +183,10 @@ let make_demo'
              The [to_string_html] logic is expensive (and this lives within a match%sub which
              defaults to not being visible), so we'd prefer to compute it when we actually
              render it. *)
-          (fun graph ->
+          (fun (local_ graph) ->
             let html_codemirror =
               let content =
-                let%arr demo = demo in
+                let%arr demo in
                 demo
                 |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
                 |> pick_interesting_nodes
@@ -199,13 +201,11 @@ let make_demo'
                 ~language:Underlying_codemirror.(Lang_html.html () |> Language.extension)
                 graph
             in
-            let%arr html_codemirror = html_codemirror in
+            let%arr html_codemirror in
             Bonsai_web_ui_codemirror.view html_codemirror))
         graph
   in
-  let%arr ocaml_codemirror = ocaml_codemirror
-  and display_which = display_which
-  and rendered_or_html = rendered_or_html in
+  let%arr ocaml_codemirror and display_which and rendered_or_html in
   let toggler = rendered_or_html |> Form.view |> Form.View.to_vdom_plain in
   let ocaml_code =
     let legend =
@@ -230,7 +230,7 @@ let make_demo'
   { code = ocaml_code; demo = output }
 ;;
 
-let make_demo (module M : Demo) graph =
+let make_demo (module M : Demo) (local_ graph) =
   let%sub demo, code = M.view graph in
   let code_and_demo =
     make_demo' ?filter_attrs:M.filter_attrs ?selector:M.selector ~demo ~code () graph

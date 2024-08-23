@@ -82,13 +82,13 @@ let create
   ~f
   ~on_select
   ()
-  graph
+  (local_ graph)
   =
   let suggestion_list_is_initialized, initialize_suggestion_list =
     Bonsai.state false graph
   in
   let inject_initialize_suggestion_list =
-    let%arr initialize_suggestion_list = initialize_suggestion_list in
+    let%arr initialize_suggestion_list in
     initialize_suggestion_list true
   in
   let%sub { Model.query; suggestion_list_state; offset }, inject, items, _ =
@@ -203,24 +203,20 @@ let create
           { model with suggestion_list_state = next_suggestion_list_state () }
         | Move_prev_with_fixed_offset ->
           { model with suggestion_list_state = prev_suggestion_list_state () })
-      ~f:(fun model inject graph ->
+      ~f:(fun model inject (local_ graph) ->
         let%sub { Model.query; _ } = model in
         let items =
           if%sub suggestion_list_is_initialized
           then f query graph
           else Bonsai.return (Map.empty (module Key))
         in
-        let%arr model = model
-        and inject = inject
-        and items = items
-        and max_visible_items = max_visible_items in
+        let%arr model and inject and items and max_visible_items in
         model, inject, items, max_visible_items)
   in
   let selected_key =
     match%sub suggestion_list_state with
     | Selected key ->
-      let%arr key = key
-      and items = items in
+      let%arr key and items in
       (match Map.closest_key items `Less_or_equal_to key with
        | Some (key, _) -> Some key
        | None ->
@@ -228,17 +224,14 @@ let create
           | Some (key, _) -> Some key
           | None -> None))
     | First_item ->
-      let%arr items = items in
+      let%arr items in
       (match Map.min_elt items with
        | Some (key, _) -> Some key
        | None -> None)
     | Closed -> Bonsai.return None
   in
   let items =
-    let%arr items = items
-    and max_visible_items = max_visible_items
-    and selected_key = selected_key
-    and offset = offset in
+    let%arr items and max_visible_items and selected_key and offset in
     match selected_key with
     | Some selected_key ->
       let length = ref 0 in
@@ -288,16 +281,16 @@ let create
     Bonsai.assoc
       (module Key)
       items
-      ~f:(fun key item _graph ->
-        let%arr key = key
-        and item = item
-        and get_items = get_items
-        and selected_key = selected_key
-        and selected_item_attr = selected_item_attr
-        and inject = inject
-        and on_select = on_select
-        and query = query
-        and modify_input_on_select = modify_input_on_select in
+      ~f:(fun key item (local_ _graph) ->
+        let%arr key
+        and item
+        and get_items
+        and selected_key
+        and selected_item_attr
+        and inject
+        and on_select
+        and query
+        and modify_input_on_select in
         let selected_attr =
           match selected_key with
           | Some selected_key when Key.comparator.compare key selected_key = 0 ->
@@ -333,14 +326,14 @@ let create
     Bonsai_web.Effect.Focus.on_effect ~name_for_testing:"query-box" () graph
   in
   let handle_keydown =
-    let%arr inject = inject
-    and selected_key = selected_key
-    and on_select = on_select
-    and expand_direction = expand_direction
-    and suggestion_list_state = suggestion_list_state
-    and blur_input = blur_input
-    and query = query
-    and modify_input_on_select = modify_input_on_select in
+    let%arr inject
+    and selected_key
+    and on_select
+    and expand_direction
+    and suggestion_list_state
+    and blur_input
+    and query
+    and modify_input_on_select in
     let open Vdom in
     let open Js_of_ocaml in
     fun ev ->
@@ -380,22 +373,22 @@ let create
   in
   let suggestion_container_id = Bonsai.path_id graph in
   let input_id = Bonsai.path_id graph in
-  let%arr query = query
-  and selected_key = selected_key
-  and inject = inject
-  and handle_keydown = handle_keydown
-  and suggestion_list_kind = suggestion_list_kind
-  and expand_direction = expand_direction
-  and items = items
-  and extra_list_container_attr = extra_list_container_attr
-  and extra_input_attr = extra_input_attr
-  and extra_attr = extra_attr
-  and suggestion_container_id = suggestion_container_id
-  and input_id = input_id
-  and focus_attr = focus_attr
-  and focus_input = focus_input
-  and inject_initialize_suggestion_list = inject_initialize_suggestion_list
-  and on_blur = on_blur in
+  let%arr query
+  and selected_key
+  and inject
+  and handle_keydown
+  and suggestion_list_kind
+  and expand_direction
+  and items
+  and extra_list_container_attr
+  and extra_input_attr
+  and extra_attr
+  and suggestion_container_id
+  and input_id
+  and focus_attr
+  and focus_input
+  and inject_initialize_suggestion_list
+  and on_blur in
   let container_position, suggestions_position, is_open =
     match suggestion_list_kind with
     | Suggestion_list_kind.Transient_overlay ->
@@ -544,7 +537,7 @@ module Collate_map_with_score = struct
     let empty_result = Map.empty (module Scored_key.M (Cmp)) in
     Bonsai.Incr.compute (Bonsai.both input query) ~f:(fun input_and_query ->
       let%pattern_bind.Ui_incr input, query = input_and_query in
-      let%bind.Ui_incr input = input in
+      let%bind.Ui_incr input in
       let len = Map.length input in
       let array = Uniform_array.unsafe_create_uninitialized ~len in
       let () =
@@ -564,7 +557,7 @@ module Collate_map_with_score = struct
          because we never use the index to get an element out of the list)
          of the first query that eliminated an item from the set of result. *)
       let filtered_out_at_index = Array.create ~len Int.max_value in
-      let%map.Ui_incr query = query in
+      let%map.Ui_incr query in
       let rec trim_queries qs =
         match qs with
         | [] -> []
@@ -634,11 +627,10 @@ let stringable
      [Fuzzy_match] case to pay the cost of the extra data in the key. Since we
      don't expect this parameter to be changed at runtime, it is probably not
      worth the cost to make the parameter dynamic. *)
-    graph
+  (local_ graph)
   =
-  let modify_input_on_select ~get_key _graph =
-    let%arr modify_input_on_select = modify_input_on_select
-    and input = input in
+  let modify_input_on_select ~get_key (local_ _graph) =
+    let%arr modify_input_on_select and input in
     match modify_input_on_select with
     | `Reset -> fun _ _ -> ""
     | `Don't_change -> fun _ query -> query
@@ -664,8 +656,7 @@ let stringable
         Bonsai.Incr.compute (Bonsai.both query input) ~f:(fun incr ->
           let%pattern_bind.Incr query, input = incr in
           Incr_map.filter_mapi' input ~f:(fun ~key ~data:string ->
-            let%map.Incr string = string
-            and query = query in
+            let%map.Incr string and query in
             if Fuzzy_match.is_match ~char_equal:Char.Caseless.equal ~pattern:query string
             then Some (to_view key string)
             else None)))
@@ -673,7 +664,7 @@ let stringable
       graph
   | Fuzzy_search_and_score ->
     let on_select =
-      let%arr on_select = on_select in
+      let%arr on_select in
       fun (_, key) -> on_select key
     in
     let result =
@@ -690,9 +681,9 @@ let stringable
         ?extra_attr
         ~modify_input_on_select
         ~on_select
-        ~f:(fun query graph ->
+        ~f:(fun query (local_ graph) ->
           let query =
-            let%arr query = query in
+            let%arr query in
             query, Fuzzy_search.Query.create query
           in
           Collate_map_with_score.collate
@@ -708,6 +699,6 @@ let stringable
         ()
         graph
     in
-    let%arr result = result in
+    let%arr result in
     { result with selected_item = Option.map result.selected_item ~f:snd }
 ;;

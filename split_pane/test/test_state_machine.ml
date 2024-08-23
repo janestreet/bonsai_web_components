@@ -79,11 +79,9 @@ end = struct
 
     let incoming t = t.inject_action
 
-    let test_component ~parameters graph =
+    let test_component ~parameters (local_ graph) =
       let state, inject_action = Split_pane.For_testing.state_machine ~parameters graph in
-      let%arr parameters = parameters
-      and state = state
-      and inject_action = inject_action in
+      let%arr parameters and state and inject_action in
       { state; parameters; inject_action }
     ;;
   end

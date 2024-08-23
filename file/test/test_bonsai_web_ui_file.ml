@@ -29,7 +29,7 @@ module Read_state = struct
 end
 
 let set_up_read t =
-  let computation graph =
+  let computation (local_ graph) =
     let result, set_result =
       Bonsai.state
         Starting
@@ -40,7 +40,7 @@ let set_up_read t =
     let () =
       Bonsai.Edge.lifecycle
         ~on_activate:
-          (let%map set_result = set_result in
+          (let%map set_result in
            let open Ui_effect.Let_syntax in
            let%bind file_read =
              read

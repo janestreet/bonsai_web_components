@@ -13,7 +13,7 @@ val to_manual_form : 'a t -> ('a, Vdom.Node.t) Form_manual.t
     you. *)
 val to_manual_form'
   :  'a t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('a, Vdom.Node.t) Form_manual.t Bonsai.t
 
 (** [of_manual_form] creates a [t] from a [With_manual_view.t]. Unlike [to_manual_form],
@@ -21,7 +21,7 @@ val to_manual_form'
     which is generated with [Bonsai.path_id]. *)
 val of_manual_form
   :  ('a, Vdom.Node.t) Form_manual.t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a t Bonsai.t
 
 (** [return] produces a bonsai form that will always produce the same value. [set] and
@@ -29,7 +29,7 @@ val of_manual_form
     to provide better warning messages when actions are ignored by setting into the form.
 *)
 val return
-  :  ?here:Stdlib.Lexing.position
+  :  here:[%call_pos]
   -> ?sexp_of_t:('a -> Sexp.t)
   -> ?equal:('a -> 'a -> bool)
   -> 'a
@@ -41,7 +41,7 @@ val return_settable
   :  ?sexp_of_model:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> 'a
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a t Bonsai.t
 
 (** [return_error] produces a form that always fails validation. *)
@@ -233,13 +233,13 @@ module Dynamic : sig
   (* Sets a ['a t] to a default value the first time it is displayed on a page.
      [with_default] does not set the model a second time if the form is removed
      from the page and then re-added. *)
-  val with_default : 'a Bonsai.t -> 'a t Bonsai.t -> Bonsai.graph -> 'a t Bonsai.t
+  val with_default : 'a Bonsai.t -> 'a t Bonsai.t -> local_ Bonsai.graph -> 'a t Bonsai.t
 
   (* Like [with_default], but an effect is provided to produce the default value. *)
   val with_default_from_effect
     :  'a Effect.t Bonsai.t
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a t Bonsai.t
 
   (* Like [with_default_from_effect], but the effect produces an optional value. The
@@ -248,14 +248,18 @@ module Dynamic : sig
   val with_default_from_optional_effect
     :  'a option Effect.t Bonsai.t
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a t Bonsai.t
 
   (* Sets a ['a t] to an initial value every time it is (re)displayed on a page. *)
-  val with_default_always : 'a Bonsai.t -> 'a t Bonsai.t -> Bonsai.graph -> 'a t Bonsai.t
+  val with_default_always
+    :  'a Bonsai.t
+    -> 'a t Bonsai.t
+    -> local_ Bonsai.graph
+    -> 'a t Bonsai.t
 
   (** Adds a clickable error hint for this form  *)
-  val error_hint : 'a t Bonsai.t -> Bonsai.graph -> 'a t Bonsai.t
+  val error_hint : 'a t Bonsai.t -> local_ Bonsai.graph -> 'a t Bonsai.t
 
   (** Adds a group that is clickable.  Visibility for sub-forms is initially
       determined by [starts_open] but is toggled by clicking on the label. *)
@@ -263,7 +267,7 @@ module Dynamic : sig
     :  ?starts_open:bool
     -> string Bonsai.t
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a t Bonsai.t
 
   (** Adds a on_change handler to a [Form.t].
@@ -283,7 +287,7 @@ module Dynamic : sig
     -> equal:('a -> 'a -> bool)
     -> f:('a -> unit Ui_effect.t) Bonsai.t
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> unit Bonsai.t
 
   (** Synchronizes a form with some external storage. The value from the store is used to
@@ -297,7 +301,7 @@ module Dynamic : sig
     -> store_value:'a option Bonsai.t
     -> store_set:('a -> unit Effect.t) Bonsai.t
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> unit Bonsai.t
 
   (** Unlike [validate] which requires the validation function to be available
@@ -319,7 +323,7 @@ module Dynamic : sig
     -> ?debounce_ui:Time_ns.Span.t
     -> 'a t Bonsai.t
     -> f:('a -> unit Or_error.t Effect.t) Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a t Bonsai.t
 
   (** This works the same as [validate_via_effect], but keeps track of the result and
@@ -334,7 +338,7 @@ module Dynamic : sig
     -> 'a t Bonsai.t
     -> unparse:('b -> 'a)
     -> parse:('a -> 'b Or_error.t Effect.t) Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'b t Bonsai.t
 
   module Record_builder :

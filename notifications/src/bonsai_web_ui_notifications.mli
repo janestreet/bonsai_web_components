@@ -18,7 +18,7 @@ type 'a t
 val component
   :  (module Bonsai_proc.Model with type t = 'a)
   -> equal:('a -> 'a -> bool)
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a t Bonsai.t
 
 (** [render] allows you to defined the rendering logic for your notification component.
@@ -29,9 +29,9 @@ val render
   -> f:
        (close:unit Effect.t Bonsai.t
         -> 'a Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> Vdom.Node.t Bonsai.t)
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
 (** Scheduling [send_notification] will register a new notification with the the notification
@@ -90,7 +90,7 @@ module Basic : sig
     :  ?dismiss_notifications_after:Time_ns.Span.t Bonsai.t (** default = 15s *)
     -> ?dismiss_errors_automatically:bool Bonsai.t (** default = false *)
     -> unit
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> t Bonsai.t
 
   (** [add_error] will create a notification with [text] in primary focus and [error] pretty
@@ -105,6 +105,6 @@ module Basic : sig
     -> ?notification_extra_attr:Vdom.Attr.t Bonsai.t
     -> ?notification_container_extra_attr:Vdom.Attr.t Bonsai.t
     -> t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Vdom.Node.t Bonsai.t
 end

@@ -33,7 +33,7 @@ module Mutable_state_tracker = struct
       | Modify of ('s -> unit)
   end
 
-  let component (type s) () graph =
+  let component (type s) () (local_ graph) =
     let module Model = struct
       include Model
 
@@ -56,8 +56,7 @@ module Mutable_state_tracker = struct
             model)
     in
     let get_model = Bonsai.peek model graph in
-    let%arr inject = inject
-    and get_model = get_model in
+    let%arr inject and get_model in
     let unsafe_init state =
       let id = Id.create () in
       Effect.Expert.handle_non_dom_event_exn (inject (Register { id; state }));
@@ -109,7 +108,7 @@ module Widget = struct
     ?(vdom_for_testing = fun _ -> Vdom.Node.create "widget" [])
     (module M : S with type input = input and type state = state)
     input
-    graph
+    (local_ graph)
     =
     let id =
       Bonsai.Expert.thunk
@@ -118,8 +117,8 @@ module Widget = struct
     in
     let state_tracker = Mutable_state_tracker.component () graph in
     let view =
-      let%arr input = input
-      and id = id
+      let%arr input
+      and id
       and { unsafe_init; unsafe_destroy; _ } = state_tracker in
       Vdom.Node.widget
         ~vdom_for_testing:(lazy (vdom_for_testing input))
@@ -152,12 +151,12 @@ module Widget = struct
         ()
     in
     let funs =
-      let%arr state_tracker = state_tracker in
+      let%arr state_tracker in
       let modify f = state_tracker.modify (fun s -> f s.input s.state) in
       let reader = { f = (fun f -> state_tracker.read (fun s -> f s.input s.state)) } in
       modify, reader
     in
-    let%arr view = view
+    let%arr view
     and modify, reader = funs in
     { view; modify; read = reader.f }
   ;;
@@ -184,7 +183,7 @@ module Hook = struct
     (module M : S with type input = input and type state = state)
     ~hook_name
     input
-    graph
+    (local_ graph)
     =
     let id =
       Bonsai.Expert.thunk
@@ -198,9 +197,9 @@ module Hook = struct
     in
     let state_tracker = Mutable_state_tracker.component () graph in
     let attr =
-      let%arr input = input
-      and id = id
-      and input_id = input_id
+      let%arr input
+      and id
+      and input_id
       and { unsafe_init; unsafe_destroy; _ } = state_tracker in
       Vdom.Attr.create_hook
         hook_name
@@ -237,12 +236,12 @@ module Hook = struct
              M.destroy input state element))
     in
     let funs =
-      let%arr state_tracker = state_tracker in
+      let%arr state_tracker in
       let modify f = state_tracker.modify (fun s -> f s.input s.state) in
       let reader = { f = (fun f -> state_tracker.read (fun s -> f s.input s.state)) } in
       modify, reader
     in
-    let%arr attr = attr
+    let%arr attr
     and modify, reader = funs in
     { attr; modify; read = reader.f }
   ;;
@@ -263,7 +262,7 @@ module Dom_ref = struct
     let destroy () _element _element = ()
   end
 
-  let tracker graph =
+  let tracker (local_ graph) =
     let c = Hook.component (module T) ~hook_name:"ref" (Bonsai.return ()) graph in
     let%arr { Hook.attr; read; modify = _ } = c in
     let nodes = read (fun () state -> state) in

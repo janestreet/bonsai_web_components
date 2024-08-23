@@ -24,7 +24,7 @@ let message_for_async_durable time_span =
     (Time_ns.Span.to_string_hum ~decimals:0 time_span)
 ;;
 
-let custom ~create_message is_connected graph =
+let custom ~create_message is_connected (local_ graph) =
   if%sub is_connected
   then Bonsai.return (Vdom.Node.div ~attrs:[ Style.connected ] [])
   else (
@@ -38,14 +38,12 @@ let custom ~create_message is_connected graph =
     let () =
       Bonsai.Edge.lifecycle
         ~on_activate:
-          (let%arr set_activation_time = set_activation_time
+          (let%arr set_activation_time
            and now = now >>| Option.some in
            set_activation_time now)
         graph
     in
-    let%arr now = now
-    and activation_time = activation_time
-    and create_message = create_message in
+    let%arr now and activation_time and create_message in
     let duration_of_visibility =
       Time_ns.diff now (Option.value ~default:now activation_time)
     in

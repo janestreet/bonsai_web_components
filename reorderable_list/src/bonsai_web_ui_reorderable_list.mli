@@ -36,7 +36,7 @@ val list
   -> ?right:Css_gen.Length.t
        (** The space between the right edge of an item and the list container *)
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
        (** What to display when there are no items in the list. [item_is_hovered] is
       provided in case you wish to change the placeholder based on whether an
       item is being hovered above the empty list.  *)
@@ -51,7 +51,7 @@ val list
      (** The items that should be displayed in the list. Each item should have its
       view and its current rank. Updating the rank of an item must be done via
       the [on_drop] callback of the drag-and-drop universe. *)
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
 (** Similar to [list], but creates the drag-and-drop universe and handles the
@@ -64,17 +64,17 @@ val simple
   -> ?left:Css_gen.Length.t
   -> ?right:Css_gen.Length.t
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
   -> ?default_item_height:int
   -> ?add_drop_target_for_appending:bool
   -> render:
        (index:int Bonsai.t
         -> source:Vdom.Attr.t Bonsai.t
         -> 'key Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> ('data * Vdom.Node.t) Bonsai.t)
   -> ('key, 'cmp) Set.t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> (('key * 'data) list * Vdom.Node.t) Bonsai.t
 
 module Action : sig
@@ -98,15 +98,15 @@ val with_inject
   -> ?left:Css_gen.Length.t
   -> ?right:Css_gen.Length.t
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
   -> ?default_item_height:int
   -> ?add_drop_target_for_appending:bool
   -> (index:int Bonsai.t
       -> source:Vdom.Attr.t Bonsai.t
       -> 'key Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('data * Vdom.Node.t) Bonsai.t)
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> (('key * 'data) list * Vdom.Node.t * ('key Action.t -> unit Effect.t)) Bonsai.t
 
 module Multi : sig
@@ -128,7 +128,7 @@ module Multi : sig
     -> ?empty_list_placeholder:
          (item_is_hovered:bool Bonsai.t
           -> 'which Bonsai.t
-          -> Bonsai.graph
+          -> local_ Bonsai.graph
           -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
     -> ?add_drop_target_for_appending:bool
@@ -137,14 +137,14 @@ module Multi : sig
           -> source:Vdom.Attr.t Bonsai.t
           -> 'which Bonsai.t (** The current list an item is rendered inside. *)
           -> 'key Bonsai.t
-          -> Bonsai.graph
+          -> local_ Bonsai.graph
           -> ('data * Vdom.Node.t) Bonsai.t)
     -> lists:('which, 'which_cmp) Set.t Bonsai.t
          (** The set of lists that items can be placed in. *)
     -> default_list:'which Bonsai.t
          (** Initially, all items are placed in [default_list]. *)
     -> ('key, 'cmp) Set.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (('which, ('key * 'data) list * Vdom.Node.t, 'which_cmp) Map.t * Vdom.Node.t)
          Bonsai.t
 
@@ -169,7 +169,7 @@ module Multi : sig
     -> ?empty_list_placeholder:
          (item_is_hovered:bool Bonsai.t
           -> 'which Bonsai.t
-          -> Bonsai.graph
+          -> local_ Bonsai.graph
           -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
     -> ?add_drop_target_for_appending:bool
@@ -178,9 +178,9 @@ module Multi : sig
         -> source:Vdom.Attr.t Bonsai.t
         -> 'which Bonsai.t
         -> 'key Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> ('data * Vdom.Node.t) Bonsai.t)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (('which, ('key * 'data) list * Vdom.Node.t, 'which_cmp) Map.t
        * Vdom.Node.t
        * (('key, 'which, 'which_cmp) Action.t -> unit Effect.t))

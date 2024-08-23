@@ -86,12 +86,12 @@ val create
       part of the component is provided as an argument to the function
       and it is expected that you use this to do your own filtering and
       return the filtered map. *)
-  -> f:(string Bonsai.t -> Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
+  -> f:(string Bonsai.t -> local_ Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
        (** [on_select] is called when [enter] is hit when an item is
       selected. *)
   -> on_select:('k -> unit Effect.t) Bonsai.t
   -> unit
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'k t Bonsai.t
 
 module Filter_strategy : sig
@@ -129,7 +129,7 @@ val stringable
   -> filter_strategy:Filter_strategy.t
   -> on_select:('k -> unit Effect.t) Bonsai.t
   -> ('k, string, 'cmp) Map.t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'k t Bonsai.t
 
 module Collate_map_with_score : sig
@@ -181,6 +181,6 @@ module Collate_map_with_score : sig
     -> to_result:('preprocessed -> key:'k -> data:'v -> 'result)
     -> ('k, 'v, 'cmp) Map.t Bonsai.t
     -> 'query Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('k, 'result, 'cmp) Scored_key.Map.t Bonsai.t
 end

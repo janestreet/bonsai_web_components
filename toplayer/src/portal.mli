@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 
-val bonsai_driven : Vdom.Node.t Bonsai.t -> Bonsai.graph -> unit
+val bonsai_driven : Vdom.Node.t Bonsai.t -> local_ Bonsai.graph -> unit
 
 module For_testing : sig
   val portals

@@ -91,11 +91,12 @@ let list
   ?(get_extra_item_attrs = Bonsai.return (fun _ _ -> None))
   ?(left = `Px 0)
   ?(right = `Px 0)
-  ?(empty_list_placeholder = fun ~item_is_hovered:_ _graph -> Bonsai.return Node.None)
+  ?(empty_list_placeholder =
+    fun ~item_is_hovered:_ (local_ _graph) -> Bonsai.return Node.None)
   ?(default_item_height = 50)
   ?(add_drop_target_for_appending = true)
   input
-  graph
+  (local_ graph)
   =
   let module Key = (val key) in
   let%sub sizes, size_attr =
@@ -122,8 +123,7 @@ let list
         graph
     in
     let update_min =
-      let%arr historical_min_index = historical_min_index
-      and set_historical_min_index = set_historical_min_index in
+      let%arr historical_min_index and set_historical_min_index in
       fun min_index ->
         if min_index < historical_min_index
         then set_historical_min_index min_index
@@ -141,7 +141,7 @@ let list
   in
   let%sub model, should_render_extra_target =
     let%arr model = dnd >>| Drag_and_drop.model
-    and input = input in
+    and input in
     match model with
     | Not_dragging -> Drag_and_drop.Model.Not_dragging, false
     | Dragging t ->
@@ -150,8 +150,7 @@ let list
        | None -> Dragging { t with source = External t.source }, true)
   in
   let model_info_at_index =
-    let%arr model = model
-    and historical_min_index = historical_min_index in
+    let%arr model and historical_min_index in
     fun index ->
       let is_dragged_item =
         match model with
@@ -201,8 +200,7 @@ let list
         }
   in
   let%sub total_height, alist_for_targets =
-    let%arr input = input
-    and sizes = sizes in
+    let%arr input and sizes in
     let items =
       Array.of_list_map (Map.to_alist input) ~f:(fun (key, (data, index)) ->
         let size =
@@ -232,7 +230,7 @@ let list
   let map_for_targets = alist_for_targets >>| Map.of_alist_exn (module Key) in
   let map_for_items =
     let%arr items = alist_for_targets
-    and model_info_at_index = model_info_at_index in
+    and model_info_at_index in
     let items = Array.of_list items in
     Array.map_inplace items ~f:(fun (key, item) ->
       let { adjusted_index; is_target_of_external_item; is_dragged_item } =
@@ -259,7 +257,7 @@ let list
     |> snd
   in
   let is_dragging =
-    let%arr dnd = dnd in
+    let%arr dnd in
     match Drag_and_drop.model dnd with
     | Not_dragging -> false
     | Dragging _ -> true
@@ -268,19 +266,18 @@ let list
     Bonsai.assoc
       (module Key)
       map_for_items
-      ~f:(fun key data _graph ->
+      ~f:(fun key data (local_ _graph) ->
         let drop_target =
-          let%arr dnd = dnd in
+          let%arr dnd in
           Drag_and_drop.drop_target dnd
         in
         let key_sexp =
-          let%arr key = key in
+          let%arr key in
           let key_sexp = Key.sexp_of_t key in
           [%string "source-%{key_sexp#Sexp}"]
         in
         let size_attr =
-          let%arr size_attr = size_attr
-          and key = key in
+          let%arr size_attr and key in
           size_attr key
         in
         let%sub { data
@@ -292,18 +289,18 @@ let list
           =
           data
         in
-        let%arr data = data
-        and key = key
-        and drop_target = drop_target
-        and is_dragging = is_dragging
-        and y_position = y_position
-        and is_dragged_item = is_dragged_item
-        and extra_item_attrs = extra_item_attrs
-        and size_attr = size_attr
-        and adjusted_idx = adjusted_idx
-        and dragged_item_attrs = dragged_item_attrs
-        and get_extra_item_attrs = get_extra_item_attrs
-        and key_sexp = key_sexp in
+        let%arr data
+        and key
+        and drop_target
+        and is_dragging
+        and y_position
+        and is_dragged_item
+        and extra_item_attrs
+        and size_attr
+        and adjusted_idx
+        and dragged_item_attrs
+        and get_extra_item_attrs
+        and key_sexp in
         let dragged_item_attrs =
           if is_dragged_item
           then Attr.(Attr.style (Css_gen.opacity 0.0) @ dragged_item_attrs)
@@ -334,18 +331,12 @@ let list
       Map.fold ~init:(-1) map ~f:(fun ~key:_ ~data:(_, rank) acc -> Int.max rank acc) + 1
     in
     let drop_target = dnd >>| Drag_and_drop.drop_target in
-    let single_target ~is_the_extra_target index size y_position _graph =
+    let single_target ~is_the_extra_target index size y_position (local_ _graph) =
       let is_the_extra_target =
-        let%arr should_render_extra_target = should_render_extra_target
-        and index = index
-        and num_items = num_items in
+        let%arr should_render_extra_target and index and num_items in
         ((not should_render_extra_target) && index = num_items - 1) || is_the_extra_target
       in
-      let%arr index = index
-      and size = size
-      and y_position = y_position
-      and is_the_extra_target = is_the_extra_target
-      and drop_target = drop_target in
+      let%arr index and size and y_position and is_the_extra_target and drop_target in
       let the_height =
         if is_the_extra_target
         then
@@ -375,7 +366,7 @@ let list
       Bonsai.assoc
         (module Key)
         map_for_targets
-        ~f:(fun _ data graph ->
+        ~f:(fun _ data (local_ graph) ->
           let%sub { index; size; y_position; _ } = data in
           single_target ~is_the_extra_target:false index size y_position graph)
         graph
@@ -391,22 +382,17 @@ let list
           graph
       else Bonsai.return (Vdom.Node.none_deprecated [@alert "-deprecated"])
     in
-    let%arr item_targets = item_targets
-    and extra_target = extra_target in
+    let%arr item_targets and extra_target in
     extra_target :: Map.data item_targets
   in
   let item_is_hovered =
-    let%arr dnd = dnd in
+    let%arr dnd in
     match Drag_and_drop.model dnd with
     | Dragging { target = Some _; _ } -> true
     | _ -> false
   in
   let empty_list_placeholder = empty_list_placeholder ~item_is_hovered graph in
-  let%arr items = items
-  and targets = targets
-  and is_dragging = is_dragging
-  and total_height = total_height
-  and empty_list_placeholder = empty_list_placeholder in
+  let%arr items and targets and is_dragging and total_height and empty_list_placeholder in
   let items = if Map.is_empty items then [ empty_list_placeholder ] else Map.data items in
   let items = if is_dragging then items @ targets else items in
   Node.div
@@ -493,7 +479,7 @@ let with_inject
   ?default_item_height
   ?add_drop_target_for_appending
   render
-  graph
+  (local_ graph)
   =
   let module Key = struct
     include (val key)
@@ -528,7 +514,7 @@ let with_inject
       ~source_id:(module Key)
       ~target_id:(module Int)
       ~on_drop:
-        (let%map inject = inject in
+        (let%map inject in
          fun key i -> inject [ Move (key, i) ])
       graph
   in
@@ -537,10 +523,9 @@ let with_inject
     Bonsai.assoc
       (module Key)
       ranked_input
-      ~f:(fun key data graph ->
+      ~f:(fun key data (local_ graph) ->
         let source =
-          let%arr key = key
-          and source = source in
+          let%arr key and source in
           source ~id:key
         in
         let rendered = render ~index:data ~source key graph in
@@ -551,7 +536,7 @@ let with_inject
     Bonsai.assoc
       (module Key)
       rendered_ranked_input
-      ~f:(fun _ data _graph ->
+      ~f:(fun _ data (local_ _graph) ->
         let%arr (_, view), rank = data in
         view, rank)
       graph
@@ -574,14 +559,14 @@ let with_inject
   let dragged_element =
     Drag_and_drop.dragged_element
       dnd
-      ~f:(fun key graph ->
+      ~f:(fun key (local_ graph) ->
         let result =
           Bonsai.Incr.compute
             (Bonsai.both key rendered_ranked_input)
             ~f:(fun key_and_input ->
               let%pattern_bind.Ui_incr key, rendered_ranked_input = key_and_input in
               let lookup = Ui_incr.Map.Lookup.create (module Key) rendered_ranked_input in
-              let%bind.Ui_incr key = key in
+              let%bind.Ui_incr key in
               Ui_incr.Map.Lookup.find lookup key)
             graph
         in
@@ -591,13 +576,11 @@ let with_inject
       graph
   in
   let view =
-    let%arr list = list
-    and sentinel = sentinel
-    and dragged_element = dragged_element in
+    let%arr list and sentinel and dragged_element in
     Vdom.Node.div ~attrs:[ sentinel ~name:sentinel_name ] [ list; dragged_element ]
   in
   let ranking =
-    let%arr rendered_ranked_input = rendered_ranked_input in
+    let%arr rendered_ranked_input in
     Map.to_alist rendered_ranked_input
     |> List.sort ~compare:(fun a b ->
       Comparable.lift Int.compare ~f:(fun (_, (_, rank)) -> rank) a b)
@@ -613,12 +596,10 @@ let sync_with_set
   ~inject
   ~add
   ~remove
-  graph
+  (local_ graph)
   =
   let callback =
-    let%arr inject = inject
-    and add = add
-    and remove = remove in
+    let%arr inject and add and remove in
     fun old new_ ->
       inject
         (match old with
@@ -651,7 +632,7 @@ let simple
   ?add_drop_target_for_appending
   ~render
   (input : (src, cmp) Set.t Bonsai.t)
-  graph
+  (local_ graph)
   =
   let%sub value, view, inject =
     with_inject
@@ -746,9 +727,9 @@ module Multi = struct
       -> source:Vdom.Attr.t Bonsai.t
       -> which Bonsai.t
       -> src Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> (_ * Vdom.Node.t) Bonsai.t)
-    graph
+    (local_ graph)
     =
     let module Key = struct
       include (val key)
@@ -793,7 +774,7 @@ module Multi = struct
             type t = Which.t * Int.t [@@deriving equal, sexp]
           end)
         ~on_drop:
-          (let%map inject = inject in
+          (let%map inject in
            fun source (target_which, target) ->
              inject [ Move (source, target_which, target) ])
         graph
@@ -814,10 +795,9 @@ module Multi = struct
       Bonsai.assoc
         (module Key)
         ranked_input
-        ~f:(fun key data graph ->
+        ~f:(fun key data (local_ graph) ->
           let source =
-            let%arr key = key
-            and source = source in
+            let%arr key and source in
             source ~id:key
           in
           let%sub which, index = data in
@@ -829,7 +809,7 @@ module Multi = struct
       Bonsai.assoc_set
         (module Which)
         lists
-        ~f:(fun which graph ->
+        ~f:(fun which (local_ graph) ->
           let rendered_ranked_input =
             Bonsai.Incr.compute
               (Bonsai.both which rendered_ranked_input)
@@ -848,14 +828,13 @@ module Multi = struct
             Bonsai.assoc
               (module Key)
               rendered_ranked_input
-              ~f:(fun _ data _graph ->
+              ~f:(fun _ data (local_ _graph) ->
                 let%arr (_, view), rank = data in
                 view, rank)
               graph
           in
           let dnd =
-            let%arr dnd = dnd
-            and which = which in
+            let%arr dnd and which in
             Drag_and_drop.project_target
               dnd
               ~map:(fun (target_which, index) ->
@@ -879,7 +858,7 @@ module Multi = struct
               graph
           in
           let value =
-            let%arr rendered_ranked_input = rendered_ranked_input in
+            let%arr rendered_ranked_input in
             Map.to_alist rendered_ranked_input
             |> List.sort ~compare:(fun a b ->
               Comparable.lift Int.compare ~f:(fun (_, (_, rank)) -> rank) a b)
@@ -892,14 +871,13 @@ module Multi = struct
     let dragged_element =
       Drag_and_drop.dragged_element
         dnd
-        ~f:(fun target graph ->
+        ~f:(fun target (local_ graph) ->
           let result =
             Bonsai.Incr.compute
               (Bonsai.both target results)
               ~f:(fun target_and_results ->
                 let%pattern_bind.Ui_incr source, results = target_and_results in
-                let%map.Ui_incr source = source
-                and results = results in
+                let%map.Ui_incr source and results in
                 List.find_map (Map.to_alist results) ~f:(fun (_, (_, _, list)) ->
                   Map.find list source))
               graph
@@ -913,15 +891,12 @@ module Multi = struct
       Bonsai.assoc
         (module Which)
         results
-        ~f:(fun _key data _graph ->
+        ~f:(fun _key data (local_ _graph) ->
           let%arr value, view, _ = data in
           value, view)
         graph
     in
-    let%arr results = results
-    and sentinel = sentinel
-    and dragged_element = dragged_element
-    and inject = inject in
+    let%arr results and sentinel and dragged_element and inject in
     let view =
       Vdom.Node.div ~attrs:[ sentinel ~name:sentinel_name ] [ dragged_element ]
     in
@@ -945,12 +920,12 @@ module Multi = struct
         -> source:Vdom.Attr.t Bonsai.t
         -> which Bonsai.t
         -> src Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> (_ * Vdom.Node.t) Bonsai.t)
     ~(lists : (which, which_cmp) Set.t Bonsai.t)
     ~default_list
     (input : (src, cmp) Set.t Bonsai.t)
-    graph
+    (local_ graph)
     =
     let%sub value, view, inject =
       with_inject
@@ -970,7 +945,7 @@ module Multi = struct
     in
     let%sub () =
       let add =
-        let%arr default_list = default_list in
+        let%arr default_list in
         fun k -> Action.Set (default_list, k)
       in
       sync_with_set

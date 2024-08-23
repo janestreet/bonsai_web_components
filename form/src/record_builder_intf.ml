@@ -45,7 +45,7 @@ module type Dynamic_record_builder = sig
 
   val build_for_record
     :  ('a, _ Record_builder_lib.Hlist.cons, 'a) Bare.Make_creator_types.handle_all_fields
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a profunctor_term Bonsai.t
 
   val field

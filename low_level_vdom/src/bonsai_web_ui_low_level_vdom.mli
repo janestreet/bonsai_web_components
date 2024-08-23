@@ -62,7 +62,7 @@ module Widget : sig
     :  ?vdom_for_testing:('input -> Vdom.Node.t)
     -> (module S with type input = 'input and type state = 'state)
     -> 'input Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('input, 'state) t Bonsai.t
 end
 
@@ -105,7 +105,7 @@ module Hook : sig
     :  (module S with type input = 'input and type state = 'state)
     -> hook_name:string
     -> 'input Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('input, 'state) t Bonsai.t
 end
 
@@ -118,7 +118,7 @@ module Dom_ref : sig
   (** Allows you to get the [Dom_html.element Js.t]s for some [Vdom.Node.t] in effects.
       You should not store the output of the [nodes] effect in state, because it is
       mutable and may change unexpectedly. *)
-  val tracker : Bonsai.graph -> t Bonsai.t
+  val tracker : local_ Bonsai.graph -> t Bonsai.t
 end
 
 module Mutable_state_tracker : sig
@@ -152,5 +152,5 @@ module Mutable_state_tracker : sig
     ; read : 'a. ('s -> 'a) -> 'a list Effect.t
     }
 
-  val component : unit -> Bonsai.graph -> 's t Bonsai.t
+  val component : unit -> local_ Bonsai.graph -> 's t Bonsai.t
 end

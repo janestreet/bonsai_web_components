@@ -8,13 +8,13 @@ module type S = sig
   type data
   type column_id
 
-  val headers : t -> Bonsai.graph -> column_id Header_tree.t Bonsai.t
+  val headers : t -> local_ Bonsai.graph -> column_id Header_tree.t Bonsai.t
 
   val instantiate_cells
     :  t
     -> (key, 'cmp) Bonsai.comparator
     -> (key * data) Opaque_map.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
 end
 
@@ -30,7 +30,7 @@ module type S_with_sorter = sig
          [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click ] Bonsai.t
     -> t
     -> column_id Sortable.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ((column_id, (key, data) Sort_kind.t, column_id_cmp) Map.t
        * column_id Header_tree.t)
          Bonsai.t
@@ -39,7 +39,7 @@ module type S_with_sorter = sig
     :  t
     -> (key, 'cmp) Bonsai.comparator
     -> (key * data) Opaque_map.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
 end
 

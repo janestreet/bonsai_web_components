@@ -32,7 +32,7 @@ let%expect_test "render some notifications and test that they close as expected"
   let handle =
     Handle.create
       (module Notification_spec)
-      (fun graph ->
+      (fun (local_ graph) ->
         let notifications =
           Notifications.Basic.create
             ~dismiss_notifications_after:(Bonsai.return (Time_ns.Span.create ~sec:15 ()))
@@ -41,8 +41,7 @@ let%expect_test "render some notifications and test that they close as expected"
             graph
         in
         let vdom = Notifications.Basic.render notifications graph in
-        let%arr notifications = notifications
-        and vdom = vdom in
+        let%arr notifications and vdom in
         notifications, vdom)
   in
   Handle.show handle;
@@ -239,7 +238,7 @@ let%test_module "generic notification test" =
     end
 
     let%expect_test "opening and closing a single notification" =
-      let computation graph =
+      let computation (local_ graph) =
         let notifications =
           Notifications.component
             (module Notification_type)
@@ -249,9 +248,8 @@ let%test_module "generic notification test" =
         let vdom =
           Notifications.render
             notifications
-            ~f:(fun ~close element _graph ->
-              let%arr element = element
-              and close = close in
+            ~f:(fun ~close element (local_ _graph) ->
+              let%arr element and close in
               Vdom.Node.div
                 ~attrs:
                   [ Notification_type.to_attr element
@@ -261,8 +259,7 @@ let%test_module "generic notification test" =
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in
@@ -299,7 +296,7 @@ let%test_module "generic notification test" =
         |}]
     ;;
 
-    let bare_bones_notification_ui graph =
+    let bare_bones_notification_ui (local_ graph) =
       let notifications =
         Notifications.component
           (module Notification_type)
@@ -309,13 +306,12 @@ let%test_module "generic notification test" =
       let vdom =
         Notifications.render
           notifications
-          ~f:(fun ~close:_ element _graph ->
-            let%arr element = element in
+          ~f:(fun ~close:_ element (local_ _graph) ->
+            let%arr element in
             Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)])
           graph
       in
-      let%arr vdom = vdom
-      and notifications = notifications in
+      let%arr vdom and notifications in
       vdom, notifications
     ;;
 
@@ -569,7 +565,7 @@ let%test_module "generic notification test" =
     ;;
 
     let%expect_test "opening and closing many notifications" =
-      let computation graph =
+      let computation (local_ graph) =
         let notifications =
           Notifications.component
             (module Notification_type)
@@ -579,9 +575,8 @@ let%test_module "generic notification test" =
         let vdom =
           Notifications.render
             notifications
-            ~f:(fun ~close element _graph ->
-              let%arr element = element
-              and close = close in
+            ~f:(fun ~close element (local_ _graph) ->
+              let%arr element and close in
               Vdom.Node.div
                 ~attrs:
                   [ Notification_type.to_attr element
@@ -591,8 +586,7 @@ let%test_module "generic notification test" =
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in
@@ -685,7 +679,7 @@ let%test_module "generic notification test" =
     ;;
 
     let%expect_test "notification closig due to time expiry at different times" =
-      let computation graph =
+      let computation (local_ graph) =
         let notifications =
           Notifications.component
             (module Notification_type)
@@ -695,16 +689,15 @@ let%test_module "generic notification test" =
         let vdom =
           Notifications.render
             notifications
-            ~f:(fun ~close:_ element _graph ->
-              let%arr element = element in
+            ~f:(fun ~close:_ element (local_ _graph) ->
+              let%arr element in
               Vdom.Node.div
                 ~attrs:[ Notification_type.to_attr element ]
                 [ Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)]
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in

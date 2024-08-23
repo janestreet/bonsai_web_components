@@ -36,7 +36,7 @@ val component
   -> leaves:'column_id Header_tree.leaf list Bonsai.t
   -> assoc:
        (('key * 'data) Opaque_map.t Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> ('key * ('column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t)
   -> column_widths:('column_id, Column_size.t, 'column_id_cmp) Map.t Bonsai.t
   -> visually_focused:('key, 'column_id, 'kind) Focus.focused Bonsai.t
@@ -44,5 +44,5 @@ val component
   -> extra_row_attrs:('key -> Vdom.Attr.t list) Bonsai.t
   -> ('key, 'data) Collated.t Bonsai.t
   -> ('key * 'data) Opaque_map.t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> (Table_view.Body.t * For_testing.t Lazy.t) Bonsai.t

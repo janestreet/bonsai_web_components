@@ -15,13 +15,13 @@ let create
   ?(modify_input_on_select = fun _ _ -> "")
   ()
   =
-  let component graph =
+  let component (local_ graph) =
     Bonsai_web_ui_query_box.create
       (module Int)
       ?expand_direction:(Option.map expand_direction ~f:Bonsai.return)
       ~max_visible_items:(Bonsai.return 3)
-      ~f:(fun query _graph ->
-        let%arr query = query in
+      ~f:(fun query (local_ _graph) ->
+        let%arr query in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ?on_blur
@@ -359,14 +359,14 @@ let%expect_test "partial-rendering" =
          ; "watermelon"
          ])
   in
-  let component graph =
+  let component (local_ graph) =
     Bonsai_web_ui_query_box.create
       (module String)
       ~on_select:(Bonsai.return (fun _ -> Effect.Ignore))
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ~max_visible_items:(Bonsai.return 4)
-      ~f:(fun query _graph ->
-        let%arr query = query in
+      ~f:(fun query (local_ _graph) ->
+        let%arr query in
         Map.filter_mapi fruits ~f:(fun ~key:fruit ~data:() ->
           if Fuzzy_match.is_match ~char_equal:Char.Caseless.equal fruit ~pattern:query
           then Some (Node.text fruit)
@@ -923,12 +923,12 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
   let items =
     Bonsai.Expert.Var.create (Int.Map.of_alist_exn [ 1, "a"; 3, "c"; 5, "e" ])
   in
-  let component graph =
+  let component (local_ graph) =
     Bonsai_web_ui_query_box.create
       (module Int)
       ~max_visible_items:(Bonsai.return 3)
-      ~f:(fun query _graph ->
-        let%arr query = query
+      ~f:(fun query (local_ _graph) ->
+        let%arr query
         and items = Bonsai.Expert.Var.value items in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
@@ -1081,8 +1081,8 @@ let%test_module "optimization: the query box only loads its data when interacted
       Bonsai_web_ui_query_box.create
         (module Int)
         ~max_visible_items:(Bonsai.return 3)
-        ~f:(fun query _graph ->
-          let%arr query = query in
+        ~f:(fun query (local_ _graph) ->
+          let%arr query in
           print_endline "Generating options...";
           Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
         ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
@@ -1265,13 +1265,13 @@ let%test_module "optimization: the query box only loads its data when interacted
 
 let%expect_test "[modify_input_on_select] field works" =
   let handle =
-    let component graph =
+    let component (local_ graph) =
       Bonsai_web_ui_query_box.create
         (module Int)
         ~expand_direction:(Bonsai.return Bonsai_web_ui_query_box.Expand_direction.Down)
         ~max_visible_items:(Bonsai.return 3)
-        ~f:(fun query _graph ->
-          let%arr query = query in
+        ~f:(fun query (local_ _graph) ->
+          let%arr query in
           Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
         ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
         ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))

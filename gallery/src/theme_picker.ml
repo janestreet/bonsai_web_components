@@ -48,7 +48,7 @@ module Style =
       }
       |}]
 
-let component ?(default = Theme_id.Default) ?(standalone = false) () graph =
+let component ?(default = Theme_id.Default) ?(standalone = false) () (local_ graph) =
   let var = theme_var ~default in
   let var_value = Persistent_var.value var in
   let picker =

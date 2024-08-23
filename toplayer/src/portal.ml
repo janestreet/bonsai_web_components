@@ -34,25 +34,24 @@ let apply_action_sync ~path action =
 
 let apply_action ~path action = Effect.of_sync_fun (apply_action_sync ~path) action
 
-let bonsai_driven vdom graph =
+let bonsai_driven vdom (local_ graph) =
   let path = Bonsai.path_id graph in
   let () =
     (* Create a new portal whenever the component is activated. *)
     let on_activate =
-      let%arr vdom = vdom
-      and path = path in
+      let%arr vdom and path in
       apply_action ~path (`Create vdom)
     in
     (* Destroy any existing portal whenever the component is deactivated. *)
     let on_deactivate =
-      let%arr path = path in
+      let%arr path in
       apply_action ~path `Destroy
     in
     Bonsai.Edge.lifecycle ~on_activate ~on_deactivate graph
   in
   (* Patch the portal contents whenever they change. *)
   let callback =
-    let%arr path = path in
+    let%arr path in
     fun vdom -> apply_action ~path (`Apply_patch vdom)
   in
   Bonsai.Edge.on_change vdom ~equal:phys_equal ~callback graph

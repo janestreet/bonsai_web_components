@@ -48,7 +48,7 @@ val smooth
   -> duration:Time_ns.Span.t Bonsai.t
   -> interpolate:'a Interpolatable.t
   -> 'a Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a Bonsai.t
 
 module Advanced : sig
@@ -71,6 +71,6 @@ module Advanced : sig
   val make
     :  fallback:'a Bonsai.t
     -> interpolate:'a Interpolatable.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a t Bonsai.t
 end

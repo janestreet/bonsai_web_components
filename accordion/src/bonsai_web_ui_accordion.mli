@@ -15,7 +15,7 @@ val component
   -> ?extra_content_attrs:Vdom.Attr.t list Bonsai.t
   -> starts_open:bool
   -> title:Vdom.Node.t Bonsai.t
-  -> content:(Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
   -> unit
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> t Bonsai.t

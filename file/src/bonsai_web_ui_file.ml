@@ -263,14 +263,14 @@ module Read_on_change = struct
          | Reading { file_read; status = _ } -> Reading { file_read; status })
     ;;
 
-    let abort_read_if_applicable t _graph =
+    let abort_read_if_applicable t (local_ _graph) =
       match%sub t with
       | Before_first_read -> Bonsai.return Ui_effect.Ignore
       | Reading { file_read; status = _ } -> file_read >>| File_read.abort
     ;;
   end
 
-  let create_helper file graph =
+  let create_helper file (local_ graph) =
     let state, inject =
       Bonsai.state_machine0
         ~sexp_of_model:[%sexp_of: File_state.t]
@@ -290,7 +290,7 @@ module Read_on_change = struct
         ~equal:[%equal: File.t]
         file
         ~callback:
-          (let%map inject = inject in
+          (let%map inject in
            fun file ->
              let open Ui_effect.Let_syntax in
              let%bind file_read =
@@ -309,7 +309,7 @@ module Read_on_change = struct
     state
   ;;
 
-  let create_multiple files graph =
+  let create_multiple files (local_ graph) =
     let file_states =
       (* In reality, I suspect that whenever the user changes their selection in a file
          picker widget, the browser generates an entirely new set of File objects for us.
@@ -322,7 +322,7 @@ module Read_on_change = struct
       Bonsai.assoc
         (module Filename)
         files
-        ~f:(fun _filename file graph ->
+        ~f:(fun _filename file (local_ graph) ->
           let reading = create_helper file graph in
           match%map reading with
           | File_state.Before_first_read -> None
@@ -332,14 +332,13 @@ module Read_on_change = struct
     Bonsai.Incr.compute file_states ~f:(Ui_incr.Map.filter_map ~f:Fn.id) graph
   ;;
 
-  let create_single file graph =
+  let create_single file (local_ graph) =
     let state = create_helper file graph in
-    let%arr file = file
-    and state = state in
+    let%arr file and state in
     file.filename, File_state.to_status state
   ;;
 
-  let create_single_opt file graph =
+  let create_single_opt file (local_ graph) =
     match%sub file with
     | None -> Bonsai.return None
     | Some file -> Bonsai.map (create_single file graph) ~f:Option.some

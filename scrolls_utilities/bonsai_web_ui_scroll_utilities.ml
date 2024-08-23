@@ -30,6 +30,7 @@ module Scroll_into_view = struct
         match align with
         | `Top -> Js.string "start"
         | `Bottom -> Js.string "end"
+        | `Center -> Js.string "center"
     end
   ;;
 
@@ -51,6 +52,9 @@ module Scroll_into_view = struct
     | `To_bottom ->
       scrollable##scrollIntoView
         (Js.Unsafe.inject (scroll_into_view_options ~align:`Bottom ~smooth))
+    | `To_center ->
+      scrollable##scrollIntoView
+        (Js.Unsafe.inject (scroll_into_view_options ~align:`Center ~smooth))
   ;;
 
   let for_effect (smooth, selector, how) =

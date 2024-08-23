@@ -18,12 +18,12 @@ val component
   :  ?styles:Vdom.Attr.t
   -> create_message:(Time_ns.Span.t -> string)
   -> bool Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
 (** like [component], but allows for creating a more flexible vdom structure. *)
 val custom
   :  create_message:(Time_ns.Span.t -> Vdom.Node.t) Bonsai.t
   -> bool Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t

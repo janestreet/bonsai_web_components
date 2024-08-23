@@ -12,7 +12,12 @@ type 'col_id t =
 let order t = t.order
 let inject t = t.inject
 
-let state ?(initial_order = Bonsai.return Order.default) ~equal:col_id_equal () graph =
+let state
+  ?(initial_order = Bonsai.return Order.default)
+  ~equal:col_id_equal
+  ()
+  (local_ graph)
+  =
   let equal = Order.equal col_id_equal in
   let%sub order, inject =
     Bonsai_extra.state_machine0_dynamic_model
@@ -23,8 +28,7 @@ let state ?(initial_order = Bonsai.return Order.default) ~equal:col_id_equal () 
       graph
   in
   let order = Bonsai.cutoff ~equal order in
-  let%arr order = order
-  and inject = inject in
+  let%arr order and inject in
   { order; inject; col_id_equal }
 ;;
 

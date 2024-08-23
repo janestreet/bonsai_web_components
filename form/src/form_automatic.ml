@@ -155,19 +155,16 @@ include Form_manual
 module Dynamic = struct
   include Dynamic
 
-  let error_hint t _graph =
-    let%arr t = t in
+  let error_hint t (local_ _graph) =
+    let%arr t in
     match Result.error t.value with
     | Some err -> { t with view = View.suggest_error err t.view }
     | None -> t
   ;;
 
-  let collapsible_group ?(starts_open = true) label t graph =
+  let collapsible_group ?(starts_open = true) label t (local_ graph) =
     let%tydi is_open, toggle_is_open = Bonsai.toggle ~default_model:starts_open graph in
-    let%arr is_open = is_open
-    and toggle_is_open = toggle_is_open
-    and label = label
-    and t = t in
+    let%arr is_open and toggle_is_open and label and t in
     let label =
       Vdom.Node.div
         ~attrs:
@@ -197,7 +194,7 @@ module Dynamic = struct
 
     let field' t ~label_of_field fieldslib_field =
       let for_profunctor =
-        let%map t = t in
+        let%map t in
         let t =
           { t with value = Record_builder.attach_fieldname_to_error t fieldslib_field }
         in
@@ -211,7 +208,7 @@ module Dynamic = struct
 
     let field = field' ~label_of_field:Record_builder.label_of_field
 
-    let build_for_record creator _graph =
+    let build_for_record creator (local_ _graph) =
       let%arr t = build_for_record creator in
       let value, set, fields = For_profunctor.finalize_view t in
       { value; set; view = View.record fields }
@@ -229,25 +226,24 @@ include T
 
 let to_manual_form form = map_view form ~f:(fun old_view -> View.to_vdom old_view)
 
-let to_manual_form' form _graph =
-  let%arr form = form in
+let to_manual_form' form (local_ _graph) =
+  let%arr form in
   to_manual_form form
 ;;
 
-let of_manual_form manual_form graph =
+let of_manual_form manual_form (local_ graph) =
   let path = Bonsai.path_id graph in
-  let%arr manual_form = manual_form
-  and path = path in
+  let%arr manual_form and path in
   map_view manual_form ~f:(fun old_view -> View.of_vdom old_view ~unique_key:path)
 ;;
 
-let return ?(here = Stdlib.Lexing.dummy_pos) ?sexp_of_t ?equal value =
+let return ~(here : [%call_pos]) ?sexp_of_t ?equal value =
   map_view (return ~here ?sexp_of_t ?equal value) ~f:(fun () -> View.empty)
 ;;
 
-let return_settable ?sexp_of_model ~equal value graph =
+let return_settable ?sexp_of_model ~equal value (local_ graph) =
   let form = return_settable ?sexp_of_model ~equal value graph in
-  let%arr form = form in
+  let%arr form in
   map_view form ~f:(fun () -> View.empty)
 ;;
 

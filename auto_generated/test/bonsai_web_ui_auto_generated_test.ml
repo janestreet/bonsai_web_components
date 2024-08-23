@@ -1590,17 +1590,18 @@ let%expect_test "customizing a tuple within a list" =
       ~apply_to_tag:(fun ~key ~value ->
         String.equal key Sexplib0.Sexp_grammar.type_name_tag
         && Sexp.equal value ([%sexp_of: string] "my_pair"))
-      (fun (with_tag : Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t) ~recurse graph ->
+      (fun (with_tag : Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t)
+        ~recurse
+        (local_ graph) ->
         let grammar =
-          let%arr with_tag = with_tag in
+          let%arr with_tag in
           with_tag.grammar
         in
         match%sub (grammar : Sexplib0.Sexp_grammar.grammar Bonsai.t) with
         | List (Cons (first, Cons (second, Empty))) ->
           let first = recurse first graph in
           let second = recurse second graph in
-          let%arr first = first
-          and second = second in
+          let%arr first and second in
           let view =
             Form.View.tuple
               [ Form.view (Form.label "Key" first); Form.view (Form.label "Data" second) ]

@@ -61,9 +61,9 @@ module T = struct
 end
 
 module Run_tests (M : sig
-    val string : unit -> Bonsai.graph -> string Form.t Bonsai.t
-    val stringable : unit -> Bonsai.graph -> T.t Form.t Bonsai.t
-    val sexpable : unit -> Bonsai.graph -> T.t Form.t Bonsai.t
+    val string : unit -> local_ Bonsai.graph -> string Form.t Bonsai.t
+    val stringable : unit -> local_ Bonsai.graph -> T.t Form.t Bonsai.t
+    val sexpable : unit -> local_ Bonsai.graph -> T.t Form.t Bonsai.t
   end) =
 struct
   let name = "Bonsai_web_ui_codemirror_form"

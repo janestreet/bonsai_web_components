@@ -49,15 +49,14 @@ let rows
   ~(on_cell_click : (key -> column_id -> unit Effect.t) Bonsai.t)
   ~extra_row_attrs
   (cells : (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t)
-  graph
+  (local_ graph)
   =
   let module Key_cmp = (val key_comparator) in
   let module Col_cmp = (val column_id_comparator) in
   (* It's tempting to use [Bonsai.Map.unordered_fold] over the [col_widths], but some
      columns in [col_widths] may not actually be present in the table. *)
   let row_width =
-    let%arr col_widths = col_widths
-    and leaves = leaves in
+    let%arr col_widths and leaves in
     List.sum
       (module Float)
       leaves
@@ -67,11 +66,11 @@ let rows
         | None | Some (Hidden _) -> 0.0)
   in
   let col_styles =
-    let%arr themed_attrs = themed_attrs
+    let%arr themed_attrs
     and (`Px row_height) = row_height
-    and autosize = autosize
-    and col_widths = col_widths
-    and leaves = leaves in
+    and autosize
+    and col_widths
+    and leaves in
     Table_view.Cell.Col_styles.create
       column_id_comparator
       ~themed_attrs
@@ -82,18 +81,18 @@ let rows
   in
   let row_styles =
     let%arr (`Px row_height) = row_height
-    and autosize = autosize
-    and row_width = row_width in
+    and autosize
+    and row_width in
     Table_view.Row.Styles.create ~row_height ~row_width ~autosize
   in
   let is_row_focused =
-    let%arr visually_focused = visually_focused in
+    let%arr visually_focused in
     match visually_focused with
     | Nothing_focused | Cell_focused _ -> return_false_1
     | Row_focused k -> fun key -> Comparable.equal Key_cmp.comparator.compare k key
   in
   let focused_column_in_row =
-    let%arr visually_focused = visually_focused in
+    let%arr visually_focused in
     match visually_focused with
     | Nothing_focused | Row_focused _ -> return_none_1
     | Cell_focused (k, c) ->
@@ -102,25 +101,23 @@ let rows
   Bonsai.assoc
     (module Opaque_map.Key)
     cells
-    ~f:(fun _ key_and_cells _graph ->
-      let%sub key, cells = key_and_cells in
+    ~f:(fun _ key_and_cells (local_ _graph) ->
       let cells =
         let is_focused =
-          let%arr focused_column_in_row = focused_column_in_row
-          and key = key in
+          let%arr focused_column_in_row
+          and key, _ = key_and_cells in
           match focused_column_in_row key with
           | None -> return_false_1
           | Some focused_column ->
             fun column_id ->
               Comparable.equal Col_cmp.comparator.compare focused_column column_id
         in
-        let%arr on_cell_click = on_cell_click
-        and is_focused = is_focused
-        and col_styles = col_styles
-        and cells = cells
-        and themed_attrs = themed_attrs
-        and autosize = autosize
-        and key = key in
+        let%arr on_cell_click
+        and is_focused
+        and col_styles
+        and key, cells = key_and_cells
+        and themed_attrs
+        and autosize in
         let col_styles column_id = (Staged.unstage col_styles) column_id in
         List.map cells ~f:(fun (column_id, cell) ->
           Table_view.Cell.view
@@ -131,13 +128,13 @@ let rows
             ~autosize
             cell)
       in
-      let%arr themed_attrs = themed_attrs
-      and key = key
-      and cells = cells
-      and autosize = autosize
-      and is_row_focused = is_row_focused
-      and row_styles = row_styles
-      and extra_row_attrs = extra_row_attrs in
+      let%arr themed_attrs
+      and key, _ = key_and_cells
+      and cells
+      and autosize
+      and is_row_focused
+      and row_styles
+      and extra_row_attrs in
       let extra_attrs = extra_row_attrs key in
       Table_view.Row.view
         themed_attrs
@@ -160,7 +157,7 @@ let component
   ~(leaves : col Header_tree.leaf list Bonsai.t)
   ~(assoc :
       (key * data) Opaque_map.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> (key * (col * Vdom.Node.t) list) Opaque_map.t Bonsai.t)
   ~column_widths
   ~(visually_focused : (key, col, kind) Focus.focused Bonsai.t)
@@ -168,11 +165,11 @@ let component
   ~extra_row_attrs
   (collated : (key, data) Collated.t Bonsai.t)
   (input : (key * data) Opaque_map.t Bonsai.t)
-  : Bonsai.graph -> (Table_view.Body.t * For_testing.t Lazy.t) Bonsai.t
+  : local_ Bonsai.graph -> (Table_view.Body.t * For_testing.t Lazy.t) Bonsai.t
   =
-  fun graph ->
+  fun (local_ graph) ->
   let padding_top_and_bottom =
-    let%arr collated = collated
+    let%arr collated
     and (`Px row_height) = row_height in
     let padding_top = Collated.num_before_range collated * row_height in
     let padding_bottom = Collated.num_after_range collated * row_height in
@@ -203,16 +200,13 @@ let component
         graph
     in
     let%arr padding_top, padding_bottom = padding_top_and_bottom
-    and themed_attrs = themed_attrs
-    and autosize = autosize
-    and rows = rows in
+    and themed_attrs
+    and autosize
+    and rows in
     Table_view.Body.view themed_attrs ~padding_top ~padding_bottom ~rows ~autosize
   in
   let for_testing =
-    let%arr cells = cells
-    and collated = collated
-    and visually_focused = visually_focused
-    and headers = headers in
+    let%arr cells and collated and visually_focused and headers in
     lazy
       (let column_names = Header_tree.column_names headers in
        { For_testing.column_names
@@ -243,7 +237,6 @@ let component
        ; num_unfiltered = Collated.num_unfiltered_rows collated
        })
   in
-  let%arr view = view
-  and for_testing = for_testing in
+  let%arr view and for_testing in
   view, for_testing
 ;;

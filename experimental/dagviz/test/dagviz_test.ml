@@ -55,29 +55,29 @@ module Dummy_nodes = struct
   let map_with_ids ids = Id.Map.of_alist_exn (List.map ids ~f:(fun x -> x, ()))
 end
 
-let node_to_vdom (id : Id.t Bonsai.t) _ : Bonsai.graph -> Vdom.Node.t Bonsai.t =
-  fun _graph ->
-  let%arr id = id in
+let node_to_vdom (id : Id.t Bonsai.t) _ : local_ Bonsai.graph -> Vdom.Node.t Bonsai.t =
+  fun (local_ _graph) ->
+  let%arr id in
   Vdom.Node.text (Id.to_string id)
 ;;
 
 let edge_to_svg ~(edge : Edge.t Bonsai.t) ~from:_ ~to_:_
-  : Bonsai.graph -> Vdom.Node.t Bonsai.t
+  : local_ Bonsai.graph -> Vdom.Node.t Bonsai.t
   =
-  fun _graph ->
-  let%arr edge = edge in
+  fun (local_ _graph) ->
+  let%arr edge in
   Vdom.Node.sexp_for_debugging [%message (edge : Edge.t)]
 ;;
 
 let create_handle ~dag ~curr_id =
-  let component graph =
+  let component (local_ graph) =
     let%sub dag, _curr_id =
       create ~curr_id ~direction:`Top_to_bottom ~node_to_vdom ~edge_to_svg dag graph
     in
     match%sub dag with
     | Ok dag -> dag
     | Error error ->
-      let%arr error = error in
+      let%arr error in
       Vdom.Node.sexp_for_debugging [%message (error : Error.t)]
   in
   Handle.create

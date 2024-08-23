@@ -16,7 +16,7 @@ module Record : sig
         component which produces values of that type. *)
     val form_for_field
       :  'a Typed_field.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, field_view) Form.t Bonsai.t
 
     type form_of_field_fn =
@@ -24,7 +24,7 @@ module Record : sig
 
     (** Once each of the forms for your record have been created, you need to combine
         them into a final view of your choosing. *)
-    val finalize_view : form_of_field_fn -> Bonsai.graph -> resulting_view Bonsai.t
+    val finalize_view : form_of_field_fn -> local_ Bonsai.graph -> resulting_view Bonsai.t
   end
 
   val make
@@ -32,7 +32,7 @@ module Record : sig
           with type Typed_field.derived_on = 'a
            and type resulting_view = 'view
            and type field_view = _)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, 'view) Form.t Bonsai.t
 
   (** Like [make], but don't tag fields' errors with their name. This can be useful when
@@ -44,7 +44,7 @@ module Record : sig
           with type Typed_field.derived_on = 'a
            and type resulting_view = 'view
            and type field_view = _)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, 'view) Form.t Bonsai.t
 
   module type S_for_table = sig
@@ -61,7 +61,7 @@ module Record : sig
         component which produces values of that type. *)
     val form_for_field
       :  'a Typed_field.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, Vdom.Node.t) Form.t Bonsai.t
   end
 
@@ -69,7 +69,7 @@ module Record : sig
       correspond to list items. *)
   val make_table
     :  (module S_for_table with type Typed_field.derived_on = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a list, Vdom.Node.t) Form.t Bonsai.t
 end
 
@@ -84,18 +84,18 @@ module Variant : sig
     type resulting_view
 
     val form_for_picker
-      :  Bonsai.graph
+      :  local_ Bonsai.graph
       -> (Typed_variant.Packed.t, picker_view) Form.t Bonsai.t
 
     val form_for_variant
       :  'a Typed_variant.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, variant_view) Form.t Bonsai.t
 
     val finalize_view
       :  picker_view Bonsai.t
       -> ('a Typed_variant.t * ('a, variant_view) Form.t) Or_error.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> resulting_view Bonsai.t
   end
 
@@ -109,18 +109,18 @@ module Variant : sig
     type resulting_view
 
     val form_for_picker
-      :  Bonsai.graph
+      :  local_ Bonsai.graph
       -> (Typed_variant.Packed.t option, picker_view) Form.t Bonsai.t
 
     val form_for_variant
       :  'a Typed_variant.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, variant_view) Form.t Bonsai.t
 
     val finalize_view
       :  picker_view Bonsai.t
       -> ('a Typed_variant.t * ('a, variant_view) Form.t) option Or_error.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> resulting_view Bonsai.t
   end
 
@@ -153,13 +153,16 @@ module Variant : sig
     val form_for_variant
       :  'a Typed_variant.t
       -> ('a, 'cmp) Bonsai.comparator
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> (('a, 'cmp) Set.t, variant_view) Form.t Bonsai.t
 
     type form_of_variant_fn =
       { f : 'a 'cmp. 'a Typed_variant.t -> ('a, variant_view) Packed_set_form.t Bonsai.t }
 
-    val finalize_view : form_of_variant_fn -> Bonsai.graph -> resulting_view Bonsai.t
+    val finalize_view
+      :  form_of_variant_fn
+      -> local_ Bonsai.graph
+      -> resulting_view Bonsai.t
   end
 
   (** [picker_attr] will be added to the picker for selecting a variant constructor.
@@ -170,7 +173,7 @@ module Variant : sig
            and type picker_view = _
            and type variant_view = _
            and type resulting_view = 'view)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, 'view) Form.t Bonsai.t
 
   (* Like [make], but the picker will have an extra option that parses to [None] with the
@@ -181,7 +184,7 @@ module Variant : sig
            and type picker_view = _
            and type variant_view = _
            and type resulting_view = 'view)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a option, 'view) Form.t Bonsai.t
 
   (** Creates a form that selects a set of values from a variant type, using the
@@ -194,7 +197,7 @@ module Variant : sig
            and type comparator_witness = 'cmp
            and type variant_view = _
            and type resulting_view = 'view)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, 'view) Form.t Bonsai.t
 
   (** Like [make_set], but don't tag variants' errors with their name.
@@ -207,6 +210,6 @@ module Variant : sig
            and type comparator_witness = 'cmp
            and type variant_view = _
            and type resulting_view = 'view)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, 'view) Form.t Bonsai.t
 end

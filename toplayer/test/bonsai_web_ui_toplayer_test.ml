@@ -275,7 +275,7 @@ module Helper = struct
 
   let get_toplayer_elements app_vdom =
     let anchored_popovers =
-      let%arr app_vdom = app_vdom in
+      let%arr app_vdom in
       let app_helper = Node_helpers.unsafe_convert_exn app_vdom in
       get_all_anchored app_helper
     in
@@ -287,25 +287,23 @@ module Helper = struct
       |> List.filter_opt
     in
     let virtual_popovers =
-      let%arr virtual_and_modals = virtual_and_modals in
+      let%arr virtual_and_modals in
       List.filter_map virtual_and_modals ~f:(function
         | `Virtual_popover x -> Some x
         | `Modal _ -> None)
     in
     let modals =
-      let%arr virtual_and_modals = virtual_and_modals in
+      let%arr virtual_and_modals in
       List.filter_map virtual_and_modals ~f:(function
         | `Modal x -> Some x
         | `Virtual_popover _ -> None)
     in
-    let%arr anchored_popovers = anchored_popovers
-    and virtual_popovers = virtual_popovers
-    and modals = modals in
+    let%arr anchored_popovers and virtual_popovers and modals in
     { Result.anchored_popovers; virtual_popovers; modals }
   ;;
 
   let wrap_app_vdom app_vdom =
-    let%arr app_vdom = app_vdom
+    let%arr app_vdom
     and result = get_toplayer_elements app_vdom in
     Result.wrap_app_vdom result app_vdom
   ;;
@@ -362,7 +360,7 @@ module Test_result = struct
 end
 
 let test_component ?position ?alignment ?offset ?match_anchor_side_length ~content =
-  Bonsai.with_model_resetter' ~f:(fun ~reset:reset_models graph ->
+  Bonsai.with_model_resetter' ~f:(fun ~reset:reset_models (local_ graph) ->
     let popover, { Controls.open_ = open_anchored; close = close_anchored; is_open = _ } =
       Popover.create ?position ?alignment ?offset ?match_anchor_side_length ~content graph
     in
@@ -377,15 +375,15 @@ let test_component ?position ?alignment ?offset ?match_anchor_side_length ~conte
         graph
     in
     let app_vdom =
-      let%arr popover = popover in
+      let%arr popover in
       Vdom.Node.div ~attrs:[ popover ] []
     in
     let%arr result = Helper.get_toplayer_elements app_vdom
-    and open_virtual = open_virtual
-    and open_anchored = open_anchored
-    and close_virtual = close_virtual
-    and close_anchored = close_anchored
-    and reset_models = reset_models in
+    and open_virtual
+    and open_anchored
+    and close_virtual
+    and close_anchored
+    and reset_models in
     { Test_result.result
     ; open_ = Effect.Many [ open_virtual; open_anchored ]
     ; close = Effect.Many [ close_virtual; close_anchored ]
@@ -396,9 +394,7 @@ let test_component ?position ?alignment ?offset ?match_anchor_side_length ~conte
 let%test_module "vdom output" =
   (module struct
     let toggle_button ~label open_ close is_open =
-      let%arr open_ = open_
-      and close = close
-      and is_open = is_open in
+      let%arr open_ and close and is_open in
       let on_click = if is_open then close else open_ in
       let formatted_id =
         "toggle-" ^ Capitalization.apply_to_words Kebab_case (String.split ~on:' ' label)
@@ -410,14 +406,14 @@ let%test_module "vdom output" =
         |}
     ;;
 
-    let anchored_with_toggle ~label graph =
+    let anchored_with_toggle ~label (local_ graph) =
       let attr, { Controls.open_; close; is_open } =
         Popover.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
       in
       attr, toggle_button ~label open_ close is_open
     ;;
 
-    let virtual_with_toggle ~label graph =
+    let virtual_with_toggle ~label (local_ graph) =
       let { Controls.open_; close; is_open } =
         Popover.create_virtual
           ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
@@ -433,7 +429,7 @@ let%test_module "vdom output" =
       ~prefix
       ()
       ~close:_
-      graph
+      (local_ graph)
       =
       let anchored_attrs, anchored_togglers =
         List.init num_anchored ~f:(fun i ->
@@ -462,7 +458,7 @@ let%test_module "vdom output" =
         |}
     ;;
 
-    let test_popovers_and_virtual_popovers graph =
+    let test_popovers_and_virtual_popovers (local_ graph) =
       let anchored1, toggle_anchored1 = anchored_with_toggle ~label:"Anchored 1" graph in
       let anchored2, toggle_anchored2 = anchored_with_toggle ~label:"Anchored 2" graph in
       let ( anchored3
@@ -492,15 +488,15 @@ let%test_module "vdom output" =
         toggle_button ~label:"Virtual 3" open_virtual3 close_virtual3 is_open_virtual3
       in
       let app_root =
-        let%arr anchored1 = anchored1
-        and anchored2 = anchored2
-        and anchored3 = anchored3
-        and toggle_anchored1 = toggle_anchored1
-        and toggle_anchored2 = toggle_anchored2
-        and toggle_anchored3 = toggle_anchored3
-        and toggle_virtual1 = toggle_virtual1
-        and toggle_virtual2 = toggle_virtual2
-        and toggle_virtual3 = toggle_virtual3 in
+        let%arr anchored1
+        and anchored2
+        and anchored3
+        and toggle_anchored1
+        and toggle_anchored2
+        and toggle_anchored3
+        and toggle_virtual1
+        and toggle_virtual2
+        and toggle_virtual3 in
         {%html|
             <div>
               <div
@@ -759,14 +755,14 @@ let%test_module "vdom output" =
       Handle.recompute_view_until_stable handle
     ;;
 
-    let modal_with_toggle ~label graph =
+    let modal_with_toggle ~label (local_ graph) =
       let { Controls.open_; close; is_open } =
         Modal.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
       in
       toggle_button ~label open_ close is_open
     ;;
 
-    let test_modals graph =
+    let test_modals (local_ graph) =
       let toggle_modal1 = modal_with_toggle ~label:"Modal 1" graph in
       let toggle_modal2 = modal_with_toggle ~label:"Modal 2" graph in
       let { Controls.open_ = open_modal3; close = close_modal3; is_open = is_open_modal3 }
@@ -777,9 +773,7 @@ let%test_module "vdom output" =
         toggle_button ~label:"Modal 3" open_modal3 close_modal3 is_open_modal3
       in
       let app_root =
-        let%arr toggle_modal1 = toggle_modal1
-        and toggle_modal2 = toggle_modal2
-        and toggle_modal3 = toggle_modal3 in
+        let%arr toggle_modal1 and toggle_modal2 and toggle_modal3 in
         {%html|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
       in
       Helper.wrap_app_vdom app_root
@@ -929,7 +923,7 @@ let%test_module "vdom output" =
 
     let%expect_test "modals pass through lock_body_scroll" =
       let lock_body_scroll = Var.create false in
-      let component graph =
+      let component (local_ graph) =
         let { Controls.open_; close; is_open } =
           Modal.create
             ~lock_body_scroll:(Var.value lock_body_scroll)
@@ -937,13 +931,11 @@ let%test_module "vdom output" =
             graph
         in
         let toggle =
-          let%arr open_ = open_
-          and close = close
-          and is_open = is_open in
+          let%arr open_ and close and is_open in
           if is_open then close else open_
         in
         let app_root =
-          let%arr toggle = toggle in
+          let%arr toggle in
           {%html|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
         in
         let result = Helper.get_toplayer_elements app_root in
@@ -954,8 +946,7 @@ let%test_module "vdom output" =
             [%message "One modal" (lock_body_scroll : bool)]
           | _ -> [%sexp "More than one modal"]
         in
-        let%arr modal_desc = modal_desc
-        and app_root = app_root in
+        let%arr modal_desc and app_root in
         { Modal_test_result.modal_desc; app_root }
       in
       let handle =
@@ -1205,7 +1196,7 @@ module _ = struct
   let%expect_test "Closing via the internal button on click" =
     let test_component =
       test_component ~content:(fun ~close _ ->
-        let%arr close = close in
+        let%arr close in
         View.vbox
           [ View.text "Popover!"
           ; Vdom.Node.button
@@ -1245,10 +1236,9 @@ module _ = struct
                    and clears its contents."
     =
     let test_component =
-      test_component ~content:(fun ~close:_ graph ->
+      test_component ~content:(fun ~close:_ (local_ graph) ->
         let count, set_count = Bonsai.state 0 graph in
-        let%arr count = count
-        and set_count = set_count in
+        let%arr count and set_count in
         Vdom.Node.button
           ~attrs:
             [ Vdom.Attr.on_click (fun _ -> set_count (count + 1))
@@ -1325,13 +1315,11 @@ module _ = struct
 
   let%expect_test "Resetting the insides of a popover doesn't close it" =
     let test_component =
-      test_component ~content:(fun ~close:_ graph ->
+      test_component ~content:(fun ~close:_ (local_ graph) ->
         Bonsai.with_model_resetter'
-          ~f:(fun ~reset graph ->
+          ~f:(fun ~reset (local_ graph) ->
             let count, set_count = Bonsai.state 0 graph in
-            let%arr count = count
-            and set_count = set_count
-            and reset = reset in
+            let%arr count and set_count and reset in
             Vdom.Node.div
               [ Vdom.Node.button
                   ~attrs:

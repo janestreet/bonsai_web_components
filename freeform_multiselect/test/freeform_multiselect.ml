@@ -10,12 +10,12 @@ let shared_computation =
     ()
 ;;
 
-let view_computation graph =
+let view_computation (local_ graph) =
   let%sub _, vdom, _ = shared_computation graph in
   vdom
 ;;
 
-let view_and_set_computation graph =
+let view_and_set_computation (local_ graph) =
   let%sub _, vdom, set = shared_computation graph in
   Bonsai.both vdom set
 ;;

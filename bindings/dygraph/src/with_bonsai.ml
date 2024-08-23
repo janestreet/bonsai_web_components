@@ -124,10 +124,7 @@ let create_graph ?with_graph ?on_zoom data options ~graph_tracker =
     | None -> Bonsai.Value.return None
     | Some on_zoom -> Bonsai.Value.map on_zoom ~f:Option.some
   in
-  let%arr data = data
-  and options = options
-  and on_zoom = on_zoom
-  and graph_tracker = graph_tracker in
+  let%arr data and options and on_zoom and graph_tracker in
   widget ?with_graph ?on_zoom data options ~graph_tracker
 ;;
 
@@ -149,13 +146,13 @@ let create_default_legend ~x_label ~per_series_info =
   let%sub model, view, inject = Default_legend.create ~x_label ~per_series_info in
   (* project out visibility *)
   let model =
-    let%map model = model in
+    let%map model in
     { Legend_model.visibility =
         List.map model.series ~f:Default_legend.Model.Series.is_visible
     }
   in
   let inject =
-    let%map inject = inject in
+    let%map inject in
     fun data -> inject Default_legend.Action.(From_graph data)
   in
   return (Bonsai.Value.map3 model view inject ~f:Tuple3.create)
@@ -182,7 +179,7 @@ let build_options options visibility legendFormatter x_label y_labels =
 let visibility ~legend_model ~num_series =
   let visibility =
     let%map.Bonsai visibility_from_legend = legend_model >>| Legend_model.visibility
-    and num_series = num_series in
+    and num_series in
     let visibility_len = List.length visibility_from_legend in
     if visibility_len < num_series
     then (
@@ -239,11 +236,7 @@ let create
   in
   let%sub graph_tracker = Mutable_state_tracker.component () in
   let%sub graph = create_graph ?with_graph ?on_zoom data options ~graph_tracker in
-  let%arr graph = graph
-  and legend_view = legend_view
-  and key = key
-  and graph_tracker = graph_tracker
-  and extra_attr = extra_attr in
+  let%arr graph and legend_view and key and graph_tracker and extra_attr in
   let graph_view =
     Vdom.Node.div
       ~key

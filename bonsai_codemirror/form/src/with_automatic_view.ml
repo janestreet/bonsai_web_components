@@ -9,14 +9,17 @@ module Form = Bonsai_web_ui_form.With_automatic_view
 module Make_forms (M : sig
     type t
 
-    val create_codemirror : name:string -> t -> Bonsai.graph -> Codemirror_ui.t Bonsai.t
+    val create_codemirror
+      :  name:string
+      -> t
+      -> local_ Bonsai.graph
+      -> Codemirror_ui.t Bonsai.t
   end) =
 struct
-  let string ?(name = "Bonsai_web_ui_codemirror_form") t graph =
+  let string ?(name = "Bonsai_web_ui_codemirror_form") t (local_ graph) =
     let path = Bonsai.path_id graph in
     let codemirror = M.create_codemirror ~name t graph in
-    let%arr path = path
-    and codemirror = codemirror in
+    let%arr path and codemirror in
     Form.Expert.create
       ~view:(Form.View.of_vdom ~unique_key:path (Codemirror_ui.view codemirror))
       ~value:(Ok (Codemirror_ui.text codemirror))
@@ -26,12 +29,12 @@ struct
           (Codemirror_ui.Transaction.set_lines (String.split_lines s)))
   ;;
 
-  let stringable (type a) (module M : Stringable with type t = a) ?name t graph =
+  let stringable (type a) (module M : Stringable with type t = a) ?name t (local_ graph) =
     let%map.Bonsai form = string ?name t graph in
     Form.project form ~parse_exn:M.of_string ~unparse:M.to_string
   ;;
 
-  let sexpable (type a) (module M : Sexpable with type t = a) ?name t graph =
+  let sexpable (type a) (module M : Sexpable with type t = a) ?name t (local_ graph) =
     let%map.Bonsai form = string ?name t graph in
     Form.project
       form

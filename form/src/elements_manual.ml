@@ -40,22 +40,17 @@ module Style =
       |}]
 
 module Basic_stateful = struct
-  let make state ~view graph =
+  let make state ~view (local_ graph) =
     let state, set_state = state graph in
-    let%arr view = view
-    and state = state
-    and set_state = set_state in
+    let%arr view and state and set_state in
     let view = view ~state ~set_state in
     form_expert_create ~value:(Ok state) ~view ~set:set_state
   ;;
 
-  let make_themed state ~view graph =
+  let make_themed state ~view (local_ graph) =
     let state, set_state = state graph in
     let theme = View.Theme.current graph in
-    let%arr view = view
-    and theme = theme
-    and state = state
-    and set_state = set_state in
+    let%arr view and theme and state and set_state in
     let view = view ~state ~set_state ~theme in
     form_expert_create ~value:(Ok state) ~view ~set:set_state
   ;;
@@ -70,9 +65,8 @@ let optional_to_required =
 ;;
 
 module Non_interactive = struct
-  let constant view value _graph =
-    let%arr view = view
-    and value = value in
+  let constant view value (local_ _graph) =
+    let%arr view and value in
     let view = view in
     form_expert_create ~view ~value ~set:(fun _ -> Effect.Ignore)
   ;;
@@ -94,12 +88,12 @@ let string_underlying
   ?(extra_attrs = Bonsai.return [])
   ?placeholder
   ()
-  graph
+  (local_ graph)
   =
   let view =
     let path = Bonsai.path_id graph in
-    let%arr extra_attrs = extra_attrs
-    and path = path
+    let%arr extra_attrs
+    and path
     and placeholder = Bonsai.transpose_opt placeholder in
     fun ~state ~set_state ~theme ->
       f
@@ -129,7 +123,13 @@ module Textbox = struct
       ()
   ;;
 
-  let int ?extra_attrs ?placeholder ?(allow_updates_when_focused = `Always) here graph =
+  let int
+    ?extra_attrs
+    ?placeholder
+    ?(allow_updates_when_focused = `Always)
+    here
+    (local_ graph)
+    =
     let parse input =
       match Int.of_string input with
       | exception _ -> Or_error.error_string "Expected an integer"
@@ -142,7 +142,13 @@ module Textbox = struct
     Form.project' form ~parse ~unparse
   ;;
 
-  let float ?extra_attrs ?placeholder ?(allow_updates_when_focused = `Always) () graph =
+  let float
+    ?extra_attrs
+    ?placeholder
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
     let parse input =
       match Float.of_string input with
       | exception _ -> Or_error.error_string "Expected a floating point number"
@@ -161,7 +167,7 @@ module Textbox = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     (module M : Sexpable with type t = t)
-    graph
+    (local_ graph)
     =
     let parse_exn s = s |> Sexp.of_string |> M.t_of_sexp in
     let unparse t = t |> M.sexp_of_t |> Sexp.to_string_hum in
@@ -177,7 +183,7 @@ module Textbox = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     (module M : Stringable with type t = t)
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       string ?extra_attrs ?placeholder ~allow_updates_when_focused () graph
@@ -202,7 +208,7 @@ module Password = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     (module M : Stringable with type t = t)
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       string ?extra_attrs ?placeholder ~allow_updates_when_focused () graph
@@ -217,10 +223,10 @@ module Textarea = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let view =
-      let%arr extra_attrs = extra_attrs
+      let%arr extra_attrs
       and placeholder = Bonsai.transpose_opt placeholder in
       fun ~state ~set_state ~theme ->
         View.Form_inputs.textarea
@@ -239,14 +245,26 @@ module Textarea = struct
       graph
   ;;
 
-  let int ?extra_attrs ?placeholder ?(allow_updates_when_focused = `Always) () graph =
+  let int
+    ?extra_attrs
+    ?placeholder
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
     let%map.Bonsai form =
       string ?extra_attrs ?placeholder ~allow_updates_when_focused () graph
     in
     Form.project form ~parse_exn:Int.of_string ~unparse:Int.to_string_hum
   ;;
 
-  let float ?extra_attrs ?placeholder ?(allow_updates_when_focused = `Always) () graph =
+  let float
+    ?extra_attrs
+    ?placeholder
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
     let%map.Bonsai form =
       string ?extra_attrs ?placeholder ~allow_updates_when_focused () graph
     in
@@ -259,7 +277,7 @@ module Textarea = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     (module M : Sexpable with type t = t)
-    graph
+    (local_ graph)
     =
     let parse_exn s = s |> Sexp.of_string |> M.t_of_sexp in
     let unparse t = t |> M.sexp_of_t |> Sexp.to_string_hum in
@@ -275,7 +293,7 @@ module Textarea = struct
     ?placeholder
     ?(allow_updates_when_focused = `Always)
     (module M : Stringable with type t = t)
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       string ?extra_attrs ?placeholder ~allow_updates_when_focused () graph
@@ -315,11 +333,10 @@ module Checkbox = struct
       ()
   ;;
 
-  let checkbox ?(extra_attrs = Bonsai.return []) default_model graph =
+  let checkbox ?(extra_attrs = Bonsai.return []) default_model (local_ graph) =
     let view =
       let path = Bonsai.path_id graph in
-      let%arr extra_attrs = extra_attrs
-      and path = path in
+      let%arr extra_attrs and path in
       fun ~state ~set_state -> make_input ~key:path ~extra_attrs ~state ~set_state ()
     in
     Basic_stateful.make
@@ -342,9 +359,9 @@ module Checkbox = struct
     ?(layout = `Vertical)
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     values
-    : Bonsai.graph -> ((a, cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
+    : local_ Bonsai.graph -> ((a, cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let to_string =
       Option.value to_string ~default:(sexp_to_pretty_string [%sexp_of: M.t])
     in
@@ -356,10 +373,7 @@ module Checkbox = struct
     end
     in
     let view =
-      let%map values = values
-      and style = style
-      and extra_container_attrs = extra_container_attrs
-      and extra_checkbox_attrs = extra_checkbox_attrs in
+      let%map values and style and extra_container_attrs and extra_checkbox_attrs in
       fun ~state ~set_state ->
         Vdom_input_widgets.Checklist.of_values
           ~layout
@@ -444,11 +458,10 @@ module Toggle = struct
         }
         |}]
 
-  let bool ?(extra_attr = Bonsai.return Vdom.Attr.empty) ~default () graph =
+  let bool ?(extra_attr = Bonsai.return Vdom.Attr.empty) ~default () (local_ graph) =
     let view =
       let path = Bonsai.path_id graph in
-      let%arr extra_attr = extra_attr
-      and path = path in
+      let%arr extra_attr and path in
       fun ~state ~set_state ->
         let checkbox =
           Checkbox.make_input
@@ -554,7 +567,7 @@ module Dropdown = struct
     all
     ~include_empty
     ~init
-    graph
+    (local_ graph)
     =
     let module E = struct
       include E
@@ -581,13 +594,13 @@ module Dropdown = struct
         graph
     in
     let path = Bonsai.path_id graph in
-    let%arr state = state
-    and set_state = set_state
-    and all = all
-    and extra_attrs = extra_attrs
-    and extra_option_attrs = extra_option_attrs
-    and default_value = default_value
-    and path = path in
+    let%arr state
+    and set_state
+    and all
+    and extra_attrs
+    and extra_option_attrs
+    and default_value
+    and path in
     let view =
       make_input
         ?to_string
@@ -668,7 +681,7 @@ module Dropdown = struct
     m
     ~equal
     all
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       impl
@@ -692,7 +705,7 @@ module Dropdown = struct
     ?extra_option_attrs
     ?to_string
     (module E : Bonsai.Enum with type t = t)
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       impl
@@ -727,7 +740,7 @@ module Typeahead = struct
     (module M : Model with type t = a)
     ~equal
     ~all_options
-    graph
+    (local_ graph)
     =
     let%sub { selected = value; view; set_selected = set; _ } =
       Bonsai_web_ui_typeahead.Typeahead.create
@@ -741,9 +754,7 @@ module Typeahead = struct
         ~extra_attrs
         graph
     in
-    let%arr value = value
-    and view = view
-    and set = set in
+    let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
   ;;
 
@@ -756,7 +767,7 @@ module Typeahead = struct
     m
     ~equal
     ~all_options
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       single_opt
@@ -782,7 +793,7 @@ module Typeahead = struct
     ?split
     m
     ~all_options
-    graph
+    (local_ graph)
     =
     let%sub { selected = value; view; set_selected = set; _ } =
       Bonsai_web_ui_typeahead.Typeahead.create_multi
@@ -796,9 +807,7 @@ module Typeahead = struct
         ~all_options
         graph
     in
-    let%arr value = value
-    and view = view
-    and set = set in
+    let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
   ;;
 
@@ -812,7 +821,7 @@ module Typeahead = struct
     ?split
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     ~all_options
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       set
@@ -866,10 +875,10 @@ module Date_time = struct
     ?default
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let view =
-      let%map extra_attrs = extra_attrs in
+      let%map extra_attrs in
       fun ~state ~set_state ->
         Vdom_input_widgets.Entry.date
           ~allow_updates_when_focused
@@ -887,7 +896,8 @@ module Date_time = struct
       graph
   ;;
 
-  let date ?extra_attrs ?default ?(allow_updates_when_focused = `Always) () graph =
+  let date ?extra_attrs ?default ?(allow_updates_when_focused = `Always) () (local_ graph)
+    =
     let%map.Bonsai form =
       date_opt ?extra_attrs ?default ~allow_updates_when_focused () graph
     in
@@ -898,10 +908,10 @@ module Date_time = struct
     ?(extra_attrs = Bonsai.return [])
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let view =
-      let%arr extra_attrs = extra_attrs in
+      let%arr extra_attrs in
       fun ~state ~set_state ->
         Vdom_input_widgets.Entry.time
           ~allow_updates_when_focused
@@ -918,7 +928,7 @@ module Date_time = struct
       graph
   ;;
 
-  let time ?extra_attrs ?(allow_updates_when_focused = `Always) () graph =
+  let time ?extra_attrs ?(allow_updates_when_focused = `Always) () (local_ graph) =
     let%map.Bonsai form = time_opt ?extra_attrs ~allow_updates_when_focused () graph in
     optional_to_required form
   ;;
@@ -930,7 +940,7 @@ module Date_time = struct
     ?(default = None)
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let unit, set_unit =
       Bonsai.state
@@ -940,9 +950,7 @@ module Date_time = struct
         graph
     in
     let unit_view =
-      let%arr unit = unit
-      and set_unit = set_unit
-      and extra_unit_attrs = extra_unit_attrs in
+      let%arr unit and set_unit and extra_unit_attrs in
       Dropdown.Private.make_input
         ~to_string:Span_unit.to_string
         (module Span_unit)
@@ -962,7 +970,7 @@ module Date_time = struct
     in
     let amount, set_amount =
       let default_amount =
-        let%map.Option default = default in
+        let%map.Option default in
         Span_unit.to_float default_unit default
       in
       Bonsai.state
@@ -972,9 +980,7 @@ module Date_time = struct
         graph
     in
     let amount_view =
-      let%arr amount = amount
-      and set_amount = set_amount
-      and extra_amount_attrs = extra_amount_attrs in
+      let%arr amount and set_amount and extra_amount_attrs in
       Vdom_input_widgets.Entry.number
         (module Vdom_input_widgets.Decimal)
         ~extra_attrs:extra_amount_attrs
@@ -984,18 +990,15 @@ module Date_time = struct
         ~allow_updates_when_focused
     in
     let value =
-      let%arr amount = amount
-      and unit = unit in
+      let%arr amount and unit in
       Option.map amount ~f:(Span_unit.of_float unit)
     in
     let view =
-      let%arr unit_view = unit_view
-      and amount_view = amount_view in
+      let%arr unit_view and amount_view in
       Vdom.Node.div [ amount_view; unit_view ]
     in
     let set =
-      let%arr set_unit = set_unit
-      and set_amount = set_amount in
+      let%arr set_unit and set_amount in
       function
       | None -> Effect.Many [ set_unit default_unit; set_amount None ]
       | Some time_span ->
@@ -1009,9 +1012,7 @@ module Date_time = struct
         Effect.Many
           [ set_unit unit; set_amount (Some (Span_unit.to_float unit time_span)) ]
     in
-    let%arr value = value
-    and view = view
-    and set = set in
+    let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
   ;;
 
@@ -1022,7 +1023,7 @@ module Date_time = struct
     ?default
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       time_span_opt
@@ -1041,10 +1042,10 @@ module Date_time = struct
     ?(extra_attrs = Bonsai.return [])
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let view =
-      let%map extra_attrs = extra_attrs in
+      let%map extra_attrs in
       fun ~state ~set_state ->
         Vdom_input_widgets.Entry.datetime_local
           ~extra_attrs
@@ -1065,7 +1066,12 @@ module Date_time = struct
       graph
   ;;
 
-  let datetime_local ?extra_attrs ?(allow_updates_when_focused = `Always) () graph =
+  let datetime_local
+    ?extra_attrs
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
     let%map.Bonsai form =
       datetime_local_opt ?extra_attrs ~allow_updates_when_focused () graph
     in
@@ -1090,7 +1096,7 @@ module Date_time = struct
       ~equal
       (module C : Comparisons.S with type t = a)
       (view : a Input_element.t)
-      graph
+      (local_ graph)
       =
       let module M = struct
         include M
@@ -1129,13 +1135,13 @@ module Date_time = struct
           ~equal:[%equal: M_opt.t]
           graph
       in
-      let%arr lower = lower
-      and set_lower = set_lower
-      and upper = upper
-      and set_upper = set_upper
-      and lower_id = lower_id
-      and upper_id = upper_id
-      and extra_attr = extra_attr in
+      let%arr lower
+      and set_lower
+      and upper
+      and set_upper
+      and lower_id
+      and upper_id
+      and extra_attr in
       let value =
         match lower, upper with
         | Some lower, Some upper ->
@@ -1201,7 +1207,13 @@ module Date_time = struct
           Vdom_input_widgets.Entry.date ~allow_updates_when_focused ~extra_attrs ())
     ;;
 
-    let date ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () graph =
+    let date
+      ?extra_attr
+      ?allow_equal
+      ?(allow_updates_when_focused = `Always)
+      ()
+      (local_ graph)
+      =
       let%map.Bonsai form =
         date_opt ?extra_attr ?allow_equal ~allow_updates_when_focused () graph
       in
@@ -1220,7 +1232,13 @@ module Date_time = struct
           Vdom_input_widgets.Entry.time ~allow_updates_when_focused ~extra_attrs ())
     ;;
 
-    let time ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () graph =
+    let time
+      ?extra_attr
+      ?allow_equal
+      ?(allow_updates_when_focused = `Always)
+      ()
+      (local_ graph)
+      =
       let%map.Bonsai form =
         time_opt ?extra_attr ?allow_equal ~allow_updates_when_focused () graph
       in
@@ -1252,7 +1270,7 @@ module Date_time = struct
       ?allow_equal
       ?(allow_updates_when_focused = `Always)
       ()
-      graph
+      (local_ graph)
       =
       let%map.Bonsai form =
         datetime_local_opt ?extra_attr ?allow_equal ~allow_updates_when_focused () graph
@@ -1271,7 +1289,7 @@ module Multiselect = struct
     ?(allow_updates_when_focused = `Always)
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     input_list
-    graph
+    (local_ graph)
     =
     let module Item = struct
       include M
@@ -1294,7 +1312,7 @@ module Multiselect = struct
     in
     let path = Bonsai.path_id graph in
     let view_config =
-      let%arr path = path in
+      let%arr path in
       { Single_factor.View_config.header =
           Vdom.Node.none_deprecated [@alert "-deprecated"]
       ; extra_row_attrs = Some extra_row_attrs
@@ -1308,7 +1326,7 @@ module Multiselect = struct
     in
     let%arr { Single_factor.Result.view; inject; selected_items; key_handler; _ } =
       single_factor_result
-    and extra_attrs = extra_attrs in
+    and extra_attrs in
     let set_state set =
       inject
         (Single_factor.Action.Set_all_selection_statuses
@@ -1334,7 +1352,7 @@ module Multiselect = struct
     ?(allow_updates_when_focused = `Always)
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     input_list
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       set
@@ -1369,7 +1387,7 @@ module Multiple = struct
     ?(placeholder = Bonsai.return "")
     (module M : Stringable_model with type t = a)
     ~equal
-    graph
+    (local_ graph)
     =
     let module M = struct
       include M
@@ -1399,14 +1417,14 @@ module Multiple = struct
         selected_options
         graph
     in
-    let%arr invalid = invalid
-    and inject_invalid = inject_invalid
-    and selected_options = selected_options
-    and inject_selected_options = inject_selected_options
-    and state = state
-    and set_state = set_state
-    and pills = pills
-    and extra_input_attr = extra_input_attr
+    let%arr invalid
+    and inject_invalid
+    and selected_options
+    and inject_selected_options
+    and state
+    and set_state
+    and pills
+    and extra_input_attr
     and placeholder_ = placeholder in
     let handle_keydown event =
       match Js_of_ocaml.Dom_html.Keyboard_code.of_event event with
@@ -1455,10 +1473,10 @@ module Multiple = struct
 
   module Seqnum_for_list = Bonsai_extra.Id_gen (Int63) ()
 
-  let list (type a view) (t : Bonsai.graph -> (a, view) Form.t Bonsai.t)
-    : Bonsai.graph -> (a list, (a, view) t) Form.t Bonsai.t
+  let list (type a view) (t : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+    : local_ Bonsai.graph -> (a list, (a, view) t) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let%sub form, _, _, _, _, _ =
       Bonsai.wrap
         graph
@@ -1503,17 +1521,17 @@ module Multiple = struct
                           context
                           (list_of_values, new_seqnum))
                    ])))
-        ~f:(fun (_ : unit Bonsai.t) inject_outer graph ->
+        ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
           let extendy = Extendy.component t graph in
           let bonk = Bonsai_extra.bonk graph in
           let get_next_seqnum, most_recent_seqnum =
             Seqnum_for_list.component' ~reset:`Bump graph
           in
           let%arr { Extendy.contents; append; set_length; remove } = extendy
-          and inject_outer = inject_outer
-          and bonk = bonk
-          and get_next_seqnum = get_next_seqnum
-          and most_recent_seqnum = most_recent_seqnum in
+          and inject_outer
+          and bonk
+          and get_next_seqnum
+          and most_recent_seqnum in
           let view =
             let items =
               contents
@@ -1550,14 +1568,13 @@ module Multiple = struct
     form
   ;;
 
-  let nonempty_list (type a view) (t : Bonsai.graph -> (a, view) Form.t Bonsai.t)
-    : Bonsai.graph -> (a Nonempty_list.t, (a, view) nonempty_t) Form.t Bonsai.t
+  let nonempty_list (type a view) (t : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+    : local_ Bonsai.graph -> (a Nonempty_list.t, (a, view) nonempty_t) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let hd = t graph in
     let tl = list t graph in
-    let%arr hd = hd
-    and tl = tl in
+    let%arr hd and tl in
     Form.both hd tl
     |> Form.project
          ~parse_exn:(fun (hd, tl) -> Nonempty_list.create hd tl)
@@ -1569,10 +1586,10 @@ module Multiple = struct
   let set
     (type a cmp view)
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
-    (form : Bonsai.graph -> (a, view) Form.t Bonsai.t)
-    : Bonsai.graph -> ((a, cmp) Set.t, (a, view) t) Form.t Bonsai.t
+    (form : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+    : local_ Bonsai.graph -> ((a, cmp) Set.t, (a, view) t) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let%map.Bonsai form = list form graph in
     Form.project form ~parse_exn:(Set.of_list (module M)) ~unparse:Set.to_list
   ;;
@@ -1582,9 +1599,9 @@ module Multiple = struct
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     ~key
     ~data
-    graph
+    (local_ graph)
     =
-    let both graph =
+    let both (local_ graph) =
       let key_form = key graph in
       let value_form = data graph in
       Bonsai.map2 key_form value_form ~f:Form.both
@@ -1629,11 +1646,11 @@ module Number = struct
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let optional_unvalidated =
       let view =
-        let%arr extra_attrs = extra_attrs in
+        let%arr extra_attrs in
         fun ~state ~set_state ~theme ->
           View.Form_inputs.number
             theme
@@ -1649,7 +1666,7 @@ module Number = struct
       in
       Basic_stateful.make_themed (Bonsai.state_opt ?default_model:default) ~view graph
     in
-    let%arr optional_unvalidated = optional_unvalidated in
+    let%arr optional_unvalidated in
     Form.project'
       optional_unvalidated
       ~parse:(function
@@ -1667,7 +1684,7 @@ module Number = struct
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let int x = Option.map x ~f:Int.to_float in
     let float =
@@ -1681,7 +1698,7 @@ module Number = struct
         ()
         graph
     in
-    let%arr float = float in
+    let%arr float in
     Form.project float ~parse_exn:Int.of_float ~unparse:Int.to_float
   ;;
 end
@@ -1698,11 +1715,11 @@ module Range = struct
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let unvalidated =
       let view =
-        let%arr extra_attrs = extra_attrs in
+        let%arr extra_attrs in
         fun ~state ~set_state ~theme ->
           let input =
             View.Form_inputs.range
@@ -1724,7 +1741,7 @@ module Range = struct
       in
       Basic_stateful.make_themed (Bonsai.state default) ~view graph
     in
-    let%arr unvalidated = unvalidated in
+    let%arr unvalidated in
     Form.validate unvalidated ~f:(validate_range ~min ~max)
   ;;
 
@@ -1738,7 +1755,7 @@ module Range = struct
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
-    graph
+    (local_ graph)
     =
     let int x = Option.map x ~f:Int.to_float in
     let float =
@@ -1754,7 +1771,7 @@ module Range = struct
         ()
         graph
     in
-    let%arr float = float in
+    let%arr float in
     Form.project float ~parse_exn:Int.of_float ~unparse:Int.to_float
   ;;
 end
@@ -1771,7 +1788,7 @@ module Radio_buttons = struct
     ~equal
     ~layout
     all
-    graph
+    (local_ graph)
     =
     let module E = struct
       include E
@@ -1787,11 +1804,7 @@ module Radio_buttons = struct
     in
     let path = Bonsai.path_id graph in
     let view =
-      let%map all = all
-      and style = style
-      and extra_container_attrs = extra_container_attrs
-      and extra_button_attrs = extra_button_attrs
-      and path = path in
+      let%map all and style and extra_container_attrs and extra_button_attrs and path in
       fun ~state ~set_state ->
         let node_fun =
           match layout with
@@ -1844,9 +1857,9 @@ module Radio_buttons = struct
 end
 
 module Color_picker = struct
-  let hex ?(extra_attr = Bonsai.return Vdom.Attr.empty) () graph =
+  let hex ?(extra_attr = Bonsai.return Vdom.Attr.empty) () (local_ graph) =
     let view =
-      let%map extra_attr = extra_attr in
+      let%map extra_attr in
       fun ~state ~set_state ->
         Vdom_input_widgets.Entry.color_picker
           ~extra_attr
@@ -1876,9 +1889,9 @@ module File_select = struct
       following functions print a warning message and do nothing if anything other than
       clearing is attempted with [Form.set]. *)
 
-  let single_opt ?(extra_attrs = Bonsai.return []) ?accept () graph =
+  let single_opt ?(extra_attrs = Bonsai.return []) ?accept () (local_ graph) =
     let view =
-      let%map extra_attrs = extra_attrs in
+      let%map extra_attrs in
       fun ~state ~set_state ->
         (* [value_prop] is a trick that enforces the browser input is cleared when an
            empty value is set into the form: if we ever change from a [Some] to a [None],
@@ -1900,7 +1913,7 @@ module File_select = struct
         ~view
         graph
     in
-    let%arr form = form in
+    let%arr form in
     { form with
       set =
         (function
@@ -1914,13 +1927,13 @@ module File_select = struct
     }
   ;;
 
-  let single ?(extra_attrs = Bonsai.return []) ?accept () graph =
+  let single ?(extra_attrs = Bonsai.return []) ?accept () (local_ graph) =
     Bonsai.map (single_opt ~extra_attrs ?accept () graph) ~f:optional_to_required
   ;;
 
-  let multiple ?(extra_attrs = Bonsai.return []) ?accept () graph =
+  let multiple ?(extra_attrs = Bonsai.return []) ?accept () (local_ graph) =
     let view =
-      let%map extra_attrs = extra_attrs in
+      let%map extra_attrs in
       fun ~state ~set_state ->
         (* [value_prop] is a trick that enforces the browser input is cleared when an
            empty value is set into the form: if we ever change from a non-empty map to an
@@ -1951,7 +1964,7 @@ module File_select = struct
         ~view
         graph
     in
-    let%arr form = form in
+    let%arr form in
     { form with
       set =
         (fun files ->
@@ -1969,7 +1982,13 @@ module File_select = struct
 end
 
 module Freeform_multiselect = struct
-  let set ?(extra_attr = Bonsai.return Vdom.Attr.empty) ?placeholder ?split () graph =
+  let set
+    ?(extra_attr = Bonsai.return Vdom.Attr.empty)
+    ?placeholder
+    ?split
+    ()
+    (local_ graph)
+    =
     let freeform_multiselect =
       Bonsai_web_ui_freeform_multiselect.Freeform_multiselect.create
         ?placeholder
@@ -1982,7 +2001,7 @@ module Freeform_multiselect = struct
     form_expert_create ~value:(Ok value) ~view ~set
   ;;
 
-  let list ?extra_attr ?placeholder ?split () graph =
+  let list ?extra_attr ?placeholder ?split () (local_ graph) =
     let%map.Bonsai form = set ?extra_attr ?placeholder ?split () graph in
     Form.project form ~parse_exn:Set.to_list ~unparse:String.Set.of_list
   ;;
@@ -1998,7 +2017,7 @@ module Rank = struct
     ?empty_list_placeholder
     ?default_item_height
     render
-    graph
+    (local_ graph)
     =
     let%map.Bonsai value, view, inject =
       Bonsai_web_ui_reorderable_list.with_inject
@@ -2009,7 +2028,7 @@ module Rank = struct
         ?right
         ?empty_list_placeholder
         ?default_item_height
-        (fun ~index:_ ~source key graph ->
+        (fun ~index:_ ~source key (local_ graph) ->
           let%map.Bonsai view = render ~source key graph in
           (), view)
         graph
@@ -2035,7 +2054,7 @@ module Query_box = struct
     ~selection_to_string
     ~f
     ()
-    graph
+    (local_ graph)
     =
     let last_selected_value, set_last_selected_value =
       let module M = struct
@@ -2047,9 +2066,7 @@ module Query_box = struct
       Bonsai.state_opt graph ~sexp_of_model:[%sexp_of: M.t] ~equal:[%equal: M.t]
     in
     let extra_input_attr =
-      let%arr extra_input_attr = extra_input_attr
-      and last_selected_value = last_selected_value
-      and selection_to_string = selection_to_string in
+      let%arr extra_input_attr and last_selected_value and selection_to_string in
       match last_selected_value with
       | None -> extra_input_attr
       | Some last_selected_value ->
@@ -2068,15 +2085,12 @@ module Query_box = struct
         ~extra_attr
         ~f
         ~on_select:
-          (let%map set_last_selected_value = set_last_selected_value in
+          (let%map set_last_selected_value in
            fun key -> set_last_selected_value (Some key))
         ()
         graph
     in
-    let%arr last_selected_value = last_selected_value
-    and set_last_selected_value = set_last_selected_value
-    and query = query
-    and view = view in
+    let%arr last_selected_value and set_last_selected_value and query and view in
     (* It's important that we make the value [None] if the textbox has text in
        it so that people don't get the impression that the textbox represents
        the current form value. *)
@@ -2096,7 +2110,7 @@ module Query_box = struct
     ~selection_to_string
     ~f
     ()
-    graph
+    (local_ graph)
     =
     Bonsai.map
       (create_opt
@@ -2162,19 +2176,19 @@ module Query_box = struct
         }
         |}]
 
-  let optional_computation opt _graph =
+  let optional_computation opt (local_ _graph) =
     match opt with
     | None -> Bonsai.return None
     | Some value ->
-      let%arr value = value in
+      let%arr value in
       Some value
   ;;
 
-  let optional_computation_value_map x ~default ~f _graph =
+  let optional_computation_value_map x ~default ~f (local_ _graph) =
     match x with
     | None -> Bonsai.return default
     | Some x ->
-      let%arr x = x in
+      let%arr x in
       f x
   ;;
 
@@ -2189,10 +2203,10 @@ module Query_box = struct
     ~all_options
     ~handle_unknown_option
     ~to_option_description
-    graph
+    (local_ graph)
     =
     let extra_input_attr =
-      let%arr extra_input_attr = extra_input_attr in
+      let%arr extra_input_attr in
       Vdom.Attr.many [ Query_box_styles.input; extra_input_attr ]
     in
     create_opt
@@ -2202,7 +2216,7 @@ module Query_box = struct
       ~selected_item_attr
       ~extra_list_container_attr
       ~selection_to_string:to_string
-      ~f:(fun query graph ->
+      ~f:(fun query (local_ graph) ->
         let render_item ~to_string ~key ~to_option_description =
           let main_item = Vdom.Node.span [ Vdom.Node.text (to_string key) ] in
           Option.value_map
@@ -2229,9 +2243,7 @@ module Query_box = struct
               let%pattern_bind.Incr to_string, to_option_description, query, all_options =
                 incr
               in
-              let%bind.Incr query = query
-              and to_string = to_string
-              and to_option_description = to_option_description in
+              let%bind.Incr query and to_string and to_option_description in
               Incr_map.filter_mapi all_options ~f:(fun ~key ~data:() ->
                 match
                   Fuzzy_match.is_match
@@ -2243,11 +2255,11 @@ module Query_box = struct
                 | true -> Some (render_item ~to_string ~key ~to_option_description)))
             graph
         in
-        let%arr result_without_unknown_option = result_without_unknown_option
-        and handle_unknown_option = handle_unknown_option
-        and query = query
-        and to_string = to_string
-        and to_option_description = to_option_description in
+        let%arr result_without_unknown_option
+        and handle_unknown_option
+        and query
+        and to_string
+        and to_option_description in
         match handle_unknown_option with
         | None -> result_without_unknown_option
         | Some f ->
@@ -2276,9 +2288,9 @@ module Query_box = struct
     ?handle_unknown_option
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     ~all_options
-    : Bonsai.graph -> (a option, Vdom.Node.t) Form.t Bonsai.t
+    : local_ Bonsai.graph -> (a option, Vdom.Node.t) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let extra_attr =
       optional_computation_value_map
         extra_attrs
@@ -2310,7 +2322,7 @@ module Query_box = struct
         graph
     in
     let all_options =
-      let%arr all_options = all_options in
+      let%arr all_options in
       List.fold
         all_options
         ~init:(Map.empty (module M))
@@ -2339,7 +2351,7 @@ module Query_box = struct
     ?handle_unknown_option
     m
     ~all_options
-    graph
+    (local_ graph)
     =
     let%map.Bonsai form =
       single_opt

@@ -65,13 +65,13 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
       ~sort:
         (Bonsai.return (fun a b ->
            Comparable.lift [%compare: int] ~f:(fun (key, _) -> key) a b))
-      ~cell:(fun ~key ~data:_ _graph ->
-        let%arr key = key in
+      ~cell:(fun ~key ~data:_ (local_ _graph) ->
+        let%arr key in
         Vdom.Node.textf "%d" key)
       ()
   ; Columns.column
       ~header:(render_header "a")
-      ~cell:(fun ~key:_ ~data graph ->
+      ~cell:(fun ~key:_ ~data (local_ graph) ->
         let state, set_state =
           Bonsai.state
             ""
@@ -80,8 +80,8 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
             graph
         in
         let%arr { a; _ } = data
-        and state = state
-        and set_state = set_state in
+        and state
+        and set_state in
         Vdom.Node.div
           [ Vdom.Node.input ~attrs:[ Vdom.Attr.on_input (fun _ -> set_state) ] ()
           ; Vdom.Node.textf "%s %s" a state
@@ -93,7 +93,7 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
       ~sort:
         (Bonsai.return (fun a b_1 ->
            Comparable.lift [%compare: float] ~f:(fun (_, { b; _ }) -> b) a b_1))
-      ~cell:(fun ~key:_ ~data _graph ->
+      ~cell:(fun ~key:_ ~data (local_ _graph) ->
         let%arr { b; _ } = data in
         Vdom.Node.textf "%f" b)
       ()
@@ -113,7 +113,7 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
              ~f:(fun (_, { d; _ }) -> d)
              a
              b_1))
-      ~cell:(fun ~key:_ ~data _graph ->
+      ~cell:(fun ~key:_ ~data (local_ _graph) ->
         let%arr { d; _ } = data in
         match d with
         | None -> Vdom.Node.textf "---"
@@ -257,7 +257,7 @@ module Test = struct
 
   module Component = struct
     type ('a, 'focus, 'column_id) t =
-      { component : Bonsai.graph -> 'a Bonsai.t
+      { component : local_ Bonsai.graph -> 'a Bonsai.t
       ; get_vdom : 'a -> Vdom.Node.t
       ; get_inject : 'a -> 'column_id Action.t -> unit Ui_effect.t
       ; get_testing : 'a -> Bonsai_web_ui_partial_render_table.For_testing.t Lazy.t
@@ -474,7 +474,7 @@ module Test = struct
       input
       _filter
       =
-      let component graph =
+      let component (local_ graph) =
         let%sub collation, actual_key_rank =
           Table_expert.collate
             ~filter_equal:[%compare.equal: unit]
@@ -488,8 +488,8 @@ module Test = struct
         let columns =
           [ Table_expert.Columns.Dynamic_cells.column
               ~header:(Bonsai.return (Vdom.Node.text "key"))
-              ~cell:(fun ~key ~data:_ _graph ->
-                let%arr key = key in
+              ~cell:(fun ~key ~data:_ (local_ _graph) ->
+                let%arr key in
                 Vdom.Node.textf "%d" key)
               ()
           ]

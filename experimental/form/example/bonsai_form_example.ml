@@ -94,8 +94,7 @@ let form =
     or_all_dropdown |> lift ~f:Result.a_b_or_c_or_all
   in
   let result =
-    let%map.Or_error date_from_string = date_from_string
-    and sexp_from_string = sexp_from_string in
+    let%map.Or_error date_from_string and sexp_from_string in
     Result.Fields.create
       ~string
       ~date

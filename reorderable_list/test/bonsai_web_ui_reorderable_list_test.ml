@@ -8,7 +8,7 @@ module Node = Vdom.Node
 
 let small_list = List.range 0 3 |> List.map ~f:(fun x -> x, x) |> Int.Map.of_alist_exn
 
-let component list graph =
+let component list (local_ graph) =
   let dnd =
     Drag_and_drop.create
       ~source_id:(module Int)
@@ -22,9 +22,9 @@ let component list graph =
     Bonsai.assoc
       (module Int)
       list
-      ~f:(fun key data _graph ->
+      ~f:(fun key data (local_ _graph) ->
         let item =
-          let%arr data = data in
+          let%arr data in
           Node.text (Int.to_string data)
         in
         Bonsai.both item key)
@@ -34,17 +34,14 @@ let component list graph =
   let dragged_element =
     Drag_and_drop.dragged_element
       dnd
-      ~f:(fun item _graph ->
-        let%arr item = item in
+      ~f:(fun item (local_ _graph) ->
+        let%arr item in
         Node.text (Int.to_string item))
       graph
   in
   let source = dnd >>| Drag_and_drop.source in
   let list = Reorderable_list.list (module Int) ~dnd ~default_item_height:1 data graph in
-  let%arr sentinel = sentinel
-  and dragged_element = dragged_element
-  and source = source
-  and list = list in
+  let%arr sentinel and dragged_element and source and list in
   Node.div
     ~attrs:[ sentinel ~name:"dnd" ]
     [ Node.div ~attrs:[ source ~id:10 ] [ Node.text "10" ]; list; dragged_element ]
@@ -306,15 +303,14 @@ let%expect_test "re-arrange" =
     |}]
 ;;
 
-let component input graph =
+let component input (local_ graph) =
   let%sub _, view =
     Reorderable_list.simple
       (module Int)
       ~sentinel_name:"dnd"
       ~default_item_height:1
-      ~render:(fun ~index:_ ~source i _graph ->
-        let%arr i = i
-        and source = source in
+      ~render:(fun ~index:_ ~source i (local_ _graph) ->
+        let%arr i and source in
         (), Vdom.Node.div ~attrs:[ source ] [ Vdom.Node.text (Int.to_string i) ])
       input
       graph
@@ -436,13 +432,13 @@ type result =
   (int * int) list * Vdom.Node.t * (int Reorderable_list.Action.t -> unit Effect.t)
 
 let%expect_test "removing an item should shift the rank of everything else" =
-  let component graph =
+  let component (local_ graph) =
     Reorderable_list.with_inject
       (module Int)
       ~sentinel_name:"dnd"
       ~default_item_height:1
-      (fun ~index ~source:_ _ _graph ->
-        let%arr index = index in
+      (fun ~index ~source:_ _ (local_ _graph) ->
+        let%arr index in
         index, Vdom.Node.None)
       graph
   in

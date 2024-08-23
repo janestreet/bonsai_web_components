@@ -156,7 +156,7 @@ let create_internal
   ~equal
   ~all_options
   ~show_datalist_in_test
-  graph
+  (local_ graph)
   =
   let open! Bonsai.Let_syntax in
   let to_string =
@@ -181,16 +181,16 @@ let create_internal
   in
   let id = Bonsai.path_id graph in
   let input =
-    let%arr set_focused = set_focused
-    and set_selected = set_selected
-    and extra_attrs = extra_attrs
-    and id = id
-    and handle_unknown_option = handle_unknown_option
-    and all_options = all_options
-    and on_select_change = on_select_change
-    and current_input = current_input
-    and set_current_input = set_current_input
-    and to_string = to_string in
+    let%arr set_focused
+    and set_selected
+    and extra_attrs
+    and id
+    and handle_unknown_option
+    and all_options
+    and on_select_change
+    and current_input
+    and set_current_input
+    and to_string in
     let on_input input = set_current_input input in
     let on_change t _ = Ui_effect.Many [ set_selected t; on_select_change t ] in
     input
@@ -208,37 +208,28 @@ let create_internal
   in
   let datalist =
     let show_datalist =
-      let%arr focused = focused in
+      let%arr focused in
       show_datalist ~focused ~show_datalist_in_test
     in
     match%sub show_datalist with
     | false -> Bonsai.return (Vdom.Node.text "")
     | true ->
-      let%arr to_option_description = to_option_description
-      and id = id
-      and to_string = to_string
-      and all_options = all_options in
+      let%arr to_option_description and id and to_string and all_options in
       datalist ~to_option_description ~to_string ~id ~all_options ()
   in
   let view =
-    let%arr input = input
-    and datalist = datalist in
+    let%arr input and datalist in
     Vdom.Node.div [ input; datalist ]
   in
   let set_selected =
-    let%arr set_selected = set_selected
-    and set_current_input = set_current_input
-    and to_string = to_string in
+    let%arr set_selected and set_current_input and to_string in
     fun selected ->
       Effect.lazy_
         (lazy
           (let current_input = Option.value_map selected ~f:to_string ~default:"" in
            Ui_effect.Many [ set_selected selected; set_current_input current_input ]))
   in
-  let%arr selected = selected
-  and current_input = current_input
-  and view = view
-  and set_selected = set_selected in
+  let%arr selected and current_input and view and set_selected in
   { selected; current_input; view; set_selected }
 ;;
 
@@ -257,20 +248,20 @@ let input
   ~on_set_change
   ~set_focused
   ()
-  _graph
+  (local_ _graph)
   =
   let open! Bonsai.Let_syntax in
-  let%arr current_input = current_input
-  and inject_current_input = inject_current_input
-  and handle_unknown_option = handle_unknown_option
-  and all_options = all_options
-  and selected_options = selected_options
-  and inject_selected_options = inject_selected_options
-  and extra_attrs = extra_attrs
-  and id = id
-  and on_set_change = on_set_change
-  and to_string = to_string
-  and set_focused = set_focused in
+  let%arr current_input
+  and inject_current_input
+  and handle_unknown_option
+  and all_options
+  and selected_options
+  and inject_selected_options
+  and extra_attrs
+  and id
+  and on_set_change
+  and to_string
+  and set_focused in
   let on_input input = inject_current_input input in
   let on_change maybe_t user_input =
     match maybe_t with
@@ -326,7 +317,7 @@ let create_multi_internal
      and type t = t)
   ~all_options
   ~show_datalist_in_test
-  graph
+  (local_ graph)
   =
   let open Bonsai.Let_syntax in
   let module M = struct
@@ -340,21 +331,20 @@ let create_multi_internal
       ~default:(Bonsai.return (fun a -> a |> M.sexp_of_t |> Sexp.to_string_hum))
   in
   let to_option_description = Option.value to_option_description ~default:to_string in
-  let selected_options graph =
+  let selected_options (local_ graph) =
     Bonsai.state
       M.Set.empty
       ~sexp_of_model:[%sexp_of: M.Set.t]
       ~equal:[%equal: M.Set.t]
       graph
   in
-  let focused graph =
+  let focused (local_ graph) =
     Bonsai.state false ~sexp_of_model:[%sexp_of: Bool.t] ~equal:[%equal: Bool.t] graph
   in
   let selected_options, inject_selected_options = selected_options graph in
   let focused, set_focused = focused graph in
   let inject_selected_options =
-    let%arr inject_selected_options = inject_selected_options
-    and on_set_change = on_set_change in
+    let%arr inject_selected_options and on_set_change in
     fun selected_options ->
       Effect.Many
         [ on_set_change selected_options; inject_selected_options selected_options ]
@@ -395,17 +385,17 @@ let create_multi_internal
   in
   let datalist =
     let show_datalist =
-      let%arr focused = focused in
+      let%arr focused in
       show_datalist ~focused ~show_datalist_in_test
     in
     match%sub show_datalist with
     | false -> Bonsai.return (Vdom.Node.datalist [])
     | true ->
-      let%arr all_options = all_options
-      and selected_options = selected_options
-      and id = id
-      and to_string = to_string
-      and to_option_description = to_option_description in
+      let%arr all_options
+      and selected_options
+      and id
+      and to_string
+      and to_option_description in
       datalist
         ~id
         ~all_options
@@ -417,12 +407,12 @@ let create_multi_internal
            fun option -> Set.mem remaining_options option)
         ()
   in
-  let%arr selected_options = selected_options
-  and datalist = datalist
-  and inject_selected_options = inject_selected_options
-  and current_input = current_input
-  and input = input
-  and pills = pills in
+  let%arr selected_options
+  and datalist
+  and inject_selected_options
+  and current_input
+  and input
+  and pills in
   { selected = selected_options
   ; set_selected = inject_selected_options
   ; current_input

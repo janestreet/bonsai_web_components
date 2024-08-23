@@ -35,7 +35,7 @@ val create
   -> (module Bonsai_proc.Model with type t = 'a)
   -> equal:('a -> 'a -> bool)
   -> all_options:'a list Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a option t Bonsai.t
 
 val create_multi
@@ -48,7 +48,7 @@ val create_multi
   -> ?split:(string -> string list)
   -> ('a, 'cmp) Bonsai.comparator
   -> all_options:'a list Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('a, 'cmp) Set.t t Bonsai.t
 
 module Private : sig
@@ -63,7 +63,7 @@ module Private : sig
       -> (module Bonsai_proc.Model with type t = 'a)
       -> equal:('a -> 'a -> bool)
       -> all_options:'a list Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> 'a option t Bonsai.t
 
     val create_multi_with_browser_behavior_in_test
@@ -76,7 +76,7 @@ module Private : sig
       -> ?split:(string -> string list)
       -> ('a, 'cmp) Bonsai.comparator
       -> all_options:'a list Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, 'cmp) Set.t t Bonsai.t
   end
 end

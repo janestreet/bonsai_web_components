@@ -155,10 +155,10 @@ let make
   : type a.
     fallback:a Bonsai.t
     -> interpolate:(a -> a -> float -> a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> a t Bonsai.t
   =
-  fun ~fallback ~interpolate graph ->
+  fun ~fallback ~interpolate (local_ graph) ->
   let module A_star_a = struct
     type t = a * a
 
@@ -207,8 +207,7 @@ let make
         | None -> Bonsai.return ()
         | Some callback ->
           let callback =
-            let%map callback = callback
-            and set_callback = set_callback in
+            let%map callback and set_callback in
             fun prev new_ ->
               let remove_callback = set_callback None in
               match prev, new_ with
@@ -229,19 +228,14 @@ let make
        | After -> Bonsai.return 1.0
        | Before ->
          let cur_time = Bonsai.Clock.now graph in
-         let%arr start_time = start_time
-         and end_time = end_time
-         and cur_time = cur_time in
+         let%arr start_time and end_time and cur_time in
          let range_delta = Time_ns.abs_diff end_time start_time in
          let cur_delta = Time_ns.abs_diff cur_time start_time in
          Time_ns.Span.to_ms cur_delta /. Time_ns.Span.to_ms range_delta)
   in
   let interpolator = Bonsai.map interpolator ~f:Interpolator.to_f in
   let value =
-    let%arr fallback = fallback
-    and percent_float = percent_float
-    and interpolator = interpolator
-    and range = range in
+    let%arr fallback and percent_float and interpolator and range in
     let percent_float = interpolator percent_float in
     match range with
     | None -> fallback
@@ -249,12 +243,12 @@ let make
   in
   let get_value = Bonsai.peek value graph in
   let animate =
-    let%arr set_start = set_start
-    and set_end = set_end
-    and set_callback = set_callback
-    and set_interpolator = set_interpolator
-    and set_range = set_range
-    and get_value = get_value in
+    let%arr set_start
+    and set_end
+    and set_callback
+    and set_interpolator
+    and set_range
+    and get_value in
     fun ?after_finished ?with_ time target ->
       let%bind.Effect now = curtime in
       let%bind.Effect value =
@@ -286,8 +280,7 @@ let make
       in
       Effect.Many effects
   in
-  let%arr value = value
-  and animate = animate in
+  let%arr value and animate in
   { value; animate }
 ;;
 
@@ -298,13 +291,12 @@ let smooth
   ~duration
   ~interpolate
   v
-  graph
+  (local_ graph)
   =
   let%sub { value; animate } = make ~fallback:v ~interpolate graph in
   let () =
     let callback =
-      let%map animate = animate
-      and duration = duration in
+      let%map animate and duration in
       fun new_ -> animate (`For duration) ~with_ new_
     in
     Bonsai.Edge.on_change ?sexp_of_model ~equal v ~callback graph

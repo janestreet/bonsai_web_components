@@ -156,14 +156,15 @@ module Kind = struct
     | None : (unit, unit, 'k, 'column_id) t
     | By_row :
         { on_change : ('k option -> unit Effect.t) Bonsai.t
-        ; compute_presence : 'k option Bonsai.t -> Bonsai.graph -> 'presence Bonsai.t
+        ; compute_presence :
+            'k option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'presence) By_row.t, 'presence, 'k, 'column_id) t
     | By_cell :
         { on_change : (('k * 'column_id) option -> unit Effect.t) Bonsai.t
         ; compute_presence :
-            ('k * 'column_id) option Bonsai.t -> Bonsai.graph -> 'presence Bonsai.t
+            ('k * 'column_id) option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'column_id, 'presence) By_cell.t, 'presence, 'k, 'column_id) t
@@ -233,7 +234,7 @@ module Cell_machine = struct
     (key : (key, cmp) Bonsai.comparator)
     (column_id : (column_id, column_id_cmp) Bonsai.comparator)
     ~(compute_presence :
-        (key * column_id) option Bonsai.t -> Bonsai.graph -> presence Bonsai.t)
+        (key * column_id) option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
     ~(on_change : ((key * column_id) option -> unit Effect.t) Bonsai.t)
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
@@ -241,9 +242,10 @@ module Cell_machine = struct
     ~(range : (int * int) Bonsai.t)
     ~(scroll_to_index : (int -> unit Effect.t) Bonsai.t)
     ~(scroll_to_column : (column_id -> unit Effect.t) Bonsai.t)
-    : Bonsai.graph -> ((key, column_id, presence) By_cell.t, key, column_id) t Bonsai.t
+    :  local_ Bonsai.graph
+    -> ((key, column_id, presence) By_cell.t, key, column_id) t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let module Key = struct
       include (val key)
 
@@ -301,13 +303,13 @@ module Cell_machine = struct
     end
     in
     let input =
-      let%arr collated = collated
-      and columns = columns
-      and range = range
-      and on_change = on_change
-      and key_rank = key_rank
-      and scroll_to_index = scroll_to_index
-      and scroll_to_column = scroll_to_column in
+      let%arr collated
+      and columns
+      and range
+      and on_change
+      and key_rank
+      and scroll_to_index
+      and scroll_to_column in
       { Input.collated
       ; columns
       ; range
@@ -600,7 +602,7 @@ module Cell_machine = struct
          Doing it this way will mean that downstream consumers that only look at e.g. the "focus_up"
          field, won't have cutoff issues caused by [inject Up] being called every time that
          the model changes. *)
-      let%arr inject = inject in
+      let%arr inject in
       By_cell.Statically_computed.create inject
     in
     let focus_is_locked =
@@ -608,8 +610,7 @@ module Cell_machine = struct
       locked
     in
     let visually_focused =
-      let%arr current = current
-      and collated = collated in
+      let%arr current and collated in
       match current with
       | { current_focus = Visible { row = At_key { key; _ }; column }
         ; locked = _
@@ -631,7 +632,7 @@ module Cell_machine = struct
         ~equal:[%equal: Model.t * (Key.t * Column_id.t) option]
         (Bonsai.both current visually_focused)
         ~callback:
-          (let%map inject = inject in
+          (let%map inject in
            fun ( { Model.current_focus; locked = _; pending_select_id = _ }
                , visually_focused ) ->
              (* If we ever notice that the state machine is focused at an index
@@ -652,10 +653,7 @@ module Cell_machine = struct
       | None -> Nothing_focused
       | Some (key, column_id) -> Cell_focused (key, column_id)
     in
-    let%arr presence = presence
-    and visually_focused = visually_focused
-    and statically_computed = statically_computed
-    and focus_is_locked = focus_is_locked in
+    let%arr presence and visually_focused and statically_computed and focus_is_locked in
     let focus =
       By_cell.Statically_computed.finalize statically_computed ~presence ~focus_is_locked
     in
@@ -667,24 +665,24 @@ module Row_machine = struct
   let component
     (type key data cmp presence)
     (key : (key, cmp) Bonsai.comparator)
-    ~(compute_presence : key option Bonsai.t -> Bonsai.graph -> presence Bonsai.t)
+    ~(compute_presence : key option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
     ~(on_change : (key option -> unit Effect.t) Bonsai.t)
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(range : (int * int) Bonsai.t)
     ~(scroll_to_index : (int -> unit Effect.t) Bonsai.t)
-    : Bonsai.graph -> ((key, presence) By_row.t, key, _) t Bonsai.t
+    : local_ Bonsai.graph -> ((key, presence) By_row.t, key, _) t Bonsai.t
     =
-    fun graph ->
-    let compute_presence focus graph =
+    fun (local_ graph) ->
+    let compute_presence focus (local_ graph) =
       let focus =
-        let%arr focus = focus in
+        let%arr focus in
         Option.map focus ~f:(fun (key, ()) -> key)
       in
       compute_presence focus graph
     in
     let on_change =
-      let%arr on_change = on_change in
+      let%arr on_change in
       fun focus ->
         match focus with
         | None -> on_change None
@@ -705,13 +703,12 @@ module Row_machine = struct
         graph
     in
     let visually_focused =
-      let%arr visually_focused = visually_focused in
+      let%arr visually_focused in
       match visually_focused with
       | Nothing_focused -> Nothing_focused
       | Cell_focused (key, ()) | Row_focused key -> Row_focused key
     in
-    let%arr focus = focus
-    and visually_focused = visually_focused in
+    let%arr focus and visually_focused in
     { focus; visually_focused }
   ;;
 end
@@ -726,16 +723,30 @@ let component
     -> range:_
     -> scroll_to_index:_
     -> scroll_to_column:(column_id -> unit Effect.t) Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (kind, key, column_id) t Bonsai.t
   =
   fun kind ->
   match kind with
   | None ->
-    fun _ _ ~collated:_ ~leaves:_ ~range:_ ~scroll_to_index:_ ~scroll_to_column:_ _graph ->
+    fun _
+      _
+      ~collated:_
+      ~leaves:_
+      ~range:_
+      ~scroll_to_index:_
+      ~scroll_to_column:_
+      (local_ _graph) ->
       Bonsai.return { focus = (); visually_focused = Nothing_focused }
   | By_row { on_change; compute_presence; key_rank } ->
-    fun key _ ~collated ~leaves:_ ~range ~scroll_to_index ~scroll_to_column:_ graph ->
+    fun key
+      _
+      ~collated
+      ~leaves:_
+      ~range
+      ~scroll_to_index
+      ~scroll_to_column:_
+      (local_ graph) ->
       Row_machine.component
         key
         ~on_change
@@ -746,9 +757,16 @@ let component
         ~scroll_to_index
         graph
   | By_cell { on_change; compute_presence; key_rank } ->
-    fun key column ~collated ~leaves ~range ~scroll_to_index ~scroll_to_column graph ->
+    fun key
+      column
+      ~collated
+      ~leaves
+      ~range
+      ~scroll_to_index
+      ~scroll_to_column
+      (local_ graph) ->
       let columns =
-        let%arr leaves = leaves in
+        let%arr leaves in
         List.map leaves ~f:(fun leaf -> leaf.column_id)
       in
       Cell_machine.component
@@ -781,13 +799,13 @@ let get_on_cell_click
       let%map control = value in
       By_row.focus control
     in
-    let%map focus = focus in
+    let%map focus in
     fun key _ -> focus key ()
   | By_cell _ ->
     let focus =
       let%map control = value in
       By_cell.focus control
     in
-    let%map focus = focus in
+    let%map focus in
     fun key column -> focus key column
 ;;

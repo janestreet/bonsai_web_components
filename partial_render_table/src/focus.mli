@@ -66,14 +66,15 @@ module Kind : sig
     | None : (unit, unit, 'k, 'col_id) t
     | By_row :
         { on_change : ('k option -> unit Effect.t) Bonsai.t
-        ; compute_presence : 'k option Bonsai.t -> Bonsai.graph -> 'presence Bonsai.t
+        ; compute_presence :
+            'k option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'presence) By_row.t, 'presence, 'k, 'col_id) t
     | By_cell :
         { on_change : (('k * 'col_id) option -> unit Effect.t) Bonsai.t
         ; compute_presence :
-            ('k * 'col_id) option Bonsai.t -> Bonsai.graph -> 'presence Bonsai.t
+            ('k * 'col_id) option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'col_id, 'presence) By_cell.t, 'presence, 'k, 'col_id) t
@@ -98,7 +99,7 @@ val component
   -> range:(int * int) Bonsai.t
   -> scroll_to_index:(int -> unit Effect.t) Bonsai.t
   -> scroll_to_column:('col_id -> unit Effect.t) Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('kind, 'key, 'col_id) t Bonsai.t
 
 val get_on_cell_click

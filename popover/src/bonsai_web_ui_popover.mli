@@ -54,7 +54,7 @@ val component
   -> close_when_clicked_outside:bool Bonsai.t
   -> direction:Direction.t Bonsai.t
   -> alignment:Alignment.t Bonsai.t
-  -> popover:(close:unit Effect.t Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  -> popover:(close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
   -> unit
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Result.t Bonsai.t

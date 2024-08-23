@@ -94,7 +94,7 @@ module type S = sig
         items to show initially selected. *)
     -> view_config:View_config.t Bonsai.t
     -> Item.Set.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Result.t Bonsai.t
 end
 

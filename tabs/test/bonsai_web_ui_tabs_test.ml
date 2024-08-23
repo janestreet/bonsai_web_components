@@ -14,13 +14,13 @@ end
 
 open My_tabs
 
-let basic_tab_component ?additional_button_attributes ?decorate ?f () graph =
+let basic_tab_component ?additional_button_attributes ?decorate ?f () (local_ graph) =
   let f =
     Option.value f ~default:(fun ~change_tab:_ tab ->
       Bonsai.enum
         (module My_tabs)
         ~match_:tab
-        ~with_:(fun tab _graph ->
+        ~with_:(fun tab (local_ _graph) ->
           match tab with
           | A -> Bonsai.return (Vdom.Node.text "a")
           | B -> Bonsai.return (Vdom.Node.text "b")
@@ -142,8 +142,8 @@ let%expect_test "you can switch the tab from inside the inner component" =
     Handle.create
       (Result_spec.vdom Fn.id)
       (basic_tab_component
-         ~f:(fun ~change_tab _ _graph ->
-           let%arr change_tab = change_tab in
+         ~f:(fun ~change_tab _ (local_ _graph) ->
+           let%arr change_tab in
            Vdom.Node.button
              ~attrs:
                [ Vdom.Attr.many_without_merge

@@ -42,7 +42,7 @@ val tab_state
   :  ?equal:('a -> 'a -> bool)
   -> (module Bonsai_proc.Model with type t = 'a)
   -> initial:'a
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'a State.t Bonsai.t
 
 (** [tab_ui] takes a state and evaluates a computation-returning
@@ -62,7 +62,7 @@ val tab_ui
   -> f:
        (change_tab:('a -> unit Vdom.Effect.t) Bonsai.t
         -> 'a Bonsai.t
-        -> Bonsai.graph
+        -> local_ Bonsai.graph
         -> 'result Bonsai.t)
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> 'result Result.t Bonsai.t

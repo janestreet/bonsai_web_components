@@ -4,7 +4,7 @@ open Bonsai_web_test
 open Bonsai.Let_syntax
 module Reorderable_list = Bonsai_web_ui_reorderable_list
 
-let component render graph =
+let component render (local_ graph) =
   let%sub lists, dragged_element =
     Reorderable_list.Multi.simple
       (module Int)
@@ -20,16 +20,14 @@ let component render graph =
     Bonsai.assoc
       (module Int)
       lists
-      ~f:(fun which data _graph ->
+      ~f:(fun which data (local_ _graph) ->
         let%sub _, view = data in
-        let%arr view = view
-        and which = which in
+        let%arr view and which in
         Vdom.Node.div
           [ Vdom.Node.h3 [ Vdom.Node.text [%string "List %{which#Int}"] ]; view ])
       graph
   in
-  let%arr lists = lists
-  and dragged_element = dragged_element in
+  let%arr lists and dragged_element in
   Vdom.Node.div [ Vdom.Node.div (Map.data lists); dragged_element ]
 ;;
 
@@ -51,9 +49,8 @@ let dnd_action handle action =
 ;;
 
 let%expect_test "simple usage" =
-  let item ~index:_ ~source _which data _graph =
-    let%arr source = source
-    and data = data in
+  let item ~index:_ ~source _which data (local_ _graph) =
+    let%arr source and data in
     let view = Vdom.Node.div ~attrs:[ source ] [ Vdom.Node.text (Int.to_string data) ] in
     (), view
   in
@@ -156,12 +153,9 @@ let%expect_test "simple usage" =
 ;;
 
 let%expect_test "stateful items" =
-  let item ~index:_ ~source _which data graph =
+  let item ~index:_ ~source _which data (local_ graph) =
     let is_true, toggle = Bonsai.toggle ~default_model:false graph in
-    let%arr source = source
-    and data = data
-    and is_true = is_true
-    and toggle = toggle in
+    let%arr source and data and is_true and toggle in
     let view =
       Vdom.Node.button
         ~attrs:

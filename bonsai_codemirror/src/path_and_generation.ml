@@ -15,7 +15,7 @@ let lookup = Ui_incr.Map.Lookup.create (module Bonsai.Path) incr
 let find path =
   let open Ui_incr.Let_syntax in
   (* paths are always constant nodes, so this bind will only fire once *)
-  let%bind path = path in
+  let%bind path in
   let%map generation = Ui_incr.Map.Lookup.find lookup path in
   Option.value generation ~default:(-1)
 ;;
@@ -35,7 +35,7 @@ let remove =
   Effect.of_sync_fun f
 ;;
 
-let model_resetter_generation graph =
+let model_resetter_generation (local_ graph) =
   let path = Bonsai.path graph in
   let generation = Bonsai.Incr.compute path ~f:find graph in
   let () =
@@ -47,14 +47,14 @@ let model_resetter_generation graph =
         (* this callback will only get called in two scenarios:
            1. when the component becomes active for the first time
            2. when its model is cleared *)
-        (let%map path = path in
+        (let%map path in
          fun () -> bump_generation path)
       graph
   in
   let () = Bonsai.Edge.lifecycle ~on_deactivate:(Bonsai.map path ~f:remove) graph in
   let path_id = Bonsai.map ~f:Bonsai.Path.to_unique_identifier_string path in
   let to_return =
-    let%arr path_id = path_id
+    let%arr path_id
     and generation_id = generation in
     { path_id; generation_id }
   in

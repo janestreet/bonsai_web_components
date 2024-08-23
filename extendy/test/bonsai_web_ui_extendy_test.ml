@@ -32,9 +32,9 @@ module Extendy_spec = struct
 end
 
 let handle () =
-  let component graph =
+  let component (local_ graph) =
     Extendy.component
-      (fun graph ->
+      (fun (local_ graph) ->
         let state, set_state =
           Bonsai.state
             ""
@@ -42,8 +42,7 @@ let handle () =
             ~equal:[%equal: String.t]
             graph
         in
-        let%arr state = state
-        and set_state = set_state in
+        let%arr state and set_state in
         state, set_state)
       graph
   in

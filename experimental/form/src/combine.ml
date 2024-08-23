@@ -17,8 +17,7 @@ module T = struct
 
       let map2 a b ~f =
         let open Arrow_deprecated.Bonsai.Let_syntax in
-        let%map_open a = a
-        and b = b in
+        let%map_open a and b in
         let value = f (Product.value a) (Product.value b) in
         let set parsed =
           Vdom.Effect.Many [ Product.set a parsed; Product.set b parsed ]

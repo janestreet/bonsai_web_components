@@ -483,7 +483,7 @@ module Parameters = struct
   ;;
 end
 
-let state_machine ~parameters graph =
+let state_machine ~parameters (local_ graph) =
   let state_machine, inject_action =
     Bonsai.state_machine1
       ~sexp_of_model:[%sexp_of: State.t]
@@ -569,7 +569,7 @@ let state_machine ~parameters graph =
       ~equal:[%equal: Parameters.t]
       parameters
       ~callback:
-        (let%map inject_action = inject_action in
+        (let%map inject_action in
          fun (_ : Parameters.t) -> inject_action Parameters_changed)
       graph
   in
@@ -622,24 +622,24 @@ let create_from_parameters
   parameters
   ~first_panel
   ~second_panel
-  graph
+  (local_ graph)
   =
   let state, inject_action = state_machine ~parameters graph in
   let size_change_attr =
     (* compute this attr separately in order to be precise about its dependencies
        (only depending on inject_action) so that the tracker isn't being continuously
        recreated *)
-    let%arr inject_action = inject_action in
+    let%arr inject_action in
     Size_tracker.on_change (fun ~width ~height ->
       inject_action
         (Container_resized (Container_dimensions.Fields.create ~width ~height)))
   in
   let container_builder =
-    let%arr state = state
-    and inject_action = inject_action
-    and size_change_attr = size_change_attr
+    let%arr state
+    and inject_action
+    and size_change_attr
     and { Parameters.separator_size_px; direction; separator_color; _ } = parameters
-    and panel_extra_attrs = panel_extra_attrs in
+    and panel_extra_attrs in
     let separator_listeners =
       if State.is_dragging state
       then Attr.empty
@@ -740,9 +740,7 @@ let create_from_parameters
       ; panel_sizes = State.panel_sizes ~direction ~separator_size_px state
       }
   in
-  let%arr container_builder = container_builder
-  and first_panel = first_panel
-  and second_panel = second_panel in
+  let%arr container_builder and first_panel and second_panel in
   container_builder first_panel second_panel
 ;;
 
@@ -757,7 +755,7 @@ let create
   ~first_panel
   ~second_panel
   ()
-  graph
+  (local_ graph)
   =
   let separator_color =
     match separator_color with
@@ -765,12 +763,12 @@ let create
     | None -> Bonsai.return None
   in
   let parameters =
-    let%arr initial_size = initial_size
-    and separator_size_px = separator_size_px
-    and separator_color = separator_color
-    and on_container_resize = on_container_resize
-    and constraints = constraints
-    and direction = direction in
+    let%arr initial_size
+    and separator_size_px
+    and separator_color
+    and on_container_resize
+    and constraints
+    and direction in
     { Parameters.initial_size
     ; separator_size_px
     ; separator_color

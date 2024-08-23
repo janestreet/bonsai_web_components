@@ -81,19 +81,19 @@ module Basic : sig
       val build
         :  ?sorts:
              ('column_id Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> ('key, 'data) Sort_kind.t option Bonsai.t)
         -> ('column_id, _) Bonsai.comparator
         -> columns:'column_id list Bonsai.t
         -> render_header:
              ('column_id Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> (Sort_state.t -> Vdom.Node.t) Bonsai.t)
         -> render_cell:
              ('column_id Bonsai.t
               -> 'key Bonsai.t
               -> 'data Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> Vdom.Node.t Bonsai.t)
         -> ('key, 'data, 'column_id) columns
 
@@ -128,7 +128,7 @@ module Basic : sig
         -> cell:
              (key:'key Bonsai.t
               -> data:'data Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> Vdom.Node.t Bonsai.t)
              (** [cell] is the function determines the contents of every cell in this column. *)
         -> unit
@@ -231,7 +231,7 @@ module Basic : sig
         is specified to be 0px or less, we instead use 1px. *)
     -> columns:('key, 'data, 'column_id) Columns.t
     -> ('key, 'data, 'cmp) Map.t Bonsai.t (** The input data for the table *)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('focus, 'column_id) Result.t Bonsai.t
 end
 
@@ -255,7 +255,7 @@ module Expert : sig
           (** Row-selection is not required to be inside the viewport, so the selected row
               can be offscreen such that it isn't given to the table component. [compute_presence]
               forces the user to consider if a row is considered 'focused' or not. *)
-          ; compute_presence : 'k option Bonsai.t -> Bonsai.graph -> 'p Bonsai.t
+          ; compute_presence : 'k option Bonsai.t -> local_ Bonsai.graph -> 'p Bonsai.t
           (** A user might try to focus-by-key a row that has not been filtered out,
               but is not inside the viewport. In that case, [key_rank] will be used as
               a fallback to compute the desired index.
@@ -267,7 +267,7 @@ module Expert : sig
       | By_cell :
           { on_change : (('k * 'c) option -> unit Effect.t) Bonsai.t
           ; compute_presence :
-              ('k * 'c) option Bonsai.t -> Bonsai.graph -> 'presence Bonsai.t
+              ('k * 'c) option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
           ; key_rank : ('k -> int option Effect.t) Bonsai.t
           }
           -> (('k, 'c, 'presence) By_cell.t, 'presence, 'k, 'c) t
@@ -296,12 +296,13 @@ module Expert : sig
       val build
         :  ('column_id, 'a) Bonsai.comparator
         -> columns:'column_id list Bonsai.t
-        -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+        -> render_header:
+             ('column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
         -> render_cell:
              ('column_id Bonsai.t
               -> 'key Bonsai.t
               -> 'data Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> Vdom.Node.t Bonsai.t)
         -> ('key, 'data, 'column_id) columns
 
@@ -321,7 +322,7 @@ module Expert : sig
         -> cell:
              (key:'key Bonsai.t
               -> data:'data Bonsai.t
-              -> Bonsai.graph
+              -> local_ Bonsai.graph
               -> Vdom.Node.t Bonsai.t)
         -> unit
         -> ('key, 'data) t
@@ -379,7 +380,7 @@ module Expert : sig
     -> ('k, 'filter, 'order) Collate.t Bonsai.t
        (** A [Collate.t] is a specification for how to perform collation: it's where the
         ['filter], ['order], and rank range are defined. *)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (('k, 'v) Collated.t * ('k -> int option Effect.t)) Bonsai.t
 
   val component
@@ -410,6 +411,6 @@ module Expert : sig
         You can use [Expert.collate] to get a Collated.t value, or do
         the collation manually on the server by using the Incr_map_collate
         library manually. *)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('focus, 'column_id) Result.t Bonsai.t
 end

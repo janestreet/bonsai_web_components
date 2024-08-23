@@ -113,7 +113,7 @@ module Controls : sig
       -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
       -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t
       -> ?close_on_esc:bool Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> t Bonsai.t
   end
 end
@@ -168,8 +168,9 @@ module Popover : sig
     -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
-    -> content:(close:unit Effect.t Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> Bonsai.graph
+    -> content:
+         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> local_ Bonsai.graph
     -> Vdom.Attr.t Bonsai.t * Controls.t
 
   (** Like [create], but uses a virtual anchor (e.g. a bounding box or a coordinate pair)
@@ -185,9 +186,10 @@ module Popover : sig
     -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
-    -> content:(close:unit Effect.t Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> content:
+         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> Anchor.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Controls.t
 
   module For_external_state : sig
@@ -214,8 +216,8 @@ module Popover : sig
       -> ?focus_on_open:bool Bonsai.t
       -> ?has_arrow:bool Bonsai.t
       -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Bonsai.graph
+      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> local_ Bonsai.graph
       -> Vdom.Attr.t Bonsai.t
 
     val bool
@@ -228,8 +230,8 @@ module Popover : sig
       -> ?focus_on_open:bool Bonsai.t
       -> ?has_arrow:bool Bonsai.t
       -> is_open:bool Bonsai.t
-      -> content:(Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Bonsai.graph
+      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> local_ Bonsai.graph
       -> Vdom.Attr.t Bonsai.t
 
     val opt_virtual
@@ -242,9 +244,9 @@ module Popover : sig
       -> ?focus_on_open:bool Bonsai.t
       -> ?has_arrow:bool Bonsai.t
       -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
       -> Anchor.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> unit
 
     val bool_virtual
@@ -257,9 +259,9 @@ module Popover : sig
       -> ?focus_on_open:bool Bonsai.t
       -> ?has_arrow:bool Bonsai.t
       -> is_open:bool Bonsai.t
-      -> content:(Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
       -> Anchor.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> unit
   end
 end
@@ -293,8 +295,9 @@ module Modal : sig
     -> ?close_on_esc:bool Bonsai.t
     -> ?lock_body_scroll:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
-    -> content:(close:unit Effect.t Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> Bonsai.graph
+    -> content:
+         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> local_ Bonsai.graph
     -> Controls.t
 
   module For_external_state : sig
@@ -304,8 +307,8 @@ module Modal : sig
       -> ?lock_body_scroll:bool Bonsai.t
       -> ?focus_on_open:bool Bonsai.t
       -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Bonsai.graph
+      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> local_ Bonsai.graph
       -> unit
 
     val bool
@@ -314,8 +317,8 @@ module Modal : sig
       -> ?lock_body_scroll:bool Bonsai.t
       -> ?focus_on_open:bool Bonsai.t
       -> is_open:bool Bonsai.t
-      -> content:(Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Bonsai.graph
+      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> local_ Bonsai.graph
       -> unit
   end
 end

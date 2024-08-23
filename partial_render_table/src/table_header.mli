@@ -14,5 +14,5 @@ val component
   -> set_header_client_rect:
        (Bonsai_web_ui_element_size_hooks.Visibility_tracker.Bbox.t -> unit Vdom.Effect.t)
          Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> Table_view.Header.t Bonsai.t

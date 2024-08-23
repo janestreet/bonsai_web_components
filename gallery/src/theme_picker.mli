@@ -14,5 +14,5 @@ val component
   :  ?default:Theme_id.t
   -> ?standalone:bool
   -> unit
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> (View.Theme.t * Vdom.Node.t) Bonsai.t

@@ -82,7 +82,7 @@ type 'a t =
       ?close_after:Time_ns.Span.t -> 'a Id.t -> 'a -> Notification_id.t Effect.t
   }
 
-let component (type a) (module M : Model with type t = a) ~equal graph =
+let component (type a) (module M : Model with type t = a) ~equal (local_ graph) =
   let id_generator = Notification_id.component graph in
   let notifications, inject =
     let module Model = struct
@@ -119,20 +119,18 @@ let component (type a) (module M : Model with type t = a) ~equal graph =
       Bonsai.assoc
         (module Notification_id)
         notifications
-        ~f:(fun notification_id notification graph ->
+        ~f:(fun notification_id notification (local_ graph) ->
           let%sub { opened_at; close_after; content = _ } = notification in
           match%sub close_after with
           | None -> Bonsai.return ()
           | Some close_after ->
             let span =
-              let%arr close_after = close_after
-              and opened_at = opened_at in
+              let%arr close_after and opened_at in
               Time_ns.add opened_at close_after
             in
             let at = Bonsai.Clock.at span graph in
             let callback =
-              let%arr notification_id = notification_id
-              and inject = inject in
+              let%arr notification_id and inject in
               function
               | Bonsai.Clock.Before_or_after.Before -> Effect.Ignore
               | After -> inject (Action.Remove notification_id)
@@ -150,12 +148,10 @@ let component (type a) (module M : Model with type t = a) ~equal graph =
   in
   let send_and_modify_notifications =
     let now = Bonsai.Clock.get_current_time graph in
-    let%arr inject = inject
-    and id_generator = id_generator
-    and now = now in
+    let%arr inject and id_generator and now in
     let modify_notification ?close_after id content =
       let open Effect.Let_syntax in
-      let%bind now = now in
+      let%bind now in
       let notification = { Notification.content; opened_at = now; close_after } in
       let%bind () = inject (Add { id; notification }) in
       return id
@@ -166,8 +162,8 @@ let component (type a) (module M : Model with type t = a) ~equal graph =
     in
     send_notification, modify_notification
   in
-  let%arr notifications = notifications
-  and inject = inject
+  let%arr notifications
+  and inject
   and send_notification, modify_notification = send_and_modify_notifications in
   { notifications; inject; send_notification; modify_notification }
 ;;
@@ -180,27 +176,25 @@ let render_with_access_to_entire_notification
   ?(notification_container_extra_attr = Bonsai.return Vdom.Attr.empty)
   t
   ~f
-  graph
+  (local_ graph)
   =
   let%sub { notifications; inject; send_notification = _; modify_notification = _ } = t in
   let rendered =
     Bonsai.assoc
       (module Notification_id)
       notifications
-      ~f:(fun notification_id notification graph ->
+      ~f:(fun notification_id notification (local_ graph) ->
         let close_effect =
-          let%arr notification_id = notification_id
-          and inject = inject in
+          let%arr notification_id and inject in
           inject (Action.Remove notification_id)
         in
         let rendered = f ~close:close_effect ~id:notification_id notification graph in
-        let%arr rendered = rendered
+        let%arr rendered
         and data = notification in
         rendered, data.opened_at)
       graph
   in
-  let%arr rendered = rendered
-  and notification_container_extra_attr = notification_container_extra_attr in
+  let%arr rendered and notification_container_extra_attr in
   Map.to_alist rendered
   |> List.map ~f:(fun (notification_id, (rendered, _)) ->
     Vdom.Node.div
@@ -211,12 +205,12 @@ let render_with_access_to_entire_notification
        ~attrs:[ Style.notification_container; notification_container_extra_attr ]
 ;;
 
-let render t ~f graph =
+let render t ~f (local_ graph) =
   render_with_access_to_entire_notification
     t
-    ~f:(fun ~close ~id:_ notification graph ->
+    ~f:(fun ~close ~id:_ notification (local_ graph) ->
       let content =
-        let%arr notification = notification in
+        let%arr notification in
         notification.Notification.content
       in
       f ~close content graph)
@@ -307,14 +301,14 @@ module Basic = struct
       Bonsai.return (Time_ns.Span.of_sec 15.0))
     ?(dismiss_errors_automatically : bool Bonsai.t = Bonsai.return false)
     ()
-    graph
+    (local_ graph)
     =
     let notifications =
       component (module Basic_notification) ~equal:[%equal: Basic_notification.t] graph
     in
-    let%arr notifications = notifications
-    and dismiss_notifications_after = dismiss_notifications_after
-    and dismiss_errors_automatically = dismiss_errors_automatically in
+    let%arr notifications
+    and dismiss_notifications_after
+    and dismiss_errors_automatically in
     { notifications; dismiss_notifications_after; dismiss_errors_automatically }
   ;;
 
@@ -352,7 +346,7 @@ module Basic = struct
     ?(notification_extra_attr = Bonsai.return Vdom.Attr.empty)
     ?notification_container_extra_attr
     (t : basic_t Bonsai.t)
-    graph
+    (local_ graph)
     =
     let module Notification_style = (val notification_style) in
     let%sub { notifications
@@ -365,12 +359,12 @@ module Basic = struct
     render_with_access_to_entire_notification
       notifications
       ?notification_container_extra_attr
-      ~f:(fun ~close ~id:notification_id notification _graph ->
+      ~f:(fun ~close ~id:notification_id notification (local_ _graph) ->
         let%arr { Notification.content = { text; level }; opened_at = _; close_after } =
           notification
-        and close = close
-        and notification_id = notification_id
-        and notification_extra_attr = notification_extra_attr in
+        and close
+        and notification_id
+        and notification_extra_attr in
         let level_class =
           match level with
           | Success -> Notification_style.success

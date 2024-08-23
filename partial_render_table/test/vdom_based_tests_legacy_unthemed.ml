@@ -900,7 +900,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
 let%expect_test "table body is not recomputed more often than necessary" =
   let test =
     Test.create (fun input _filter_var ->
-      let component graph =
+      let component (local_ graph) =
         let%sub collation, key_rank =
           Table_expert.collate
             ~filter_equal:[%compare.equal: unit]
@@ -919,8 +919,8 @@ let%expect_test "table body is not recomputed more often than necessary" =
         let columns =
           [ Table_expert.Columns.Dynamic_cells.column
               ~header:(Bonsai.return (Vdom.Node.text "key"))
-              ~cell:(fun ~key ~data:_ _graph ->
-                let%arr key = key in
+              ~cell:(fun ~key ~data:_ (local_ _graph) ->
+                let%arr key in
                 Vdom.Node.textf "%d" key)
               ()
           ]
@@ -932,7 +932,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
           ~focus:
             (By_row
                { on_change = Bonsai.return (Fn.const Effect.Ignore)
-               ; compute_presence = (fun focus _graph -> focus)
+               ; compute_presence = (fun focus (local_ _graph) -> focus)
                ; key_rank
                })
           ~row_height:(Bonsai.return (`Px 10))

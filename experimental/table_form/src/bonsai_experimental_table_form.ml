@@ -55,7 +55,7 @@ let table_form
   (key : (k, cmp) comparator)
   form_of_t
   ~columns
-  graph
+  (local_ graph)
   =
   let module Key = (val key) in
   let module M_map = struct
@@ -74,10 +74,7 @@ let table_form
     let text, set_text =
       Bonsai.state "" ~sexp_of_model:[%sexp_of: String.t] ~equal:[%equal: String.t] graph
     in
-    let%arr text = text
-    and set_text = set_text
-    and map = map
-    and set_map = set_map in
+    let%arr text and set_text and map and set_map in
     let on_submit () =
       Effect.Many
         [ set_map (Map.set map ~key:(Key.t_of_sexp (Sexp.of_string text)) ~data:())
@@ -107,10 +104,7 @@ let table_form
     Vdom.Node.div ~attrs:[ Style.key_input_container ] [ textbox; button ]
   in
   let columns =
-    let%map columns = columns
-    and set_map = set_map
-    and map = map
-    and textbox = textbox in
+    let%map columns and set_map and map and textbox in
     let editable_columns =
       List.mapi columns ~f:(fun i { Column.name; initial_width } ->
         C.column
@@ -158,16 +152,11 @@ let table_form
         forms
         graph
     in
-    let%arr forms = forms
-    and view = view in
+    let%arr forms and view in
     forms, view
   in
   let get_forms = Bonsai.peek forms graph in
-  let%arr forms = forms
-  and get_forms = get_forms
-  and table = table
-  and set_map = set_map
-  and id = id in
+  let%arr forms and get_forms and table and set_map and id in
   let view = Form.View.of_vdom ~unique_key:id table in
   let value =
     forms

@@ -23,19 +23,19 @@ module Record : sig
 
     (** For each of the fields in your record, you need to provide a form
         component which produces values of that type. *)
-    val form_for_field : 'a Typed_field.t -> Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_field : 'a Typed_field.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
   end
 
   val make
     :  (module S with type Typed_field.derived_on = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a Form.t Bonsai.t
 
   (** Creates a table whose columns are the fields of the record, and whose rows
       correspond to list items. *)
   val make_table
     :  (module S with type Typed_field.derived_on = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a list Form.t Bonsai.t
 end
 
@@ -60,7 +60,7 @@ module Variant : sig
 
     (** For each of the variants in your sum type, you need to provide a form
         component which produces values of that type. *)
-    val form_for_variant : 'a Typed_variant.t -> Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_variant : 'a Typed_variant.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
 
     (* [initial_choice] can be used to change which constructor in the variant is
        initially selected. *)
@@ -98,7 +98,7 @@ module Variant : sig
     val form_for_variant
       :  'a Typed_variant.t
       -> ('a, 'cmp) Bonsai.comparator
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> ('a, 'cmp) Set.t Form.t Bonsai.t
   end
 
@@ -110,7 +110,7 @@ module Variant : sig
     :  ?picker:[ `Dropdown | `Radio of [ `Horizontal | `Vertical ] ]
     -> ?picker_attr:Vdom.Attr.t Bonsai.t
     -> (module S with type Typed_variant.derived_on = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a Form.t Bonsai.t
 
   (* Like [make], but the dropdown/radio button list will have an extra option that parses
@@ -121,7 +121,7 @@ module Variant : sig
     -> ?picker_attr:Vdom.Attr.t Bonsai.t
     -> ?empty_label:string
     -> (module S with type Typed_variant.derived_on = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> 'a option Form.t Bonsai.t
 
   (** This creates a form to pick a set of values of a particular variant.
@@ -130,6 +130,6 @@ module Variant : sig
   *)
   val make_set
     :  (module S_set with type t = 'a and type comparator_witness = 'cmp)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, 'cmp) Set.t Form.t Bonsai.t
 end

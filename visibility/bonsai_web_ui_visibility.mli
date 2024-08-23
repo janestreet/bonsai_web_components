@@ -12,8 +12,8 @@ open! Bonsai_web
 val only_when_visible
   :  ?visible_attr:Vdom.Attr.t Bonsai.t
   -> ?hidden_attr:Vdom.Attr.t Bonsai.t
-  -> (Bonsai.graph -> Vdom.Node.t Bonsai.t)
-  -> Bonsai.graph
+  -> (local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
 (** Like [only_when_visible], but if the component returns more than just a vdom node,
@@ -22,8 +22,8 @@ val only_when_visible
 val only_when_visible'
   :  ?visible_attr:Vdom.Attr.t Bonsai.t
   -> ?hidden_attr:Vdom.Attr.t Bonsai.t
-  -> (Bonsai.graph -> (Vdom.Node.t * 'a) Bonsai.t)
-  -> Bonsai.graph
+  -> (local_ Bonsai.graph -> (Vdom.Node.t * 'a) Bonsai.t)
+  -> local_ Bonsai.graph
   -> (Vdom.Node.t * 'a option) Bonsai.t
 
 module Tracker : sig
@@ -36,5 +36,5 @@ module Tracker : sig
     | Hidden
     | Unknown
 
-  val component : Bonsai.graph -> (t * Vdom.Attr.t) Bonsai.t
+  val component : local_ Bonsai.graph -> (t * Vdom.Attr.t) Bonsai.t
 end

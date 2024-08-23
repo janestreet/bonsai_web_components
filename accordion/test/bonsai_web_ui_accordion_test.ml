@@ -48,7 +48,7 @@ let%expect_test "Clicking open and close" =
       ~extra_title_attrs:(Bonsai.return [ Vdom.Attr.create "data-test" "title" ])
       ~starts_open:false
       ~title:(Bonsai.return (Vdom.Node.text "Title"))
-      ~content:(fun _graph -> Bonsai.return (Vdom.Node.text "Content"))
+      ~content:(fun (local_ _graph) -> Bonsai.return (Vdom.Node.text "Content"))
       ()
   in
   let handle = Handle.create (module Accordion_result_spec) accordion in
@@ -112,7 +112,7 @@ let%expect_test "Opening and closing via effects" =
     Accordion.component
       ~starts_open:false
       ~title:(Bonsai.return (Vdom.Node.text "Title"))
-      ~content:(fun _graph -> Bonsai.return (Vdom.Node.text "Content"))
+      ~content:(fun (local_ _graph) -> Bonsai.return (Vdom.Node.text "Content"))
       ()
   in
   let handle = Handle.create (module Accordion_result_spec) accordion in

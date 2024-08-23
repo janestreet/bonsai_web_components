@@ -552,137 +552,117 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> JANE0 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> JANE0 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0 </div>
-              </div>
-            </div>
-            <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
-                 style={
-                   height: 1px;
-                   display: table-row;
-                 }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> JANE1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0 </div>
+                </div>
               </div>
             </div>
             <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
@@ -690,137 +670,117 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> JANE2 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> JANE1 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 2 </div>
-              </div>
-            </div>
-            <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
-                 style={
-                   height: 1px;
-                   display: table-row;
-                 }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> JANE3 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3. </div>
-              </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 3 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1 </div>
+                </div>
               </div>
             </div>
             <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
@@ -828,68 +788,353 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> JANE4 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> JANE2 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 4 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2 </div>
+                </div>
+              </div>
+            </div>
+            <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
+                 style={
+                   height: 1px;
+                   display: table-row;
+                 }>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> JANE3 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 3 </div>
+                </div>
+              </div>
+            </div>
+            <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
+                 style={
+                   height: 1px;
+                   display: table-row;
+                 }>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> JANE4 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4. </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+                     style={
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 4 </div>
+                </div>
               </div>
             </div>
             <div @key=bottom_border class="body_row_hash_replaced_in_test">
@@ -1082,33 +1327,54 @@ let%expect_test "Grouped vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
                        display: none;
-                     }> </div>
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 0 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 0 </div>
+                </div>
               </div>
             </div>
             <div class="body_row_hash_replaced_in_test row_hash_replaced_in_test"
@@ -1116,33 +1382,54 @@ let%expect_test "Grouped vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 1. </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1. </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
                        display: none;
-                     }> </div>
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test">
-                <div class="body_cell_hash_replaced_in_test"
-                     @on_click
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
+                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
-                     }> 1 </div>
+                     }>
+                  <div class="body_cell_hash_replaced_in_test"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1 </div>
+                </div>
               </div>
             </div>
             <div @key=bottom_border class="body_row_hash_replaced_in_test">

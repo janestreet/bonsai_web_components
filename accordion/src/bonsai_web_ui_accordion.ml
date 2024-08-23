@@ -18,22 +18,19 @@ let component
   ~title
   ~content
   ()
-  graph
+  (local_ graph)
   =
   let%tydi { state = is_open; set_state = set_is_open; toggle } =
     Bonsai.toggle' ~default_model:starts_open graph
   in
   let%sub open_, close =
-    let%arr set_is_open = set_is_open in
+    let%arr set_is_open in
     set_is_open true, set_is_open false
   in
   let view =
     let theme = View.Theme.current graph in
     let title_attrs =
-      let%arr extra_title_attrs = extra_title_attrs
-      and toggle = toggle
-      and theme = theme
-      and is_open = is_open in
+      let%arr extra_title_attrs and toggle and theme and is_open in
       let constants = View.constants theme in
       [ Style.title
       ; Vdom.Attr.on_click (fun _ -> toggle)
@@ -46,8 +43,7 @@ let component
       ]
     in
     let title =
-      let%arr is_open = is_open
-      and title = title in
+      let%arr is_open and title in
       let is_open_attr =
         if is_open then Style.accordion_open else Style.accordion_closed
       in
@@ -63,11 +59,11 @@ let component
     in
     match%sub is_open with
     | false ->
-      let%arr theme = theme
-      and title = title
-      and title_attrs = title_attrs
-      and extra_content_attrs = extra_content_attrs
-      and extra_container_attrs = extra_container_attrs in
+      let%arr theme
+      and title
+      and title_attrs
+      and extra_content_attrs
+      and extra_container_attrs in
       View.card'
         theme
         ~content_attrs:[ Style.no_padding; Vdom.Attr.many extra_content_attrs ]
@@ -77,12 +73,12 @@ let component
         [ (Vdom.Node.none_deprecated [@alert "-deprecated"]) ]
     | true ->
       let content = content graph in
-      let%arr theme = theme
-      and content = content
-      and title = title
-      and title_attrs = title_attrs
-      and extra_container_attrs = extra_container_attrs
-      and extra_content_attrs = extra_content_attrs in
+      let%arr theme
+      and content
+      and title
+      and title_attrs
+      and extra_container_attrs
+      and extra_content_attrs in
       View.card'
         theme
         ~container_attrs:extra_container_attrs
@@ -91,10 +87,6 @@ let component
         ~title
         [ content ]
   in
-  let%arr view = view
-  and is_open = is_open
-  and open_ = open_
-  and close = close
-  and toggle = toggle in
+  let%arr view and is_open and open_ and close and toggle in
   { view; is_open; open_; close; toggle }
 ;;

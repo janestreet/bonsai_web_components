@@ -42,7 +42,7 @@ end
 val component
   :  ('key, 'cmp) Bonsai.comparator
   -> 'contained Options.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> (('key, 'contained, 'cmp) Base.Map.t * ('key -> Vdom.Attr.t)) Bonsai.t
 
 (** [component'] is a more general version of [component] that doesn't build the map for
@@ -51,7 +51,7 @@ val component'
   :  ?sexp_of_key:('key -> Sexp.t)
   -> 'contained Options.t
   -> ('key Action.t -> unit Effect.t) Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('key -> Vdom.Attr.t) Bonsai.t
 
 module For_testing : sig

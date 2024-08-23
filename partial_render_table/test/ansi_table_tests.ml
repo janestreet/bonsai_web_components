@@ -2898,7 +2898,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     |> Int.Map.of_alist_exn
     |> Bonsai.return
   in
-  let component graph =
+  let component (local_ graph) =
     let%sub collate, key_rank =
       let collate =
         let%map rank_range = Bonsai.Expert.Var.value rank_range in
@@ -2923,9 +2923,8 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
         (Table_expert.Focus.By_row
            { on_change = Test.focus_changed
            ; compute_presence =
-               (fun focus _graph ->
-                 let%arr map = map
-                 and focus = focus in
+               (fun focus (local_ _graph) ->
+                 let%arr map and focus in
                  match focus with
                  | None -> None
                  | Some focus -> if Map.mem map focus then Some focus else None)
@@ -3062,7 +3061,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
 ;;
 
 let%expect_test "focus down when presence says that all responses are None" =
-  let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
+  let presence ~focus:_ ~collation:_ (local_ _graph) = Bonsai.return None in
   let collate =
     Bonsai.return
       { Incr_map_collate.Collate.filter = ()
@@ -3077,7 +3076,7 @@ let%expect_test "focus down when presence says that all responses are None" =
       (Test.Component.expert_for_testing_compute_presence_and_key_rank
          ~collate
          ~presence
-         ~key_rank:(fun ~actual_key_rank _graph -> actual_key_rank)
+         ~key_rank:(fun ~actual_key_rank (local_ _graph) -> actual_key_rank)
          ())
   in
   Handle.show test.handle;
@@ -3127,7 +3126,7 @@ let%expect_test "focus down when presence says that all responses are None" =
 let%test_module "focus by key `key_rank` fallback" =
   (module struct
     let test () =
-      let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
+      let presence ~focus:_ ~collation:_ (local_ _graph) = Bonsai.return None in
       let collate =
         Bonsai.return
           { Incr_map_collate.Collate.filter = ()
@@ -3137,9 +3136,9 @@ let%test_module "focus by key `key_rank` fallback" =
           }
       in
       Test.create ~stats:true ~map:big_map ~should_set_bounds:false (fun input filter ->
-        let key_rank ~actual_key_rank:_ graph =
+        let key_rank ~actual_key_rank:_ (local_ graph) =
           let sleep = Bonsai.Clock.sleep graph in
-          let%arr sleep = sleep in
+          let%arr sleep in
           fun row_key ->
             let%bind.Effect () = sleep (Time_ns.Span.of_ms 10.) in
             Effect.return (Some ((row_key mod 2) + 2))
@@ -3535,9 +3534,8 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
                  component"
   =
   let open Incr_map_collate.Collate.Which_range in
-  let presence ~focus ~collation _graph =
-    let%arr focus = focus
-    and collation = collation in
+  let presence ~focus ~collation (local_ _graph) =
+    let%arr focus and collation in
     match focus with
     | None -> None
     | Some focus ->
@@ -3558,7 +3556,7 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
       (Test.Component.expert_for_testing_compute_presence_and_key_rank
          ~collate
          ~presence
-         ~key_rank:(fun ~actual_key_rank _graph -> actual_key_rank)
+         ~key_rank:(fun ~actual_key_rank (local_ _graph) -> actual_key_rank)
          ())
   in
   Bonsai.Expert.Var.set rank (Between (0, 10));
@@ -3862,7 +3860,7 @@ let%test_module "dynamic columns with visibility" =
         |> Int.Map.of_alist_exn
         |> Bonsai.return
       in
-      let component graph =
+      let component (local_ graph) =
         let%sub collate, _ =
           let collate =
             { Collate.filter = None

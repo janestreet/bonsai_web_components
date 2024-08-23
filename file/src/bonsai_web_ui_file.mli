@@ -95,16 +95,19 @@ module Read_on_change : sig
     [@@deriving sexp_of]
   end
 
-  val create_single : t Bonsai.t -> Bonsai.graph -> (Filename.t * Status.t) Bonsai.t
+  val create_single
+    :  t Bonsai.t
+    -> local_ Bonsai.graph
+    -> (Filename.t * Status.t) Bonsai.t
 
   val create_single_opt
     :  t option Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (Filename.t * Status.t) option Bonsai.t
 
   val create_multiple
     :  t Filename.Map.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Status.t Filename.Map.t Bonsai.t
 end
 

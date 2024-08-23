@@ -69,7 +69,7 @@ module Expert = struct
     ~headers
     ~assoc
     (collated : (key, data) Collated.t Bonsai.t)
-    graph
+    (local_ graph)
     =
     let extra_row_attrs =
       match extra_row_attrs with
@@ -78,8 +78,7 @@ module Expert = struct
     in
     let theme = View.Theme.current graph in
     let themed_attrs =
-      let%arr theme = theme
-      and autosize = autosize in
+      let%arr theme and autosize in
       Table_view.Themed.create ~autosize theme () theming
     in
     let row_height =
@@ -90,11 +89,11 @@ module Expert = struct
     let input_map = Bonsai.map ~f:Collated.to_opaque_map collated in
     let private_body_classname =
       let path = Bonsai.path_id graph in
-      let%arr path = path in
+      let%arr path in
       "partial-render-table-body-" ^ path
     in
     let table_body_selector =
-      let%arr private_body_classname = private_body_classname in
+      let%arr private_body_classname in
       "." ^ private_body_classname
     in
     let header_client_rect, set_header_client_rect = Bonsai.state_opt graph in
@@ -102,7 +101,7 @@ module Expert = struct
       Bonsai.cutoff ~equal:[%equal: Bbox.t option] header_client_rect
     in
     let set_header_client_rect =
-      let%arr set_header_client_rect = set_header_client_rect in
+      let%arr set_header_client_rect in
       fun b -> set_header_client_rect (Some b)
     in
     let table_body_visible_rect, set_table_body_visible_rect =
@@ -150,7 +149,7 @@ module Expert = struct
       Bonsai.cutoff ~equal:[%equal: Column_widths_model.t] column_widths
     in
     let set_column_width =
-      let%arr set_column_width = set_column_width in
+      let%arr set_column_width in
       fun ~column_id width -> set_column_width (column_id, width)
     in
     let row_count = collated >>| Collated.num_filtered_rows in
@@ -165,14 +164,13 @@ module Expert = struct
          looking at the table_body_visible_rect, but we also account for the header occluding
          some of the first rows of the table.  For that, we need to look at the client-rects for
          the body and the header and subtract their overlap. *)
-      let%arr table_body_visible_rect = table_body_visible_rect
-      and table_body_client_rect = table_body_client_rect
-      and header_client_rect =
-        header_client_rect
+      let%arr table_body_visible_rect
+      and table_body_client_rect
+      and header_client_rect
         (* We need to know about autosize because the sticky header takes up 0 height in
            the table container, so it doesn't technically occlude anything initially. *)
-      and autosize = autosize
-      and header_height_px = header_height_px in
+      and autosize
+      and header_height_px in
       fun (`Px row_height_px) ->
         let row_height_px = Float.of_int row_height_px in
         match table_body_visible_rect, table_body_client_rect, header_client_rect with
@@ -210,17 +208,17 @@ module Expert = struct
         | _ -> None
     in
     let midpoint_of_container =
-      let%arr table_body_visible_rect = table_body_visible_rect in
+      let%arr table_body_visible_rect in
       match table_body_visible_rect with
       | None -> 0.0, 0.0
       | Some rect -> (rect.max_x +. rect.min_x) /. 2.0, (rect.max_y -. rect.min_y) /. 2.0
     in
     let scroll_to_index =
-      let%arr header_height_px = header_height_px
-      and range_without_preload = range_without_preload
+      let%arr header_height_px
+      and range_without_preload
       and midpoint_of_container_x, _ = midpoint_of_container
-      and table_body_selector = table_body_selector
-      and autosize = autosize
+      and table_body_selector
+      and autosize
       and (`Px row_height_px) = row_height in
       fun index ->
         let range_start, range_end =
@@ -297,8 +295,7 @@ module Expert = struct
         | Hidden { prev_width_px = _ } -> 0.0
       in
       let get_offset_and_width =
-        let%arr column_widths = column_widths
-        and leaves = leaves in
+        let%arr column_widths and leaves in
         fun column_id ->
           List.fold_until
             ~init:0.0
@@ -315,9 +312,9 @@ module Expert = struct
               | true -> Stop (Some (offset, column_width))
               | false -> Continue (offset +. column_width))
       in
-      let%arr get_offset_and_width = get_offset_and_width
-      and table_body_visible_rect = table_body_visible_rect
-      and table_body_selector = table_body_selector
+      let%arr get_offset_and_width
+      and table_body_visible_rect
+      and table_body_selector
       and _, midpoint_of_container_y = midpoint_of_container in
       fun column_id ->
         match table_body_visible_rect with
@@ -349,11 +346,11 @@ module Expert = struct
              else Effect.Ignore)
     in
     let keep_top_row_in_position =
-      let%arr range_without_preload = range_without_preload
-      and header_height_px = header_height_px
+      let%arr range_without_preload
+      and header_height_px
       and midpoint_of_container_x, _ = midpoint_of_container
-      and table_body_selector = table_body_selector
-      and table_body_visible_rect = table_body_visible_rect in
+      and table_body_selector
+      and table_body_visible_rect in
       fun (`Px old_row_height_px) (`Px new_row_height_px) ->
         match range_without_preload (`Px old_row_height_px), table_body_visible_rect with
         | None, None | None, Some _ ->
@@ -403,7 +400,7 @@ module Expert = struct
          of rows to their new location. To do this, we calculate the new
          position of the current top row, and then scroll their immediately. *)
       let callback =
-        let%arr keep_top_row_in_position = keep_top_row_in_position in
+        let%arr keep_top_row_in_position in
         fun prev_row_height new_row_height ->
           match prev_row_height with
           | Some prev_row_height ->
@@ -426,9 +423,7 @@ module Expert = struct
           row_height
           graph
       in
-      let%arr prev_row_height = prev_row_height
-      and row_height = row_height
-      and range_without_preload = range_without_preload in
+      let%arr prev_row_height and row_height and range_without_preload in
       (* If the [row_height] just changed, then we will be scrolling to a new
          position that will leave [range_without_preload] unchanged. Thus, we
          should intentionally _not_ account for the new change in row_height
@@ -483,8 +478,7 @@ module Expert = struct
     in
     let view =
       let vis_change_attr =
-        let%arr set_table_body_visible_rect = set_table_body_visible_rect
-        and set_table_body_client_rect = set_table_body_client_rect in
+        let%arr set_table_body_visible_rect and set_table_body_client_rect in
         Bonsai_web_ui_element_size_hooks.Visibility_tracker.detect
           ()
           ~client_rect_changed:(fun bounds -> set_table_body_client_rect (Some bounds))
@@ -492,17 +486,17 @@ module Expert = struct
             set_table_body_visible_rect visible_bounds)
       in
       let total_height =
-        let%arr row_count = row_count
+        let%arr row_count
         and (`Px row_height_px) = row_height in
         row_count * row_height_px
       in
-      let%arr head = head
-      and body = body
-      and private_body_classname = private_body_classname
-      and vis_change_attr = vis_change_attr
-      and total_height = total_height
-      and autosize = autosize
-      and themed_attrs = themed_attrs in
+      let%arr head
+      and body
+      and private_body_classname
+      and vis_change_attr
+      and total_height
+      and autosize
+      and themed_attrs in
       Table_view.Table.view
         themed_attrs
         ~private_body_classname
@@ -514,7 +508,7 @@ module Expert = struct
     in
     let range =
       let%arr low, high = range_without_preload
-      and row_count = row_count in
+      and row_count in
       let low = Int.max 0 (low - preload_rows) in
       let low =
         (* always fetch a range starting at an even index in order to make
@@ -525,11 +519,7 @@ module Expert = struct
       let low, high = low, Int.max low high in
       low, high
     in
-    let%arr view = view
-    and range = range
-    and body_for_testing = body_for_testing
-    and focus = focus
-    and set_column_width = set_column_width in
+    let%arr view and range and body_for_testing and focus and set_column_width in
     let for_testing =
       let%map.Lazy body = body_for_testing in
       { For_testing.body }
@@ -548,7 +538,7 @@ module Expert = struct
     ~row_height
     ~(columns : (key, data, column_id) Column_intf.t)
     (collated : (key, data) Collated.t Bonsai.t)
-    graph
+    (local_ graph)
     =
     let (T { value; vtable; column_id }) = columns in
     let module T = (val vtable) in
@@ -659,7 +649,7 @@ module Basic = struct
       -> row_height:[ `Px of int ] Bonsai.t
       -> columns:(key, data, column_id) Column_intf.with_sorter
       -> (key, data, cmp) Map.t Bonsai.t
-      -> Bonsai.graph
+      -> local_ Bonsai.graph
       -> (focus, column_id) Result.t Bonsai.t
     =
     fun ?(theming = `Themed)
@@ -675,7 +665,7 @@ module Basic = struct
       ~row_height
       ~columns
       map
-      graph ->
+      (local_ graph) ->
     let module Key_cmp = (val key_comparator) in
     let filter = Bonsai.transpose_opt filter in
     let rank_range, set_rank_range =
@@ -710,10 +700,7 @@ module Basic = struct
         | Some override -> override >>| Option.some
       in
       let order =
-        let%arr sorters = sorters
-        and default_sort = default_sort
-        and sortable_state = sortable_state
-        and override_sort = override_sort in
+        let%arr sorters and default_sort and sortable_state and override_sort in
         let override_sort =
           Option.map override_sort ~f:(fun override_sort ->
             override_sort Key_cmp.comparator.compare)
@@ -724,9 +711,7 @@ module Basic = struct
           ~sorters
           ~default_sort
       in
-      let%arr filter = filter
-      and order = order
-      and rank_range = rank_range in
+      let%arr filter and order and rank_range in
       let key_range = Collate.Which_range.All_rows in
       { Collate.filter; order; key_range; rank_range }
     in
@@ -744,18 +729,16 @@ module Basic = struct
       match focus with
       | None -> None
       | By_row { on_change } ->
-        let compute_presence focus _graph =
-          let%arr focus = focus
-          and map = map in
+        let compute_presence focus (local_ _graph) =
+          let%arr focus and map in
           match focus with
           | None -> None
           | Some focus -> if Map.mem map focus then Some focus else None
         in
         By_row { on_change; compute_presence; key_rank }
       | By_cell { on_change } ->
-        let compute_presence focus _graph =
-          let%arr focus = focus
-          and map = map in
+        let compute_presence focus (local_ _graph) =
+          let%arr focus and map in
           match focus with
           | None -> None
           | Some ((focused_key, _) as focus) ->
@@ -764,7 +747,7 @@ module Basic = struct
         By_cell { on_change; compute_presence; key_rank }
     in
     let num_filtered_rows =
-      let%arr collated = collated in
+      let%arr collated in
       Collated.num_filtered_rows collated
     in
     let%sub ({ range = viewed_range; _ } as result) =
@@ -788,13 +771,13 @@ module Basic = struct
         ~equal:[%equal: int * int]
         viewed_range
         ~callback:
-          (let%map set_rank_range = set_rank_range in
+          (let%map set_rank_range in
            fun (low, high) -> set_rank_range (Collate.Which_range.Between (low, high)))
         graph
     in
     let%arr { view; for_testing; range = _; focus; set_column_width } = result
-    and num_filtered_rows = num_filtered_rows
-    and sortable_state = sortable_state in
+    and num_filtered_rows
+    and sortable_state in
     { Result.view
     ; for_testing
     ; focus

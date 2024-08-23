@@ -43,14 +43,14 @@ module Make (Name : Types.Name) : sig
     :  curr_id:Name.Count.t Bonsai.t
     -> direction:[ `Left_to_right | `Top_to_bottom ]
     -> node_to_vdom:
-         (Name.t Bonsai.t -> 'a Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+         (Name.t Bonsai.t -> 'a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> edge_to_svg:
          (edge:Edge.t Bonsai.t
           -> from:Position.t Bonsai.t
           -> to_:Position.t Bonsai.t
-          -> Bonsai.graph
+          -> local_ Bonsai.graph
           -> Vdom.Node.t Bonsai.t)
     -> 'a t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (Vdom.Node.t Or_error.t * Name.Count.t) Bonsai.t
 end

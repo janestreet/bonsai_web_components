@@ -5,12 +5,11 @@ open Bonsai_web_test
 open Bonsai.Let_syntax
 
 let%expect_test "position hook" =
-  let computation graph =
+  let computation (local_ graph) =
     let%sub { Position_tracker.Position_tracker.positions; update = _; get_attr } =
       Position_tracker.component (module Int) graph
     in
-    let%arr positions = positions
-    and get_attr = get_attr in
+    let%arr positions and get_attr in
     let mk id i =
       let attr = Vdom.Attr.many [ get_attr i; Vdom.Attr.id id ] in
       Vdom.Node.div ~attrs:[ attr ] []

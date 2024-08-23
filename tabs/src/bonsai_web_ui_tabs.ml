@@ -30,10 +30,9 @@ module Result = struct
   ;;
 end
 
-let tab_state (type t) ?equal (module M : Model with type t = t) ~initial graph =
+let tab_state (type t) ?equal (module M : Model with type t = t) ~initial (local_ graph) =
   let current, set = Bonsai.state initial ~sexp_of_model:[%sexp_of: M.t] ?equal graph in
-  let%arr current = current
-  and set = set in
+  let%arr current and set in
   State.create ~current ~set
 ;;
 
@@ -46,7 +45,7 @@ let tab_ui
   ~equal
   state
   ~f
-  graph
+  (local_ graph)
   =
   let default_additional_button_attributes () =
     Bonsai.return (fun ~is_selected:_ _ -> Vdom.Attr.empty)
@@ -61,9 +60,7 @@ let tab_ui
       ~default:(default_additional_button_attributes ())
   in
   let tab_to_button =
-    let%map state = state
-    and decorate = decorate
-    and additional_button_attributes = additional_button_attributes in
+    let%map state and decorate and additional_button_attributes in
     fun kind ->
       let is_selected = equal kind (State.current state) in
       let selected_attr =
@@ -80,8 +77,7 @@ let tab_ui
       Vdom.Node.button ~attrs:[ attr ] [ decorate kind ]
   in
   let tabs =
-    let%map all_tabs = all_tabs
-    and tab_to_button = tab_to_button in
+    let%map all_tabs and tab_to_button in
     List.map all_tabs ~f:tab_to_button
   in
   let result =
@@ -90,6 +86,6 @@ let tab_ui
     f ~change_tab current graph
   in
   let%arr current = result
-  and tabs = tabs in
+  and tabs in
   { Result.tabs; current }
 ;;

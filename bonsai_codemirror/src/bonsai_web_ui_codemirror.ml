@@ -199,7 +199,7 @@ let execute_command t = t.execute_command
 let text { state; _ } = state_text state
 let set_lines t new_lines = t.send_transaction (Transaction.set_lines new_lines)
 
-let of_initial_state ~name initial_state graph =
+let of_initial_state ~name initial_state (local_ graph) =
   let state, inject =
     Bonsai.actor0
       graph
@@ -256,24 +256,21 @@ let of_initial_state ~name initial_state graph =
   let () =
     Bonsai.Edge.lifecycle
       ~on_deactivate:
-        (let%map inject = inject in
+        (let%map inject in
          inject Reset)
       graph
   in
   let view =
     match Bonsai_web.am_running_how with
     | `Browser | `Browser_benchmark ->
-      let%arr state = state
-      and inject = inject
-      and path_and_generation = path_and_generation in
+      let%arr state and inject and path_and_generation in
       codemirror_widget { state; inject; path_and_generation }
     | `Node | `Node_benchmark | `Node_test ->
       let send_transaction =
-        let%arr inject = inject in
+        let%arr inject in
         fun transaction -> inject (Send_transaction transaction)
       in
-      let%arr state = state
-      and send_transaction = send_transaction in
+      let%arr state and send_transaction in
       Vdom.Node.create
         "codemirror"
         ~attrs:
@@ -282,9 +279,7 @@ let of_initial_state ~name initial_state graph =
           ]
         [ Vdom.Node.text (state_text state) ]
   in
-  let%arr state = state
-  and view = view
-  and inject = inject in
+  let%arr state and view and inject in
   { view
   ; state
   ; send_transaction = (fun transaction -> inject (Send_transaction transaction))
@@ -309,12 +304,11 @@ let with_dynamic_extensions
   ~initial_state
   ~compute_extensions
   value
-  graph
+  (local_ graph)
   =
   let cm = of_initial_state ~name initial_state graph in
   let callback =
-    let%arr cm = cm
-    and compute_extensions = compute_extensions in
+    let%arr cm and compute_extensions in
     fun value ->
       let open State in
       cm.send_transaction (fun state ->
@@ -465,7 +459,7 @@ let with_sexp_grammar_autocompletion
              { untyped = grammar }
          ; extra_extension
          ]))
-    (let%map grammar = grammar in
+    (let%map grammar in
      grammar.Sexp_grammar.untyped)
 ;;
 

@@ -13,7 +13,7 @@ module Action = struct
 end
 
 let handle () =
-  let component graph =
+  let component (local_ graph) =
     let scope, toggle_scope = Bonsai.toggle ~default_model:false graph in
     let result, reset =
       Bonsai.with_model_resetter
@@ -24,9 +24,7 @@ let handle () =
              ~for_:Path_and_generation.model_resetter_generation)
         graph
     in
-    let%arr toggle_scope = toggle_scope
-    and result = result
-    and reset = reset in
+    let%arr toggle_scope and result and reset in
     ( result
     , function
       | Action.Reset -> reset

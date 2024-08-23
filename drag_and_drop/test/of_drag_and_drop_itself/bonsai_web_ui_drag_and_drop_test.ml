@@ -6,7 +6,7 @@ module Drag_and_drop = Bonsai_web_ui_drag_and_drop
 module Node = Vdom.Node
 module Attr = Vdom.Attr
 
-let component graph =
+let component (local_ graph) =
   let universe name =
     Drag_and_drop.create
       ~source_id:(module Int)
@@ -49,7 +49,7 @@ module Project_target = struct
     | Positive of int
 end
 
-let project_component graph =
+let project_component (local_ graph) =
   let universe name =
     Drag_and_drop.create
       ~source_id:(module Int)
@@ -61,7 +61,7 @@ let project_component graph =
   in
   let universe1 =
     let universe = universe "1" graph in
-    let%arr universe = universe in
+    let%arr universe in
     Drag_and_drop.project_target
       universe
       ~map:(fun x ->
@@ -102,7 +102,7 @@ let run_test_with_all_dnd_components f = List.iter [ component; project_componen
 let%expect_test "remove the component with the dnd" =
   run_test_with_all_dnd_components (fun component ->
     let input_var = Bonsai.Expert.Var.create true in
-    let component graph =
+    let component (local_ graph) =
       if%sub Bonsai.Expert.Var.value input_var
       then component graph
       else Bonsai.return (Vdom.Node.text "no")

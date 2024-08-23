@@ -12,19 +12,19 @@ module Basic : sig
   val string
     :  ?name:string
     -> unit
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
     :  ?name:string
     -> (module Stringable with type t = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val sexpable
     :  ?name:string
     -> (module Sexpable with type t = 'a)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end
 
@@ -37,7 +37,7 @@ module Dynamic_extensions : sig
     -> ?name:string
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
@@ -47,7 +47,7 @@ module Dynamic_extensions : sig
     -> ?name:string
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val sexpable
@@ -57,7 +57,7 @@ module Dynamic_extensions : sig
     -> ?name:string
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end
 
@@ -68,7 +68,7 @@ module Sexp_grammar_autocomplete : sig
     :  ?name:string
     -> ?extra_extension:Codemirror.State.Extension.t
     -> _ Sexp_grammar.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
@@ -76,7 +76,7 @@ module Sexp_grammar_autocomplete : sig
     -> ?name:string
     -> ?extra_extension:Codemirror.State.Extension.t
     -> 'a Sexp_grammar.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val sexpable
@@ -84,6 +84,6 @@ module Sexp_grammar_autocomplete : sig
     -> ?name:string
     -> ?extra_extension:Codemirror.State.Extension.t
     -> 'a Sexp_grammar.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end

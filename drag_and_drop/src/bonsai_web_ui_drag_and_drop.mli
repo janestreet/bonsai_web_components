@@ -90,7 +90,7 @@ val create
   :  source_id:(module S with type t = 'source_id)
   -> target_id:(module S with type t = 'target_id)
   -> on_drop:('source_id -> 'target_id -> unit Effect.t) Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('source_id, 'target_id) t Bonsai.t
 
 (** Creates a new drag-and-drop universe. Where [on_drop] can access the client
@@ -99,7 +99,7 @@ val create_with_drop_position
   :  source_id:(module S with type t = 'source_id)
   -> target_id:(module S with type t = 'target_id)
   -> on_drop:(Position.t -> 'source_id -> 'target_id -> unit Effect.t) Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> ('source_id, 'target_id) t Bonsai.t
 
 (** A node which is follows the mouse when something is being dragged, but is
@@ -108,8 +108,8 @@ val create_with_drop_position
     drag operation to look visually seamless. *)
 val dragged_element
   :  ('source_id, _) t Bonsai.t
-  -> f:('source_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-  -> Bonsai.graph
+  -> f:('source_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  -> local_ Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
 module For_testing : sig

@@ -125,7 +125,7 @@ module Tracker = struct
     | Hidden
     | Unknown
 
-  let component graph =
+  let component (local_ graph) =
     let state, inject =
       Bonsai.state_machine0
         graph
@@ -140,8 +140,7 @@ module Tracker = struct
           | id, Set_hidden -> Map.set map ~key:id ~data:Hidden)
     in
     let attr = Bonsai.map ~f:attr inject in
-    let%arr attr = attr
-    and state = state in
+    let%arr attr and state in
     let on_page = not (Map.is_empty state) in
     let visible =
       Map.exists state ~f:(function
@@ -184,7 +183,7 @@ let rec with_attr attr (vdom : Vdom.Node.t) =
   | Fragment children -> Vdom.Node.div ~attrs:[ attr ] children
 ;;
 
-let only_when_visible' ?visible_attr ?hidden_attr c graph =
+let only_when_visible' ?visible_attr ?hidden_attr c (local_ graph) =
   let with_visible_attr =
     match visible_attr with
     | Some attr -> Bonsai.map attr ~f:with_attr
@@ -215,26 +214,23 @@ let only_when_visible' ?visible_attr ?hidden_attr c graph =
           ~equal:[%equal: Vdom_model.t]
           vdom
           ~callback:
-            (let%map set_prev_vdom = set_prev_vdom in
+            (let%map set_prev_vdom in
              fun v -> set_prev_vdom (Some v))
           graph
       in
-      let%arr vdom = vdom
-      and other = other
-      and with_visible_attr = with_visible_attr in
+      let%arr vdom and other and with_visible_attr in
       with_visible_attr vdom, Some other
     | (Unknown | Hidden), Some prev_vdom ->
-      let%arr prev_vdom = prev_vdom
-      and with_hidden_attr = with_hidden_attr in
+      let%arr prev_vdom and with_hidden_attr in
       with_hidden_attr prev_vdom, None
   in
   let%arr vdom, other = vdom_and_other
-  and attr = attr in
+  and attr in
   with_attr attr vdom, other
 ;;
 
-let only_when_visible ?visible_attr ?hidden_attr c graph =
-  let c graph = Bonsai.map (c graph) ~f:(fun vdom -> vdom, ()) in
+let only_when_visible ?visible_attr ?hidden_attr c (local_ graph) =
+  let c (local_ graph) = Bonsai.map (c graph) ~f:(fun vdom -> vdom, ()) in
   let%sub vdom, _ = only_when_visible' ?visible_attr ?hidden_attr c graph in
   vdom
 ;;

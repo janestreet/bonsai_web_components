@@ -179,13 +179,17 @@ module Dropdown = struct
     { Product.value = { Product.With_view.value; view }; set = inject }
   ;;
 
-  let of_enum_dynamic_model (type t) (module M : Enum with type t = t) ~default graph =
+  let of_enum_dynamic_model
+    (type t)
+    (module M : Enum with type t = t)
+    ~default
+    (local_ graph)
+    =
     let open Bonsai.Let_syntax in
     let%sub value, inject =
       form_element_dynamic_model ~default ~equal:[%equal: M.t] () graph
     in
-    let%arr value = value
-    and inject = inject in
+    let%arr value and inject in
     let view =
       Vdom_input_widgets.Dropdown.of_enum
         ~merge_behavior:Legacy_dont_merge

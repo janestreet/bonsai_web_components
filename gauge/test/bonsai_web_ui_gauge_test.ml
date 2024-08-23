@@ -10,7 +10,7 @@ let percent_to_color (p : Percent.t) : Css_gen.Color.t =
 
 let%expect_test _ =
   let percent = Bonsai.Expert.Var.create Percent.zero in
-  let component _graph =
+  let component (local_ _graph) =
     let%arr percent = Bonsai.Expert.Var.value percent in
     Gauge.create ~percent_to_color ~radius:20. percent
   in

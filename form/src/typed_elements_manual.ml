@@ -10,10 +10,10 @@ module Optional = struct
     ?(some_label = "Some")
     ?(none_label = "None")
     ?extra_attrs
-    (form : Bonsai.graph -> (a, view) Form.t Bonsai.t)
-    : Bonsai.graph -> (a option, Vdom.Node.t * view option) Form.t Bonsai.t
+    (form : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+    : local_ Bonsai.graph -> (a option, Vdom.Node.t * view option) Form.t Bonsai.t
     =
-    fun graph ->
+    fun (local_ graph) ->
     let module M = struct
       type t =
         | None
@@ -42,14 +42,14 @@ module Optional = struct
 
           let form_for_variant
             : type a.
-              a Typed_variant.t -> Bonsai.graph -> (a, view option) Form.t Bonsai.t
+              a Typed_variant.t -> local_ Bonsai.graph -> (a, view option) Form.t Bonsai.t
             =
-            fun typed_variant graph ->
+            fun typed_variant (local_ graph) ->
             match typed_variant with
             | None -> Bonsai.return (Form.return () |> Form.map_view ~f:(fun () -> None))
             | Some ->
               let form = form graph in
-              let%arr form = form in
+              let%arr form in
               Form.map_view ~f:Option.some form
           ;;
 
@@ -62,14 +62,13 @@ module Optional = struct
                 | { M.Typed_variant.Packed.f = T Some } -> some_label)
           ;;
 
-          let finalize_view picker_view inner _graph =
+          let finalize_view picker_view inner (local_ _graph) =
             match%sub inner with
             | Ok (_, inner) ->
-              let%arr inner = inner
-              and picker_view = picker_view in
+              let%arr inner and picker_view in
               picker_view, Form.view inner
             | Error _ ->
-              let%arr picker_view = picker_view in
+              let%arr picker_view in
               picker_view, None
           ;;
         end)

@@ -5,7 +5,7 @@ open Bonsai_web_test
 open Async_js_test
 
 let create_handle node =
-  Handle.create (Result_spec.vdom Fn.id) (fun _graph -> Bonsai.return node)
+  Handle.create (Result_spec.vdom Fn.id) (fun (local_ _graph) -> Bonsai.return node)
 ;;
 
 let make_with_children = Bonsai_web_ui_nav_link.make' ~page_to_string:Fn.id

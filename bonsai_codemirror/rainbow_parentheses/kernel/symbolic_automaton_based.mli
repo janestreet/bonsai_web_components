@@ -21,7 +21,7 @@ end
 module type Text = sig
   type t
 
-  val foldi : t -> init:'acc -> f:(int -> 'acc -> char -> 'acc) -> 'acc
+  val foldi : t -> init:'acc -> f:(int -> local_ ('acc -> char -> 'acc)) -> 'acc
   val length : t -> int
   val suffix : t -> int -> t
 end

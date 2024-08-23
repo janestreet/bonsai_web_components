@@ -42,18 +42,18 @@ is_open: %{is_open#Bool}
 end
 
 let%expect_test "External open and closing" =
-  let popover graph =
+  let popover (local_ graph) =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.return Popover.Direction.Right)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close:_ _graph -> Bonsai.return (View.text "Popover content!"))
+        ~popover:(fun ~close:_ (local_ _graph) ->
+          Bonsai.return (View.text "Popover content!"))
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover base!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in
@@ -120,18 +120,18 @@ let%expect_test "External open and closing" =
 
 let%expect_test "Popover changing directions" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
-  let popover graph =
+  let popover (local_ graph) =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close:_ _graph -> Bonsai.return (View.text "Popover content!"))
+        ~popover:(fun ~close:_ (local_ _graph) ->
+          Bonsai.return (View.text "Popover content!"))
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover entry!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in
@@ -190,13 +190,14 @@ let button ~on_click s =
 
 let%expect_test "Opening and closing from within popover base" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
-  let popover graph =
+  let popover (local_ graph) =
     let popover =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close:_ _graph -> Bonsai.return (View.text "Popover content!"))
+        ~popover:(fun ~close:_ (local_ _graph) ->
+          Bonsai.return (View.text "Popover content!"))
         ()
         graph
     in
@@ -255,14 +256,14 @@ let%expect_test "Opening and closing from within popover base" =
 
 let%expect_test "Opening from base and closing from dialog" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
-  let popover graph =
+  let popover (local_ graph) =
     let popover =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close _graph ->
-          let%arr close = close in
+        ~popover:(fun ~close (local_ _graph) ->
+          let%arr close in
           Vdom.Node.button
             ~attrs:[ Vdom.Attr.id "close"; Vdom.Attr.on_click (fun _ -> close) ]
             [ Vdom.Node.text "close" ])
@@ -365,7 +366,7 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
     ]
   in
   List.iter hook_triggers ~f:(fun trigger_hook ->
-    let popover graph =
+    let popover (local_ graph) =
       let popover =
         Popover.component
           ~popover_extra_attr:(Bonsai.return (Vdom.Attr.create "data-test" id))
@@ -373,7 +374,8 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
             (* NOTE: [close_when_clicked_outside] is set to true. *)
           ~direction:(Bonsai.return Popover.Direction.Right)
           ~alignment:(Bonsai.return Popover.Alignment.Center)
-          ~popover:(fun ~close:_ _graph -> Bonsai.return (View.text "Popover content!"))
+          ~popover:(fun ~close:_ (local_ _graph) ->
+            Bonsai.return (View.text "Popover content!"))
           ()
           graph
       in
@@ -422,27 +424,25 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
 ;;
 
 let%expect_test "Nested popover" =
-  let popover graph =
+  let popover (local_ graph) =
     let popover =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return true)
         ~direction:(Bonsai.return Popover.Direction.Right)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close:close_popover1 graph ->
+        ~popover:(fun ~close:close_popover1 (local_ graph) ->
           let%sub { Popover.Result.wrap; open_; close = _; toggle = _; is_open = _ } =
             Popover.component
               ~close_when_clicked_outside:(Bonsai.return true)
               ~direction:(Bonsai.return Popover.Direction.Right)
               ~alignment:(Bonsai.return Popover.Alignment.Center)
-              ~popover:(fun ~close _graph ->
-                let%arr close = close in
+              ~popover:(fun ~close (local_ _graph) ->
+                let%arr close in
                 button ~on_click:close "close-popover2")
               ()
               graph
           in
-          let%arr wrap = wrap
-          and open_ = open_
-          and close_popover1 = close_popover1 in
+          let%arr wrap and open_ and close_popover1 in
           wrap
             (Vdom.Node.div
                [ button ~on_click:open_ "open-popover2"
@@ -658,42 +658,39 @@ let%test_module "interactions with [with_model_resetter]" =
       ;;
     end
 
-    let popover graph =
+    let popover (local_ graph) =
       let state, resetter =
         Bonsai.with_model_resetter
-          ~f:(fun graph ->
+          ~f:(fun (local_ graph) ->
             let popover =
               Popover.component
                 ~close_when_clicked_outside:(Bonsai.return true)
                 ~direction:(Bonsai.return Popover.Direction.Right)
                 ~alignment:(Bonsai.return Popover.Alignment.Center)
-                ~popover:(fun ~close:_ graph ->
+                ~popover:(fun ~close:_ (local_ graph) ->
                   let x, reset =
                     Bonsai.with_model_resetter
-                      ~f:(fun _graph -> Bonsai.return (View.text "Popover!"))
+                      ~f:(fun (local_ _graph) -> Bonsai.return (View.text "Popover!"))
                       graph
                   in
-                  let%arr x = x
-                  and reset = reset in
+                  let%arr x and reset in
                   Vdom.Node.div [ x; button ~on_click:reset "reset-popover" ])
                 ()
                 graph
             in
             let x, reset =
               Bonsai.with_model_resetter
-                ~f:(fun _graph -> Bonsai.return (View.text "Popover base!"))
+                ~f:(fun (local_ _graph) -> Bonsai.return (View.text "Popover base!"))
                 graph
             in
             let%arr ({ Popover.Result.wrap; _ } as popover) = popover
-            and x = x
-            and reset = reset in
+            and x
+            and reset in
             wrap (Vdom.Node.div [ x; button ~on_click:reset "reset-base" ]), popover)
           graph
       in
       let%sub vdom, popover = state in
-      let%arr vdom = vdom
-      and popover = popover
-      and resetter = resetter in
+      let%arr vdom and popover and resetter in
       vdom, popover, resetter
     ;;
 
@@ -844,7 +841,7 @@ let%test_module "interactions with [with_model_resetter]" =
 ;;
 
 let%expect_test "popover with an extra base attr" =
-  let popover graph =
+  let popover (local_ graph) =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
       Popover.component
         ~close_when_clicked_outside:(Bonsai.return false)
@@ -852,12 +849,12 @@ let%expect_test "popover with an extra base attr" =
           (Bonsai.return (Vdom.Attr.create "data-test" "I am attached as a base attr."))
         ~direction:(Bonsai.return Popover.Direction.Right)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
-        ~popover:(fun ~close:_ _graph -> Bonsai.return (View.text "Popover content!"))
+        ~popover:(fun ~close:_ (local_ _graph) ->
+          Bonsai.return (View.text "Popover content!"))
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover base!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in

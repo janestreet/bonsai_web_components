@@ -10,8 +10,8 @@ module Optional : sig
     :  ?some_label:string (** default ["Some"] *)
     -> ?none_label:string (** default ["None"] *)
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> (Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
+    -> (local_ Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
        (** shown when the [some_label] option is selected *)
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> ('a option, Vdom.Node.t * 'view option) Form.t Bonsai.t
 end

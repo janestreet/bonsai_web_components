@@ -8,7 +8,7 @@ module Pills : sig
     -> to_string:('a -> string) Bonsai.t
     -> inject_selected_options:('a list -> unit Effect.t) Bonsai.t
     -> 'a list Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Vdom.Node.t Bonsai.t
 
   val of_set
@@ -17,6 +17,6 @@ module Pills : sig
     -> to_string:('a -> string) Bonsai.t
     -> inject_selected_options:(('a, 'cmp) Set.t -> unit Effect.t) Bonsai.t
     -> ('a, 'cmp) Set.t Bonsai.t
-    -> Bonsai.graph
+    -> local_ Bonsai.graph
     -> Vdom.Node.t Bonsai.t
 end

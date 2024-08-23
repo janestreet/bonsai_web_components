@@ -174,7 +174,7 @@ let component'
   ?(sexp_of_key = sexp_of_opaque)
   (options : contained Options.t)
   f
-  graph
+  (local_ graph)
   =
   let on_change ~group_key ~key =
     Vdom.Attr.many
@@ -192,8 +192,7 @@ let component'
   in
   let () =
     let on_activate =
-      let%arr f = f
-      and group_key = group_key in
+      let%arr f and group_key in
       let inject =
         match options with
         | Ignore_stale ->
@@ -212,11 +211,11 @@ let component'
     Bonsai.Edge.lifecycle
       ~on_activate
       ~on_deactivate:
-        (let%map group_key = group_key in
+        (let%map group_key in
          Trackers.remove ~group_key)
       graph
   in
-  let%arr group_key = group_key in
+  let%arr group_key in
   fun key -> on_change ~group_key ~key
 ;;
 
@@ -224,7 +223,7 @@ let component
   (type key cmp contained)
   (key : (key, cmp) Bonsai.comparator)
   (options : contained Options.t)
-  graph
+  (local_ graph)
   =
   let module Key = (val key) in
   let module Model = struct
@@ -272,8 +271,7 @@ let component
   in
   let sizes = Bonsai.cutoff ~equal:[%equal: Model.t] sizes in
   let attr = component' ~sexp_of_key:[%sexp_of: Key.t] options inject graph in
-  let%arr sizes = sizes
-  and attr = attr in
+  let%arr sizes and attr in
   sizes, attr
 ;;
 

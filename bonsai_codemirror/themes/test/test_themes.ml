@@ -3,7 +3,7 @@ open! Bonsai_web_test
 open! Bonsai_web
 
 let handle () =
-  let component graph =
+  let component (local_ graph) =
     let%map.Bonsai codemirror =
       Bonsai_web_ui_codemirror.of_initial_state
         ~name:"editor"

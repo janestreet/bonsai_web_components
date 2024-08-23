@@ -26,7 +26,7 @@ val of_initial_state
   :  name:string
        (** [name] is name of the codemirror editor, so that it can be referred to in tests. *)
   -> State.Editor_state.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> t Bonsai.t
 
 (** Uses edge-triggering to re-configure the set of extensions whenever the
@@ -45,7 +45,7 @@ val with_dynamic_extensions
   -> initial_state:State.Editor_state.t
   -> compute_extensions:('a -> State.Extension.t list) Bonsai.t
   -> 'a Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> t Bonsai.t
 
 (** An easy-to-use function for making a codemirror textbox with autocompletion
@@ -59,7 +59,7 @@ val with_sexp_grammar_autocompletion
   -> name:string
        (** [name] is name of the codemirror editor, so that it can be referred to in tests. *)
   -> 'a Sexp_grammar.t Bonsai.t
-  -> Bonsai.graph
+  -> local_ Bonsai.graph
   -> t Bonsai.t
 
 val text : t -> string
