@@ -156,7 +156,7 @@ module Dynamic = struct
   include Dynamic
 
   let error_hint t _graph =
-    let%arr t = t in
+    let%arr t in
     match Result.error t.value with
     | Some err -> { t with view = View.suggest_error err t.view }
     | None -> t
@@ -164,10 +164,7 @@ module Dynamic = struct
 
   let collapsible_group ?(starts_open = true) label t graph =
     let%tydi is_open, toggle_is_open = Bonsai.toggle ~default_model:starts_open graph in
-    let%arr is_open = is_open
-    and toggle_is_open = toggle_is_open
-    and label = label
-    and t = t in
+    let%arr is_open and toggle_is_open and label and t in
     let label =
       Vdom.Node.div
         ~attrs:
@@ -197,7 +194,7 @@ module Dynamic = struct
 
     let field' t ~label_of_field fieldslib_field =
       let for_profunctor =
-        let%map t = t in
+        let%map t in
         let t =
           { t with value = Record_builder.attach_fieldname_to_error t fieldslib_field }
         in
@@ -230,14 +227,13 @@ include T
 let to_manual_form form = map_view form ~f:(fun old_view -> View.to_vdom old_view)
 
 let to_manual_form' form _graph =
-  let%arr form = form in
+  let%arr form in
   to_manual_form form
 ;;
 
 let of_manual_form manual_form graph =
   let path = Bonsai.path_id graph in
-  let%arr manual_form = manual_form
-  and path = path in
+  let%arr manual_form and path in
   map_view manual_form ~f:(fun old_view -> View.of_vdom old_view ~unique_key:path)
 ;;
 
@@ -247,7 +243,7 @@ let return ?(here = Stdlib.Lexing.dummy_pos) ?sexp_of_t ?equal value =
 
 let return_settable ?sexp_of_model ~equal value graph =
   let form = return_settable ?sexp_of_model ~equal value graph in
-  let%arr form = form in
+  let%arr form in
   map_view form ~f:(fun () -> View.empty)
 ;;
 

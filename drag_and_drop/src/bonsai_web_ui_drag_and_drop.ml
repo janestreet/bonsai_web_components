@@ -172,8 +172,8 @@ let add_event_listener, remove_event_listener =
   let install =
     Bonsai.Effect.of_sync_fun (fun (typ, path, handler) ->
       match Bonsai_web.am_running_how with
-      | `Node_test -> print_endline "adding window event listener"
-      | `Browser | `Browser_benchmark ->
+      | `Node_test | `Node_jsdom_test -> print_endline "adding window event listener"
+      | `Browser | `Browser_test | `Browser_benchmark ->
         let listener =
           Dom_html.addEventListener Dom_html.window typ (Dom.handler handler) Js._true
         in
@@ -184,8 +184,8 @@ let add_event_listener, remove_event_listener =
   let uninstall =
     Bonsai.Effect.of_sync_fun (fun path ->
       match Bonsai_web.am_running_how with
-      | `Node_test -> print_endline "removing window event listener"
-      | `Browser | `Browser_benchmark ->
+      | `Node_test | `Node_jsdom_test -> print_endline "removing window event listener"
+      | `Browser | `Browser_test | `Browser_benchmark ->
         Map.find !active path |> Option.iter ~f:Dom_html.removeEventListener
       | `Node | `Node_benchmark -> ())
   in
@@ -247,12 +247,11 @@ let create_with_drop_position
   in
   let path = Bonsai_private.path graph in
   let universe_suffix =
-    let%arr path = path in
+    let%arr path in
     Bonsai_private.Path.to_unique_identifier_string path
   in
   let source =
-    let%arr inject = inject
-    and universe_suffix = universe_suffix in
+    let%arr inject and universe_suffix in
     fun ~id ->
       Vdom.Attr.many
         [ Vdom.Attr.on_pointerdown (fun event ->
@@ -296,18 +295,14 @@ let create_with_drop_position
   let path_for_pointermove = Bonsai_private.path graph in
   let path_for_pointerup = Bonsai_private.path graph in
   let on_deactivate =
-    let%arr path_for_pointermove = path_for_pointermove
-    and path_for_pointerup = path_for_pointerup in
+    let%arr path_for_pointermove and path_for_pointerup in
     Effect.all_unit
       [ remove_event_listener path_for_pointermove
       ; remove_event_listener path_for_pointerup
       ]
   in
   let on_activate =
-    let%arr inject = inject
-    and path_for_pointermove = path_for_pointermove
-    and path_for_pointerup = path_for_pointerup
-    and universe_suffix = universe_suffix in
+    let%arr inject and path_for_pointermove and path_for_pointerup and universe_suffix in
     let%bind.Effect () =
       add_event_listener
         Dom_html.Event.pointermove
@@ -364,7 +359,7 @@ let create_with_drop_position
   in
   let () = Bonsai.Edge.lifecycle ~on_deactivate ~on_activate graph in
   let sentinel =
-    let%arr inject = inject in
+    let%arr inject in
     fun ~name ->
       Vdom.Attr.many
         [ For_testing.Inject_hook.attr (fun action ->
@@ -375,8 +370,7 @@ let create_with_drop_position
         ]
   in
   let drop_target =
-    let%arr inject = inject
-    and universe_suffix = universe_suffix in
+    let%arr inject and universe_suffix in
     fun ~id ->
       Vdom.Attr.many
         [ Vdom.Attr.on_pointerup (fun event ->
@@ -388,11 +382,7 @@ let create_with_drop_position
             (Sexp.to_string_mach (Target.sexp_of_t id))
         ]
   in
-  let%arr model = model
-  and inject = inject
-  and source = source
-  and sentinel = sentinel
-  and drop_target = drop_target in
+  let%arr model and inject and source and sentinel and drop_target in
   { model; inject; source; drop_target; sentinel }
 ;;
 
@@ -414,7 +404,7 @@ let dragged_element t ~f graph =
   | Dragging ({ source; _ } as dragging) ->
     let item = f source graph in
     let%arr { position; offset; size; _ } = dragging
-    and item = item in
+    and item in
     let x = position.x - offset.x in
     let y = position.y - offset.y in
     Vdom.Node.div

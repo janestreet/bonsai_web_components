@@ -22,14 +22,12 @@ let component render graph =
       lists
       ~f:(fun which data _graph ->
         let%sub _, view = data in
-        let%arr view = view
-        and which = which in
+        let%arr view and which in
         Vdom.Node.div
           [ Vdom.Node.h3 [ Vdom.Node.text [%string "List %{which#Int}"] ]; view ])
       graph
   in
-  let%arr lists = lists
-  and dragged_element = dragged_element in
+  let%arr lists and dragged_element in
   Vdom.Node.div [ Vdom.Node.div (Map.data lists); dragged_element ]
 ;;
 
@@ -52,8 +50,7 @@ let dnd_action handle action =
 
 let%expect_test "simple usage" =
   let item ~index:_ ~source _which data _graph =
-    let%arr source = source
-    and data = data in
+    let%arr source and data in
     let view = Vdom.Node.div ~attrs:[ source ] [ Vdom.Node.text (Int.to_string data) ] in
     (), view
   in
@@ -158,10 +155,7 @@ let%expect_test "simple usage" =
 let%expect_test "stateful items" =
   let item ~index:_ ~source _which data graph =
     let is_true, toggle = Bonsai.toggle ~default_model:false graph in
-    let%arr source = source
-    and data = data
-    and is_true = is_true
-    and toggle = toggle in
+    let%arr source and data and is_true and toggle in
     let view =
       Vdom.Node.button
         ~attrs:

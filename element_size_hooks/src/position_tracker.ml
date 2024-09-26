@@ -225,8 +225,7 @@ let component (type key cmp) (key : (key, cmp) Bonsai.comparator) graph =
           new_effect :: acc)
         |> List.rev)
     in
-    let%arr apply_action = apply_action
-    and dom_node_tracker = dom_node_tracker in
+    let%arr apply_action and dom_node_tracker in
     let%bind.Effect effects = update_f dom_node_tracker in
     apply_action effects
   in
@@ -240,20 +239,18 @@ let component (type key cmp) (key : (key, cmp) Bonsai.comparator) graph =
     Bonsai.Edge.lifecycle
       ~on_activate:
         (let%map inject = apply_action
-         and group_key = group_key in
+         and group_key in
          Trackers.set ~inject ~group_key)
       ~on_deactivate:
-        (let%map group_key = group_key in
+        (let%map group_key in
          Trackers.remove ~group_key)
       graph
   in
   let attr =
-    let%arr group_key = group_key in
+    let%arr group_key in
     fun key -> on_change ~group_key ~key
   in
-  let%arr position_tracker = position_tracker
-  and attr = attr
-  and update = update in
+  let%arr position_tracker and attr and update in
   { Position_tracker.positions = position_tracker; get_attr = attr; update }
 ;;
 

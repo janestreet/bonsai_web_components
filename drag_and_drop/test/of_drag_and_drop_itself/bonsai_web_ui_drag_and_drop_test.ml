@@ -61,7 +61,7 @@ let project_component graph =
   in
   let universe1 =
     let universe = universe "1" graph in
-    let%arr universe = universe in
+    let%arr universe in
     Drag_and_drop.project_target
       universe
       ~map:(fun x ->

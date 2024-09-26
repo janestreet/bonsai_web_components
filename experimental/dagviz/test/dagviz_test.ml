@@ -57,7 +57,7 @@ end
 
 let node_to_vdom (id : Id.t Bonsai.t) _ : Bonsai.graph -> Vdom.Node.t Bonsai.t =
   fun _graph ->
-  let%arr id = id in
+  let%arr id in
   Vdom.Node.text (Id.to_string id)
 ;;
 
@@ -65,7 +65,7 @@ let edge_to_svg ~(edge : Edge.t Bonsai.t) ~from:_ ~to_:_
   : Bonsai.graph -> Vdom.Node.t Bonsai.t
   =
   fun _graph ->
-  let%arr edge = edge in
+  let%arr edge in
   Vdom.Node.sexp_for_debugging [%message (edge : Edge.t)]
 ;;
 
@@ -77,7 +77,7 @@ let create_handle ~dag ~curr_id =
     match%sub dag with
     | Ok dag -> dag
     | Error error ->
-      let%arr error = error in
+      let%arr error in
       Vdom.Node.sexp_for_debugging [%message (error : Error.t)]
   in
   Handle.create

@@ -26,18 +26,16 @@ module Conversion = struct
     let extra_attr =
       match extra_attr with
       | None ->
-        let%arr path_and_id = path_and_id in
+        let%arr path_and_id in
         let _, id = path_and_id in
         id
       | Some extra_attr ->
-        let%arr extra_attr = extra_attr
-        and path_and_id = path_and_id in
+        let%arr extra_attr and path_and_id in
         let _, id = path_and_id in
         Vdom.Attr.combine id extra_attr
     in
     let form = f ~extra_attr graph in
-    let%arr form = form
-    and path_and_id = path_and_id in
+    let%arr form and path_and_id in
     let path, _ = path_and_id in
     map_view form ~f:(fun view -> View.of_vdom ~unique_key:path view)
   ;;
@@ -49,18 +47,16 @@ module Conversion = struct
     let extra_attrs =
       match extra_attrs with
       | None ->
-        let%arr path_and_id = path_and_id in
+        let%arr path_and_id in
         let _, id = path_and_id in
         [ id ]
       | Some extra_attrs ->
-        let%arr extra_attrs = extra_attrs
-        and path_and_id = path_and_id in
+        let%arr extra_attrs and path_and_id in
         let _, id = path_and_id in
         id :: extra_attrs
     in
     let form = f ~extra_attrs graph in
-    let%arr form = form
-    and path_and_id = path_and_id in
+    let%arr form and path_and_id in
     let path, _ = path_and_id in
     map_view form ~f:(fun view -> View.of_vdom ~unique_key:path view)
   ;;
@@ -69,8 +65,7 @@ module Conversion = struct
   let don't_attach_id form graph =
     let path = Bonsai.path_id graph in
     let form = form graph in
-    let%arr form = form
-    and path = path in
+    let%arr form and path in
     map_view form ~f:(fun view -> View.of_vdom ~unique_key:path view)
   ;;
 end
@@ -229,7 +224,7 @@ module Dropdown = struct
   let width_100_percent = Vdom.Attr.style (Css_gen.width (`Percent (Percent.of_mult 1.)))
 
   let add_width_100_percent extra_attrs _graph =
-    let%arr extra_attrs = extra_attrs in
+    let%arr extra_attrs in
     width_100_percent :: extra_attrs
   ;;
 
@@ -594,7 +589,7 @@ module Multiple = struct
   let extract_add_element_text = function
     | Some value ->
       fun _graph ->
-        let%arr value = value in
+        let%arr value in
         Some value
     | None -> fun _graph -> Bonsai.return None
   ;;
@@ -608,8 +603,7 @@ module Multiple = struct
     graph
     =
     let add_element_text = extract_add_element_text add_element_text graph in
-    let%arr form = form
-    and add_element_text = add_element_text in
+    let%arr form and add_element_text in
     map_view form ~f:(fun { items; add_element = append } ->
       List.map items ~f:(fun { form = { view; value = _; set = _ }; remove } ->
         View.list_item
@@ -629,8 +623,7 @@ module Multiple = struct
     graph
     =
     let add_element_text = extract_add_element_text add_element_text graph in
-    let%arr form = form
-    and add_element_text = add_element_text in
+    let%arr form and add_element_text in
     map_view form ~f:(fun { hd = { view = hd_view; _ }; tl; add_element = append } ->
       (* [Remove_view Vdom.Node.none] works but leads to a not quite correct
          result in the end, since the empty delete button becomes an empty <tr> that
@@ -644,7 +637,7 @@ module Multiple = struct
       let tl_views =
         List.map tl ~f:(fun { form = { view; _ }; remove } ->
           let element_label =
-            let%map.Option element_group_label = element_group_label in
+            let%map.Option element_group_label in
             fun ~delete_button i -> element_group_label ~delete_button (i + Int.one)
           in
           View.list_item
@@ -937,6 +930,7 @@ module Query_box = struct
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
+    ?on_hover_item
     ~selection_to_string
     ~f
     ()
@@ -951,6 +945,7 @@ module Query_box = struct
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
+         ?on_hover_item
          ~selection_to_string
          ~f
          ())
@@ -965,6 +960,7 @@ module Query_box = struct
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
+    ?on_hover_item
     ~selection_to_string
     ~f
     ()
@@ -979,6 +975,7 @@ module Query_box = struct
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
+         ?on_hover_item
          ~selection_to_string
          ~f
          ())
@@ -992,6 +989,7 @@ module Query_box = struct
     ?extra_list_container_attr
     ?handle_unknown_option
     m
+    ?on_hover_item
     ~all_options
     =
     Conversion.with_extra_attrs
@@ -1004,6 +1002,7 @@ module Query_box = struct
           ?extra_list_container_attr
           ?handle_unknown_option
           m
+          ?on_hover_item
           ~all_options)
       extra_attrs
   ;;
@@ -1016,6 +1015,7 @@ module Query_box = struct
     ?extra_list_container_attr
     ?handle_unknown_option
     m
+    ?on_hover_item
     ~all_options
     =
     Conversion.with_extra_attrs
@@ -1028,6 +1028,7 @@ module Query_box = struct
           ?extra_list_container_attr
           ?handle_unknown_option
           m
+          ?on_hover_item
           ~all_options)
       extra_attrs
   ;;
@@ -1044,7 +1045,7 @@ module Optional = struct
     graph
     =
     let form = dropdown ?some_label ?none_label form graph in
-    let%arr form = form in
+    let%arr form in
     map_view form ~f:(fun (clause_selector, sub_form) ->
       View.variant
         ~clause_selector

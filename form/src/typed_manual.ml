@@ -85,19 +85,18 @@ module Record = struct
     let form_values_per_field =
       let f field graph =
         let subform = M.form_for_field field graph in
-        let%arr subform = subform in
+        let%arr subform in
         Form.map_error subform ~f:(M.augment_error field)
       in
       The_form_values.create { f }
     in
     let forms_per_field = To_forms.run form_values_per_field graph in
     let lookup field =
-      let%map forms_per_field = forms_per_field in
+      let%map forms_per_field in
       The_forms.find forms_per_field field
     in
     let view = M.finalize_view { f = lookup } graph in
-    let%arr forms_per_field = forms_per_field
-    and view = view in
+    let%arr forms_per_field and view in
     let value =
       let f field = Form.value (The_forms.find forms_per_field field) in
       The_results.As_applicative.transpose
@@ -211,7 +210,7 @@ module Record = struct
         | `Dynamic field_to_string -> field_to_string
       in
       let cols =
-        let%arr to_string = to_string in
+        let%arr to_string in
         let remove_column =
           View.Table.Col.make
             "Remove"
@@ -230,8 +229,7 @@ module Record = struct
         @ [ remove_column ]
       in
       let theme = View.Theme.current graph in
-      let%arr cols = cols
-      and theme = theme in
+      let%arr cols and theme in
       fun ({ items; add_element } : (a, View_by_field.t) Elements.Multiple.t) ->
         let items = List.map items ~f:(fun { form; remove } -> Form.view form, remove) in
         View.vbox
@@ -239,8 +237,7 @@ module Record = struct
           ; View.button theme "+" ~on_click:add_element
           ]
     in
-    let%arr many_records = many_records
-    and render_table = render_table in
+    let%arr many_records and render_table in
     Form.map_view many_records ~f:render_table
   ;;
 end
@@ -362,12 +359,11 @@ module Variant = struct
       match%sub picker_value with
       | Error e ->
         let picker_error =
-          let%arr e = e in
+          let%arr e in
           Error e
         in
         let view = M.finalize_view picker_view picker_error graph in
-        let%arr view = view
-        and e = e in
+        let%arr view and e in
         view, Error e
       | Ok picker_value ->
         let inner =
@@ -379,14 +375,13 @@ module Variant = struct
                 fun graph ->
                   let form = M.form_for_variant variant graph in
                   let variant_and_form =
-                    let%arr form = form in
+                    let%arr form in
                     Ok (variant, form)
                   in
                   let finalized_view =
                     M.finalize_view picker_view variant_and_form graph
                   in
-                  let%arr form = form
-                  and finalized_view = finalized_view in
+                  let%arr form and finalized_view in
                   Packed_with_form.T { variant; form; finalized_view })
             graph
         in
@@ -411,10 +406,7 @@ module Variant = struct
         finalized_view, Ok projected
     in
     let get_inner_form = Bonsai.peek inner graph in
-    let%arr inner = inner
-    and set_picker_value = set_picker_value
-    and get_inner_form = get_inner_form
-    and view = view in
+    let%arr inner and set_picker_value and get_inner_form and view in
     let set value =
       let constructor = M.Typed_variant.which value in
       let open Ui_effect.Let_syntax in
@@ -479,7 +471,7 @@ module Variant = struct
         =
         fun graph ->
         let picker_form = M.form_for_picker graph in
-        let%arr picker_form = picker_form in
+        let%arr picker_form in
         Form.project
           picker_form
           ~parse_exn:(function
@@ -513,15 +505,14 @@ module Variant = struct
         match%sub selected_clause_view with
         | Error e ->
           let error =
-            let%arr e = e in
+            let%arr e in
             Error e
           in
           M.finalize_view picker_view error graph
         | Ok (N, _) -> M.finalize_view picker_view (Bonsai.return (Ok None)) graph
         | Ok (S selected_clause, form) ->
           let variant_and_form =
-            let%arr selected_clause = selected_clause
-            and form = form in
+            let%arr selected_clause and form in
             Ok
               (Some
                  ( selected_clause
@@ -606,7 +597,7 @@ module Variant = struct
       end
       in
       let form = M.form_for_variant variant (module Comparator) graph in
-      let%arr form = form in
+      let%arr form in
       let form = Form.map_error form ~f:(M.augment_error variant) in
       Form_with_comparator.T
         { cmp = (module Comparator)
@@ -621,14 +612,13 @@ module Variant = struct
     let forms = To_forms.run form_computations graph in
     let view =
       let lookup variant =
-        let%map forms = forms in
+        let%map forms in
         let (Form_with_comparator.T { form; cmp; _ }) = Forms.find forms variant in
         Packed_set_form.T { form; comparator = cmp }
       in
       M.finalize_view { f = lookup } graph
     in
-    let%arr forms = forms
-    and view = view in
+    let%arr forms and view in
     let value =
       List.map Packed.all ~f:(fun { Packed.f = T variant } ->
         let (Form_with_comparator.T { form; wrap; _ }) = Forms.find forms variant in

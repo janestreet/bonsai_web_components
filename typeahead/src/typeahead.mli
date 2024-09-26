@@ -16,6 +16,15 @@ type 'a t =
   ; view : Vdom.Node.t
   }
 
+module Attr_merge_behavior : sig
+  (** This module defines how the attrs in the typeahead should be merged
+      [Legacy_do_not_merge] is the original behavior, and calls [Vdom.Attr.many_without_merge]
+      [Merge] calls [Vdom.Attr.many] *)
+  type t =
+    | Legacy_do_not_merge
+    | Merge
+end
+
 (** [create] returns a typeahead using native browser controls.
 
     [to_option_description] if provided will render the description provided below the
@@ -25,6 +34,7 @@ type 'a t =
     [all_options]. Setting a value not in [all_options] will successfully set the
     typeahead to that value.
 *)
+
 val create
   :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
   -> ?placeholder:string
@@ -32,6 +42,7 @@ val create
   -> ?to_string:('a -> string) Bonsai.t
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+  -> ?attr_merge_behavior:Attr_merge_behavior.t
   -> (module Bonsai_proc.Model with type t = 'a)
   -> equal:('a -> 'a -> bool)
   -> all_options:'a list Bonsai.t
@@ -46,6 +57,7 @@ val create_multi
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
   -> ?split:(string -> string list)
+  -> ?attr_merge_behavior:Attr_merge_behavior.t
   -> ('a, 'cmp) Bonsai.comparator
   -> all_options:'a list Bonsai.t
   -> Bonsai.graph
@@ -60,6 +72,7 @@ module Private : sig
       -> ?to_string:('a -> string) Bonsai.t
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+      -> ?attr_merge_behavior:Attr_merge_behavior.t
       -> (module Bonsai_proc.Model with type t = 'a)
       -> equal:('a -> 'a -> bool)
       -> all_options:'a list Bonsai.t
@@ -74,6 +87,7 @@ module Private : sig
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
       -> ?split:(string -> string list)
+      -> ?attr_merge_behavior:Attr_merge_behavior.t
       -> ('a, 'cmp) Bonsai.comparator
       -> all_options:'a list Bonsai.t
       -> Bonsai.graph

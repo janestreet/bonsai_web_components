@@ -24,10 +24,7 @@ let if_empty_then_none constructor text =
 
 let wrap_application ?(attr = Bonsai.return Vdom.Attr.empty) ~theme_picker nodes graph =
   let theme = View.Theme.current graph in
-  let%arr nodes = nodes
-  and theme_picker = theme_picker
-  and theme = theme
-  and attr = attr in
+  let%arr nodes and theme_picker and theme and attr in
   Vdom.Node.div
     ~attrs:
       [ Style.app
@@ -50,7 +47,7 @@ let make_sections ~theme_picker sections graph =
          let subsections =
            Bonsai.all (List.map subsections ~f:(fun section -> section graph))
          in
-         let%arr subsections = subsections in
+         let%arr subsections in
          Vdom.Node.div
            [ if_empty_then_none Vdom.Node.h1 section_title
            ; if_empty_then_none Vdom.Node.p description
@@ -109,7 +106,7 @@ let codemirror ~language ~content graph =
       ~equal:[%equal: String.t]
       content
       ~callback:
-        (let%map codemirror = codemirror in
+        (let%map codemirror in
          fun demo -> Codemirror.set_lines codemirror (String.split_lines demo))
       graph
   in
@@ -184,7 +181,7 @@ let make_demo'
           (fun graph ->
             let html_codemirror =
               let content =
-                let%arr demo = demo in
+                let%arr demo in
                 demo
                 |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
                 |> pick_interesting_nodes
@@ -199,13 +196,11 @@ let make_demo'
                 ~language:Underlying_codemirror.(Lang_html.html () |> Language.extension)
                 graph
             in
-            let%arr html_codemirror = html_codemirror in
+            let%arr html_codemirror in
             Bonsai_web_ui_codemirror.view html_codemirror))
         graph
   in
-  let%arr ocaml_codemirror = ocaml_codemirror
-  and display_which = display_which
-  and rendered_or_html = rendered_or_html in
+  let%arr ocaml_codemirror and display_which and rendered_or_html in
   let toggler = rendered_or_html |> Form.view |> Form.View.to_vdom_plain in
   let ocaml_code =
     let legend =

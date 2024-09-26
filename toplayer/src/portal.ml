@@ -9,7 +9,12 @@ let portals = Bonsai.Expert.Var.create String.Map.empty
 let get_portal_root () : Dom_html.element Js.t =
   match am_running_how with
   | `Browser -> Dom_html.document##.documentElement
-  | `Browser_benchmark | `Node | `Node_benchmark | `Node_test -> Js.Unsafe.obj [||]
+  | `Browser_test
+  | `Browser_benchmark
+  | `Node
+  | `Node_benchmark
+  | `Node_test
+  | `Node_jsdom_test -> Js.Unsafe.obj [||]
 ;;
 
 let apply_action_sync ~path action =
@@ -39,20 +44,19 @@ let bonsai_driven vdom graph =
   let () =
     (* Create a new portal whenever the component is activated. *)
     let on_activate =
-      let%arr vdom = vdom
-      and path = path in
+      let%arr vdom and path in
       apply_action ~path (`Create vdom)
     in
     (* Destroy any existing portal whenever the component is deactivated. *)
     let on_deactivate =
-      let%arr path = path in
+      let%arr path in
       apply_action ~path `Destroy
     in
     Bonsai.Edge.lifecycle ~on_activate ~on_deactivate graph
   in
   (* Patch the portal contents whenever they change. *)
   let callback =
-    let%arr path = path in
+    let%arr path in
     fun vdom -> apply_action ~path (`Apply_patch vdom)
   in
   Bonsai.Edge.on_change vdom ~equal:phys_equal ~callback graph

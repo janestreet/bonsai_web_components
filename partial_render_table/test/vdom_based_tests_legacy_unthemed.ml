@@ -920,7 +920,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
           [ Table_expert.Columns.Dynamic_cells.column
               ~header:(Bonsai.return (Vdom.Node.text "key"))
               ~cell:(fun ~key ~data:_ _graph ->
-                let%arr key = key in
+                let%arr key in
                 Vdom.Node.textf "%d" key)
               ()
           ]

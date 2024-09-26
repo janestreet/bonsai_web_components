@@ -660,6 +660,7 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:(string Bonsai.t -> Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
     -> unit
@@ -675,6 +676,7 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:(string Bonsai.t -> Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
     -> unit
@@ -689,7 +691,8 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+         (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)
     -> all_options:'a list Bonsai.t
@@ -704,7 +707,8 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+         (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)
     -> all_options:'a list Bonsai.t

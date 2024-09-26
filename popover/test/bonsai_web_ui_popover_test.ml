@@ -52,8 +52,7 @@ let%expect_test "External open and closing" =
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover base!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in
@@ -130,8 +129,7 @@ let%expect_test "Popover changing directions" =
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover entry!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in
@@ -262,7 +260,7 @@ let%expect_test "Opening from base and closing from dialog" =
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
         ~popover:(fun ~close _graph ->
-          let%arr close = close in
+          let%arr close in
           Vdom.Node.button
             ~attrs:[ Vdom.Attr.id "close"; Vdom.Attr.on_click (fun _ -> close) ]
             [ Vdom.Node.text "close" ])
@@ -435,14 +433,12 @@ let%expect_test "Nested popover" =
               ~direction:(Bonsai.return Popover.Direction.Right)
               ~alignment:(Bonsai.return Popover.Alignment.Center)
               ~popover:(fun ~close _graph ->
-                let%arr close = close in
+                let%arr close in
                 button ~on_click:close "close-popover2")
               ()
               graph
           in
-          let%arr wrap = wrap
-          and open_ = open_
-          and close_popover1 = close_popover1 in
+          let%arr wrap and open_ and close_popover1 in
           wrap
             (Vdom.Node.div
                [ button ~on_click:open_ "open-popover2"
@@ -673,8 +669,7 @@ let%test_module "interactions with [with_model_resetter]" =
                       ~f:(fun _graph -> Bonsai.return (View.text "Popover!"))
                       graph
                   in
-                  let%arr x = x
-                  and reset = reset in
+                  let%arr x and reset in
                   Vdom.Node.div [ x; button ~on_click:reset "reset-popover" ])
                 ()
                 graph
@@ -685,15 +680,13 @@ let%test_module "interactions with [with_model_resetter]" =
                 graph
             in
             let%arr ({ Popover.Result.wrap; _ } as popover) = popover
-            and x = x
-            and reset = reset in
+            and x
+            and reset in
             wrap (Vdom.Node.div [ x; button ~on_click:reset "reset-base" ]), popover)
           graph
       in
       let%sub vdom, popover = state in
-      let%arr vdom = vdom
-      and popover = popover
-      and resetter = resetter in
+      let%arr vdom and popover and resetter in
       vdom, popover, resetter
     ;;
 
@@ -856,8 +849,7 @@ let%expect_test "popover with an extra base attr" =
         ()
         graph
     in
-    let%arr wrap = wrap
-    and popover = popover in
+    let%arr wrap and popover in
     wrap (View.text "Popover base!"), popover
   in
   let handle = Handle.create (module Popover_result_spec) popover in

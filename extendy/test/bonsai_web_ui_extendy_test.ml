@@ -42,8 +42,7 @@ let handle () =
             ~equal:[%equal: String.t]
             graph
         in
-        let%arr state = state
-        and set_state = set_state in
+        let%arr state and set_state in
         state, set_state)
       graph
   in

@@ -9,4 +9,4 @@
  (targets style.ml style.mli style__generated.ml style__generated.mli)
  (deps style.css)
  (action
-  (bash "%{bin:css_inliner} %{deps} \"((rewrite ()))\"")))
+  (bash "%{bin:css_inliner} %{deps} \"()\"")))

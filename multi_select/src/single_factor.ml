@@ -473,9 +473,9 @@ module Make (Item : Item) = struct
       Searcher.bonsai ~initial:initial_model_settings.search_string all_items graph
     in
     let input_for_t =
-      let%map all_items = all_items
-      and view_config = view_config
-      and default_selection_status = default_selection_status
+      let%map all_items
+      and view_config
+      and default_selection_status
       and { Searcher.Result.items_matching_search; update_search; current_search } =
         search_results
       in

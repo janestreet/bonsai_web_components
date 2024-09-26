@@ -292,7 +292,9 @@ end
 
 module Cell = struct
   module Col_styles = struct
-    type t = Vdom.Attr.t list
+    (* First index is for the set_or_wrap node, the second index is for the inner wrapper
+    for the autosize variant *)
+    type t = Vdom.Attr.t list * Vdom.Attr.t list
 
     (* Css_gen is really slow, so we need to re-use the results of all these functions
        whenever possible.  The difference between non-cached and cached css is the
@@ -330,33 +332,43 @@ module Cell = struct
               ; resizable = _
               }
             ->
-            let width_styles =
-              match autosize with
-              | false ->
-                (* We use the previous width even when hidden, so that the rendering engine has
-                   less work to do if re-adding a column. Columns that are not currently visible
-                   are hidden via `display: None`. *)
-                let w =
-                  match Map.find col_widths column_id with
-                  | None | Some (Hidden { prev_width_px = None }) -> "0.00px"
-                  | Some (Hidden { prev_width_px = Some width })
-                  | Some (Visible { width_px = width }) -> float_to_px_string width
-                in
-                Css_gen.(
-                  create ~field:"width" ~value:w
-                  @> create ~field:"min-width" ~value:w
-                  @> create ~field:"max-width" ~value:w)
-              | true -> Css_gen.empty
-            in
             let visible_styles =
               match is_visible with
               | false -> Css_gen.display `None
               | true -> Css_gen.empty
             in
-            ( column_id
-            , [ Vdom.Attr.style Css_gen.(height_styles @> width_styles @> visible_styles)
-              ; themed_attrs.cell
-              ] ))
+            let attrs =
+              match autosize with
+              | false ->
+                let width_styles =
+                  (* We use the previous width even when hidden, so that the rendering engine has
+                   less work to do if re-adding a column. Columns that are not currently visible
+                   are hidden via `display: None`. *)
+                  let w =
+                    match Map.find col_widths column_id with
+                    | None | Some (Hidden { prev_width_px = None }) -> "0.00px"
+                    | Some (Hidden { prev_width_px = Some width })
+                    | Some (Visible { width_px = width }) -> float_to_px_string width
+                  in
+                  Css_gen.(
+                    create ~field:"width" ~value:w
+                    @> create ~field:"min-width" ~value:w
+                    @> create ~field:"max-width" ~value:w)
+                in
+                ( [ Vdom.Attr.style
+                      Css_gen.(height_styles @> width_styles @> visible_styles)
+                  ; themed_attrs.cell
+                  ]
+                , [] )
+              | true ->
+                let autosize_cell_styles = {%css|overflow: hidden;|} in
+                (* Height has to be applied to both the wrapper and the inner element *)
+                ( [ themed_attrs.cell; Vdom.Attr.style height_styles ]
+                , [ Vdom.Attr.style Css_gen.(visible_styles @> height_styles)
+                  ; autosize_cell_styles
+                  ] )
+            in
+            column_id, attrs)
         |> Map.of_alist_exn (module Col_cmp)
       in
       Staged.stage (fun column -> Map.find_exn styles_by_column column)
@@ -368,7 +380,7 @@ module Cell = struct
   let view
     (themed_attrs : Themed.t)
     ~is_focused
-    ~col_styles
+    ~col_styles:(col_styles, wrapper_styles)
     ~on_cell_click
     ~autosize
     content
@@ -402,8 +414,9 @@ module Cell = struct
          surprising that that costs so much more time
       *)
       Vdom.Node.div
-        ~attrs:[ themed_attrs.autosize_table_cell_wrapper ]
-        [ set_or_wrap ~attrs:shared_attrs content ]
+        ~attrs:[ themed_attrs.autosize_table_cell_wrapper; {%css|contain: strict;|} ]
+        [ Vdom.Node.div ~attrs:wrapper_styles [ set_or_wrap ~attrs:shared_attrs content ]
+        ]
   ;;
 end
 

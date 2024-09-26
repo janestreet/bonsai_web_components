@@ -230,7 +230,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
         |> Option.value ~default:(Single_factor.Initial_model_settings.create ())
       in
       let view_config =
-        let%map id_prefix = id_prefix in
+        let%map id_prefix in
         Single_factor.View_config.create
           ~id:(search_box_id key ~id_prefix)
           ~header:(Vdom.Node.text (Key.to_string key))
@@ -264,7 +264,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
     in
     let () =
       let callback =
-        let%map id_prefix = id_prefix in
+        let%map id_prefix in
         fun prev new_focus ->
           match prev with
           | Some prev_focus when Key.equal prev_focus new_focus -> Effect.Ignore
@@ -278,9 +278,9 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
         graph
     in
     let%arr subwidgets = single_factors
-    and focus = focus
+    and focus
     and inject_ring_focus_action = inject_focus_action
-    and id_prefix = id_prefix in
+    and id_prefix in
     let inject = inject ~subwidgets ~inject_ring_focus_action in
     let selection =
       Map.map subwidgets ~f:(fun result -> result.Single_factor.Result.selected_items)

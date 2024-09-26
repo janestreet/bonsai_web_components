@@ -4,7 +4,7 @@ open! Bonsai_web
 open Bonsai.Let_syntax
 
 module Path_and_generation =
-  Bonsai_web_ui_codemirror.Private.For_tests.Path_and_generation
+  Bonsai_web_ui_codemirror.Private_for_tests.Path_and_generation
 
 module Action = struct
   type t =
@@ -24,9 +24,7 @@ let handle () =
              ~for_:Path_and_generation.model_resetter_generation)
         graph
     in
-    let%arr toggle_scope = toggle_scope
-    and result = result
-    and reset = reset in
+    let%arr toggle_scope and result and reset in
     ( result
     , function
       | Action.Reset -> reset

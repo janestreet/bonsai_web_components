@@ -62,9 +62,9 @@ let component' t ~wrap_remove graph =
         ->
         let result, reset = Bonsai.with_model_resetter ~f:t graph in
         let%arr out = result
-        and reset = reset
-        and key = key
-        and inject_action = inject_action in
+        and reset
+        and key
+        and inject_action in
         let inject_remove = Effect.Many [ reset; inject_action (Action.Remove key) ] in
         out, inject_remove)
       graph
@@ -76,8 +76,8 @@ let component' t ~wrap_remove graph =
       graph
   in
   let%arr contents = contents_map
-  and map = map
-  and inject_action = inject_action in
+  and map
+  and inject_action in
   let append = inject_action (Action.Add { how_many = 1 }) in
   let remove id = inject_action (Action.Remove id) in
   let set_length length =

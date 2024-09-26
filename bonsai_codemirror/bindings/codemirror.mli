@@ -4,8 +4,27 @@ include module type of For_ppx
 (* These extra modules are just here to provide a more intuitive interface for the
    raw CodeMirror bindings. *)
 
+module type State_effect_spec = sig
+  type t
+end
+
 module State : sig
   include module type of For_ppx.State
+
+  module State_effect : sig
+    type t = State.state_effect
+
+    val is : t -> type_:'a State_effect_type.t -> bool
+    val value : t -> type_:'a State.State_effect_type.t -> 'a option
+
+    (** The "real" type of `State_effect.define` is `unit -> 'a State_effect_type.t`.
+        We require passing in a First Class Module with [type t = 'a] so that we only
+        create state effects connected to real types.
+    *)
+    val define : (module State_effect_spec with type t = 'a) -> 'a State_effect_type.t
+
+    val reconfigure : Extension.t State_effect_type.t
+  end
 
   module Range_set_update_spec : sig
     include module type of Range_set_update_spec

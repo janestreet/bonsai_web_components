@@ -12,8 +12,7 @@ let reference_implementation
   query
   _graph
   =
-  let%arr input = input
-  and query = query in
+  let%arr input and query in
   Map.to_alist input
   |> List.map ~f:(fun (key, data) ->
     let preprocessed = preprocess ~key ~data in
@@ -45,7 +44,7 @@ let real_implementation
       query
       graph
   in
-  let%arr map = map in
+  let%arr map in
   Map.to_alist map |> List.map ~f:(fun ((_score, key), data) -> key, data)
 ;;
 
@@ -78,7 +77,7 @@ let real_implementation2
       ~f:(fun _key data _graph -> data)
       graph
   in
-  let%arr map = map in
+  let%arr map in
   Map.to_alist map |> List.map ~f:(fun ((_score, key), data) -> key, data)
 ;;
 
@@ -121,9 +120,7 @@ let checked_implementation
       query
       graph
   in
-  let%arr reference = reference
-  and real = real
-  and real2 = real2 in
+  let%arr reference and real and real2 in
   if not ([%equal: (string * string) list] real reference)
   then
     raise_s
@@ -143,7 +140,7 @@ let checked_implementation
 
 let fuzzy_search_component input query graph =
   let query =
-    let%arr query = query in
+    let%arr query in
     query, Fuzzy_search.Query.create query
   in
   checked_implementation

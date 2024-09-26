@@ -4,8 +4,8 @@ open Js_of_ocaml
 
 let is_browser =
   match Bonsai_web.am_running_how with
-  | `Browser | `Browser_benchmark -> true
-  | `Node | `Node_benchmark | `Node_test -> false
+  | `Browser | `Browser_test | `Browser_benchmark -> true
+  | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test -> false
 ;;
 
 let query_selector s =
@@ -30,6 +30,7 @@ module Scroll_into_view = struct
         match align with
         | `Top -> Js.string "start"
         | `Bottom -> Js.string "end"
+        | `Center -> Js.string "center"
     end
   ;;
 
@@ -51,6 +52,9 @@ module Scroll_into_view = struct
     | `To_bottom ->
       scrollable##scrollIntoView
         (Js.Unsafe.inject (scroll_into_view_options ~align:`Bottom ~smooth))
+    | `To_center ->
+      scrollable##scrollIntoView
+        (Js.Unsafe.inject (scroll_into_view_options ~align:`Center ~smooth))
   ;;
 
   let for_effect (smooth, selector, how) =

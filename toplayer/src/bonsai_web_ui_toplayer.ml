@@ -93,8 +93,7 @@ module Controls = struct
       Bonsai.state `Outside graph
     in
     let monitor_mousedowns_attr =
-      let%arr set_last_mousedown_was_inside = set_last_mousedown_was_inside
-      and root_id = root_id in
+      let%arr set_last_mousedown_was_inside and root_id in
       Vdom.Attr.Global_listeners.mousedown
         ~phase:Vdom.Attr.Global_listeners.Phase.Capture
         ~f:(fun (ev : mouse_event) ->
@@ -117,9 +116,9 @@ module Controls = struct
       monitor_mousedown ~root_id graph
     in
     let%sub click, right_click =
-      let%arr on_click_outside = on_click_outside
-      and on_right_click_outside = on_right_click_outside
-      and root_id = root_id
+      let%arr on_click_outside
+      and on_right_click_outside
+      and root_id
       and peek_last_mousedown = Bonsai.peek last_mousedown_was_inside graph in
       let build_click_listener ~kind ~f =
         match f with
@@ -153,15 +152,10 @@ module Controls = struct
       match%sub on_esc with
       | None -> return []
       | Some eff ->
-        let%arr eff = eff
-        and root_id = root_id in
+        let%arr eff and root_id in
         on_esc_attrs ~eff ~root_id
     in
-    let%arr root_id = root_id
-    and monitor_mousedowns_attr = monitor_mousedowns_attr
-    and click = click
-    and right_click = right_click
-    and escape = escape in
+    let%arr root_id and monitor_mousedowns_attr and click and right_click and escape in
     Vdom.Attr.many
       ([ Vdom.Attr.id root_id; click; right_click; monitor_mousedowns_attr ] @ escape)
   ;;
@@ -177,12 +171,12 @@ module Controls = struct
       match%sub conf with
       | Close_on_click_outside.No -> return None
       | Yes_unless_target_is_popover ->
-        let%arr close = close in
+        let%arr close in
         Some
           (fun ~click_target_was_another_popover ->
             if click_target_was_another_popover then Effect.Ignore else close)
       | Yes ->
-        let%arr close = close in
+        let%arr close in
         Some (fun ~click_target_was_another_popover:_ -> close)
     in
     let on_click_outside = build_on_click close_on_click_outside in
@@ -191,7 +185,7 @@ module Controls = struct
       match%sub close_on_esc with
       | false -> return None
       | true ->
-        let%arr close = close in
+        let%arr close in
         Some (fun ~focus_inside:_ -> close)
     in
     listeners ~on_click_outside ~on_right_click_outside ~on_esc graph
@@ -200,7 +194,7 @@ module Controls = struct
   let create ?close_on_click_outside ?close_on_right_click_outside ?close_on_esc graph =
     let is_open, set_open = Bonsai.state false graph in
     let%sub open_, close =
-      let%arr set_open = set_open in
+      let%arr set_open in
       set_open true, set_open false
     in
     ( control_attr
@@ -262,14 +256,14 @@ module Popover = struct
       | None -> return Vdom.Attr.empty
       | Some input ->
         let%arr theme = View.Theme.current graph
-        and controls = controls
+        and controls
         and position = Bonsai.transpose_opt position
         and alignment = Bonsai.transpose_opt alignment
         and offset = Bonsai.transpose_opt offset
         and match_anchor_side_length = transpose_join_opt match_anchor_side_length
-        and focus_on_open = focus_on_open
+        and focus_on_open
         and has_arrow = Bonsai.transpose_opt has_arrow
-        and extra_attrs = extra_attrs
+        and extra_attrs
         and content = content input graph in
         let popover_style, offset, arrow = from_theme ?has_arrow ?offset theme in
         Vdom_toplayer.popover
@@ -333,16 +327,16 @@ module Popover = struct
         | None -> return (Vdom.Node.none_deprecated [@alert "-deprecated"])
         | Some input ->
           let%arr theme = View.Theme.current graph
-          and controls = controls
+          and controls
           and position = Bonsai.transpose_opt position
           and alignment = Bonsai.transpose_opt alignment
           and offset = Bonsai.transpose_opt offset
           and match_anchor_side_length = transpose_join_opt match_anchor_side_length
-          and focus_on_open = focus_on_open
+          and focus_on_open
           and has_arrow = Bonsai.transpose_opt has_arrow
-          and extra_attrs = extra_attrs
+          and extra_attrs
           and content = content input graph
-          and anchor = anchor in
+          and anchor in
           let popover_style, offset, arrow = from_theme ?has_arrow ?offset theme in
           Vdom_toplayer.For_use_in_portals.popover_custom
             ~popover_attrs:
@@ -415,8 +409,7 @@ module Popover = struct
         graph
     in
     let extra_attrs =
-      let%arr extra_attrs = extra_attrs
-      and control_attr = control_attr in
+      let%arr extra_attrs and control_attr in
       control_attr :: extra_attrs
     in
     ( For_external_state.bool
@@ -456,8 +449,7 @@ module Popover = struct
         graph
     in
     let extra_attrs =
-      let%arr extra_attrs = extra_attrs
-      and control_attr = control_attr in
+      let%arr extra_attrs and control_attr in
       control_attr :: extra_attrs
     in
     let () =
@@ -495,9 +487,9 @@ module Modal = struct
         | Some input ->
           let%arr theme = View.Theme.current graph
           and lock_body_scroll = Bonsai.transpose_opt lock_body_scroll
-          and focus_on_open = focus_on_open
-          and extra_attrs = extra_attrs
-          and controls = controls
+          and focus_on_open
+          and extra_attrs
+          and controls
           and content = content input graph in
           let modal_styles = View.For_components.Toplayer.modal_styles theme in
           Vdom_toplayer.For_use_in_portals.modal
@@ -538,8 +530,7 @@ module Modal = struct
         graph
     in
     let extra_attrs =
-      let%arr extra_attrs = extra_attrs
-      and control_attr = control_attr in
+      let%arr extra_attrs and control_attr in
       control_attr :: extra_attrs
     in
     let () =

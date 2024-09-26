@@ -1,0 +1,6 @@
+(library
+ (name codemirror_incremental_sexp_grammar_test_tools)
+ (libraries codemirror_incremental_sexp_grammar core
+   core_kernel.nonempty_list sexp_grammar)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai ppx_quick_test)))

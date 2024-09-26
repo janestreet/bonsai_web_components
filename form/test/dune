@@ -2,7 +2,8 @@
  (name bonsai_web_ui_form_test)
  (public_name bonsai_web_components.web_ui_form_test)
  (libraries bonsai_web bonsai_web_test bonsai_web_ui_file bonsai_web_ui_form
-   core expect_test_helpers_core.expect_test_helpers_base
+   bonsai_web_ui_query_box core
+   expect_test_helpers_core.expect_test_helpers_base
    patdiff.expect_test_patdiff js_of_ocaml core_kernel.nonempty_list
    virtual_dom.ui_effect)
  (preprocess

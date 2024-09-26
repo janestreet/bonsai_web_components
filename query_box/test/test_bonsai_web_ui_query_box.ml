@@ -8,9 +8,37 @@ let get_vdom = Bonsai_web_ui_query_box.view
 let fruits = [ "apple"; "orange"; "kiwi"; "dragon fruit" ]
 let items = List.mapi fruits ~f:Tuple2.create |> Int.Map.of_alist_exn
 
+module Spec = struct
+  type t = int Bonsai_web_ui_query_box.t
+  type incoming = Nothing.t
+
+  let incoming _ incoming = Nothing.unreachable_code incoming
+
+  let view box =
+    let html =
+      Virtual_dom_test_helpers.Node_helpers.to_string_html
+        ~filter_printed_attributes:(fun ~key ~data:_ ->
+          match key with
+          | "class" | "data-test" -> true
+          | _ -> false)
+        ~censor_paths:true
+        ~censor_hash:true
+        (Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn (get_vdom box))
+    in
+    let selected_item =
+      match box.Bonsai_web_ui_query_box.selected_item with
+      | None -> "None"
+      | Some item -> Int.to_string item
+    in
+    [%string "Selected item: %{selected_item}\n\n%{html}"]
+  ;;
+end
+
 let create
   ?expand_direction
   ?on_blur
+  ?on_focus
+  ~on_hover_item
   ?(items = items)
   ?(modify_input_on_select = fun _ _ -> "")
   ()
@@ -21,23 +49,18 @@ let create
       ?expand_direction:(Option.map expand_direction ~f:Bonsai.return)
       ~max_visible_items:(Bonsai.return 3)
       ~f:(fun query _graph ->
-        let%arr query = query in
+        let%arr query in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ?on_blur
+      ?on_focus:(Option.map on_focus ~f:Bonsai.return)
+      ~on_hover_item
       ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
       ~modify_input_on_select:(Bonsai.return modify_input_on_select)
       ()
       graph
   in
-  Handle.create
-    (Result_spec.vdom
-       ~filter_printed_attributes:(fun ~key ~data:_ ->
-         match key with
-         | "class" | "data-test" -> true
-         | _ -> false)
-       get_vdom)
-    component
+  Handle.create (module Spec) component
 ;;
 
 let input_text handle text = Handle.input_text handle ~get_vdom ~selector:"input" ~text
@@ -53,10 +76,17 @@ let blur ?related_target handle selector =
 let focus handle = Handle.focus handle ~get_vdom ~selector:"input"
 
 let%expect_test "changing text does filtering" =
-  let handle = create () in
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   Handle.show handle;
   [%expect
     {|
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -68,6 +98,8 @@ let%expect_test "changing text does filtering" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -83,6 +115,8 @@ let%expect_test "changing text does filtering" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -95,13 +129,20 @@ let%expect_test "changing text does filtering" =
 ;;
 
 let%expect_test "keybindings and filtering behavior" =
-  let handle = create () in
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   Handle.store_view handle;
   (* Focusing should open the suggestion list *)
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -118,6 +159,8 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -131,6 +174,8 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key ArrowDown))
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -148,6 +193,8 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 1
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -165,6 +212,8 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -183,6 +232,8 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -200,6 +251,9 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key Tab))
+
+    -|Selected item: 0
+    +|Selected item: 1
 
       <div>
         <input> </input>
@@ -228,6 +282,8 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -244,6 +300,8 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -257,6 +315,8 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
+    Selected item: 3
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -276,6 +336,8 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("blur effect for" query-box)
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -288,10 +350,18 @@ let%expect_test "keybindings and filtering behavior" =
 let%expect_test "inputting text twice in the same frame shouldn't be a problem" =
   let xs = [ "ab"; "ac"; "de" ] in
   let items = List.mapi xs ~f:Tuple2.create |> Int.Map.of_alist_exn in
-  let handle = create ~items () in
+  let handle =
+    create
+      ~items
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   Handle.show handle;
   [%expect
     {|
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -309,6 +379,8 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     {|
     ("default prevented" (key Tab))
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -325,6 +397,8 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
   Handle.show handle;
   [%expect
     {|
+    Selected item: 1
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -362,11 +436,13 @@ let%expect_test "partial-rendering" =
   let component graph =
     Bonsai_web_ui_query_box.create
       (module String)
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ~on_select:(Bonsai.return (fun _ -> Effect.Ignore))
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ~max_visible_items:(Bonsai.return 4)
       ~f:(fun query _graph ->
-        let%arr query = query in
+        let%arr query in
         Map.filter_mapi fruits ~f:(fun ~key:fruit ~data:() ->
           if Fuzzy_match.is_match ~char_equal:Char.Caseless.equal fruit ~pattern:query
           then Some (Node.text fruit)
@@ -513,11 +589,18 @@ let%expect_test "partial-rendering" =
 ;;
 
 let%expect_test "tabbing one item visible should exit First_item mode" =
-  let handle = create () in
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   input_text handle "kiwi";
   Handle.show handle;
   [%expect
     {|
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -533,6 +616,8 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -547,11 +632,18 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
 ;;
 
 let%expect_test "shift-tabbing one item visible should exit First_item mode" =
-  let handle = create () in
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   input_text handle "kiwi";
   Handle.show handle;
   [%expect
     {|
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -567,6 +659,8 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -581,11 +675,19 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
 ;;
 
 let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
-  let handle = create ~expand_direction:Up () in
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ~expand_direction:Up
+      ()
+  in
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -602,6 +704,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 3
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -618,6 +722,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -634,6 +740,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowDown))
+    Selected item: 1
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -650,6 +758,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
+    Selected item: 2
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -666,6 +776,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
+    Selected item: 3
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -682,6 +794,8 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -702,12 +816,16 @@ let%expect_test "The element containing all the items should be focusable withou
     create
       ~on_blur:(Bonsai.return (Effect.print_s [%message "on_blur called"]))
       ~expand_direction:Up
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ()
   in
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -724,6 +842,8 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -741,6 +861,8 @@ let%expect_test "The element containing all the items should be focusable withou
   [%expect
     {|
     "on_blur called"
+    Selected item: None
+
     <div>
       <div data-test="query-box-item-container">
         <div> </div>
@@ -752,6 +874,8 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -768,6 +892,8 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <div data-test="query-box-item-container">
         <div>
@@ -785,6 +911,8 @@ let%expect_test "The element containing all the items should be focusable withou
   [%expect
     {|
     "on_blur called"
+    Selected item: None
+
     <div>
       <div data-test="query-box-item-container">
         <div> </div>
@@ -795,11 +923,19 @@ let%expect_test "The element containing all the items should be focusable withou
 ;;
 
 let%expect_test "clicking on item invokes the callback and closes the list" =
-  let handle = create ~expand_direction:Down () in
+  let handle =
+    create
+      ~expand_direction:Down
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -816,6 +952,8 @@ let%expect_test "clicking on item invokes the callback and closes the list" =
   [%expect
     {|
     (item 0)
+    Selected item: None
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -826,11 +964,19 @@ let%expect_test "clicking on item invokes the callback and closes the list" =
 ;;
 
 let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and down" =
-  let handle = create ~expand_direction:Down () in
+  let handle =
+    create
+      ~expand_direction:Down
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -849,6 +995,8 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
   Handle.show handle;
   [%expect
     {|
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -863,11 +1011,19 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
 ;;
 
 let%expect_test "mousewheel on an item selects it" =
-  let handle = create ~expand_direction:Down () in
+  let handle =
+    create
+      ~expand_direction:Down
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  in
   focus handle;
   Handle.show handle;
   [%expect
     {|
+    Selected item: 0
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -886,6 +1042,8 @@ let%expect_test "mousewheel on an item selects it" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 2
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -905,6 +1063,8 @@ let%expect_test "mousewheel on an item selects it" =
   Handle.show handle;
   [%expect
     {|
+    Selected item: 1
+
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
@@ -928,11 +1088,13 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
       (module Int)
       ~max_visible_items:(Bonsai.return 3)
       ~f:(fun query _graph ->
-        let%arr query = query
+        let%arr query
         and items = Bonsai.Expert.Var.value items in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ()
       graph
   in
@@ -1014,6 +1176,8 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
           ~to_result:(fun item ~key:_ ~data:_ -> Node.text item))
       ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
       ~on_select:(Bonsai.return (fun (_, item) -> Effect.print_s [%message (item : int)]))
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ()
   in
   let handle =
@@ -1082,11 +1246,13 @@ let%test_module "optimization: the query box only loads its data when interacted
         (module Int)
         ~max_visible_items:(Bonsai.return 3)
         ~f:(fun query _graph ->
-          let%arr query = query in
+          let%arr query in
           print_endline "Generating options...";
           Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
         ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
         ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
+        ~on_hover_item:
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
         ()
     ;;
 
@@ -1271,11 +1437,13 @@ let%expect_test "[modify_input_on_select] field works" =
         ~expand_direction:(Bonsai.return Bonsai_web_ui_query_box.Expand_direction.Down)
         ~max_visible_items:(Bonsai.return 3)
         ~f:(fun query _graph ->
-          let%arr query = query in
+          let%arr query in
           Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
         ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
         ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
         ~modify_input_on_select:(Bonsai.return (fun _ _ -> "oran"))
+        ~on_hover_item:
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
         ()
         graph
     in
@@ -1335,4 +1503,176 @@ let%expect_test "[modify_input_on_select] field works" =
         </div>
       </div>
     |}]
+;;
+
+let bisimulate_both_focus
+  ~(f :
+      Bonsai_web_ui_query_box.On_focus.t
+      -> expect_diff:
+           (do_nothing:(unit -> unit) -> select_first_element:(unit -> unit) -> unit)
+      -> unit)
+  =
+  f Do_nothing ~expect_diff:(fun ~do_nothing ~select_first_element:_ -> do_nothing ());
+  f Select_first_item ~expect_diff:(fun ~do_nothing:_ ~select_first_element ->
+    select_first_element ())
+;;
+
+let%expect_test "Different on_focus_behavior" =
+  bisimulate_both_focus ~f:(fun on_focus ~expect_diff ->
+    let handle =
+      create
+        ~on_focus
+        ~on_hover_item:
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        ()
+    in
+    Handle.store_view handle;
+    (* Focusing with [on_focus:Do_nothing] should not open the suggestion list *)
+    (try focus handle with
+     | _ -> print_endline "Attempted to focus, but nothing was focusable on-screen!");
+    Handle.show handle;
+    expect_diff
+      ~do_nothing:(fun () ->
+        [%expect
+          {|
+          Attempted to focus, but nothing was focusable on-screen!
+          Selected item: None
+
+          <div>
+            <input> </input>
+            <div data-test="query-box-item-container">
+              <div> </div>
+            </div>
+          </div>
+          |}])
+      ~select_first_element:(fun () ->
+        [%expect
+          {|
+          Selected item: 0
+
+          <div>
+            <input> </input>
+            <div data-test="query-box-item-container">
+              <div>
+                <div class="selected-item"> apple </div>
+                <div> orange </div>
+                <div> kiwi </div>
+              </div>
+            </div>
+          </div>
+          |}]);
+    (* Pressing down should still open the suggestion list *)
+    keydown handle ArrowDown;
+    Handle.show_diff handle;
+    expect_diff
+      ~do_nothing:(fun () ->
+        [%expect
+          {|
+          ("default prevented" (key ArrowDown))
+
+          -|Selected item: None
+          +|Selected item: 0
+
+            <div>
+              <input> </input>
+              <div data-test="query-box-item-container">
+          -|    <div> </div>
+          +|    <div>
+          +|      <div class="selected-item"> apple </div>
+          +|      <div> orange </div>
+          +|      <div> kiwi </div>
+          +|    </div>
+              </div>
+            </div>
+          |}])
+      ~select_first_element:(fun () ->
+        [%expect
+          {|
+          ("default prevented" (key ArrowDown))
+
+          -|Selected item: 0
+          +|Selected item: 1
+
+            <div>
+              <input> </input>
+              <div data-test="query-box-item-container">
+                <div>
+          -|      <div class="selected-item"> apple </div>
+          -|      <div> orange </div>
+          +|      <div> apple </div>
+          +|      <div class="selected-item"> orange </div>
+                  <div> kiwi </div>
+                </div>
+              </div>
+            </div>
+          |}]))
+;;
+
+let bisimulate_hover_behaviors
+  ~(f :
+      Bonsai_web_ui_query_box.On_hover_item.t
+      -> expect_diff:
+           (do_nothing:(unit -> unit) -> select_hovered_element:(unit -> unit) -> unit)
+      -> unit)
+  =
+  f Do_nothing ~expect_diff:(fun ~do_nothing ~select_hovered_element:_ -> do_nothing ());
+  f Select_hovered_item ~expect_diff:(fun ~do_nothing:_ ~select_hovered_element ->
+    select_hovered_element ())
+;;
+
+let%expect_test "different on_hover_item behaviors" =
+  bisimulate_hover_behaviors ~f:(fun on_hover_item ~expect_diff ->
+    let handle = create ~on_hover_item:(Bonsai.return on_hover_item) () in
+    focus handle;
+    Handle.show handle;
+    [%expect
+      {|
+      Selected item: 0
+
+      <div>
+        <input> </input>
+        <div data-test="query-box-item-container">
+          <div>
+            <div class="selected-item"> apple </div>
+            <div> orange </div>
+            <div> kiwi </div>
+          </div>
+        </div>
+      </div>
+      |}];
+    (try
+       Handle.mouseenter
+         handle
+         ~get_vdom
+         ~selector:"[data-test=query-box-item-container] > div > div:nth-child(3)"
+     with
+     | _ ->
+       print_endline
+         "Attempted to mouse over an element, but that element is not hoverable!");
+    Handle.show_diff handle;
+    expect_diff
+      ~select_hovered_element:(fun () ->
+        (* Mousing over should select the item. *)
+        [%expect
+          {|
+          -|Selected item: 0
+          +|Selected item: 2
+
+            <div>
+              <input> </input>
+              <div data-test="query-box-item-container">
+                <div>
+          -|      <div class="selected-item"> apple </div>
+          +|      <div> apple </div>
+                  <div> orange </div>
+          -|      <div> kiwi </div>
+          +|      <div class="selected-item"> kiwi </div>
+                </div>
+              </div>
+            </div>
+          |}])
+      ~do_nothing:(fun () ->
+        (* Mousing over should not select the item and there should be no diff. *)
+        [%expect
+          {| Attempted to mouse over an element, but that element is not hoverable! |}]))
 ;;

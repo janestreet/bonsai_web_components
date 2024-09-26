@@ -10,6 +10,7 @@ module Language : sig
     | Css
     | Python
     | Common_lisp
+    | Sexp
     | Scheme
     | Sql
     | Javascript

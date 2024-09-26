@@ -23,5 +23,5 @@ val to_position_inside_element
 val into_view
   :  ?smooth:bool
   -> selector:string
-  -> [ `Minimal | `To_top | `To_bottom ]
+  -> [ `Minimal | `To_top | `To_bottom | `To_center ]
   -> unit Or_error.t Effect.t

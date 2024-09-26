@@ -143,7 +143,7 @@ let%expect_test "you can switch the tab from inside the inner component" =
       (Result_spec.vdom Fn.id)
       (basic_tab_component
          ~f:(fun ~change_tab _ _graph ->
-           let%arr change_tab = change_tab in
+           let%arr change_tab in
            Vdom.Node.button
              ~attrs:
                [ Vdom.Attr.many_without_merge

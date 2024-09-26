@@ -12,6 +12,7 @@ type t =
 val component
   :  ?extra_container_attrs:Vdom.Attr.t list Bonsai.t
   -> ?extra_title_attrs:Vdom.Attr.t list Bonsai.t
+  -> ?extra_title_container_attrs:Vdom.Attr.t list Bonsai.t
   -> ?extra_content_attrs:Vdom.Attr.t list Bonsai.t
   -> starts_open:bool
   -> title:Vdom.Node.t Bonsai.t

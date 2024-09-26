@@ -1,0 +1,13 @@
+(library
+ (name bonsai_experimental_snips)
+ (public_name bonsai_web_components.experimental_snips)
+ (libraries core virtual_dom.css_gen virtual_dom)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai ppx_css))
+ (flags :standard -alert -private_bonsai_view_library))
+
+(rule
+ (targets style.ml style.mli style__generated.ml style__generated.mli)
+ (deps style.css)
+ (action
+  (bash "%{bin:css_inliner} %{deps} '()'")))

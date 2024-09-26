@@ -75,7 +75,7 @@ let dynamic_cells ~stateful_cells : (module S) =
               state
             | false -> return ()
           in
-          let%arr data = data
+          let%arr data
           and () = state in
           Vdom.Node.text (M.to_string (Field.get field data)))
         ()
@@ -185,7 +185,7 @@ let dynamic_experimental ~stateful_cells : (module S) =
         | false -> return ()
       in
       let%arr { Row.Typed_field.Packed.f = T field } = col
-      and row = row
+      and row
       and () = state in
       let string, float, int =
         ( Vdom.Node.text
@@ -370,7 +370,7 @@ module Config = struct
         graph
     in
     let inject =
-      let%arr focus = focus in
+      let%arr focus in
       let module Focus_control = Table.Focus.By_cell in
       function
       | Action.Unfocus -> Focus_control.unfocus focus

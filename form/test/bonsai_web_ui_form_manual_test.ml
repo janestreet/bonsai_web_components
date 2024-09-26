@@ -744,8 +744,7 @@ let%expect_test "typing into a paired string textbox * int textbox " =
     let int_form =
       Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
     in
-    let%arr string_form = string_form
-    and int_form = int_form in
+    let%arr string_form and int_form in
     Form.both string_form int_form
     |> Form.map_view ~f:(fun (a, b) -> Vdom.Node.div [ a; b ])
   in
@@ -807,8 +806,7 @@ let%expect_test "setting into a paired string textbox * int textbox " =
     let int_form =
       Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
     in
-    let%arr string_form = string_form
-    and int_form = int_form in
+    let%arr string_form and int_form in
     Form.both string_form int_form
     |> Form.map_view ~f:(fun (a, b) -> Vdom.Node.div [ a; b ])
   in
@@ -870,7 +868,7 @@ let%test_module "Form.all" =
             (List.init 3 ~f:(fun _ ->
                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph))
         in
-        let%arr string_forms = string_forms in
+        let%arr string_forms in
         Form.all string_forms |> Form.map_view ~f:(fun l -> Vdom.Node.div l)
       in
       Handle.create (form_result_spec [%sexp_of: string list]) component
@@ -1099,7 +1097,7 @@ let%test_module "Form.all_map" =
              |> Int.Map.of_alist_exn)
             graph
         in
-        let%arr string_forms = string_forms in
+        let%arr string_forms in
         Form.all_map string_forms
         |> Form.map_view ~f:(fun map -> Vdom.Node.div (Map.data map))
       in
@@ -1908,7 +1906,7 @@ let%expect_test "using the same component twice" =
     let textbox =
       Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
     in
-    let%arr textbox = textbox in
+    let%arr textbox in
     Form.both textbox textbox |> Form.map_view ~f:(fun (a, b) -> Vdom.Node.div [ a; b ])
   in
   let handle =
@@ -2447,6 +2445,241 @@ let%expect_test "setting into an int number element" =
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
              @on_input> </input>
+    |}]
+;;
+
+let%expect_test "typing into an optional float number element" =
+  let component =
+    Form.Elements.Number.float_opt ~step:1. ~allow_updates_when_focused:`Never ()
+  in
+  let handle = Handle.create (form_result_spec [%sexp_of: float option]) component in
+  Handle.show handle;
+  [%expect
+    {|
+    (Ok ())
+
+    ==============
+    <input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"-1";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok ())
+    +|(Ok (-1))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1 @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (-1))
+    +|(Ok ())
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"10.2";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok ())
+    +|(Ok (10.2))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"-1.1";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (10.2))
+    +|(Ok (-1.1))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1.1 @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (-1.1))
+    +|(Ok ())
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1.1 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    |}]
+;;
+
+let%expect_test "typing into an optional float number element (with a default and \
+                 min/max)"
+  =
+  let component =
+    Form.Elements.Number.float_opt
+      ~min:(-1.)
+      ~max:10.1
+      ~default:0.
+      ~step:1.
+      ~allow_updates_when_focused:`Never
+      ()
+  in
+  let handle = Handle.create (form_result_spec [%sexp_of: float option]) component in
+  Handle.show handle;
+  [%expect
+    {|
+    (Ok (0))
+
+    ==============
+    <input type="number"
+           step="1"
+           placeholder=""
+           spellcheck="false"
+           min="-1"
+           max="10.1"
+           value:normalized=0
+           @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (0))
+    +|(Ok ())
+
+      ==============
+      <input type="number"
+             step="1"
+             placeholder=""
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=0
+    +|       value:normalized=""
+             @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"-1";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok ())
+    +|(Ok (-1))
+
+      ==============
+      <input type="number"
+             step="1"
+             placeholder=""
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=""
+    +|       value:normalized=-1
+             @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"10.2";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (-1))
+    +|(Error ((value 10.2) "higher than allowed threshold" (max 10.1)))
+
+      ==============
+      <input type="number"
+             step="1"
+             placeholder=""
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=-1
+    +|       value:normalized=10.2
+             @on_input> </input>
+    |}];
+  Handle.input_text handle ~selector:"input" ~text:"-1.1";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Error ((value 10.2) "higher than allowed threshold" (max 10.1)))
+    +|(Error ((value -1.1) "lower than allowed threshold" (min -1)))
+
+      ==============
+      <input type="number"
+             step="1"
+             placeholder=""
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=10.2
+    +|       value:normalized=-1.1
+             @on_input> </input>
+    |}]
+;;
+
+let%expect_test "setting into an optional float number element" =
+  let component =
+    Form.Elements.Number.float_opt
+      ~default:0.
+      ~step:1.
+      ~allow_updates_when_focused:`Never
+      ()
+  in
+  let handle = Handle.create (form_result_spec [%sexp_of: float option]) component in
+  Handle.show handle;
+  [%expect
+    {|
+    (Ok (0))
+
+    ==============
+    <input type="number" step="1" placeholder="" spellcheck="false" value:normalized=0 @on_input> </input>
+    |}];
+  Handle.do_actions handle [ None ];
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (0))
+    +|(Ok ())
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=0 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    |}];
+  Handle.do_actions handle [ Some (-1.) ];
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok ())
+    +|(Ok (-1))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1 @on_input> </input>
+    |}];
+  Handle.do_actions handle [ Some 10.2 ];
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (-1))
+    +|(Ok (10.2))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    |}];
+  Handle.do_actions handle [ Some (-1.1) ];
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (10.2))
+    +|(Ok (-1.1))
+
+      ==============
+    -|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    +|<input type="number" step="1" placeholder="" spellcheck="false" value:normalized=-1.1 @on_input> </input>
     |}]
 ;;
 
@@ -3567,7 +3800,7 @@ let%expect_test "extending a projection with an error" =
     let textbox =
       Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
     in
-    let%arr textbox = textbox in
+    let%arr textbox in
     Form.project
       textbox
       ~parse_exn:Int.of_string
@@ -3652,8 +3885,7 @@ let%expect_test _ =
             let%arr y = f Y in
             Form.view y
           in
-          let%arr view_x = view_x
-          and view_y = view_y in
+          let%arr view_x and view_y in
           Vdom.Node.div [ view_x; view_y ]
         ;;
       end)
@@ -3743,10 +3975,11 @@ let%expect_test "query box" =
       (module String)
       ~selection_to_string:(Bonsai.return Fn.id)
       ~f:(fun query _graph ->
-        let%arr query = query
-        and value = value in
+        let%arr query and value in
         Map.filter_map value ~f:(fun data ->
           if String.is_prefix ~prefix:query data then Some (Vdom.Node.text data) else None))
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ()
       graph
   in
@@ -4348,8 +4581,7 @@ let%test_module "Typed" =
                     | Error _ -> Vdom.Node.text ""
                     | Ok (_, inner) -> Form.view inner
                   in
-                  let%arr inner_view = inner_view
-                  and picker_view = picker_view in
+                  let%arr inner_view and picker_view in
                   Vdom.Node.div [ picker_view; inner_view ]
                 ;;
               end)
@@ -4444,7 +4676,7 @@ let%test_module "Typed" =
                       end)
                       graph
                   in
-                  let%arr picker = picker in
+                  let%arr picker in
                   let value =
                     match Form.value picker with
                     | Error err -> Error err
@@ -4477,8 +4709,7 @@ let%test_module "Typed" =
                     | Error _ -> Vdom.Node.text ""
                     | Ok (_, inner) -> Form.view inner
                   in
-                  let%arr picker_view = picker_view
-                  and inner_view = inner_view in
+                  let%arr picker_view and inner_view in
                   Vdom.Node.div [ picker_view; inner_view ]
                 ;;
               end)
@@ -4813,8 +5044,7 @@ let%expect_test "[Form.with_default] sets the form value after a model reset" =
           Form.Dynamic.with_default (Bonsai.Expert.Var.value default) form graph)
         graph
     in
-    let%arr state = state
-    and reset = reset in
+    let%arr state and reset in
     state, reset
   in
   let handle =
@@ -4856,8 +5086,7 @@ let%expect_test "[Form.with_default_always] sets the form value after a model re
           Form.Dynamic.with_default_always (Bonsai.Expert.Var.value default) form graph)
         graph
     in
-    let%arr state = state
-    and reset = reset in
+    let%arr state and reset in
     state, reset
   in
   let handle =
@@ -4892,7 +5121,7 @@ let%expect_test "[Form.with_default_always] only sets the form once on first act
   let component graph =
     let form = Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph in
     let form_with_printing =
-      let%arr form = form in
+      let%arr form in
       { Form.view = Form.view form
       ; value = Form.value form
       ; set =
@@ -5045,6 +5274,8 @@ let%expect_test "query box set to value not in all_options" =
       (module String)
       ~all_options:(Bonsai.return [ "a"; "b" ])
       ~handle_unknown_option:(Bonsai.return (fun _ -> None))
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
   in
   let handle = Handle.create (form_result_spec [%sexp_of: string]) component in
   Handle.do_actions handle [ "c" ];
@@ -5199,17 +5430,19 @@ let%test_module "Querybox as typeahead" =
         (module Data)
         ~all_options:(Bonsai.return Data.all)
         ~to_string
+        ~on_hover_item:
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
     ;;
 
     let view_computation ?to_string () graph =
       let form = shared_computation ?to_string () graph in
-      let%arr form = form in
+      let%arr form in
       Form.view form
     ;;
 
     let view_and_inject_computation graph =
       let form = shared_computation () graph in
-      let%arr form = form in
+      let%arr form in
       Form.view form, Form.set form
     ;;
 
@@ -5502,9 +5735,11 @@ let%test_module "Querybox as typeahead" =
               (Bonsai.return (fun _ ->
                  print_endline "in handle_uknown_option";
                  Some Data.Option_A))
+            ~on_hover_item:
+              (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
             graph
         in
-        let%arr form = form in
+        let%arr form in
         Form.view form
       in
       let handle = Handle.create (Result_spec.vdom ()) computation in

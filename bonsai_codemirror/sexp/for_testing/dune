@@ -1,0 +1,5 @@
+(library
+ (name codemirror_sexp_for_testing)
+ (libraries codemirror_incremental_sexp_grammar codemirror_sexp_kernel core)
+ (preprocess
+  (pps ppx_jane)))

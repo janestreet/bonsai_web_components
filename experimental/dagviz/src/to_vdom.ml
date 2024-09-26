@@ -576,7 +576,7 @@ module Make (Name : Types.Name) = struct
     in
     let%sub () =
       let callback =
-        let%arr update_position_tracker = update_position_tracker in
+        let%arr update_position_tracker in
         Fn.const update_position_tracker
       in
       Bonsai.Edge.on_change
@@ -588,16 +588,15 @@ module Make (Name : Types.Name) = struct
       Bonsai.return ()
     in
     let trackers =
-      let%arr get_position_tracker_attr = get_position_tracker_attr
-      and get_size_tracker_attr = get_size_tracker_attr in
+      let%arr get_position_tracker_attr and get_size_tracker_attr in
       Trackers.create ~get_position_tracker_attr ~get_size_tracker_attr
     in
     let trackers =
-      let%arr trackers = trackers in
+      let%arr trackers in
       trackers
     in
     let all_ids =
-      let%arr computation = computation in
+      let%arr computation in
       let finder_of_all_ids =
         object
           inherit ['acc] Bindgen.Types.fold as super
@@ -607,25 +606,22 @@ module Make (Name : Types.Name) = struct
       finder_of_all_ids#computation computation Name.Set.empty
     in
     let all_ids =
-      let%arr all_ids = all_ids in
+      let%arr all_ids in
       all_ids
     in
     let id_to_vdom =
       let unit_map =
-        let%arr all_ids = all_ids in
+        let%arr all_ids in
         Core.Set.to_map all_ids ~f:(Fn.const ())
       in
       Bonsai.assoc (module Name) unit_map ~f:(fun key _ -> node_to_vdom key) graph
     in
     let id_to_vdom =
-      let%arr id_to_vdom = id_to_vdom in
+      let%arr id_to_vdom in
       id_to_vdom
     in
     let%sub (computation_as_html, connections_state), curr_id =
-      let%arr computation = computation
-      and id_to_vdom = id_to_vdom
-      and trackers = trackers
-      and curr_id = curr_id in
+      let%arr computation and id_to_vdom and trackers and curr_id in
       computation_to_html
         ~direction
         ~here:None
@@ -636,7 +632,7 @@ module Make (Name : Types.Name) = struct
         ~connections_state:Connections_state.empty
     in
     let computation_as_html =
-      let%arr computation_as_html = computation_as_html in
+      let%arr computation_as_html in
       let padding =
         Vdom.Node.div
           ~attrs:[ Vdom.Attr.style Css_gen.(height (`Px 12) @> width (`Px 12)) ]
@@ -645,12 +641,12 @@ module Make (Name : Types.Name) = struct
       hbox [ padding; vbox [ padding; computation_as_html; padding ]; padding ]
     in
     let edges =
-      let%arr connections_state = connections_state in
+      let%arr connections_state in
       Connections_state.to_edges connections_state
     in
     let edges = Bonsai.cutoff edges ~equal:Edge.Set.equal in
     let edge_map =
-      let%arr edges = edges in
+      let%arr edges in
       Set.to_map edges ~f:(Fn.const ())
     in
     let edge_map =
@@ -659,7 +655,7 @@ module Make (Name : Types.Name) = struct
         edge_map
         ~f:(fun key _ graph ->
           let from_to =
-            let%arr positions = positions
+            let%arr positions
             and { from; to_ } = key in
             let%bind.Option from_position = Map.find positions from in
             let%map.Option to_position = Map.find positions to_ in
@@ -669,18 +665,15 @@ module Make (Name : Types.Name) = struct
           | None -> Bonsai.return None
           | Some (from_end, to_end) ->
             let html = edge_to_svg ~edge:key ~from:from_end ~to_:to_end graph in
-            let%arr html = html in
+            let%arr html in
             Some html)
         graph
     in
     let svgs =
-      let%arr edge_map = edge_map in
+      let%arr edge_map in
       Map.data edge_map |> List.filter_opt
     in
-    let%arr computation_as_html = computation_as_html
-    and trackers = trackers
-    and svgs = svgs
-    and curr_id = curr_id in
+    let%arr computation_as_html and trackers and svgs and curr_id in
     let tracker, curr_id = Trackers.track_resizing trackers ~curr_id in
     ( Node.div
         ~attrs:[ Style.map; Style.testcase; tracker ]
@@ -771,16 +764,14 @@ module Make (Name : Types.Name) = struct
     let%sub { nodes; edges } = input in
     let edges = Bonsai.cutoff ~equal:Set.equal edges in
     let al_graph =
-      let%arr edges = edges
-      and nodes = nodes in
+      let%arr edges and nodes in
       adjacency_list_representation ~edges ~all_nodes:(Map.key_set nodes)
     in
     let al_graph = Bonsai.cutoff al_graph ~equal:(Name.Map.equal Name.Set.equal) in
-    let%arr al_graph = al_graph
-    and edges = edges in
+    let%arr al_graph and edges in
     let nodes = create_nodes ~al_graph in
     let edges = Set.to_list edges in
-    let%map.Or_error nodes = nodes in
+    let%map.Or_error nodes in
     of_dagviz_ir { Dagviz_ir.Graph.nodes; edges }
   ;;
 
@@ -809,8 +800,7 @@ module Make (Name : Types.Name) = struct
             ~curr_id
             ~node_to_vdom:(fun key graph ->
               let data =
-                let%arr key = key
-                and dag = dag in
+                let%arr key and dag in
                 Map.find dag.nodes key
               in
               match%sub data with
@@ -820,14 +810,12 @@ module Make (Name : Types.Name) = struct
             bindgen
             graph
         in
-        let%arr vdom = vdom
-        and curr_id = curr_id in
+        let%arr vdom and curr_id in
         Or_error.return vdom, curr_id
       in
       out graph
     | Error error ->
-      let%arr error = error
-      and curr_id = curr_id in
+      let%arr error and curr_id in
       Error error, curr_id
   ;;
 end

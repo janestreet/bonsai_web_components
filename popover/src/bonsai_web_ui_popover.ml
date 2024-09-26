@@ -63,7 +63,7 @@ let has_clicked_outside : popover_id:string -> Dom.node Js.t Js.opt -> bool =
 
 let default_popover_styles graph =
   let theme = View.Theme.current graph in
-  let%arr theme = theme in
+  let%arr theme in
   let constants = View.constants theme in
   let vars =
     Style.Variables.set
@@ -105,16 +105,15 @@ let component
     Bonsai.toggle' ~default_model:false graph
   in
   let direction_class =
-    let%arr direction = direction in
+    let%arr direction in
     direction_to_attr direction
   in
   let alignment_class =
-    let%arr alignment = alignment in
+    let%arr alignment in
     alignment_to_attr alignment
   in
   let%sub open_, close =
-    let%arr set_is_open = set_is_open
-    and on_close = on_close in
+    let%arr set_is_open and on_close in
     set_is_open true, Effect.Many [ set_is_open false; on_close ]
   in
   let popover =
@@ -125,11 +124,7 @@ let component
         match%sub close_when_clicked_outside with
         | false -> Bonsai.return Vdom.Attr.empty
         | true ->
-          let%arr close = close
-          and popover_id = popover_id
-          and allow_event_propagation_when_clicked_outside =
-            allow_event_propagation_when_clicked_outside
-          in
+          let%arr close and popover_id and allow_event_propagation_when_clicked_outside in
           let f ~source event =
             let target = (event##.target :> Dom.node Js.t Js.opt) in
             match has_clicked_outside ~popover_id target with
@@ -164,12 +159,12 @@ let component
             ]
       in
       let popover = popover ~close graph in
-      let%arr popover = popover
-      and popover_id = popover_id
-      and outside_click_listener_attr = outside_click_listener_attr
-      and popover_extra_attr = popover_extra_attr
-      and popover_style_attr = popover_style_attr
-      and keep_popover_inside_window = keep_popover_inside_window in
+      let%arr popover
+      and popover_id
+      and outside_click_listener_attr
+      and popover_extra_attr
+      and popover_style_attr
+      and keep_popover_inside_window in
       let reposition_hook =
         match keep_popover_inside_window with
         | true -> Vdom.Attr.create_hook "reposition" (Reposition_hook.create ())
@@ -192,11 +187,11 @@ let component
     | true -> Style.tooltip_open
   in
   let wrap =
-    let%arr popover = popover
-    and direction_class = direction_class
-    and alignment_class = alignment_class
-    and open_attr = open_attr
-    and base_extra_attr = base_extra_attr in
+    let%arr popover
+    and direction_class
+    and alignment_class
+    and open_attr
+    and base_extra_attr in
     fun popover_base ->
       Vdom.Node.span
         ~attrs:
@@ -208,10 +203,6 @@ let component
           ]
         [ popover_base; popover ]
   in
-  let%arr open_ = open_
-  and close = close
-  and wrap = wrap
-  and toggle = toggle
-  and is_open = is_open in
+  let%arr open_ and close and wrap and toggle and is_open in
   { Result.wrap; open_; close; toggle; is_open }
 ;;

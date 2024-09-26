@@ -146,7 +146,8 @@ module Typed : sig
       limit on the number of redirects before redirects stop.
   *)
   val make
-    :  ?on_fallback_raises:'a
+    :  ?navigation:[ `Ignore | `Intercept ]
+    -> ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
     -> (module T with type t = 'a)
     -> 'a Versioned_parser.t
@@ -175,9 +176,15 @@ module Typed : sig
 end
 
 (** [create_exn'] is like [create_exn], but allows for raising if no fallback is
-    available. *)
+    available.
+
+    It also allows passing [~navigation:`Intercept] which listens to browser navigation
+    events e.g. caused by clicking on links / running [Effect.open_url] etc. When the
+    target is understood by the url parser the navigation is handled client side and
+    prevents a full page reload. *)
 val create_exn'
-  :  (module S with type t = 'a)
+  :  ?navigation:[ `Ignore | `Intercept ]
+  -> (module S with type t = 'a)
   -> on_bad_uri:[ `Default_state of 'a | `Raise ]
   -> 'a t
 

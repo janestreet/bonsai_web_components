@@ -25,6 +25,7 @@ module Language = struct
     | Css
     | Python
     | Common_lisp
+    | Sexp
     | Scheme
     | Sql
     | Javascript
@@ -33,7 +34,7 @@ module Language = struct
     | Rust
     | Xml
     | FSharp
-  [@@deriving equal]
+  [@@deriving equal, string]
 
   let of_stream_parser lang =
     lang
@@ -72,6 +73,9 @@ module Language = struct
     | Css -> Lazy.force css
     | Python -> Lazy.force python
     | Common_lisp -> Lazy.force common_lisp
+    | Sexp ->
+      (* We don't have a separate highlighting for sexp yet *)
+      Lazy.force common_lisp
     | Scheme -> Lazy.force scheme
     | Sql -> Lazy.force sql
     | Javascript -> Lazy.force javascript
@@ -166,6 +170,7 @@ module Input = struct
     }
 
   let sexp_of_t = sexp_of_opaque
+  let read_only = lazy (Codemirror.State.Compartment.create ())
   let theme = lazy (Codemirror.State.Compartment.create ())
   let language = lazy (Codemirror.State.Compartment.create ())
   let line_numbers = lazy (Codemirror.State.Compartment.create ())
@@ -193,12 +198,18 @@ module Input = struct
           default_highlight_style
           ()
       in
-      let read_only_ext =
+      let editable_ext =
         Codemirror.State.Facet.of_
           Codemirror.View.Editor_view.editable
           (with_conversion_of_bool false)
       in
-      [ (* Custom extensions are first so they take precedence. *)
+      let read_only_ext =
+        Codemirror.State.Facet.of_
+          Codemirror.State.Editor_state.read_only
+          (with_conversion_of_bool true)
+      in
+      [ configure read_only read_only_ext
+      ; (* Custom extensions are first so they take precedence. *)
         configure extension input.extension
       ; configure
           line_numbers
@@ -206,7 +217,7 @@ module Input = struct
              ~line_numbers:input.line_numbers
              ~on_line_number_click:input.on_line_number_click)
       ; highlighting_ext
-      ; read_only_ext
+      ; editable_ext
       ; configure
           line_wrapping
           (if input.line_wrapping
@@ -222,15 +233,35 @@ module Input = struct
     |> Codemirror.State.Transaction.state
   ;;
 
-  let transaction_to_update_editor ~editor_view ~effects ~changes =
-    let editor_state = Codemirror.View.Editor_view.state editor_view in
-    let transaction_specs =
-      Codemirror.State.Transaction_spec.create ?changes ~effects ()
+  let while_temporarily_editable ~editor_view callback =
+    let reconfigure_read_only bool =
+      let ext =
+        Codemirror.State.Facet.of_
+          Codemirror.State.Editor_state.read_only
+          (with_conversion_of_bool bool)
+      in
+      Codemirror.State.Transaction_spec.create ~effects:[ reconfigure read_only ext ] ()
     in
-    let transactions =
+    Codemirror.State.Editor_state.update
+      (Codemirror.View.Editor_view.state editor_view)
+      [ reconfigure_read_only false ]
+    |> Codemirror.View.Editor_view.dispatch editor_view;
+    callback ~editor_view;
+    Codemirror.State.Editor_state.update
+      (Codemirror.View.Editor_view.state editor_view)
+      [ reconfigure_read_only true ]
+    |> Codemirror.View.Editor_view.dispatch editor_view
+  ;;
+
+  let transaction_to_update_editor ~editor_view ~effects ~changes =
+    let transaction =
+      let editor_state = Codemirror.View.Editor_view.state editor_view in
+      let transaction_specs =
+        Codemirror.State.Transaction_spec.create ?changes ~effects ()
+      in
       Codemirror.State.Editor_state.update editor_state [ transaction_specs ]
     in
-    Codemirror.View.Editor_view.dispatch editor_view transactions
+    Codemirror.View.Editor_view.dispatch editor_view transaction
   ;;
 
   let update ~editor_view before after =
@@ -320,7 +351,12 @@ module Input = struct
       let effects =
         List.filter_opt [ theme; language; line_numbers; line_wrapping; extension ]
       in
-      if (not (List.is_empty effects)) || Option.is_some changes
+      if Option.is_some changes
+      then
+        while_temporarily_editable
+          ~editor_view
+          (transaction_to_update_editor ~effects ~changes)
+      else if not (List.is_empty effects)
       then transaction_to_update_editor ~editor_view ~effects ~changes
   ;;
 end
@@ -368,7 +404,40 @@ module Simple_widget = struct
   ;;
 
   let destroy ~prev_input:_ ~state ~element:_ = Codemirror.View.Editor_view.destroy state
-  let to_vdom_for_testing = `Sexp_of_input
+
+  let to_vdom_for_testing =
+    `Custom
+      (fun { Input.language
+           ; line_wrapping
+           ; line_numbers
+           ; on_line_number_click
+           ; scroll_to
+           ; code
+           ; theme
+           ; extension = _
+           } ->
+        Virtual_dom.Vdom.Node.create
+          name
+          ~attrs:
+            (Virtual_dom.Vdom.Attr.create "language" (Language.to_string language)
+             :: Virtual_dom.Vdom.Attr.create
+                  "theme"
+                  (Bonsai_web_ui_view.Expert.For_codemirror.Theme.sexp_of_t theme
+                   |> Sexp.to_string_hum)
+             :: List.filter_opt
+                  [ Option.some_if
+                      line_wrapping
+                      (Virtual_dom.Vdom.Attr.bool_property "line_wrapping" true)
+                  ; Option.some_if
+                      line_numbers
+                      (Virtual_dom.Vdom.Attr.bool_property "line_numbers" true)
+                  ; Option.map on_line_number_click ~f:(fun _ ->
+                      Virtual_dom.Vdom.Attr.create "@on_line_number_click" "")
+                  ; Option.map scroll_to ~f:(fun scroll_to ->
+                      Virtual_dom.Vdom.Attr.create "scroll_to" (Int.to_string scroll_to))
+                  ])
+          [ Virtual_dom.Vdom.Node.text code ])
+  ;;
 end
 
 let create = unstage (Virtual_dom.Vdom.Node.widget_of_module (module Simple_widget))

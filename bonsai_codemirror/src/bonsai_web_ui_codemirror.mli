@@ -19,6 +19,13 @@ val focus : t -> unit Effect.t
 val blur : t -> unit Effect.t
 val execute_command : t -> View.Command.t -> unit Effect.t
 
+(** [text] retrieves the current contents of the editor. This can be slow if your
+    file is very large. *)
+val text : t -> string
+
+(** [set_lines] overrides the entire contents of the editor with [lines]. *)
+val set_lines : t -> string list -> unit Effect.t
+
 (** A codemirror text editor component integrated into Bonsai. The codemirror
     reference manual can be found at [https://codemirror.net/6/docs/ref/].
 *)
@@ -38,7 +45,15 @@ val of_initial_state
     interactions between everything involved in this function is too complex to
     fully explain in a doc comment. *)
 val with_dynamic_extensions
-  :  (module Bonsai_proc.Model with type t = 'a)
+  :  ?basic_setup:[ `Minimal | `Basic | `None ]
+       (** A lot of basic codemirror functionality is powered by extensions (undo/redo,
+           even the enter key). This adds those extensions by default.
+
+           Defaults to `Minimal. Options correspond to minimalSetup (the bare minimum
+           set of things you should need) and basicSetup (basic functionality for a typical
+           editor) in https://codemirror.net/docs/ref/#codemirror.basicSetup
+        *)
+  -> (module Bonsai_proc.Model with type t = 'a)
   -> equal:('a -> 'a -> bool)
   -> name:string
        (** [name] is name of the codemirror editor, so that it can be referred to in tests. *)
@@ -48,52 +63,10 @@ val with_dynamic_extensions
   -> Bonsai.graph
   -> t Bonsai.t
 
-(** An easy-to-use function for making a codemirror textbox with autocompletion
-    based on a potentially dynamic sexp-grammar. This is a good way to get
-    started using Codemirror - if you want a more complex configuration, you
-    can use other functions in this module then. *)
-val with_sexp_grammar_autocompletion
-  :  ?extra_extension:Codemirror.State.Extension.t
-       (** [extra_extension] defaults to [Basic_setup.basic_setup] *)
-  -> ?include_non_exhaustive_hint:bool (** see [autocomplete_extension_of_sexp_grammar] *)
-  -> name:string
-       (** [name] is name of the codemirror editor, so that it can be referred to in tests. *)
-  -> 'a Sexp_grammar.t Bonsai.t
-  -> Bonsai.graph
-  -> t Bonsai.t
-
-val text : t -> string
-val set_lines : t -> string list -> unit Effect.t
-
-val autocomplete_extension_of_sexp_grammar
-  :  ?include_non_exhaustive_hint:bool
-       (** Whether to add an extra autocomplete entry indicating that the autocomplete list is
-      not exhaustive. The default is [true]. *)
-  -> 'a Sexp_grammar.t
-  -> State.Extension.t
-
 module For_testing : sig
   val type_id : (Transaction.t -> unit Effect.t) Type_equal.Id.t
 end
 
-module Private : sig
-  module For_tests : sig
-    module Completion : sig
-      type t =
-        { from : int
-        ; to_ : int option
-        ; options : string list
-        ; exhaustive : bool
-        }
-      [@@deriving sexp_of]
-    end
-
-    val completions
-      :  text:string
-      -> cursor_position:int
-      -> grammar:'a Sexp_grammar.t
-      -> Completion.t
-
-    module Path_and_generation = Path_and_generation
-  end
+module Private_for_tests : sig
+  module Path_and_generation = Path_and_generation
 end

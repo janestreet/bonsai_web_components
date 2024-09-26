@@ -47,8 +47,7 @@ module Record = struct
           fun field graph ->
           let form = M.form_for_field field graph in
           let form = Form.Dynamic.error_hint form graph in
-          let%arr form = form
-          and get_label = get_label in
+          let%arr form and get_label in
           let label = get_label { M.Typed_field.Packed.f = T field } in
           Form.Private.suggest_label label form |> attach_fieldname_to_error label
         ;;
@@ -64,8 +63,7 @@ module Record = struct
               packed, Form.view field)
             |> Bonsai.all
           in
-          let%arr all_fields = all_fields
-          and get_label = get_label in
+          let%arr all_fields and get_label in
           List.map all_fields ~f:(fun (packed, view) ->
             { Form_view.field_name = get_label packed; field_view = view })
           |> Form_view.record
@@ -92,20 +90,18 @@ module Record = struct
             let form =
               let form = M.form_for_field field graph in
               let form = Form.Dynamic.error_hint form graph in
-              let%arr form = form
-              and get_label = get_label in
+              let%arr form and get_label in
               let label = get_label { M.Typed_field.Packed.f = T field } in
               attach_fieldname_to_error label form
             in
-            let%arr form = form in
+            let%arr form in
             Form_manual.map_view form ~f:Form.View.to_vdom
           ;;
         end)
         graph
     in
     let path = Bonsai.path_id graph in
-    let%arr table = table
-    and path = path in
+    let%arr table and path in
     Form_manual.map_view table ~f:(Form.View.of_vdom ~unique_key:path)
   ;;
 end
@@ -185,11 +181,11 @@ module Variant = struct
           | `First_constructor | `This _ -> M_opt.all_some
         in
         let path = Bonsai.path_id graph in
-        let%arr picker_value = picker_value
-        and set_picker_value = set_picker_value
-        and path = path
-        and extra_attrs = extra_attrs
-        and to_string = to_string in
+        let%arr picker_value
+        and set_picker_value
+        and path
+        and extra_attrs
+        and to_string in
         let view =
           Vdom_input_widgets.Dropdown.of_values
             (module struct
@@ -214,11 +210,11 @@ module Variant = struct
         picker_value, set_picker_value, view
       | `Radio layout ->
         let path = Bonsai.path_id graph in
-        let%arr picker_value = picker_value
-        and set_picker_value = set_picker_value
-        and extra_attrs = extra_attrs
-        and path = path
-        and to_string = to_string in
+        let%arr picker_value
+        and set_picker_value
+        and extra_attrs
+        and path
+        and to_string in
         let node_fun =
           match layout with
           | `Vertical -> Vdom_input_widgets.Radio_buttons.of_values
@@ -239,9 +235,7 @@ module Variant = struct
         in
         picker_value, set_picker_value, view
     in
-    let%arr picker_value = picker_value
-    and set_picker_value = set_picker_value
-    and view = view in
+    let%arr picker_value and set_picker_value and view in
     let value =
       match picker_value with
       | Some value -> Ok value
@@ -288,12 +282,10 @@ module Variant = struct
         let finalize_view picker_view selected _graph =
           match%sub selected with
           | Error _ ->
-            let%arr picker_view = picker_view in
+            let%arr picker_view in
             Form_view.variant ~clause_selector:picker_view ~selected_clause:None
           | Ok (field, form) ->
-            let%arr field = field
-            and form = form
-            and picker_view = picker_view in
+            let%arr field and form and picker_view in
             let clause_name = M.Typed_variant.name field in
             Form_view.variant
               ~clause_selector:picker_view
@@ -409,8 +401,7 @@ module Variant = struct
           fun variant comparator graph ->
           let form = M.form_for_variant variant comparator graph in
           let form = Form.Dynamic.error_hint form graph in
-          let%arr form = form
-          and get_label = get_label in
+          let%arr form and get_label in
           let label = get_label { M.Typed_variant.Packed.f = T variant } in
           Form.Private.suggest_label label form |> attach_variant_name_to_error label
         ;;
@@ -429,8 +420,7 @@ module Variant = struct
               packed, Form.view form)
             |> Bonsai.all
           in
-          let%arr all_variants = all_variants
-          and get_label = get_label in
+          let%arr all_variants and get_label in
           List.map all_variants ~f:(fun (packed, view) ->
             { Form_view.field_name = get_label packed; field_view = view })
           |> Form_view.record

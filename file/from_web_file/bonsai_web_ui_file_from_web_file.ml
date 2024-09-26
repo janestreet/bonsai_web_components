@@ -2,7 +2,7 @@ open Core
 open Async_kernel
 open Js_of_ocaml
 
-let create file =
+let create ?(mode = (`Raw_contents : [ `Raw_contents | `As_data_url ])) file =
   let read =
     Ui_effect.of_sync_fun (fun on_progress ->
       let file_reader = new%js File.fileReader in
@@ -43,13 +43,24 @@ let create file =
                     file_reader##.result |> File.CoerceTo.arrayBuffer |> Js.Opt.to_option
                   with
                   | None ->
-                    raise_s
-                      [%message "BUG: could not coerce fileReader result to arrayBuffer"]
+                    (match
+                       file_reader##.result |> File.CoerceTo.string |> Js.Opt.to_option
+                     with
+                     | None ->
+                       raise_s
+                         [%message
+                           "BUG: could not coerce fileReader result to [arrayBuffer] or \
+                            [string]"]
+                     | Some string ->
+                       let contents = Bigstring.of_string (Js.to_string string) in
+                       Ivar.fill_if_empty result (Ok contents))
                   | Some array_buffer ->
                     let contents = Typed_array.Bigstring.of_arrayBuffer array_buffer in
                     Ivar.fill_if_empty result (Ok contents));
                  Js._true);
-            file_reader##readAsArrayBuffer file;
+            (match mode with
+             | `Raw_contents -> file_reader##readAsArrayBuffer file
+             | `As_data_url -> file_reader##readAsDataURL file);
             Ivar.read result)
           ()
       in

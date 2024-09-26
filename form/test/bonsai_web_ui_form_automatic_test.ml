@@ -614,8 +614,7 @@ let%expect_test "typing into a paired string textbox * int textbox " =
     let int_form =
       Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
     in
-    let%arr string_form = string_form
-    and int_form = int_form in
+    let%arr string_form and int_form in
     Form.both string_form int_form
   in
   let handle = Handle.create (form_result_spec [%sexp_of: string * int]) component in
@@ -680,8 +679,7 @@ let%expect_test "setting into a paired string textbox * int textbox " =
     let int_form =
       Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
     in
-    let%arr string_form = string_form
-    and int_form = int_form in
+    let%arr string_form and int_form in
     Form.both string_form int_form
   in
   let handle = Handle.create (form_result_spec [%sexp_of: string * int]) component in
@@ -746,7 +744,7 @@ let%test_module "Form.all" =
             (List.init 3 ~f:(fun _ ->
                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph))
         in
-        let%arr string_forms = string_forms in
+        let%arr string_forms in
         Form.all string_forms
       in
       Handle.create (form_result_spec [%sexp_of: string list]) component
@@ -997,7 +995,7 @@ let%test_module "Form.all_map" =
              |> Int.Map.of_alist_exn)
             graph
         in
-        let%arr string_forms = string_forms in
+        let%arr string_forms in
         Form.all_map string_forms
       in
       Handle.create (form_result_spec [%sexp_of: string Int.Map.t]) component
@@ -3930,7 +3928,7 @@ let%expect_test "typed records: dynamic labelling" =
           module Typed_field = Typed_field
 
           let label_for_field =
-            let%map int_label = int_label in
+            let%map int_label in
             fun ({ f = T field } : Typed_field.Packed.t) ->
               match field with
               | Int -> int_label
@@ -4293,7 +4291,7 @@ let%expect_test "typed variants: dynamic labelling" =
           module Typed_variant = Typed_variant
 
           let label_for_variant =
-            let%map int_label = int_label in
+            let%map int_label in
             fun ({ f = T variant } : Typed_variant.Packed.t) ->
               match variant with
               | Integer -> int_label
@@ -5788,9 +5786,10 @@ let%expect_test "query box" =
     Form.Elements.Query_box.create
       (module String)
       ~selection_to_string:(Bonsai.return Fn.id)
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
       ~f:(fun query _graph ->
-        let%arr query = query
-        and value = value in
+        let%arr query and value in
         Map.filter_map value ~f:(fun data ->
           if String.is_prefix ~prefix:query data then Some (Vdom.Node.text data) else None))
       ()
@@ -6477,8 +6476,7 @@ let%expect_test "[Form.with_default] sets the form value after a model reset" =
           Form.Dynamic.with_default (Bonsai.Expert.Var.value default) form graph)
         graph
     in
-    let%arr state = state
-    and reset = reset in
+    let%arr state and reset in
     state, reset
   in
   let handle =
@@ -6518,8 +6516,7 @@ let%expect_test "[Form.with_default_always] sets the form value after a model re
           Form.Dynamic.with_default_always (Bonsai.Expert.Var.value default) form graph)
         graph
     in
-    let%arr state = state
-    and set_state = set_state in
+    let%arr state and set_state in
     state, set_state
   in
   let handle =
@@ -6552,7 +6549,7 @@ let%expect_test "[Form.with_default_always] only sets the form once on first act
   let component graph =
     let form = Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph in
     let form_with_printing =
-      let%arr form = form in
+      let%arr form in
       Form.Expert.create ~view:(Form.view form) ~value:(Form.value form) ~set:(fun i ->
         let%bind.Effect () = Effect.print_s [%message "Form.set called"] in
         Form.set form i)
@@ -7169,6 +7166,8 @@ let%test_module "Querybox as typeahead" =
 
     let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
       Form.Elements.Query_box.single_opt
+        ~on_hover_item:
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
         (module Data)
         ~all_options:(Bonsai.return Data.all)
         ~to_string
@@ -7176,13 +7175,13 @@ let%test_module "Querybox as typeahead" =
 
     let view_computation ?to_string () graph =
       let form = shared_computation ?to_string () graph in
-      let%arr form = form in
+      let%arr form in
       Form.view_as_vdom form
     ;;
 
     let view_and_inject_computation graph =
       let form = shared_computation () graph in
-      let%arr form = form in
+      let%arr form in
       Form.view_as_vdom form, Form.set form
     ;;
 
@@ -7581,9 +7580,11 @@ let%test_module "Querybox as typeahead" =
               (Bonsai.return (fun _ ->
                  print_endline "in handle_unknown_option";
                  Some Data.Option_A))
+            ~on_hover_item:
+              (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
             graph
         in
-        let%arr form = form in
+        let%arr form in
         Form.view_as_vdom form
       in
       let handle = Handle.create (Result_spec.vdom Fn.id) computation in

@@ -290,7 +290,7 @@ module Read_on_change = struct
         ~equal:[%equal: File.t]
         file
         ~callback:
-          (let%map inject = inject in
+          (let%map inject in
            fun file ->
              let open Ui_effect.Let_syntax in
              let%bind file_read =
@@ -334,8 +334,7 @@ module Read_on_change = struct
 
   let create_single file graph =
     let state = create_helper file graph in
-    let%arr file = file
-    and state = state in
+    let%arr file and state in
     file.filename, File_state.to_status state
   ;;
 

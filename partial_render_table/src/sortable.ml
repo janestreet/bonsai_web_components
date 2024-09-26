@@ -23,8 +23,7 @@ let state ?(initial_order = Bonsai.return Order.default) ~equal:col_id_equal () 
       graph
   in
   let order = Bonsai.cutoff ~equal order in
-  let%arr order = order
-  and inject = inject in
+  let%arr order and inject in
   { order; inject; col_id_equal }
 ;;
 

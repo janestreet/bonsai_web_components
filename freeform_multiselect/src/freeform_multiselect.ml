@@ -67,13 +67,13 @@ let input
   let select, inject_select =
     Bonsai.state "" ~sexp_of_model:[%sexp_of: String.t] ~equal:[%equal: String.t] graph
   in
-  let%arr select = select
-  and inject_select = inject_select
-  and selected_options = selected_options
-  and inject_selected_options = inject_selected_options
-  and extra_attr = extra_attr
-  and id = id
-  and on_set_change = on_set_change in
+  let%arr select
+  and inject_select
+  and selected_options
+  and inject_selected_options
+  and extra_attr
+  and id
+  and on_set_change in
   let on_input user_input =
     let maybe_changed_options =
       split user_input
@@ -118,10 +118,7 @@ let create
       ~inject_selected_options
       graph
   in
-  let%arr selected_options = selected_options
-  and inject_selected_options = inject_selected_options
-  and input = input
-  and on_set_change = on_set_change in
+  let%arr selected_options and inject_selected_options and input and on_set_change in
   let pills = pills ~selected_options ~on_set_change ~inject_selected_options in
   selected_options, Vdom.Node.div [ input; pills ], inject_selected_options
 ;;

@@ -630,7 +630,7 @@ let svg ?size ?stroke ?fill ?stroke_width ?(extra_attrs = []) (t : t) =
   let module A = Vdom.Attr in
   let specific_class = "feather-" ^ to_string t in
   match Bonsai_web.am_running_how with
-  | `Browser | `Browser_benchmark | `Node | `Node_benchmark ->
+  | `Browser | `Browser_test | `Browser_benchmark | `Node | `Node_benchmark ->
     Vdom.Node.inner_html_svg
       ~tag:"svg"
       ~attrs:
@@ -647,6 +647,6 @@ let svg ?size ?stroke ?fill ?stroke_width ?(extra_attrs = []) (t : t) =
          @ extra_attrs)
       ~this_html_is_sanitized_and_is_totally_safe_trust_me:(path t)
       ()
-  | `Node_test ->
+  | `Node_test | `Node_jsdom_test ->
     Vdom.Node.create ~attrs:extra_attrs [%string "feather_icons.%{to_string t}"] []
 ;;

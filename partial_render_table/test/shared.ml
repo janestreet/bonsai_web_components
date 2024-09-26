@@ -66,7 +66,7 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
         (Bonsai.return (fun a b ->
            Comparable.lift [%compare: int] ~f:(fun (key, _) -> key) a b))
       ~cell:(fun ~key ~data:_ _graph ->
-        let%arr key = key in
+        let%arr key in
         Vdom.Node.textf "%d" key)
       ()
   ; Columns.column
@@ -80,8 +80,8 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
             graph
         in
         let%arr { a; _ } = data
-        and state = state
-        and set_state = set_state in
+        and state
+        and set_state in
         Vdom.Node.div
           [ Vdom.Node.input ~attrs:[ Vdom.Attr.on_input (fun _ -> set_state) ] ()
           ; Vdom.Node.textf "%s %s" a state
@@ -489,7 +489,7 @@ module Test = struct
           [ Table_expert.Columns.Dynamic_cells.column
               ~header:(Bonsai.return (Vdom.Node.text "key"))
               ~cell:(fun ~key ~data:_ _graph ->
-                let%arr key = key in
+                let%arr key in
                 Vdom.Node.textf "%d" key)
               ()
           ]

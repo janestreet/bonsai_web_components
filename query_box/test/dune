@@ -1,6 +1,7 @@
 (library
  (name test_bonsai_web_ui_query_box)
- (libraries bonsai_web_ui_query_box bonsai bonsai_test bonsai_web
-   bonsai_web_test fuzzy_match.match fuzzy_match.search)
+ (libraries bonsai bonsai_test bonsai_web bonsai_web_test
+   bonsai_web_ui_query_box fuzzy_match.match fuzzy_match.search
+   virtual_dom.vdom_test_helpers)
  (preprocess
   (pps bonsai.ppx_bonsai ppx_jane ppx_quick_test)))

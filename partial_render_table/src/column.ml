@@ -36,8 +36,8 @@ module Dynamic_cells = struct
         | Leaf { leaf_header; visible; initial_width; cell = _; resizable } ->
           let tree =
             let%map header = leaf_header
-            and visible = visible
-            and resizable = resizable in
+            and visible
+            and resizable in
             Header_tree.leaf
               ~header
               ~visible
@@ -101,8 +101,7 @@ module Dynamic_cells = struct
                 ~f:(fun _ data graph ->
                   let%sub key, data = data in
                   let r = cell ~key ~data graph in
-                  let%arr key = key
-                  and r = r in
+                  let%arr key and r in
                   key, r)
                 graph
             else (
@@ -211,8 +210,7 @@ module Dynamic_experimental = struct
           ~get_key:Fn.id
           ~f:(fun _ column_id graph ->
             let header = render_header column_id graph in
-            let%arr header = header
-            and column_id = column_id in
+            let%arr header and column_id in
             Header_tree.leaf
               ~header
               ~visible:true
@@ -227,7 +225,7 @@ module Dynamic_experimental = struct
           [%message
             "BUG" [%here] "should be impossible because columns were already deduplicated"]
       | `Ok headers ->
-        let%arr headers = headers in
+        let%arr headers in
         Header_tree.org_group headers
     ;;
 
@@ -255,8 +253,7 @@ module Dynamic_experimental = struct
               ~get_key:Fn.id
               ~f:(fun _ col graph ->
                 let cell = render_cell col key data graph in
-                let%arr col = col
-                and cell = cell in
+                let%arr col and cell in
                 col, cell)
               graph
           in
@@ -268,8 +265,7 @@ module Dynamic_experimental = struct
                   [%here]
                   "should be impossible because columns were already deduplicated"]
           | `Ok cells ->
-            let%arr cells = cells
-            and key = key in
+            let%arr cells and key in
             key, cells)
     ;;
   end
@@ -300,7 +296,7 @@ module Dynamic_experimental = struct
     fun column_id ~columns ~render_header ~render_cell ->
       let module Col_id = (val column_id) in
       let columns =
-        let%arr columns = columns in
+        let%arr columns in
         (* deduplicate *)
         let seen = ref (Set.empty (module Col_id)) in
         List.filter columns ~f:(fun column ->
@@ -430,7 +426,7 @@ module Dynamic_columns = struct
     in
     fun columns ->
       let value =
-        let%map columns = columns in
+        let%map columns in
         T.Org_group columns
       in
       Column_intf.T { value; vtable = (module X); column_id = (module Int) }
@@ -482,14 +478,13 @@ module Dynamic_cells_with_sorter = struct
       match sort, sort_reversed with
       | None, None -> Bonsai.return None
       | Some forward, Some reverse ->
-        let%map forward = forward
-        and reverse = reverse in
+        let%map forward and reverse in
         Some { Sort_kind.forward; reverse }
       | Some forward, None ->
-        let%map forward = forward in
+        let%map forward in
         Some (Sort_kind.reversible ~forward)
       | None, Some reverse ->
-        let%map reverse = reverse in
+        let%map reverse in
         Some (Sort_kind.reversible' ~reverse)
     in
     let t node =
@@ -506,10 +501,10 @@ module Dynamic_cells_with_sorter = struct
       let sorters, tree =
         T.partition t ~f:(fun i col sort render_header ->
           let leaf_header =
-            let%map render_header = render_header
-            and sortable_state = sortable_state
-            and sort = sort
-            and multisort_columns_when = multisort_columns_when in
+            let%map render_header
+            and sortable_state
+            and sort
+            and multisort_columns_when in
             Sortable.Header.Expert.default_click_handler
               ~multisort_columns_when
               ~sortable:(Option.is_some sort)
@@ -523,7 +518,7 @@ module Dynamic_cells_with_sorter = struct
         sorters
         |> Map.to_alist
         |> List.map ~f:(fun (i, sorter) ->
-          let%map sorter = sorter in
+          let%map sorter in
           Option.map sorter ~f:(fun sorter -> i, sorter))
         |> Bonsai.all
         >>| Fn.compose Int.Map.of_alist_exn List.filter_opt
@@ -536,8 +531,7 @@ module Dynamic_cells_with_sorter = struct
       let _sorters, tree =
         T.partition t ~f:(fun _i col sort render_header ->
           let header_node =
-            let%map render_header = render_header
-            and sort = sort in
+            let%map render_header and sort in
             let sort_state : Sort_state.t =
               if Option.is_none sort then Not_sortable else Not_sorted
             in
@@ -602,9 +596,7 @@ module Dynamic_columns_with_sorter = struct
   module W = struct
     let headers_and_sorters ~multisort_columns_when t sortable_state graph =
       let%sub sorters, tree =
-        let%arr t = t
-        and sortable_state = sortable_state
-        and multisort_columns_when = multisort_columns_when in
+        let%arr t and sortable_state and multisort_columns_when in
         let sorters, tree =
           T.partition t ~f:(fun i col sort render_header ->
             let sortable = Option.is_some sort in
@@ -633,7 +625,7 @@ module Dynamic_columns_with_sorter = struct
 
     let instantiate_cells t cmp map =
       let tree =
-        let%map t = t in
+        let%map t in
         let _sorters, tree =
           T.partition t ~f:(fun _i col sort render_header ->
             let sort_state : Sort_state.t =
@@ -664,7 +656,7 @@ module Dynamic_columns_with_sorter = struct
     in
     fun columns ->
       let value =
-        let%map columns = columns in
+        let%map columns in
         T.Group { children = columns; build = (fun c -> Dynamic_columns.T.Org_group c) }
       in
       Column_intf.Y { value; vtable = (module X); column_id = (module Int) }
@@ -730,11 +722,11 @@ module Dynamic_experimental_with_sorter = struct
           ~get_key:Fn.id
           ~f:(fun _ col graph ->
             let render_header = render_header col graph in
-            let%arr render_header = render_header
-            and sortable_header = sortable_header
-            and sorts = sorts
-            and col = col
-            and multisort_columns_when = multisort_columns_when in
+            let%arr render_header
+            and sortable_header
+            and sorts
+            and col
+            and multisort_columns_when in
             let sortable = Map.mem sorts col in
             let header =
               Sortable.Header.Expert.default_click_handler
@@ -758,11 +750,10 @@ module Dynamic_experimental_with_sorter = struct
           (* impossible because we already deduped *)
           assert false
         | `Ok headers ->
-          let%arr headers = headers in
+          let%arr headers in
           Header_tree.org_group headers
       in
-      let%arr headers = headers
-      and sorts = sorts in
+      let%arr headers and sorts in
       sorts, headers
     ;;
 
@@ -794,8 +785,7 @@ module Dynamic_experimental_with_sorter = struct
               ~get_key:Fn.id
               ~f:(fun _ col graph ->
                 let cell = render_cell col key data graph in
-                let%arr col = col
-                and cell = cell in
+                let%arr col and cell in
                 col, cell)
               graph
           in
@@ -804,8 +794,7 @@ module Dynamic_experimental_with_sorter = struct
             (* impossible because we already deduped *)
             assert false
           | `Ok cells ->
-            let%arr cells = cells
-            and key = key in
+            let%arr cells and key in
             key, cells)
         graph
     ;;
@@ -841,7 +830,7 @@ module Dynamic_experimental_with_sorter = struct
     fun ?sorts column_id ~columns ~render_header ~render_cell ->
       let module Col_id = (val column_id) in
       let columns =
-        let%arr columns = columns in
+        let%arr columns in
         (* deduplicate *)
         let seen = ref (Set.empty (module Col_id)) in
         let as_list =

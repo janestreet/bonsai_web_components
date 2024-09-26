@@ -11,6 +11,8 @@ let shared_computation =
     ~placeholder:"Select a value"
     ~to_string:(Bonsai.return Data.to_string)
     ~split:(String.split ~on:',')
+    ~attr_merge_behavior:
+      Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
 ;;
 
 let view_computation graph =
@@ -56,6 +58,85 @@ let%expect_test "Initial multi typeahead state" =
     |}]
 ;;
 
+let%expect_test "Attrs are NOT merged when  \
+                 Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge \
+                 is applied"
+  =
+  let component graph =
+    let%sub { view; _ } =
+      Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
+        (module Data)
+        ~all_options:(Bonsai.return Data.all)
+        ~placeholder:"Select a value"
+        ~to_string:(Bonsai.return Data.to_string)
+        ~split:(String.split ~on:',')
+        ~extra_attrs:
+          (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
+        ~attr_merge_behavior:
+          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+        graph
+    in
+    view
+  in
+  let handle = Handle.create (Result_spec.vdom Fn.id) component in
+  Handle.show handle;
+  [%expect
+    {|
+    ("WARNING: not combining classes"
+     (first (ppx_css_anonymous_class_hash_43ce83b642))
+     (second (ppx_css_anonymous_class_hash_da95232e07)))
+    <div>
+      <input type="text"
+             list="bonsai_path_replaced_in_test"
+             placeholder="Select a value"
+             value=""
+             class="ppx_css_anonymous_class_hash_replaced_in_test"
+             #value=""
+             @on_blur
+             @on_change
+             @on_focus
+             @on_input> </input>
+      <datalist> </datalist>
+    </div>
+    |}]
+;;
+
+let%expect_test "Attrs are merged when `Merge is applied" =
+  let component graph =
+    let%sub { view; _ } =
+      Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
+        (module Data)
+        ~all_options:(Bonsai.return Data.all)
+        ~placeholder:"Select a value"
+        ~to_string:(Bonsai.return Data.to_string)
+        ~split:(String.split ~on:',')
+        ~extra_attrs:
+          (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
+        ~attr_merge_behavior:Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Merge
+        graph
+    in
+    view
+  in
+  let handle = Handle.create (Result_spec.vdom Fn.id) component in
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <input type="text"
+             list="bonsai_path_replaced_in_test"
+             placeholder="Select a value"
+             value=""
+             class="ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test"
+             #value=""
+             @on_blur
+             @on_change
+             @on_focus
+             @on_input> </input>
+      <datalist> </datalist>
+    </div>
+    |}]
+;;
+
 let%expect_test "Focusing and un-focusing the input shows and hides the datalist when \
                  not in tests"
   =
@@ -67,6 +148,8 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
         ~placeholder:"Select a value"
         ~to_string:(Bonsai.return Data.to_string)
         ~split:(String.split ~on:',')
+        ~attr_merge_behavior:
+          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
         graph
     in
     view

@@ -2924,8 +2924,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
            { on_change = Test.focus_changed
            ; compute_presence =
                (fun focus _graph ->
-                 let%arr map = map
-                 and focus = focus in
+                 let%arr map and focus in
                  match focus with
                  | None -> None
                  | Some focus -> if Map.mem map focus then Some focus else None)
@@ -3139,7 +3138,7 @@ let%test_module "focus by key `key_rank` fallback" =
       Test.create ~stats:true ~map:big_map ~should_set_bounds:false (fun input filter ->
         let key_rank ~actual_key_rank:_ graph =
           let sleep = Bonsai.Clock.sleep graph in
-          let%arr sleep = sleep in
+          let%arr sleep in
           fun row_key ->
             let%bind.Effect () = sleep (Time_ns.Span.of_ms 10.) in
             Effect.return (Some ((row_key mod 2) + 2))
@@ -3536,8 +3535,7 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
   =
   let open Incr_map_collate.Collate.Which_range in
   let presence ~focus ~collation _graph =
-    let%arr focus = focus
-    and collation = collation in
+    let%arr focus and collation in
     match focus with
     | None -> None
     | Some focus ->

@@ -219,8 +219,7 @@ let create ~x_label ~per_series_info
   : (Model.t * Vdom.Node.t * (Action.t -> unit Vdom.Effect.t)) Bonsai.Computation.t
   =
   let create_model =
-    let%map.Bonsai x_label = x_label
-    and per_series_info = per_series_info in
+    let%map.Bonsai x_label and per_series_info in
     function
     | None ->
       { Model.x_label

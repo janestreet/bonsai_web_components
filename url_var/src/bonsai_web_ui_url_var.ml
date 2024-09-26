@@ -85,16 +85,79 @@ type 'a t =
   ; history : 'a History.t
   }
 
-let create_exn' (type a) (module S : S with type t = a) ~on_bad_uri =
+let listen_to_navigation_events_exn ~parse_exn ~f =
+  let open Js_of_ocaml in
+  let navigation = (Js.Unsafe.coerce Dom_html.window)##.navigation in
+  let (_ : _ Js.t) =
+    navigation##addEventListener
+      (Js.string "navigate")
+      (Dom_html.handler (fun event ->
+         let can_intercept =
+           Js.to_bool event##.canIntercept && not (Js.Opt.test event##.downloadRequest)
+         in
+         let try_intercept () =
+           print_endline (Js.to_string event##.destination##.url);
+           let value =
+             Js.to_string event##.destination##.url
+             |> Uri.of_string
+             |> Original_components.of_uri
+             |> parse_exn
+           in
+           event##intercept
+             (Js.Unsafe.obj
+                [| ( "handler"
+                   , Js.Unsafe.inject
+                       (Js.wrap_callback (fun () ->
+                          f value;
+                          Js.undefined)) )
+                |])
+         in
+         if can_intercept
+         then (
+           try try_intercept () with
+           | _ -> ());
+         Js.bool true))
+  in
+  ()
+;;
+
+let listen_to_navigation_events ~parse_exn ~f =
+  (* We wrap this call in a try-catch until the API is finalized as per
+     https://html.spec.whatwg.org/#navigation-api *)
+  try listen_to_navigation_events_exn ~parse_exn ~f with
+  | _ -> ()
+;;
+
+let set ?(how : [ `Push | `Replace ] option) { var; history } a =
+  let how = Option.value how ~default:`Push in
+  (match how with
+   | `Push -> History.update history a
+   | `Replace -> History.replace history a);
+  Bonsai.Expert.Var.set var a
+;;
+
+let create_exn'
+  (type a)
+  ?(navigation = `Ignore)
+  (module S : S with type t = a)
+  ~on_bad_uri
+  =
   (match am_running_how with
-   | `Browser | `Browser_benchmark -> ()
-   | `Node | `Node_benchmark | `Node_test ->
-     failwith
-       "Error: Bonsai_web_ui_url_var.create_exn is not supported within a nodejs\n\
-        environment because it relies on the browser's history API. One way to fix this\n\
-        is by having your app receive the url value as a parameter, and passing some\n\
-        mock implementation in tests instead of the real implementation provided by this\n\
-        library.");
+   | `Browser | `Browser_test | `Browser_benchmark | `Node_jsdom_test -> ()
+   | (`Node | `Node_benchmark | `Node_test) as am_running_how ->
+     let error_message =
+       let am_running_how =
+         [%sexp
+           (am_running_how : [ `Browser_test | `Node | `Node_benchmark | `Node_test ])]
+       in
+       [%string
+         "Error: Bonsai_web_ui_url_var.create_exn is not supported within a nodejs\n\
+          environment because it relies on the browser's history API. One way to fix this\n\
+          is by having your app receive the url value as a parameter, and passing some\n\
+          mock implementation in tests instead of the real implementation provided by this\n\
+          library. Am_running_how: '%{am_running_how#Sexp}'."]
+     in
+     failwith error_message);
   let module Uri_routing = struct
     include S
 
@@ -137,19 +200,23 @@ let create_exn' (type a) (module S : S with type t = a) ~on_bad_uri =
   let value = History.current t in
   let var = Bonsai.Expert.Var.create value in
   Bus.iter_exn (History.changes_bus t) [%here] ~f:(Bonsai.Expert.Var.set var);
-  { var; history = t }
+  let url_var = { var; history = t } in
+  (match navigation with
+   | `Ignore -> ()
+   | `Intercept ->
+     (* At the point where we intercept a navigation event the URL / histroy has already
+       updated, so we don't want to duplicate the navigation entry.
+
+       Instead we can replace the current entry with a new one that carries a payload
+       generated based on the parsed new URL.
+
+       See https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
+     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(set ~how:`Replace url_var));
+  url_var
 ;;
 
 let create_exn (type a) (module S : S with type t = a) ~fallback =
-  create_exn' (module S) ~on_bad_uri:(`Default_state fallback)
-;;
-
-let set ?(how : [ `Push | `Replace ] option) { var; history } a =
-  let how = Option.value how ~default:`Push in
-  (match how with
-   | `Push -> History.update history a
-   | `Replace -> History.replace history a);
-  Bonsai.Expert.Var.set var a
+  create_exn' (module S) ~navigation:`Ignore ~on_bad_uri:(`Default_state fallback)
 ;;
 
 let value { var; history = _ } = Bonsai.Expert.Var.value var
@@ -285,6 +352,7 @@ module Typed = struct
 
   let make
     (type a)
+    ?(navigation = `Ignore)
     ?on_fallback_raises
     ?encoding_behavior
     (module T : T with type t = a)
@@ -300,7 +368,7 @@ module Typed = struct
       let unparse = projection.unparse
     end
     in
-    create_exn' (module S) ~on_bad_uri:`Raise
+    create_exn' (module S) ~navigation ~on_bad_uri:`Raise
   ;;
 
   let make_projection

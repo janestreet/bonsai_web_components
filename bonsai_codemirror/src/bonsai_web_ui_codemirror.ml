@@ -256,24 +256,21 @@ let of_initial_state ~name initial_state graph =
   let () =
     Bonsai.Edge.lifecycle
       ~on_deactivate:
-        (let%map inject = inject in
+        (let%map inject in
          inject Reset)
       graph
   in
   let view =
     match Bonsai_web.am_running_how with
-    | `Browser | `Browser_benchmark ->
-      let%arr state = state
-      and inject = inject
-      and path_and_generation = path_and_generation in
+    | `Browser | `Browser_test | `Browser_benchmark ->
+      let%arr state and inject and path_and_generation in
       codemirror_widget { state; inject; path_and_generation }
-    | `Node | `Node_benchmark | `Node_test ->
+    | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
       let send_transaction =
-        let%arr inject = inject in
+        let%arr inject in
         fun transaction -> inject (Send_transaction transaction)
       in
-      let%arr state = state
-      and send_transaction = send_transaction in
+      let%arr state and send_transaction in
       Vdom.Node.create
         "codemirror"
         ~attrs:
@@ -282,9 +279,7 @@ let of_initial_state ~name initial_state graph =
           ]
         [ Vdom.Node.text (state_text state) ]
   in
-  let%arr state = state
-  and view = view
-  and inject = inject in
+  let%arr state and view and inject in
   { view
   ; state
   ; send_transaction = (fun transaction -> inject (Send_transaction transaction))
@@ -303,6 +298,7 @@ let of_initial_state ~name initial_state graph =
 
 let with_dynamic_extensions
   (type a)
+  ?(basic_setup = `Minimal)
   (module M : Model with type t = a)
   ~equal
   ~name
@@ -312,172 +308,35 @@ let with_dynamic_extensions
   graph
   =
   let cm = of_initial_state ~name initial_state graph in
-  let callback =
-    let%arr cm = cm
-    and compute_extensions = compute_extensions in
-    fun value ->
-      let open State in
-      cm.send_transaction (fun state ->
-        Editor_state.update
-          state
-          [ Transaction_spec.create
-              ~effects:
-                [ State_effect_type.of_
-                    State_effect.reconfigure
-                    (Extension.of_list (compute_extensions value))
-                ]
-              ()
-          ])
+  let setup_extension =
+    match basic_setup with
+    | `Minimal -> Some Basic_setup.minimal_setup
+    | `Basic -> Some Basic_setup.basic_setup
+    | `None -> None
   in
   let () =
+    let callback =
+      let%arr cm and compute_extensions in
+      fun value ->
+        let open State in
+        let extensions = compute_extensions value @ Option.to_list setup_extension in
+        cm.send_transaction (fun state ->
+          Editor_state.update
+            state
+            [ Transaction_spec.create
+                ~effects:
+                  [ State_effect_type.of_
+                      State_effect.reconfigure
+                      (Extension.of_list extensions)
+                  ]
+                ()
+            ])
+    in
     Bonsai.Edge.on_change ~sexp_of_model:[%sexp_of: M.t] ~equal value ~callback graph
   in
   cm
 ;;
 
-open Parsexp_prefix
-module Protocol = Sexp_grammar_completion_protocol
-
-module Completion = struct
-  type t =
-    { from : int
-    ; to_ : int option
-    ; options : string list
-    ; exhaustive : bool
-    }
-  [@@deriving sexp_of]
-end
-
-let completions ~text ~cursor_position ~completer =
-  let sexp_prefix = Sexp_prefix.of_substring ~pos:0 ~len:cursor_position text in
-  match sexp_prefix with
-  | None | Some (_ :: _, _) ->
-    { Completion.from = cursor_position; options = []; to_ = None; exhaustive = true }
-  (* The pattern below is a complement of the first pattern in this
-     match-expression. In words, it matches the prefix of only the
-     first sexp on a string. *)
-  | Some (([], _) as sexp_prefix) ->
-    let prefix, atom_prefix = Protocol.Prefix.of_sexp_prefix sexp_prefix in
-    let exhaustive, options =
-      match completer prefix with
-      | Ok candidates ->
-        let options =
-          Protocol.Candidates.candidates candidates
-          |> List.filter_map ~f:(fun (candidate : Protocol.Candidate.t) ->
-            if Protocol.Candidate.matches_atom_prefix candidate atom_prefix
-            then (
-              match candidate with
-              | Add_atom { atom_signified; _ } ->
-                let signifier = Sexp.to_string (sexp_of_string atom_signified) in
-                Some signifier
-              | Enter_list -> None
-              | Enter_list_and_add_atom { atom_signified; _ } ->
-                let signifier = Sexp.to_string (sexp_of_string atom_signified) in
-                Some ("(" ^ signifier))
-            else None)
-        in
-        candidates.exhaustive, options
-      | Error _ -> false, []
-    in
-    let from, to_ =
-      match atom_prefix with
-      | Some atom_prefix ->
-        let signifier = Atom_prefix.get_signifier ~parser_input:text atom_prefix in
-        let starts_with_quote = String.is_prefix signifier ~prefix:"\"" in
-        let ends_with_quote =
-          match String.get text cursor_position with
-          | exception _ -> false
-          | '"' -> true
-          | _ -> false
-        in
-        let to_ =
-          if starts_with_quote && ends_with_quote
-          then cursor_position + 1
-          else cursor_position
-        in
-        cursor_position - (Js.string signifier)##.length, to_
-      | None -> cursor_position, cursor_position
-    in
-    { Completion.from; to_ = Some to_; options; exhaustive }
-;;
-
-let autocomplete_extension_of_sexp_grammar ?(include_non_exhaustive_hint = true) grammar =
-  let completer = unstage (Sexp_grammar_completion.complete grammar) in
-  let completion_source =
-    Autocomplete.CompletionSource.of_sync_fun (fun context ->
-      let text =
-        context
-        |> Autocomplete.CompletionContext.state
-        |> State.Editor_state.doc
-        |> Text.Text.to_json
-        |> String.concat ~sep:"\n"
-      in
-      let cursor_position = Autocomplete.CompletionContext.pos context in
-      let { Completion.from; to_; options; exhaustive } =
-        completions ~text ~cursor_position ~completer
-      in
-      let options =
-        List.map options ~f:(fun option ->
-          Autocomplete.Completion.create ~label:option ())
-      in
-      let options =
-        if (not exhaustive) && include_non_exhaustive_hint
-        then (
-          let last_option =
-            Autocomplete.Completion.create
-              ~label:"\"\""
-              ~detail:"list is not exhaustive"
-              ()
-          in
-          options @ [ last_option ])
-        else options
-      in
-      Autocomplete.CompletionResult.create ~from ?to_ ~options ~filter:false ())
-  in
-  Autocomplete.autocompletion
-    (Autocomplete.Config.create
-       ~activate_on_typing:true
-       ~override:[ completion_source ]
-       ())
-;;
-
-module Grammar = struct
-  type t = Sexp_grammar.grammar [@@deriving compare, equal, sexp_of]
-end
-
-let with_sexp_grammar_autocompletion
-  ?(extra_extension = Basic_setup.basic_setup)
-  ?include_non_exhaustive_hint
-  ~name
-  grammar
-  =
-  with_dynamic_extensions
-    (module Grammar)
-    ~equal:[%equal: Grammar.t]
-    ~name
-    ~initial_state:
-      (State.Editor_state.create
-         (State.Editor_state_config.create ~extensions:[ extra_extension ] ()))
-    ~compute_extensions:
-      (Bonsai.return (fun grammar ->
-         [ autocomplete_extension_of_sexp_grammar
-             ?include_non_exhaustive_hint
-             { untyped = grammar }
-         ; extra_extension
-         ]))
-    (let%map grammar = grammar in
-     grammar.Sexp_grammar.untyped)
-;;
-
-module Private = struct
-  module For_tests = struct
-    module Completion = Completion
-
-    let completions ~text ~cursor_position ~grammar =
-      let completer = unstage (Sexp_grammar_completion.complete grammar) in
-      completions ~text ~cursor_position ~completer
-    ;;
-
-    module Path_and_generation = Path_and_generation
-  end
+module Private_for_tests = struct
+  module Path_and_generation = Path_and_generation
 end

@@ -68,6 +68,7 @@ module Text : sig
     val equal : t -> t -> bool [@@js.call "eq"]
     val iter : t -> ?dir:int -> unit -> Text_iterator.t [@@js.call]
     val iter_range : t -> from:int -> ?to_:int -> unit -> Text_iterator.t [@@js.call]
+    val iter_lines : t -> ?from:int -> ?to_:int -> unit -> Text_iterator.t [@@js.call]
     val to_json : t -> string list [@@js.call "toJSON"]
     val of_ : string list -> t [@@js.global "of"]
     val of_array : string array -> t [@@js.global "of"]
@@ -120,6 +121,9 @@ module State : sig
   module State_effect : sig
     type t = state_effect
 
+    val value : t -> 'a [@@js.get]
+    val is : t -> type_:'a State_effect_type.t -> bool [@@js.call]
+    val define : unit -> 'a State_effect_type.t [@@js.global]
     val reconfigure : Extension.t State_effect_type.t [@@js.global]
   end
   [@@js.scope "StateEffect"]
@@ -310,6 +314,7 @@ module State : sig
     type 'v t
 
     val extension : 'v t -> Extension.t [@@js.get]
+    val init : 'v t -> create:(editor_state -> 'v) -> Extension.t [@@js.call]
     val define : config:'v State_field_config.t -> 'v t [@@js.global]
   end
   [@@js.scope "StateField"]
@@ -402,7 +407,7 @@ module State : sig
 
     val doc : t -> Text.Text.t [@@js.get]
     val selection : t -> Editor_selection.t [@@js.get]
-    val field : t -> 'a State_field.t -> ?require:bool -> unit -> 'a [@@js.call]
+    val field : t -> 'a State_field.t -> 'a option [@@js.call "field"]
     val update : t -> (Transaction_spec.t list[@js.variadic]) -> Transaction.t [@@js.call]
 
     (* Codemirror also accepts a string instead of a Text.t, but that seems
@@ -523,10 +528,12 @@ module View : sig
     type t
 
     val changes : t -> State.Change_set.t [@@js.get]
+    val transactions : t -> State.Transaction.t list [@@js.get]
     val state : t -> State.Editor_state.t [@@js.get]
     val view : t -> editor_view [@@js.get]
     val viewport_changed : t -> bool [@@js.get]
     val doc_changed : t -> bool [@@js.get]
+    val focus_changed : t -> bool [@@js.get]
     val t_of_js : Ojs.t -> t
     val t_to_js : t -> Ojs.t
   end
@@ -630,9 +637,11 @@ module View : sig
     val update_listener : (View_update.t -> unit) State.Facet.multi_out [@@js.global]
     val update : t -> State.Transaction.t list -> unit [@@js.call]
     val dispatch : t -> State.Transaction.t -> unit [@@js.call]
+    val dispatch_specs : t -> State.Transaction_spec.t -> unit [@@js.call "dispatch"]
     val set_state : t -> State.Editor_state.t -> unit [@@js.call]
     val state : t -> State.Editor_state.t [@@js.get]
     val focus : t -> unit [@@js.call]
+    val has_focus : t -> bool [@@js.get]
     val destroy : t -> unit [@@js.call]
     val line_wrapping : State.Extension.t [@@js.global]
     val editable : (bool, bool) State.Facet.t [@@js.global]
@@ -872,6 +881,44 @@ module Autocomplete : sig
   val completion_keymap : View.Key_binding.t list [@@js.global]
 end
 
+module Lint : sig
+  [@@@js.scope "codemirror"]
+  [@@@js.scope "Lint"]
+
+  module Diagnostic : sig
+    type t
+
+    module Severity : sig
+      type t =
+        | Error [@js "error"]
+        | Hint [@js "hint"]
+        | Info [@js "info"]
+        | Warning [@js "warning"]
+      [@@js.enum]
+    end
+
+    val create
+      :  from:int
+      -> to_:int
+      -> severity:Severity.t
+      -> ?mark_class:string
+      -> ?source:string
+      -> message:string
+      -> unit
+      -> t
+    [@@js.builder]
+  end
+
+  val set_diagnostics
+    :  state:State.Editor_state.t
+    -> diagnostics:Diagnostic.t list
+    -> State.Transaction_spec.t
+  [@@js.global]
+
+  val diagnostic_count : State.Editor_state.t -> int [@@js.global]
+  val lint_gutter : unit -> State.Extension.t [@@js.global]
+end
+
 module Commands : sig
   [@@@js.scope "codemirror"]
   [@@@js.scope "Commands"]
@@ -1008,6 +1055,7 @@ module Basic_setup : sig
   [@@@js.scope "Basic_setup"]
 
   val basic_setup : State.Extension.t [@@js.global]
+  val minimal_setup : State.Extension.t [@@js.global]
 end
 
 module Language : sig

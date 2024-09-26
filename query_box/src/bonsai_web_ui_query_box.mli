@@ -7,11 +7,10 @@ open Bonsai_web
       list is closed, the callback is not invoked, because of course nothing is
       selected; instead the suggestion list is opened.
     - "Clicking" on the suggestion list invokes [on_select].
-    - Focusing the the text input opens the suggestion list
     - "Escape" or unfocusing the text input closes the suggestion list
     - "Tab" and "Down Arrow" move the selected item down. If the suggestion
       list is closed, it gets opened, and the selected item is set to the top
-      item.
+      item. 
     - "Shift-Tab" and "Up Arrow" move the selected item up. Again, if the list
       is closed, it gets opened, but selection is sent to the bottom item.
     - Editing the textbox content re-filters the items.
@@ -45,6 +44,35 @@ module Expand_direction : sig
   [@@deriving sexp, compare, enumerate, equal]
 end
 
+module On_focus : sig
+  type t =
+    | Select_first_item
+    (** Select the the first item in the suggestion list. If [suggestion_list_kind] is
+        [Transient_overlay]  this will also cause the suggestion list to appear as soon
+        as the textbox is focused. *)
+    | Do_nothing
+    (** Do nothing until the user starts typing, or presses up/down. If
+        [suggestion_list_kind] is [Transient_overlay] the suggestion list will remain
+        hidden until the user begins typing. *)
+  [@@deriving sexp, compare, enumerate, equal]
+end
+
+module On_hover_item : sig
+  type t =
+    | Select_hovered_item
+    (** When the mouse hovers over an item in the suggestion list, select that item.
+
+        This behavior will change the value of [selected_item] when hovered, which can
+        be potentially dangerous if you read [selected_item]. Bonsai_web_ui_form is not 
+        dangerous, because its value only updates upon clicking or pressing enter
+        (whenever [on_select] is called), but if you use this library directly, and also
+        read [selected_item], then your selection will change upon hovers if you pass
+        [Select_hovered_item] which can be dangerous. *)
+    | Do_nothing
+    (** Do nothing when the mouse hovers over an item in the suggestion list. *)
+  [@@deriving sexp, compare, enumerate, equal]
+end
+
 type 'k t =
   { selected_item : 'k option
   ; view : Vdom.Node.t
@@ -65,6 +93,12 @@ val create
   -> ?expand_direction:Expand_direction.t Bonsai.t
        (** If provided, the attributes in this value will be attached to
       the vdom node representing the currently selected item in the list. *)
+  -> ?on_focus:On_focus.t Bonsai.t
+       (** The value defaults to Select_first_item. Read doc comment on the type for more
+           info. *)
+  -> ?on_hover_item:On_hover_item.t Bonsai.t
+       (** The value defaults to Select_hovered_item. Read doc comment on the type for more
+           info. *)
   -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
        (** If provided, [extra_list_container_attr] will be added to the
       vdom node containing the list of suggestions. *)
@@ -117,6 +151,8 @@ val stringable
   -> ?max_visible_items:int Bonsai.t
   -> ?suggestion_list_kind:Suggestion_list_kind.t Bonsai.t
   -> ?expand_direction:Expand_direction.t Bonsai.t
+  -> ?on_focus:On_focus.t Bonsai.t
+  -> ?on_hover_item:On_hover_item.t Bonsai.t
   -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_input_attr:Vdom.Attr.t Bonsai.t

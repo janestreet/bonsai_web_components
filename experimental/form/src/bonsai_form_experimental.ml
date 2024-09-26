@@ -184,8 +184,7 @@ module Dropdown = struct
     let%sub value, inject =
       form_element_dynamic_model ~default ~equal:[%equal: M.t] () graph
     in
-    let%arr value = value
-    and inject = inject in
+    let%arr value and inject in
     let view =
       Vdom_input_widgets.Dropdown.of_enum
         ~merge_behavior:Legacy_dont_merge

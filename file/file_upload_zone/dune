@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_ui_file_upload_zone)
+ (public_name bonsai_web_components.bonsai_web_ui_file_upload_zone)
+ (libraries core js_of_ocaml virtual_dom.ui_effect virtual_dom)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx)))

@@ -115,12 +115,12 @@ let component
   ~set_header_client_rect
   _graph
   =
-  let%arr set_column_width = set_column_width
-  and set_header_client_rect = set_header_client_rect
-  and headers = headers
-  and column_widths = column_widths
-  and autosize = autosize
-  and themed_attrs = themed_attrs in
+  let%arr set_column_width
+  and set_header_client_rect
+  and headers
+  and column_widths
+  and autosize
+  and themed_attrs in
   let header_rows =
     render_header headers ~themed_attrs ~set_column_width ~column_widths ~autosize
   in

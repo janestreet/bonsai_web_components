@@ -122,20 +122,28 @@ let%expect_test "autosizing table initial HTML" =
     +|    <div class="body">
     +|      <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
     +|      <div @key=bottom_border class="body_row">
@@ -198,113 +206,143 @@ let%expect_test "column visibility" =
                   class="header_cell header_label leaf_header leaf_header_resizable"
                   size_tracker=<fun>
     === DIFF HUNK ===
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }>
+                    <input @on_input> </input>
+                    hello
+                  </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
+                     style={
+    +|                 display: none;
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+    -|                 }> 1.000000 </div>
+    +|                 }> </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
                      }>
-                  <input @on_input> </input>
-                  hello
-                </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-    -|               }> 1.000000 </div>
-    +|                 display: none;
-    +|               }> </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 1 </div>
-              </div>
-            </div>
-            <div class="body_row row" style={ height: 1px; display: table-row; }>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 1 </div>
     === DIFF HUNK ===
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
+                     style={
+    +|                 display: none;
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+    -|                 }> 2.000000 </div>
+    +|                 }> </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
                      }>
-                  <input @on_input> </input>
-                  there
-                </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-    -|               }> 2.000000 </div>
-    +|                 display: none;
-    +|               }> </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> 2 </div>
-              </div>
-            </div>
-            <div class="body_row row" style={ height: 1px; display: table-row; }>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> 2 </div>
     === DIFF HUNK ===
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }>
+                    <input @on_input> </input>
+                    world
+                  </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
+                     style={
+    +|                 display: none;
+                       height: 1px;
+                       min-height: 1px;
+                       max-height: 1px;
+                     }>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+    -|                 }> 2.000000 </div>
+    +|                 }> </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class"
                      style={
                        height: 1px;
                        min-height: 1px;
                        max-height: 1px;
                      }>
-                  <input @on_input> </input>
-                  world
-                </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-    -|               }> 2.000000 </div>
-    +|                 display: none;
-    +|               }> </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell"
-                     @on_click
-                     style={
-                       height: 1px;
-                       min-height: 1px;
-                       max-height: 1px;
-                     }> --- </div>
-              </div>
-            </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding style={ height: 0px; }> </div>
-          </div>
+                  <div class="body_cell"
+                       @on_click
+                       style={
+                         height: 1px;
+                         min-height: 1px;
+                         max-height: 1px;
+                       }> --- </div>
     |}]
 ;;
 
@@ -365,37 +403,53 @@ let%expect_test "stabilization of view range" =
         <div class="body">
           <div @key=top_padding> </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 0 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hello
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hello
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                there
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  there
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2 </div>
+              </div>
             </div>
           </div>
           <div @key=bottom_border class="body_row">
@@ -418,37 +472,45 @@ let%expect_test "stabilization of view range" =
   [%expect
     {|
     === DIFF HUNK ===
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+                    <input @on_input> </input>
+                    there
+                  </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2 </div>
+                </div>
               </div>
             </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 4 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            world
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 4 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              world
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> --- </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> --- </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div @key=bottom_border class="body_row">
@@ -588,37 +650,53 @@ let%expect_test "big table" =
         <div class="body">
           <div @key=top_padding> </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 51 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hi
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 51 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 25.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hi
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 100 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 25.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 100 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 52 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hi
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 52 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 26.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hi
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 100 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 26.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 100 </div>
+              </div>
             </div>
           </div>
           <div @key=bottom_border class="body_row">
@@ -636,7 +714,6 @@ let%expect_test "big table" =
   [%expect
     {|
     === DIFF HUNK ===
-              </th>
               <th colspan="1"
                   class="header_cell header_label leaf_header leaf_header_resizable"
                   size_tracker=<fun>>
@@ -651,143 +728,207 @@ let%expect_test "big table" =
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 51 </div>
-    +|          <div class="body_cell" @on_click> 55 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hi
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 51 </div>
+    +|            <div class="body_cell" @on_click> 55 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 25.000000 </div>
-    +|          <div class="body_cell" @on_click> 27.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    hi
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 100 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 25.000000 </div>
+    +|            <div class="body_cell" @on_click> 27.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 100 </div>
+                </div>
               </div>
             </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 52 </div>
-    +|          <div class="body_cell" @on_click> 56 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hi
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 52 </div>
+    +|            <div class="body_cell" @on_click> 56 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 26.000000 </div>
-    +|          <div class="body_cell" @on_click> 28.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 57 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 28.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 58 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 29.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 59 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 29.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 60 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 30.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 61 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 30.000000 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 100 </div>
-    +|        </div>
-    +|      </div>
-    +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 62 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hi
-    +|          </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 31.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    hi
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 100 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 26.000000 </div>
+    +|            <div class="body_cell" @on_click> 28.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 57 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 28.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 58 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 29.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 59 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 29.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 60 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 30.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 61 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 30.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 100 </div>
+    +|          </div>
+    +|        </div>
+    +|      </div>
+    +|      <div class="body_row row">
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 62 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hi
+    +|            </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 31.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 100 </div>
+                </div>
               </div>
             </div>
             <div @key=bottom_border class="body_row">
@@ -819,9 +960,6 @@ let%expect_test "typing into a column, leaving that column, and then coming back
   [%expect
     {|
     === DIFF HUNK ===
-                  <div>
-                    <span> d </span>
-                  </div>
                 </div>
               </th>
             </tr>
@@ -829,30 +967,33 @@ let%expect_test "typing into a column, leaving that column, and then coming back
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 51 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-    -|            hi
-    +|            hi hello world
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 51 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 25.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+    -|              hi
+    +|              hi hello world
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 100 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 25.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 100 </div>
+                </div>
               </div>
             </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 52 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
     |}];
   (* move out of bounds (really 99-25 through 100) *)
   Test.set_bounds test ~low:99 ~high:99;
@@ -910,37 +1051,53 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         <div class="body">
           <div @key=top_padding> </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 51 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hi hello world
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 51 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 25.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hi hello world
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 100 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 25.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 100 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 52 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hi
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 52 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 26.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hi
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 100 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 26.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 100 </div>
+              </div>
             </div>
           </div>
           <div @key=bottom_border class="body_row">
@@ -1006,7 +1163,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
           [ Table_expert.Columns.Dynamic_cells.column
               ~header:(Bonsai.return (Vdom.Node.text "key"))
               ~cell:(fun ~key ~data:_ _graph ->
-                let%arr key = key in
+                let%arr key in
                 Vdom.Node.textf "%d" key)
               ()
           ]
@@ -1102,54 +1259,78 @@ let%expect_test "sorting legacy renderer" =
         <div class="body">
           <div @key=top_padding> </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 0 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hello
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hello
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                there
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  there
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 4 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                world
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 4 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  world
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> --- </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> --- </div>
+              </div>
             </div>
           </div>
           <div @key=bottom_border class="body_row">
@@ -1239,70 +1420,86 @@ let%expect_test "sorting legacy renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 0 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            hello
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              hello
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     === DIFF HUNK ===
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+                    <input @on_input> </input>
+                    world
+                  </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> --- </div>
+                </div>
               </div>
             </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div @key=bottom_border class="body_row">
@@ -1350,70 +1547,86 @@ let%expect_test "sorting legacy renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     === DIFF HUNK ===
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+                    <input @on_input> </input>
+                    world
+                  </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> --- </div>
+                </div>
               </div>
             </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 0 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            hello
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              hello
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div @key=bottom_border class="body_row">
@@ -1455,15 +1668,15 @@ let%expect_test "sorting legacy renderer" =
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
               </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
     |}];
   (* but in reverse, notice that [None]s stay on the bottom *)
   Handle.click_on test.handle ~selector:"th:nth-child(4) > div" ~get_vdom:test.get_vdom;
@@ -1495,72 +1708,96 @@ let%expect_test "sorting legacy renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            there
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              there
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    hello
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
+                </div>
               </div>
             </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            there
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 2.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              there
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 2 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 2.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 2 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    world
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     |}]
 ;;
 
@@ -1623,54 +1860,78 @@ let%expect_test "sorting default renderer" =
         <div class="body">
           <div @key=top_padding> </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 0 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                hello
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  hello
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 1 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                there
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  there
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2 </div>
+              </div>
             </div>
           </div>
           <div class="body_row row">
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 4 </div>
-            </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click>
-                <input @on_input> </input>
-                world
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 4 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> 2.000000 </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click>
+                  <input @on_input> </input>
+                  world
+                </div>
+              </div>
             </div>
-            <div class="autosize_table_cell_wrapper">
-              <div class="body_cell" @on_click> --- </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> 2.000000 </div>
+              </div>
+            </div>
+            <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+              <div class="ppx_css_anonymous_class">
+                <div class="body_cell" @on_click> --- </div>
+              </div>
             </div>
           </div>
           <div @key=bottom_border class="body_row">
@@ -1771,70 +2032,86 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 0 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            hello
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              hello
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     === DIFF HUNK ===
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+                    <input @on_input> </input>
+                    world
+                  </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> --- </div>
+                </div>
               </div>
             </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div @key=bottom_border class="body_row">
@@ -1890,70 +2167,86 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     === DIFF HUNK ===
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+                    <input @on_input> </input>
+                    world
+                  </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> --- </div>
+                </div>
               </div>
             </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 0 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            hello
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              hello
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div @key=bottom_border class="body_row">
@@ -2012,14 +2305,14 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
     |}];
   (* Ctrl+clicking while either enabled: should add another to multiselect *)
   Bonsai.Expert.Var.set multisort_columns_when `Shift_or_ctrl_click;
@@ -2124,72 +2417,96 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            there
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              there
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    hello
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
+                </div>
               </div>
             </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            there
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 2.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              there
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 2 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 2.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 2 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    world
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     |}];
   (* Shift+clicking while disabled for multiselect *)
   Bonsai.Expert.Var.set multisort_columns_when `Ctrl_click;
@@ -2228,72 +2545,96 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 0 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            hello
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              hello
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  there
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    there
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 2 </div>
+                </div>
               </div>
             </div>
     -|      <div class="body_row row">
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 0 </div>
-    -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click>
-    -|            <input @on_input> </input>
-    -|            hello
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1.000000 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click>
+    -|              <input @on_input> </input>
+    -|              hello
+    -|            </div>
+    -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper">
-    -|          <div class="body_cell" @on_click> 1 </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1.000000 </div>
+    -|          </div>
+    -|        </div>
+    -|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    -|          <div class="ppx_css_anonymous_class">
+    -|            <div class="body_cell" @on_click> 1 </div>
+    -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 4 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  world
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 2.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    world
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> --- </div>
-              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
     |}];
   (* Shift+clicking while enabled for multiselect: should select both *)
   Bonsai.Expert.Var.set multisort_columns_when `Shift_click;
@@ -2463,14 +2804,14 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
     |}];
   (* Clicking already sorted twice removed all sorts *)
   Handle.click_on test.handle ~selector:"th:nth-child(4) > div" ~get_vdom:test.get_vdom;
@@ -2504,14 +2845,14 @@ let%expect_test "sorting default renderer" =
           <div class="body">
             <div @key=top_padding> </div>
             <div class="body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
     |}]
 ;;
 
@@ -2523,7 +2864,10 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
       ~should_set_bounds:false
   in
   Handle.store_view test.handle;
-  Handle.click_on test.handle ~get_vdom:test.get_vdom ~selector:"div div div div div div";
+  Handle.click_on
+    test.handle
+    ~get_vdom:test.get_vdom
+    ~selector:"div div div div div div div";
   Handle.show_diff test.handle;
   [%expect
     {|
@@ -2548,37 +2892,53 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
             <div @key=top_padding> </div>
     -|      <div class="body_row row">
     +|      <div class="body_row_focused body_row row">
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 0 </div>
-              </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click>
-                  <input @on_input> </input>
-                  hello
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1.000000 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click>
+                    <input @on_input> </input>
+                    hello
+                  </div>
+                </div>
               </div>
-              <div class="autosize_table_cell_wrapper">
-                <div class="body_cell" @on_click> 1 </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1.000000 </div>
+                </div>
+              </div>
+              <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+                <div class="ppx_css_anonymous_class">
+                  <div class="body_cell" @on_click> 1 </div>
+                </div>
               </div>
             </div>
     +|      <div class="body_row row">
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 1 </div>
-    +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click>
-    +|            <input @on_input> </input>
-    +|            there
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2.000000 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click>
+    +|              <input @on_input> </input>
+    +|              there
+    +|            </div>
+    +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper">
-    +|          <div class="body_cell" @on_click> 2 </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2.000000 </div>
+    +|          </div>
+    +|        </div>
+    +|        <div class="autosize_table_cell_wrapper ppx_css_anonymous_class">
+    +|          <div class="ppx_css_anonymous_class">
+    +|            <div class="body_cell" @on_click> 2 </div>
+    +|          </div>
     +|        </div>
     +|      </div>
             <div @key=bottom_border class="body_row">
@@ -2594,7 +2954,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
   Handle.click_on
     test.handle
     ~get_vdom:test.get_vdom
-    ~selector:"div div div div div:nth-child(2) div";
+    ~selector:"div div div div div:nth-child(2) div div";
   Handle.show_diff test.handle;
   [%expect {| |}];
   Handle.do_actions test.handle [ Unlock_focus ];
@@ -2602,7 +2962,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
   Handle.click_on
     test.handle
     ~get_vdom:test.get_vdom
-    ~selector:"div div div div div:nth-child(2) div";
+    ~selector:"div div div div div:nth-child(2) div div";
   Handle.show_diff test.handle;
   [%expect {| scrolling to index 0 at 0.0px |}]
 ;;

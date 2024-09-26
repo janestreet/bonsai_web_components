@@ -3,28 +3,7 @@ open! Bonsai_web
 open! Bonsai_web_test
 open! Bonsai.Let_syntax
 open! Import
-
-module type S = sig
-  type t [@@deriving sexp, sexp_grammar]
-end
-
-let sexp_form_handle
-  (type a)
-  ?optimize
-  ?get_vdom
-  ?customizations
-  ?allow_duplication_of_list_items
-  (module M : S with type t = a)
-  =
-  let form =
-    Auto_generated.form
-      (module M)
-      ?customizations
-      ?allow_duplication_of_list_items
-      ~allow_updates_when_focused:`Never
-  in
-  Handle.create ?optimize (form_result_spec ?get_vdom M.sexp_of_t) form
-;;
+open Test_util
 
 let%expect_test "nothing form" =
   let module T = struct
@@ -1592,15 +1571,14 @@ let%expect_test "customizing a tuple within a list" =
         && Sexp.equal value ([%sexp_of: string] "my_pair"))
       (fun (with_tag : Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t) ~recurse graph ->
         let grammar =
-          let%arr with_tag = with_tag in
+          let%arr with_tag in
           with_tag.grammar
         in
         match%sub (grammar : Sexplib0.Sexp_grammar.grammar Bonsai.t) with
         | List (Cons (first, Cons (second, Empty))) ->
           let first = recurse first graph in
           let second = recurse second graph in
-          let%arr first = first
-          and second = second in
+          let%arr first and second in
           let view =
             Form.View.tuple
               [ Form.view (Form.label "Key" first); Form.view (Form.label "Data" second) ]

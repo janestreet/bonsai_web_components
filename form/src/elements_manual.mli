@@ -486,6 +486,17 @@ module Number : sig
     -> unit
     -> Bonsai.graph
     -> (float, Vdom.Node.t) Form.t Bonsai.t
+
+  val float_opt
+    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?min:float
+    -> ?max:float
+    -> ?default:float
+    -> step:float
+    -> ?allow_updates_when_focused:[ `Always | `Never ]
+    -> unit
+    -> Bonsai.graph
+    -> (float option, Vdom.Node.t) Form.t Bonsai.t
 end
 
 module Range : sig
@@ -683,6 +694,8 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
@@ -698,6 +711,8 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
@@ -709,7 +724,9 @@ module Query_box : sig
     -> ('k, Vdom.Node.t) Form.t Bonsai.t
 
   val single
-    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -725,7 +742,9 @@ module Query_box : sig
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val single_opt
-    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t

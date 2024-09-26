@@ -47,13 +47,8 @@ end
 module Style =
   [%css
   stylesheet
-    ~rewrite:
-      [ "--font-family", "--font-family"
-      ; "--font-size", "--font-size"
-      ; "--accent-h", "--accent-h"
-      ; "--accent-s", "--accent-s"
-      ; "--accent-l", "--accent-l"
-      ]
+    ~dont_hash:
+      [ "--font-family"; "--font-size"; "--accent-h"; "--accent-s"; "--accent-l" ]
     {|
       .form {
         --font-size: 12px;

@@ -49,7 +49,7 @@ module Optional = struct
             | None -> Bonsai.return (Form.return () |> Form.map_view ~f:(fun () -> None))
             | Some ->
               let form = form graph in
-              let%arr form = form in
+              let%arr form in
               Form.map_view ~f:Option.some form
           ;;
 
@@ -65,11 +65,10 @@ module Optional = struct
           let finalize_view picker_view inner _graph =
             match%sub inner with
             | Ok (_, inner) ->
-              let%arr inner = inner
-              and picker_view = picker_view in
+              let%arr inner and picker_view in
               picker_view, Form.view inner
             | Error _ ->
-              let%arr picker_view = picker_view in
+              let%arr picker_view in
               picker_view, None
           ;;
         end)

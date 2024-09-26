@@ -46,8 +46,7 @@ let return ?(here = Stdlib.Lexing.dummy_pos) ?sexp_of_t ?(equal = phys_equal) va
 
 let return_settable ?sexp_of_model ~equal value graph =
   let value, set_value = Bonsai.state value ?sexp_of_model ~equal graph in
-  let%arr value = value
-  and set_value = set_value in
+  let%arr value and set_value in
   { value = Ok value; view = (); set = set_value }
 ;;
 
@@ -189,9 +188,7 @@ module Dynamic = struct
       | true -> Bonsai.return ()
       | false ->
         let after_display =
-          let%arr effect = effect
-          and set_is_loaded = set_is_loaded
-          and form = form in
+          let%arr effect and set_is_loaded and form in
           let%bind.Effect default = effect in
           Ui_effect.Many [ set form default; set_is_loaded true ]
         in
@@ -203,7 +200,7 @@ module Dynamic = struct
 
   let with_default_from_optional_effect effect form graph =
     let effect =
-      let%arr effect = effect in
+      let%arr effect in
       (* Returning [Effect.never] means that the subsequent [Form.set] will just
          never occur, which is what we'd like to happen when a none value is produced. *)
       match%bind.Effect effect with
@@ -215,7 +212,7 @@ module Dynamic = struct
 
   let sync_with ?sexp_of_model ~equal ~store_value ~store_set form graph =
     let%sub interactive_value, interactive_set =
-      let%arr form = form in
+      let%arr form in
       Or_error.ok (value form), set form
     in
     Bonsai_extra.mirror'
@@ -232,7 +229,7 @@ module Dynamic = struct
   let with_default default form graph =
     let get_default = Bonsai.peek default graph in
     let effect =
-      let%arr get_default = get_default in
+      let%arr get_default in
       match%bind.Effect get_default with
       | Active default -> Effect.return default
       | Inactive -> Effect.never
@@ -250,8 +247,8 @@ module Dynamic = struct
       | true -> Bonsai.return ()
       | false ->
         let after_display =
-          let%arr default = default
-          and set_is_loaded = set_is_loaded
+          let%arr default
+          and set_is_loaded
           and { set; _ } = form in
           Effect.lazy_ (lazy (Ui_effect.Many [ set default; set_is_loaded true ]))
         in
@@ -260,9 +257,9 @@ module Dynamic = struct
     in
     let () =
       let on_activate =
-        let%arr default = default
+        let%arr default
         and { set; _ } = form
-        and is_loaded = is_loaded in
+        and is_loaded in
         if is_loaded then Effect.lazy_ (lazy (set default)) else Effect.Ignore
       in
       Bonsai.Edge.lifecycle ~on_activate graph
@@ -289,8 +286,7 @@ module Dynamic = struct
     end
     in
     let callback =
-      let%map f = f
-      and on_error = on_error in
+      let%map f and on_error in
       function
       | Error e -> on_error e
       | Ok new_value -> f new_value
@@ -331,13 +327,13 @@ module Dynamic = struct
         if one_at_a_time
         then poll parse graph
         else (
-          let%arr parse = parse in
+          let%arr parse in
           fun a ->
             let%map.Effect result = parse a in
             Poll_result.Finished result)
       in
       let effect =
-        let%arr parse = parse in
+        let%arr parse in
         function
         | Error e -> Poll_result.Finished (Error e) |> Ui_effect.return
         | Ok a ->
@@ -376,9 +372,7 @@ module Dynamic = struct
              ~time_to_stable:(Bonsai.return time_to_stable)
              graph)
     in
-    let%arr t = t
-    and validation = validation
-    and is_stable = is_stable in
+    let%arr t and validation and is_stable in
     let validating_error = Error (Error.of_string "validating...") in
     project'
       t
@@ -404,7 +398,7 @@ module Dynamic = struct
     graph
     =
     let parse =
-      let%arr f = f in
+      let%arr f in
       fun value ->
         let%bind.Effect validation = f value in
         Effect.return

@@ -41,8 +41,7 @@ let%expect_test "render some notifications and test that they close as expected"
             graph
         in
         let vdom = Notifications.Basic.render notifications graph in
-        let%arr notifications = notifications
-        and vdom = vdom in
+        let%arr notifications and vdom in
         notifications, vdom)
   in
   Handle.show handle;
@@ -250,8 +249,7 @@ let%test_module "generic notification test" =
           Notifications.render
             notifications
             ~f:(fun ~close element _graph ->
-              let%arr element = element
-              and close = close in
+              let%arr element and close in
               Vdom.Node.div
                 ~attrs:
                   [ Notification_type.to_attr element
@@ -261,8 +259,7 @@ let%test_module "generic notification test" =
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in
@@ -310,12 +307,11 @@ let%test_module "generic notification test" =
         Notifications.render
           notifications
           ~f:(fun ~close:_ element _graph ->
-            let%arr element = element in
+            let%arr element in
             Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)])
           graph
       in
-      let%arr vdom = vdom
-      and notifications = notifications in
+      let%arr vdom and notifications in
       vdom, notifications
     ;;
 
@@ -580,8 +576,7 @@ let%test_module "generic notification test" =
           Notifications.render
             notifications
             ~f:(fun ~close element _graph ->
-              let%arr element = element
-              and close = close in
+              let%arr element and close in
               Vdom.Node.div
                 ~attrs:
                   [ Notification_type.to_attr element
@@ -591,8 +586,7 @@ let%test_module "generic notification test" =
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in
@@ -696,15 +690,14 @@ let%test_module "generic notification test" =
           Notifications.render
             notifications
             ~f:(fun ~close:_ element _graph ->
-              let%arr element = element in
+              let%arr element in
               Vdom.Node.div
                 ~attrs:[ Notification_type.to_attr element ]
                 [ Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)]
                 ])
             graph
         in
-        let%arr vdom = vdom
-        and notifications = notifications in
+        let%arr vdom and notifications in
         vdom, notifications
       in
       let handle = Handle.create (module Result_spec) computation in
