@@ -65,55 +65,53 @@ let%expect_test "setting cyclical works" =
   [%expect {| Integer |}]
 ;;
 
-let%test_module "errors" =
-  (module struct
-    let%expect_test "trying to access non-existent tyvars doesn't work" =
-      retrieve_and_print (Ok Context.empty) "a";
-      [%expect {| "Could not retrieve tyvar value" |}];
-      let ctx = Context.register_many Context.empty [ "a" ] [ Integer ] in
-      retrieve_and_print ctx "b";
-      [%expect {| "Could not retrieve tyvar value" |}];
-      let ctx' =
-        let%bind.Or_error ctx in
-        Context.unregister_many ctx [ "a" ]
-      in
-      retrieve_and_print ctx' "a";
-      [%expect {| "Could not retrieve tyvar value" |}]
-    ;;
+module%test [@name "errors"] _ = struct
+  let%expect_test "trying to access non-existent tyvars doesn't work" =
+    retrieve_and_print (Ok Context.empty) "a";
+    [%expect {| "Could not retrieve tyvar value" |}];
+    let ctx = Context.register_many Context.empty [ "a" ] [ Integer ] in
+    retrieve_and_print ctx "b";
+    [%expect {| "Could not retrieve tyvar value" |}];
+    let ctx' =
+      let%bind.Or_error ctx in
+      Context.unregister_many ctx [ "a" ]
+    in
+    retrieve_and_print ctx' "a";
+    [%expect {| "Could not retrieve tyvar value" |}]
+  ;;
 
-    let%expect_test "registering unequal lengths doesn't work" =
-      let ctx = Context.register_many Context.empty [ "a" ] [ Integer; Float ] in
-      retrieve_and_print ctx "a";
-      [%expect
-        {| "Internal error: unequal length lists for defn's list of tyvars and the tyvars defined in the tycon" |}];
-      let ctx = Context.register_many Context.empty [ "a"; "b" ] [ Float ] in
-      retrieve_and_print ctx "a";
-      [%expect
-        {| "Internal error: unequal length lists for defn's list of tyvars and the tyvars defined in the tycon" |}]
-    ;;
+  let%expect_test "registering unequal lengths doesn't work" =
+    let ctx = Context.register_many Context.empty [ "a" ] [ Integer; Float ] in
+    retrieve_and_print ctx "a";
+    [%expect
+      {| "Internal error: unequal length lists for defn's list of tyvars and the tyvars defined in the tycon" |}];
+    let ctx = Context.register_many Context.empty [ "a"; "b" ] [ Float ] in
+    retrieve_and_print ctx "a";
+    [%expect
+      {| "Internal error: unequal length lists for defn's list of tyvars and the tyvars defined in the tycon" |}]
+  ;;
 
-    let%expect_test "unregistering non-existent tyvars doesn't work" =
-      let ctx = Context.unregister_many Context.empty [ "a" ] in
-      retrieve_and_print ctx "a";
-      [%expect
-        {| ("Internal error: couldn't unregister tyvar" (to_remove a) (tyvars ())) |}]
-    ;;
+  let%expect_test "unregistering non-existent tyvars doesn't work" =
+    let ctx = Context.unregister_many Context.empty [ "a" ] in
+    retrieve_and_print ctx "a";
+    [%expect
+      {| ("Internal error: couldn't unregister tyvar" (to_remove a) (tyvars ())) |}]
+  ;;
 
-    let%expect_test "registering cyclic that depends on non-existent tyvars doesn't work" =
-      let ctx = Context.register_many Context.empty [ "a" ] [ Tyvar "a" ] in
-      retrieve_and_print ctx "a";
-      [%expect
-        {|
-        ("Internal error: self-referencing tyvar without a definition" (name a)
-         (tyvars ()))
-        |}];
-      let ctx = Context.register_many Context.empty [ "a" ] [ Tyvar "b" ] in
-      retrieve_and_print ctx "a";
-      [%expect
-        {|
-        ("Internal error: self-referencing tyvar without a definition" (name a)
-         (tyvars ()))
-        |}]
-    ;;
-  end)
-;;
+  let%expect_test "registering cyclic that depends on non-existent tyvars doesn't work" =
+    let ctx = Context.register_many Context.empty [ "a" ] [ Tyvar "a" ] in
+    retrieve_and_print ctx "a";
+    [%expect
+      {|
+      ("Internal error: self-referencing tyvar without a definition" (name a)
+       (tyvars ()))
+      |}];
+    let ctx = Context.register_many Context.empty [ "a" ] [ Tyvar "b" ] in
+    retrieve_and_print ctx "a";
+    [%expect
+      {|
+      ("Internal error: self-referencing tyvar without a definition" (name a)
+       (tyvars ()))
+      |}]
+  ;;
+end

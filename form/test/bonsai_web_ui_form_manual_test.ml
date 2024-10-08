@@ -859,27 +859,56 @@ let%expect_test "setting into a paired string textbox * int textbox " =
     |}]
 ;;
 
-let%test_module "Form.all" =
-  (module struct
-    let make_handle () =
-      let component graph =
-        let string_forms =
-          Bonsai.all
-            (List.init 3 ~f:(fun _ ->
-               Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph))
-        in
-        let%arr string_forms in
-        Form.all string_forms |> Form.map_view ~f:(fun l -> Vdom.Node.div l)
+module%test [@name "Form.all"] _ = struct
+  let make_handle () =
+    let component graph =
+      let string_forms =
+        Bonsai.all
+          (List.init 3 ~f:(fun _ ->
+             Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph))
       in
-      Handle.create (form_result_spec [%sexp_of: string list]) component
-    ;;
+      let%arr string_forms in
+      Form.all string_forms |> Form.map_view ~f:(fun l -> Vdom.Node.div l)
+    in
+    Handle.create (form_result_spec [%sexp_of: string list]) component
+  ;;
 
-    let%expect_test "typing into a list of string textboxes " =
-      let handle = make_handle () in
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ("" "" ""))
+  let%expect_test "typing into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ("" "" ""))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+      </div>
+      |}];
+    Handle.input_text handle ~selector:"input:nth-child(1)" ~text:"hello world";
+    Handle.input_text handle ~selector:"input:nth-child(2)" ~text:"quack";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok ("" "" ""))
+      +|(Ok ("hello world" quack ""))
 
         ==============
         <div>
@@ -887,13 +916,15 @@ let%test_module "Form.all" =
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized=quack
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
@@ -902,47 +933,44 @@ let%test_module "Form.all" =
                  value:normalized=""
                  @on_input> </input>
         </div>
-        |}];
-      Handle.input_text handle ~selector:"input:nth-child(1)" ~text:"hello world";
-      Handle.input_text handle ~selector:"input:nth-child(2)" ~text:"quack";
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|(Ok ("" "" ""))
-        +|(Ok ("hello world" quack ""))
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ("" "" ""))
 
-    let%expect_test "setting into a list of string textboxes " =
-      let handle = make_handle () in
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ("" "" ""))
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+      </div>
+      |}];
+    Handle.do_actions handle [ [ "hello world"; "quack"; "" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok ("" "" ""))
+      +|(Ok ("hello world" quack ""))
 
         ==============
         <div>
@@ -950,13 +978,15 @@ let%test_module "Form.all" =
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized=quack
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
@@ -965,153 +995,152 @@ let%test_module "Form.all" =
                  value:normalized=""
                  @on_input> </input>
         </div>
-        |}];
-      Handle.do_actions handle [ [ "hello world"; "quack"; "" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|(Ok ("" "" ""))
-        +|(Ok ("hello world" quack ""))
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes (more values than forms)" =
+    let handle = make_handle () in
+    Handle.store_view handle;
+    Handle.do_actions handle [ [ "hello world"; "quack"; ""; "oh no" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      ("WARNING: Form.set called on result of Form.all with a list value whose length doesn't match the number of forms "
+       "more values than forms" (form_count 3) (edits_count 4)
+       "dropping left-over values")
 
-    let%expect_test "setting into a list of string textboxes (more values than forms)" =
-      let handle = make_handle () in
-      Handle.store_view handle;
-      Handle.do_actions handle [ [ "hello world"; "quack"; ""; "oh no" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        ("WARNING: Form.set called on result of Form.all with a list value whose length doesn't match the number of forms "
-         "more values than forms" (form_count 3) (edits_count 4)
-         "dropping left-over values")
+      -|(Ok ("" "" ""))
+      +|(Ok ("hello world" quack ""))
 
-        -|(Ok ("" "" ""))
-        +|(Ok ("hello world" quack ""))
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=quack
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=""
+                 @on_input> </input>
+        </div>
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes (more forms than values)" =
+    let handle = make_handle () in
+    Handle.store_view handle;
+    Handle.do_actions handle [ [ "hello world"; "quack" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      ("WARNING: Form.set called on result of Form.all with a list value whose length doesn't match the number of forms "
+       "more forms than values" (form_count 3) (edits_count 2)
+       "not setting left-over forms")
 
-    let%expect_test "setting into a list of string textboxes (more forms than values)" =
-      let handle = make_handle () in
-      Handle.store_view handle;
-      Handle.do_actions handle [ [ "hello world"; "quack" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        ("WARNING: Form.set called on result of Form.all with a list value whose length doesn't match the number of forms "
-         "more forms than values" (form_count 3) (edits_count 2)
-         "not setting left-over forms")
+      -|(Ok ("" "" ""))
+      +|(Ok ("hello world" quack ""))
 
-        -|(Ok ("" "" ""))
-        +|(Ok ("hello world" quack ""))
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=quack
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=""
+                 @on_input> </input>
+        </div>
+      |}]
+  ;;
+end
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
-  end)
-;;
-
-let%test_module "Form.all_map" =
-  (module struct
-    let make_handle () =
-      let component graph =
-        let string_forms =
-          Bonsai.all_map
-            (List.init 3 ~f:(fun i ->
-               ( i
-               , fun graph ->
-                   Form.Elements.Textbox.string
-                     ~allow_updates_when_focused:`Never
-                     ()
-                     graph ))
-             |> Int.Map.of_alist_exn)
-            graph
-        in
-        let%arr string_forms in
-        Form.all_map string_forms
-        |> Form.map_view ~f:(fun map -> Vdom.Node.div (Map.data map))
+module%test [@name "Form.all_map"] _ = struct
+  let make_handle () =
+    let component graph =
+      let string_forms =
+        Bonsai.all_map
+          (List.init 3 ~f:(fun i ->
+             ( i
+             , fun graph ->
+                 Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+             ))
+           |> Int.Map.of_alist_exn)
+          graph
       in
-      Handle.create (form_result_spec [%sexp_of: string Int.Map.t]) component
-    ;;
+      let%arr string_forms in
+      Form.all_map string_forms
+      |> Form.map_view ~f:(fun map -> Vdom.Node.div (Map.data map))
+    in
+    Handle.create (form_result_spec [%sexp_of: string Int.Map.t]) component
+  ;;
 
-    let%expect_test "typing into a list of string textboxes " =
-      let handle = make_handle () in
-      Handle.show handle;
-      [%expect
-        {|
+  let%expect_test "typing into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        (0 "")
+        (1 "")
+        (2 "")))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+      </div>
+      |}];
+    Handle.input_text handle ~selector:"input:nth-child(1)" ~text:"hello world";
+    Handle.input_text handle ~selector:"input:nth-child(2)" ~text:"quack";
+    Handle.show_diff handle;
+    [%expect
+      {|
         (Ok (
-          (0 "")
-          (1 "")
+      -|  (0 "")
+      +|  (0 "hello world")
+      -|  (1 "")
+      +|  (1 quack)
           (2 "")))
 
         ==============
@@ -1120,13 +1149,15 @@ let%test_module "Form.all_map" =
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized=quack
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
@@ -1135,53 +1166,52 @@ let%test_module "Form.all_map" =
                  value:normalized=""
                  @on_input> </input>
         </div>
-        |}];
-      Handle.input_text handle ~selector:"input:nth-child(1)" ~text:"hello world";
-      Handle.input_text handle ~selector:"input:nth-child(2)" ~text:"quack";
-      Handle.show_diff handle;
-      [%expect
-        {|
-          (Ok (
-        -|  (0 "")
-        +|  (0 "hello world")
-        -|  (1 "")
-        +|  (1 quack)
-            (2 "")))
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        (0 "")
+        (1 "")
+        (2 "")))
 
-    let%expect_test "setting into a list of string textboxes " =
-      let handle = make_handle () in
-      Handle.show handle;
-      [%expect
-        {|
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+      </div>
+      |}];
+    Handle.do_actions
+      handle
+      [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack"; 2, "" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
         (Ok (
-          (0 "")
-          (1 "")
+      -|  (0 "")
+      +|  (0 "hello world")
+      -|  (1 "")
+      +|  (1 quack)
           (2 "")))
 
         ==============
@@ -1190,13 +1220,15 @@ let%test_module "Form.all_map" =
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  placeholder=""
                  spellcheck="false"
-                 value:normalized=""
+      -|         value:normalized=""
+      +|         value:normalized=quack
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
@@ -1205,135 +1237,97 @@ let%test_module "Form.all_map" =
                  value:normalized=""
                  @on_input> </input>
         </div>
-        |}];
-      Handle.do_actions
-        handle
-        [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack"; 2, "" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-          (Ok (
-        -|  (0 "")
-        +|  (0 "hello world")
-        -|  (1 "")
-        +|  (1 quack)
-            (2 "")))
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes (more values than forms)" =
+    let handle = make_handle () in
+    Handle.store_view handle;
+    Handle.do_actions
+      handle
+      [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack"; 2, ""; 3, "oh no" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      ("WARNING: Form.set on the result of Form.all_map has mismatched keys"
+       "update contains key not present in active forms" (key 3))
 
-    let%expect_test "setting into a list of string textboxes (more values than forms)" =
-      let handle = make_handle () in
-      Handle.store_view handle;
-      Handle.do_actions
-        handle
-        [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack"; 2, ""; 3, "oh no" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        ("WARNING: Form.set on the result of Form.all_map has mismatched keys"
-         "update contains key not present in active forms" (key 3))
+        (Ok (
+      -|  (0 "")
+      +|  (0 "hello world")
+      -|  (1 "")
+      +|  (1 quack)
+          (2 "")))
 
-          (Ok (
-        -|  (0 "")
-        +|  (0 "hello world")
-        -|  (1 "")
-        +|  (1 quack)
-            (2 "")))
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=quack
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=""
+                 @on_input> </input>
+        </div>
+      |}]
+  ;;
 
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
+  let%expect_test "setting into a list of string textboxes (more forms than values)" =
+    let handle = make_handle () in
+    Handle.store_view handle;
+    Handle.do_actions handle [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack" ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      ("WARNING: Form.set on the result of Form.all_map has mismatched keys"
+       "update is missing key present in active form" (key 2))
 
-    let%expect_test "setting into a list of string textboxes (more forms than values)" =
-      let handle = make_handle () in
-      Handle.store_view handle;
-      Handle.do_actions handle [ Int.Map.of_alist_exn [ 0, "hello world"; 1, "quack" ] ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        ("WARNING: Form.set on the result of Form.all_map has mismatched keys"
-         "update is missing key present in active form" (key 2))
+        (Ok (
+      -|  (0 "")
+      +|  (0 "hello world")
+      -|  (1 "")
+      +|  (1 quack)
+          (2 "")))
 
-          (Ok (
-        -|  (0 "")
-        +|  (0 "hello world")
-        -|  (1 "")
-        +|  (1 quack)
-            (2 "")))
-
-          ==============
-          <div>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized="hello world"
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-        -|         value:normalized=""
-        +|         value:normalized=quack
-                   @on_input> </input>
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-          </div>
-        |}]
-    ;;
-  end)
-;;
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized="hello world"
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=quack
+                 @on_input> </input>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=""
+                 @on_input> </input>
+        </div>
+      |}]
+  ;;
+end
 
 let%expect_test "typing into a local datetime textbox" =
   let component =
@@ -3280,234 +3274,232 @@ let%expect_test "setting into a set checklist" =
     |}]
 ;;
 
-let%test_module "file pickers" =
-  (module struct
-    let mock_js_file ~name : File.file Js.t =
-      Js.Unsafe.coerce
-        (object%js
-           val name = Js.string name
-        end)
-    ;;
+module%test [@name "file pickers"] _ = struct
+  let mock_js_file ~name : File.file Js.t =
+    Js.Unsafe.coerce
+      (object%js
+         val name = Js.string name
+      end)
+  ;;
 
-    let mock_bonsai_file ~name : Bonsai_web_ui_file.t =
-      Bonsai_web_ui_file.For_testing.(
-        create (Test_data.create_static ~filename:name ~contents:""))
-    ;;
+  let mock_bonsai_file ~name : Bonsai_web_ui_file.t =
+    Bonsai_web_ui_file.For_testing.(
+      create (Test_data.create_static ~filename:name ~contents:""))
+  ;;
 
-    let%expect_test "single: selecting a file" =
-      let component =
-        Form.Elements.File_select.single_opt
-          ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
-          ()
-      in
-      let handle =
-        Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
-      in
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ())
+  let%expect_test "single: selecting a file" =
+    let component =
+      Form.Elements.File_select.single_opt
+        ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
+        ()
+    in
+    let handle =
+      Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
+    in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ())
 
-        ==============
-        <input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
-        |}];
-      Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|(Ok ())
-        +|(Ok ("<file test.txt>"))
-
-          ==============
-        -|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
-        +|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-        |}]
-    ;;
-
-    let%expect_test "single: setting an empty value" =
-      let component =
-        Form.Elements.File_select.single_opt
-          ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
-          ()
-      in
-      let handle =
-        Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
-      in
-      Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ("<file test.txt>"))
+      ==============
+      <input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
+      |}];
+    Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok ())
+      +|(Ok ("<file test.txt>"))
 
         ==============
-        <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-        |}];
-      Handle.do_actions handle [ None ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|(Ok ("<file test.txt>"))
-        +|(Ok ())
+      -|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
+      +|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      |}]
+  ;;
 
-          ==============
-        -|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-        +|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
-        |}]
-    ;;
+  let%expect_test "single: setting an empty value" =
+    let component =
+      Form.Elements.File_select.single_opt
+        ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
+        ()
+    in
+    let handle =
+      Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
+    in
+    Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ("<file test.txt>"))
 
-    let%expect_test "single: setting a non-empty value emits a warning and is ignored" =
-      let component =
-        Form.Elements.File_select.single_opt
-          ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
-          ()
-      in
-      let handle =
-        Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
-      in
-      Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ("<file test.txt>"))
-
-        ==============
-        <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-        |}];
-      Handle.do_actions handle [ Some (mock_bonsai_file ~name:"foo.txt") ];
-      Handle.show handle;
-      (* Note: A warning is emitted and the value is unchanged. *)
-      [%expect
-        {|
-        ("WARNING: Attempted to set the value of a file select to a value other than [None]. This is prohibited by the browser and therefore ignored."
-         (filename foo.txt))
-        (Ok ("<file test.txt>"))
+      ==============
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      |}];
+    Handle.do_actions handle [ None ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok ("<file test.txt>"))
+      +|(Ok ())
 
         ==============
-        <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-        |}]
-    ;;
+      -|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      +|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
+      |}]
+  ;;
 
-    let%expect_test "list: selecting multiple files" =
-      let component =
-        Form.Elements.File_select.multiple
-          ~accept:[ `Extension ".doc"; `Extension "docx" ]
-          ()
-      in
-      let handle =
-        Handle.create
-          (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
-          component
-      in
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ())
+  let%expect_test "single: setting a non-empty value emits a warning and is ignored" =
+    let component =
+      Form.Elements.File_select.single_opt
+        ~accept:[ `Extension ".txt"; `Extension "png"; `Mimetype "image/jpeg" ]
+        ()
+    in
+    let handle =
+      Handle.create (form_result_spec [%sexp_of: Bonsai_web_ui_file.t option]) component
+    in
+    Handle.input_files handle ~selector:"input" ~files:[ mock_js_file ~name:"test.txt" ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ("<file test.txt>"))
 
-        ==============
-        <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
-        |}];
-      Handle.input_files
-        handle
-        ~selector:"input"
-        ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|(Ok ())
-        +|(Ok (
-        +|  (test1.doc "<file test1.doc>")
-        +|  (test2.doc "<file test2.doc>")))
+      ==============
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      |}];
+    Handle.do_actions handle [ Some (mock_bonsai_file ~name:"foo.txt") ];
+    Handle.show handle;
+    (* Note: A warning is emitted and the value is unchanged. *)
+    [%expect
+      {|
+      ("WARNING: Attempted to set the value of a file select to a value other than [None]. This is prohibited by the browser and therefore ignored."
+       (filename foo.txt))
+      (Ok ("<file test.txt>"))
 
-          ==============
-        -|<input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
-        +|<input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
-        |}]
-    ;;
+      ==============
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      |}]
+  ;;
 
-    let%expect_test "list: setting an empty map clears the input" =
-      let component =
-        Form.Elements.File_select.multiple
-          ~accept:[ `Extension ".doc"; `Extension "docx" ]
-          ()
-      in
-      let handle =
-        Handle.create
-          (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
-          component
-      in
-      Handle.input_files
-        handle
-        ~selector:"input"
-        ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok (
-          (test1.doc "<file test1.doc>")
-          (test2.doc "<file test2.doc>")))
+  let%expect_test "list: selecting multiple files" =
+    let component =
+      Form.Elements.File_select.multiple
+        ~accept:[ `Extension ".doc"; `Extension "docx" ]
+        ()
+    in
+    let handle =
+      Handle.create
+        (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
+        component
+    in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ())
 
-        ==============
-        <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
-        |}];
-      Handle.do_actions handle [ Filename.Map.empty ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ())
+      ==============
+      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
+      |}];
+    Handle.input_files
+      handle
+      ~selector:"input"
+      ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok ())
+      +|(Ok (
+      +|  (test1.doc "<file test1.doc>")
+      +|  (test2.doc "<file test2.doc>")))
 
         ==============
-        <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
-        |}]
-    ;;
+      -|<input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
+      +|<input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      |}]
+  ;;
 
-    let%expect_test "list: setting a non-empty input emits a warning and is ignored" =
-      let component =
-        Form.Elements.File_select.multiple
-          ~accept:[ `Extension ".doc"; `Extension "docx" ]
-          ()
-      in
-      let handle =
-        Handle.create
-          (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
-          component
-      in
-      Handle.input_files
-        handle
-        ~selector:"input"
-        ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok (
-          (test1.doc "<file test1.doc>")
-          (test2.doc "<file test2.doc>")))
+  let%expect_test "list: setting an empty map clears the input" =
+    let component =
+      Form.Elements.File_select.multiple
+        ~accept:[ `Extension ".doc"; `Extension "docx" ]
+        ()
+    in
+    let handle =
+      Handle.create
+        (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
+        component
+    in
+    Handle.input_files
+      handle
+      ~selector:"input"
+      ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        (test1.doc "<file test1.doc>")
+        (test2.doc "<file test2.doc>")))
 
-        ==============
-        <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
-        |}];
-      Handle.do_actions
-        handle
-        [ Filename.Map.of_alist_exn
-            [ "foo.docx", mock_bonsai_file ~name:"foo.docx"
-            ; "bar.docx", mock_bonsai_file ~name:"bar.docx"
-            ]
-        ];
-      Handle.show handle;
-      (* Note: A warning is emitted and the value is unchanged. *)
-      [%expect
-        {|
-        ("WARNING: Attempted to set the value of a file select to a value other than [Map.empty]. This is prohibited by the browser and therefore ignored."
-         (files ((bar.docx "<file bar.docx>") (foo.docx "<file foo.docx>"))))
-        (Ok (
-          (test1.doc "<file test1.doc>")
-          (test2.doc "<file test2.doc>")))
+      ==============
+      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      |}];
+    Handle.do_actions handle [ Filename.Map.empty ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ())
 
-        ==============
-        <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
-        |}]
-    ;;
-  end)
-;;
+      ==============
+      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
+      |}]
+  ;;
+
+  let%expect_test "list: setting a non-empty input emits a warning and is ignored" =
+    let component =
+      Form.Elements.File_select.multiple
+        ~accept:[ `Extension ".doc"; `Extension "docx" ]
+        ()
+    in
+    let handle =
+      Handle.create
+        (form_result_spec [%sexp_of: Bonsai_web_ui_file.t Filename.Map.t])
+        component
+    in
+    Handle.input_files
+      handle
+      ~selector:"input"
+      ~files:[ mock_js_file ~name:"test1.doc"; mock_js_file ~name:"test2.doc" ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        (test1.doc "<file test1.doc>")
+        (test2.doc "<file test2.doc>")))
+
+      ==============
+      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      |}];
+    Handle.do_actions
+      handle
+      [ Filename.Map.of_alist_exn
+          [ "foo.docx", mock_bonsai_file ~name:"foo.docx"
+          ; "bar.docx", mock_bonsai_file ~name:"bar.docx"
+          ]
+      ];
+    Handle.show handle;
+    (* Note: A warning is emitted and the value is unchanged. *)
+    [%expect
+      {|
+      ("WARNING: Attempted to set the value of a file select to a value other than [Map.empty]. This is prohibited by the browser and therefore ignored."
+       (files ((bar.docx "<file bar.docx>") (foo.docx "<file foo.docx>"))))
+      (Ok (
+        (test1.doc "<file test1.doc>")
+        (test2.doc "<file test2.doc>")))
+
+      ==============
+      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      |}]
+  ;;
+end
 
 let%expect_test "on_change handler should fire when input is changed" =
   let component graph =
@@ -3932,10 +3924,10 @@ let%expect_test _ =
 let%expect_test "slider input" =
   let component =
     Form.Elements.Range.int
-      ~min:0
-      ~max:100
-      ~default:0
-      ~step:1
+      ~min:(Bonsai.return 0)
+      ~max:(Bonsai.return 100)
+      ~default:(Bonsai.return 0)
+      ~step:(Bonsai.return 1)
       ~allow_updates_when_focused:`Never
       ()
   in
@@ -4028,921 +4020,889 @@ let%expect_test "query box" =
   [%expect {| |}]
 ;;
 
-let%test_module "Typed" =
-  (module struct
-    let%test_module "Record" =
-      (module struct
-        let%expect_test "basic record" =
-          let module T = struct
-            type t =
-              { a : int
-              ; b : string
-              ; c : bool
-              }
-            [@@deriving typed_fields, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Record.make
-              (module struct
-                module Typed_field = T.Typed_field
+module%test Typed = struct
+  module%test Record = struct
+    let%expect_test "basic record" =
+      let module T = struct
+        type t =
+          { a : int
+          ; b : string
+          ; c : bool
+          }
+        [@@deriving typed_fields, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Record.make
+          (module struct
+            module Typed_field = T.Typed_field
 
-                type field_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
+            type field_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
 
-                let form_for_field
-                  : type a.
-                    a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | A ->
-                    Form.Elements.Number.int
-                      ~step:1
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                  | B ->
-                    Form.Elements.Textbox.string
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                  | C -> Form.Elements.Checkbox.bool ~default:false () graph
-                ;;
+            let form_for_field
+              : type a. a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | A ->
+                Form.Elements.Number.int
+                  ~step:1
+                  ~allow_updates_when_focused:`Never
+                  ()
+                  graph
+              | B ->
+                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+              | C -> Form.Elements.Checkbox.bool ~default:false () graph
+            ;;
 
-                type form_of_field_fn =
-                  { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
+            type form_of_field_fn =
+              { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
 
-                let finalize_view { f } _graph =
-                  let%arr a = f A
-                  and b = f B
-                  and c = f C in
-                  let label_and_attr label form =
-                    Vdom.Node.label
-                      [ Vdom.Node.text label
-                      ; Vdom.Node.span
-                          ~attrs:[ Vdom.Attr.create "test" label ]
-                          [ Form.view form ]
-                      ]
-                  in
-                  Vdom.Node.div
-                    [ label_and_attr "a" a; label_and_attr "b" b; label_and_attr "c" c ]
-                ;;
-              end)
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error ("in field a" "value not specified"))
+            let finalize_view { f } _graph =
+              let%arr a = f A
+              and b = f B
+              and c = f C in
+              let label_and_attr label form =
+                Vdom.Node.label
+                  [ Vdom.Node.text label
+                  ; Vdom.Node.span
+                      ~attrs:[ Vdom.Attr.create "test" label ]
+                      [ Form.view form ]
+                  ]
+              in
+              Vdom.Node.div
+                [ label_and_attr "a" a; label_and_attr "b" b; label_and_attr "c" c ]
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error ("in field a" "value not specified"))
 
-            ==============
-            <div>
-              <label>
-                a
-                <span test="a">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                c
-                <span test="c">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="checkbox"
-                         #checked="false"
-                         @on_click
-                         style={
-                           margin-left: 0px;
-                         }> </input>
-                </span>
-              </label>
-            </div>
-            |}];
-          Handle.input_text handle ~selector:"[test=a] input" ~text:"3";
-          Handle.input_text handle ~selector:"[test=b] input" ~text:"text";
-          Handle.set_checkbox handle ~selector:"[test=c] input" ~checked:true;
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (
-              (a 3)
-              (b text)
-              (c true)))
-
-            ==============
-            <div>
-              <label>
-                a
-                <span test="a">
-                  <input type="number" step="1" placeholder="" spellcheck="false" value:normalized=3 @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=text
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                c
-                <span test="c">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="checkbox"
-                         #checked="true"
-                         @on_click
-                         style={
-                           margin-left: 0px;
-                         }> </input>
-                </span>
-              </label>
-            </div>
-            |}];
-          Handle.do_actions handle [ { a = 10; b = "hi there"; c = false } ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (
-              (a 10)
-              (b "hi there")
-              (c false)))
-
-            ==============
-            <div>
-              <label>
-                a
-                <span test="a">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=10
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized="hi there"
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                c
-                <span test="c">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="checkbox"
-                         #checked="false"
-                         @on_click
-                         style={
-                           margin-left: 0px;
-                         }> </input>
-                </span>
-              </label>
-            </div>
-            |}]
-        ;;
-
-        let%expect_test "monomorphize record" =
-          let module T = struct
-            type 'a t = { a : 'a } [@@deriving typed_fields, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Record.make
-              (module struct
-                module Typed_field = Typed_fields_lib.S_of_S1 (T.Typed_field) (Int)
-
-                type field_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_field
-                  : type a.
-                    a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | A ->
-                    Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-                ;;
-
-                type form_of_field_fn =
-                  { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
-
-                let finalize_view { f } _graph =
-                  let%arr a = f A in
-                  Form.view a
-                ;;
-              end)
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: int T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error ("in field a" "Expected an integer"))
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-            |}];
-          Handle.do_actions handle [ { a = 10 } ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok ((a 10)))
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=10
-                   @on_input> </input>
-            |}]
-        ;;
-
-        let%expect_test "calling [form_of_field_fn] multiple times gives the same value \
-                         back"
-          =
-          let module T = struct
-            type t =
-              { a : int
-              ; b : string
-              }
-            [@@deriving typed_fields, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Record.make
-              (module struct
-                module Typed_field = T.Typed_field
-
-                type field_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_field
-                  : type a.
-                    a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | A ->
-                    Form.Elements.Number.int
-                      ~step:1
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                  | B ->
-                    Form.Elements.Textbox.string
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                ;;
-
-                type form_of_field_fn =
-                  { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
-
-                let finalize_view { f } _graph =
-                  let%arr a1 = f A
-                  and a2 = f A
-                  and b = f B in
-                  let label_and_attr label form =
-                    Vdom.Node.label
-                      [ Vdom.Node.text label
-                      ; Vdom.Node.span
-                          ~attrs:[ Vdom.Attr.create "test" label ]
-                          [ Form.view form ]
-                      ]
-                  in
-                  Vdom.Node.div
-                    [ label_and_attr "a1" a1
-                    ; label_and_attr "a2" a2
-                    ; label_and_attr "b" b
-                    ]
-                ;;
-              end)
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error ("in field a" "value not specified"))
-
-            ==============
-            <div>
-              <label>
-                a1
-                <span test="a1">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                a2
-                <span test="a2">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-            </div>
-            |}];
-          (* Typing into either "a" textbox influences both; as does setting the form *)
-          Handle.input_text handle ~selector:"[test=a1] input" ~text:"1234";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (
-              (a 1234)
-              (b "")))
-
-            ==============
-            <div>
-              <label>
-                a1
-                <span test="a1">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=1234
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                a2
-                <span test="a2">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=1234
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-            </div>
-            |}];
-          Handle.input_text handle ~selector:"[test=a2] input" ~text:"4321";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (
-              (a 4321)
-              (b "")))
-
-            ==============
-            <div>
-              <label>
-                a1
-                <span test="a1">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=4321
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                a2
-                <span test="a2">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=4321
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=""
-                         @on_input> </input>
-                </span>
-              </label>
-            </div>
-            |}];
-          Handle.do_actions handle [ { a = 1423; b = "foo" } ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (
-              (a 1423)
-              (b foo)))
-
-            ==============
-            <div>
-              <label>
-                a1
-                <span test="a1">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=1423
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                a2
-                <span test="a2">
-                  <input type="number"
-                         step="1"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=1423
-                         @on_input> </input>
-                </span>
-              </label>
-              <label>
-                b
-                <span test="b">
-                  <input @key=bonsai_path_replaced_in_test
-                         type="text"
-                         placeholder=""
-                         spellcheck="false"
-                         value:normalized=foo
-                         @on_input> </input>
-                </span>
-              </label>
-            </div>
-            |}]
-        ;;
-      end)
-    ;;
-
-    let%test_module "Variant" =
-      (module struct
-        let%expect_test "basic variant - defaults to first option" =
-          let module T = struct
-            type t =
-              | Foo of int
-              | Bar of string
-            [@@deriving typed_variants, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Variant.make
-              (module struct
-                module Typed_variant = T.Typed_variant
-
-                type picker_view = Vdom.Node.t
-                type variant_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_picker =
-                  Form.Elements.Dropdown.enumerable
-                    (module struct
-                      type t = Typed_variant.Packed.t
-                      [@@deriving enumerate, equal, sexp, compare]
-                    end)
-                ;;
-
-                let form_for_variant
-                  : type a.
-                    a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | Foo ->
-                    Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-                  | Bar ->
-                    Form.Elements.Textbox.string
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                ;;
-
-                let finalize_view picker_view selected _graph =
-                  let inner_view =
-                    match%arr selected with
-                    | Error _ -> Vdom.Node.text ""
-                    | Ok (_, inner) -> Form.view inner
-                  in
-                  let%arr inner_view and picker_view in
-                  Vdom.Node.div [ picker_view; inner_view ]
-                ;;
-              end)
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error "Expected an integer")
-
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="true"> foo </option>
-                <option value="1" #selected="false"> bar </option>
-              </select>
+        ==============
+        <div>
+          <label>
+            a
+            <span test="a">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
               <input @key=bonsai_path_replaced_in_test
                      type="text"
                      placeholder=""
                      spellcheck="false"
                      value:normalized=""
                      @on_input> </input>
-            </div>
-            |}];
-          Handle.input_text handle ~selector:"input" ~text:"1234";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (Foo 1234))
+            </span>
+          </label>
+          <label>
+            c
+            <span test="c">
+              <input @key=bonsai_path_replaced_in_test
+                     type="checkbox"
+                     #checked="false"
+                     @on_click
+                     style={
+                       margin-left: 0px;
+                     }> </input>
+            </span>
+          </label>
+        </div>
+        |}];
+      Handle.input_text handle ~selector:"[test=a] input" ~text:"3";
+      Handle.input_text handle ~selector:"[test=b] input" ~text:"text";
+      Handle.set_checkbox handle ~selector:"[test=c] input" ~checked:true;
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (
+          (a 3)
+          (b text)
+          (c true)))
 
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="true"> foo </option>
-                <option value="1" #selected="false"> bar </option>
-              </select>
+        ==============
+        <div>
+          <label>
+            a
+            <span test="a">
+              <input type="number" step="1" placeholder="" spellcheck="false" value:normalized=3 @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
               <input @key=bonsai_path_replaced_in_test
                      type="text"
                      placeholder=""
                      spellcheck="false"
-                     value:normalized=1234
+                     value:normalized=text
                      @on_input> </input>
-            </div>
-            |}];
-          Handle.change handle ~selector:"select" ~value:"1";
-          Handle.recompute_view_until_stable handle;
-          Handle.input_text handle ~selector:"input" ~text:"hi!";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (Bar hi!))
+            </span>
+          </label>
+          <label>
+            c
+            <span test="c">
+              <input @key=bonsai_path_replaced_in_test
+                     type="checkbox"
+                     #checked="true"
+                     @on_click
+                     style={
+                       margin-left: 0px;
+                     }> </input>
+            </span>
+          </label>
+        </div>
+        |}];
+      Handle.do_actions handle [ { a = 10; b = "hi there"; c = false } ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (
+          (a 10)
+          (b "hi there")
+          (c false)))
 
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="false"> foo </option>
-                <option value="1" #selected="true"> bar </option>
-              </select>
+        ==============
+        <div>
+          <label>
+            a
+            <span test="a">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=10
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
               <input @key=bonsai_path_replaced_in_test
                      type="text"
                      placeholder=""
                      spellcheck="false"
-                     value:normalized=hi!
+                     value:normalized="hi there"
                      @on_input> </input>
-            </div>
-            |}]
-        ;;
-
-        let%expect_test "basic variant - can also default to no starting option selected" =
-          let module T = struct
-            type t =
-              | Foo of int
-              | Bar of string
-            [@@deriving typed_variants, sexp]
-          end
-          in
-          let component graph =
-            Form.Typed.Variant.make
-              (module struct
-                module Typed_variant = T.Typed_variant
-
-                type picker_view = Vdom.Node.t
-                type variant_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_picker graph =
-                  let picker =
-                    Form.Elements.Dropdown.enumerable_opt
-                      (module struct
-                        type t = Typed_variant.Packed.t
-                        [@@deriving enumerate, equal, sexp, compare]
-                      end)
-                      graph
-                  in
-                  let%arr picker in
-                  let value =
-                    match Form.value picker with
-                    | Error err -> Error err
-                    | Ok None -> Or_error.error_s [%message "a value is required"]
-                    | Ok (Some value) -> Ok value
-                  in
-                  let set x = Form.set picker (Some x) in
-                  let view = Form.view picker in
-                  { Form.value; view; set }
-                ;;
-
-                let form_for_variant
-                  : type a.
-                    a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | Foo ->
-                    Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-                  | Bar ->
-                    Form.Elements.Textbox.string
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                ;;
-
-                let finalize_view picker_view selected _graph =
-                  let inner_view =
-                    match%arr selected with
-                    | Error _ -> Vdom.Node.text ""
-                    | Ok (_, inner) -> Form.view inner
-                  in
-                  let%arr picker_view and inner_view in
-                  Vdom.Node.div [ picker_view; inner_view ]
-                ;;
-              end)
-              graph
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error "a value is required")
-
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="true">  </option>
-                <option value="1" #selected="false"> foo </option>
-                <option value="2" #selected="false"> bar </option>
-              </select>
-
-            </div>
-            |}];
-          Handle.change handle ~selector:"select" ~value:"1";
-          Handle.recompute_view_until_stable handle;
-          Handle.input_text handle ~selector:"input" ~text:"1234";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (Foo 1234))
-
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="false">  </option>
-                <option value="1" #selected="true"> foo </option>
-                <option value="2" #selected="false"> bar </option>
-              </select>
+            </span>
+          </label>
+          <label>
+            c
+            <span test="c">
               <input @key=bonsai_path_replaced_in_test
-                     type="text"
-                     placeholder=""
-                     spellcheck="false"
-                     value:normalized=1234
-                     @on_input> </input>
-            </div>
-            |}];
-          Handle.change handle ~selector:"select" ~value:"2";
-          Handle.recompute_view_until_stable handle;
-          Handle.input_text handle ~selector:"input" ~text:"hi!";
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok (Bar hi!))
-
-            ==============
-            <div>
-              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
-                <option value="0" #selected="false">  </option>
-                <option value="1" #selected="false"> foo </option>
-                <option value="2" #selected="true"> bar </option>
-              </select>
-              <input @key=bonsai_path_replaced_in_test
-                     type="text"
-                     placeholder=""
-                     spellcheck="false"
-                     value:normalized=hi!
-                     @on_input> </input>
-            </div>
-            |}]
-        ;;
-
-        let%expect_test "monomorphize variant" =
-          let module T = struct
-            type 'a t = Foo of 'a [@@deriving typed_variants, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Variant.make
-              (module struct
-                module Typed_variant = Typed_variants_lib.S_of_S1 (T.Typed_variant) (Int)
-
-                type picker_view = unit
-                type variant_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_picker _graph =
-                  Bonsai.return (Form.return ({ f = T Foo } : Typed_variant.Packed.t))
-                ;;
-
-                let form_for_variant
-                  : type a.
-                    a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | Foo ->
-                    Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-                ;;
-
-                let finalize_view (_ : unit Bonsai.t) foo_view _graph =
-                  match%arr foo_view with
-                  | Error _ -> raise_s [%message "impossible error"]
-                  | Ok (_, inner) -> Form.view inner
-                ;;
-              end)
-          in
-          let handle = Handle.create (form_result_spec [%sexp_of: int T.t]) component in
-          Handle.show handle;
-          [%expect
-            {|
-            (Error "Expected an integer")
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=""
-                   @on_input> </input>
-            |}];
-          Handle.do_actions handle [ Foo 5 ];
-          Handle.show handle;
-          [%expect
-            {|
-            ("Form.return was set, but setting is ignored."
-             lib/bonsai/web_ui/form/test/bonsai_web_ui_form_manual_test.ml:LINE:COL)
-            (Ok (Foo 5))
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=5
-                   @on_input> </input>
-            |}]
-        ;;
-
-        let%expect_test "optional variant" =
-          let module T = struct
-            type t =
-              | Foo of int
-              | Bar of string
-            [@@deriving typed_variants, sexp]
-          end
-          in
-          let component =
-            Form.Typed.Variant.make_optional
-              (module struct
-                module Typed_variant = T.Typed_variant
-
-                type picker_view = unit
-                type variant_view = Vdom.Node.t
-                type resulting_view = Vdom.Node.t
-
-                let form_for_picker =
-                  Form.return_settable ~equal:[%equal: Typed_variant.Packed.t option] None
-                ;;
-
-                let form_for_variant
-                  : type a.
-                    a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
-                  =
-                  fun typed_field graph ->
-                  match typed_field with
-                  | Foo ->
-                    Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-                  | Bar ->
-                    Form.Elements.Textbox.string
-                      ~allow_updates_when_focused:`Never
-                      ()
-                      graph
-                ;;
-
-                let finalize_view (_ : unit Bonsai.t) variant_and_subform _graph =
-                  match%arr variant_and_subform with
-                  | Error _ -> raise_s [%message "impossible error"]
-                  | Ok None -> Vdom.Node.none
-                  | Ok (Some (_, inner)) -> Form.view inner
-                ;;
-              end)
-          in
-          let handle =
-            Handle.create (form_result_spec [%sexp_of: T.t option]) component
-          in
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok ())
-
-            ==============
-            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
-            |}];
-          Handle.do_actions handle [ Some (Foo 5) ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok ((Foo 5)))
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=5
-                   @on_input> </input>
-            |}];
-          Handle.do_actions handle [ Some (Bar "hi!") ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok ((Bar hi!)))
-
-            ==============
-            <input @key=bonsai_path_replaced_in_test
-                   type="text"
-                   placeholder=""
-                   spellcheck="false"
-                   value:normalized=hi!
-                   @on_input> </input>
-            |}];
-          Handle.do_actions handle [ None ];
-          Handle.show handle;
-          [%expect
-            {|
-            (Ok ())
-
-            ==============
-            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
-            |}]
-        ;;
-      end)
+                     type="checkbox"
+                     #checked="false"
+                     @on_click
+                     style={
+                       margin-left: 0px;
+                     }> </input>
+            </span>
+          </label>
+        </div>
+        |}]
     ;;
-  end)
-;;
+
+    let%expect_test "monomorphize record" =
+      let module T = struct
+        type 'a t = { a : 'a } [@@deriving typed_fields, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Record.make
+          (module struct
+            module Typed_field = Typed_fields_lib.S_of_S1 (T.Typed_field) (Int)
+
+            type field_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_field
+              : type a. a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | A -> Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            type form_of_field_fn =
+              { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
+
+            let finalize_view { f } _graph =
+              let%arr a = f A in
+              Form.view a
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: int T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error ("in field a" "Expected an integer"))
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        |}];
+      Handle.do_actions handle [ { a = 10 } ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok ((a 10)))
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=10
+               @on_input> </input>
+        |}]
+    ;;
+
+    let%expect_test "calling [form_of_field_fn] multiple times gives the same value back" =
+      let module T = struct
+        type t =
+          { a : int
+          ; b : string
+          }
+        [@@deriving typed_fields, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Record.make
+          (module struct
+            module Typed_field = T.Typed_field
+
+            type field_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_field
+              : type a. a Typed_field.t -> Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | A ->
+                Form.Elements.Number.int
+                  ~step:1
+                  ~allow_updates_when_focused:`Never
+                  ()
+                  graph
+              | B ->
+                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            type form_of_field_fn =
+              { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
+
+            let finalize_view { f } _graph =
+              let%arr a1 = f A
+              and a2 = f A
+              and b = f B in
+              let label_and_attr label form =
+                Vdom.Node.label
+                  [ Vdom.Node.text label
+                  ; Vdom.Node.span
+                      ~attrs:[ Vdom.Attr.create "test" label ]
+                      [ Form.view form ]
+                  ]
+              in
+              Vdom.Node.div
+                [ label_and_attr "a1" a1; label_and_attr "a2" a2; label_and_attr "b" b ]
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error ("in field a" "value not specified"))
+
+        ==============
+        <div>
+          <label>
+            a1
+            <span test="a1">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            a2
+            <span test="a2">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
+              <input @key=bonsai_path_replaced_in_test
+                     type="text"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+        </div>
+        |}];
+      (* Typing into either "a" textbox influences both; as does setting the form *)
+      Handle.input_text handle ~selector:"[test=a1] input" ~text:"1234";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (
+          (a 1234)
+          (b "")))
+
+        ==============
+        <div>
+          <label>
+            a1
+            <span test="a1">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=1234
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            a2
+            <span test="a2">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=1234
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
+              <input @key=bonsai_path_replaced_in_test
+                     type="text"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+        </div>
+        |}];
+      Handle.input_text handle ~selector:"[test=a2] input" ~text:"4321";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (
+          (a 4321)
+          (b "")))
+
+        ==============
+        <div>
+          <label>
+            a1
+            <span test="a1">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=4321
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            a2
+            <span test="a2">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=4321
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
+              <input @key=bonsai_path_replaced_in_test
+                     type="text"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input> </input>
+            </span>
+          </label>
+        </div>
+        |}];
+      Handle.do_actions handle [ { a = 1423; b = "foo" } ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (
+          (a 1423)
+          (b foo)))
+
+        ==============
+        <div>
+          <label>
+            a1
+            <span test="a1">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=1423
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            a2
+            <span test="a2">
+              <input type="number"
+                     step="1"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=1423
+                     @on_input> </input>
+            </span>
+          </label>
+          <label>
+            b
+            <span test="b">
+              <input @key=bonsai_path_replaced_in_test
+                     type="text"
+                     placeholder=""
+                     spellcheck="false"
+                     value:normalized=foo
+                     @on_input> </input>
+            </span>
+          </label>
+        </div>
+        |}]
+    ;;
+  end
+
+  module%test Variant = struct
+    let%expect_test "basic variant - defaults to first option" =
+      let module T = struct
+        type t =
+          | Foo of int
+          | Bar of string
+        [@@deriving typed_variants, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Variant.make
+          (module struct
+            module Typed_variant = T.Typed_variant
+
+            type picker_view = Vdom.Node.t
+            type variant_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_picker =
+              Form.Elements.Dropdown.enumerable
+                (module struct
+                  type t = Typed_variant.Packed.t
+                  [@@deriving enumerate, equal, sexp, compare]
+                end)
+            ;;
+
+            let form_for_variant
+              : type a.
+                a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | Foo ->
+                Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+              | Bar ->
+                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            let finalize_view picker_view selected _graph =
+              let inner_view =
+                match%arr selected with
+                | Error _ -> Vdom.Node.text ""
+                | Ok (_, inner) -> Form.view inner
+              in
+              let%arr inner_view and picker_view in
+              Vdom.Node.div [ picker_view; inner_view ]
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error "Expected an integer")
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="true"> foo </option>
+            <option value="1" #selected="false"> bar </option>
+          </select>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=""
+                 @on_input> </input>
+        </div>
+        |}];
+      Handle.input_text handle ~selector:"input" ~text:"1234";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (Foo 1234))
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="true"> foo </option>
+            <option value="1" #selected="false"> bar </option>
+          </select>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=1234
+                 @on_input> </input>
+        </div>
+        |}];
+      Handle.change handle ~selector:"select" ~value:"1";
+      Handle.recompute_view_until_stable handle;
+      Handle.input_text handle ~selector:"input" ~text:"hi!";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (Bar hi!))
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="false"> foo </option>
+            <option value="1" #selected="true"> bar </option>
+          </select>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=hi!
+                 @on_input> </input>
+        </div>
+        |}]
+    ;;
+
+    let%expect_test "basic variant - can also default to no starting option selected" =
+      let module T = struct
+        type t =
+          | Foo of int
+          | Bar of string
+        [@@deriving typed_variants, sexp]
+      end
+      in
+      let component graph =
+        Form.Typed.Variant.make
+          (module struct
+            module Typed_variant = T.Typed_variant
+
+            type picker_view = Vdom.Node.t
+            type variant_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_picker graph =
+              let picker =
+                Form.Elements.Dropdown.enumerable_opt
+                  (module struct
+                    type t = Typed_variant.Packed.t
+                    [@@deriving enumerate, equal, sexp, compare]
+                  end)
+                  graph
+              in
+              let%arr picker in
+              let value =
+                match Form.value picker with
+                | Error err -> Error err
+                | Ok None -> Or_error.error_s [%message "a value is required"]
+                | Ok (Some value) -> Ok value
+              in
+              let set x = Form.set picker (Some x) in
+              let view = Form.view picker in
+              { Form.value; view; set }
+            ;;
+
+            let form_for_variant
+              : type a.
+                a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | Foo ->
+                Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+              | Bar ->
+                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            let finalize_view picker_view selected _graph =
+              let inner_view =
+                match%arr selected with
+                | Error _ -> Vdom.Node.text ""
+                | Ok (_, inner) -> Form.view inner
+              in
+              let%arr picker_view and inner_view in
+              Vdom.Node.div [ picker_view; inner_view ]
+            ;;
+          end)
+          graph
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error "a value is required")
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="true">  </option>
+            <option value="1" #selected="false"> foo </option>
+            <option value="2" #selected="false"> bar </option>
+          </select>
+
+        </div>
+        |}];
+      Handle.change handle ~selector:"select" ~value:"1";
+      Handle.recompute_view_until_stable handle;
+      Handle.input_text handle ~selector:"input" ~text:"1234";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (Foo 1234))
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="false">  </option>
+            <option value="1" #selected="true"> foo </option>
+            <option value="2" #selected="false"> bar </option>
+          </select>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=1234
+                 @on_input> </input>
+        </div>
+        |}];
+      Handle.change handle ~selector:"select" ~value:"2";
+      Handle.recompute_view_until_stable handle;
+      Handle.input_text handle ~selector:"input" ~text:"hi!";
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok (Bar hi!))
+
+        ==============
+        <div>
+          <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+            <option value="0" #selected="false">  </option>
+            <option value="1" #selected="false"> foo </option>
+            <option value="2" #selected="true"> bar </option>
+          </select>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 placeholder=""
+                 spellcheck="false"
+                 value:normalized=hi!
+                 @on_input> </input>
+        </div>
+        |}]
+    ;;
+
+    let%expect_test "monomorphize variant" =
+      let module T = struct
+        type 'a t = Foo of 'a [@@deriving typed_variants, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Variant.make
+          (module struct
+            module Typed_variant = Typed_variants_lib.S_of_S1 (T.Typed_variant) (Int)
+
+            type picker_view = unit
+            type variant_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_picker _graph =
+              Bonsai.return (Form.return ({ f = T Foo } : Typed_variant.Packed.t))
+            ;;
+
+            let form_for_variant
+              : type a.
+                a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | Foo ->
+                Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            let finalize_view (_ : unit Bonsai.t) foo_view _graph =
+              match%arr foo_view with
+              | Error _ -> raise_s [%message "impossible error"]
+              | Ok (_, inner) -> Form.view inner
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: int T.t]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Error "Expected an integer")
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=""
+               @on_input> </input>
+        |}];
+      Handle.do_actions handle [ Foo 5 ];
+      Handle.show handle;
+      [%expect
+        {|
+        ("Form.return was set, but setting is ignored."
+         lib/bonsai/web_ui/form/test/bonsai_web_ui_form_manual_test.ml:LINE:COL)
+        (Ok (Foo 5))
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=5
+               @on_input> </input>
+        |}]
+    ;;
+
+    let%expect_test "optional variant" =
+      let module T = struct
+        type t =
+          | Foo of int
+          | Bar of string
+        [@@deriving typed_variants, sexp]
+      end
+      in
+      let component =
+        Form.Typed.Variant.make_optional
+          (module struct
+            module Typed_variant = T.Typed_variant
+
+            type picker_view = unit
+            type variant_view = Vdom.Node.t
+            type resulting_view = Vdom.Node.t
+
+            let form_for_picker =
+              Form.return_settable ~equal:[%equal: Typed_variant.Packed.t option] None
+            ;;
+
+            let form_for_variant
+              : type a.
+                a Typed_variant.t -> Bonsai.graph -> (a, variant_view) Form.t Bonsai.t
+              =
+              fun typed_field graph ->
+              match typed_field with
+              | Foo ->
+                Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+              | Bar ->
+                Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+            ;;
+
+            let finalize_view (_ : unit Bonsai.t) variant_and_subform _graph =
+              match%arr variant_and_subform with
+              | Error _ -> raise_s [%message "impossible error"]
+              | Ok None -> Vdom.Node.none
+              | Ok (Some (_, inner)) -> Form.view inner
+            ;;
+          end)
+      in
+      let handle = Handle.create (form_result_spec [%sexp_of: T.t option]) component in
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok ())
+
+        ==============
+        <Vdom.Node.none-widget> </Vdom.Node.none-widget>
+        |}];
+      Handle.do_actions handle [ Some (Foo 5) ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok ((Foo 5)))
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=5
+               @on_input> </input>
+        |}];
+      Handle.do_actions handle [ Some (Bar "hi!") ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok ((Bar hi!)))
+
+        ==============
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               placeholder=""
+               spellcheck="false"
+               value:normalized=hi!
+               @on_input> </input>
+        |}];
+      Handle.do_actions handle [ None ];
+      Handle.show handle;
+      [%expect
+        {|
+        (Ok ())
+
+        ==============
+        <Vdom.Node.none-widget> </Vdom.Node.none-widget>
+        |}]
+    ;;
+  end
+end
 
 let%expect_test "difference between with_default and with_default_always" =
   let default = Bonsai.Expert.Var.create 10 in
@@ -5324,10 +5284,10 @@ let%expect_test "labelling a range form" =
     print_endline "###############";
     let range =
       Form.Elements.Range.int
-        ?left_label
-        ?right_label
-        ~default:0
-        ~step:1
+        ?left_label:(Option.map left_label ~f:Bonsai.return)
+        ?right_label:(Option.map right_label ~f:Bonsai.return)
+        ~default:(Bonsai.return 0)
+        ~step:(Bonsai.return 1)
         ~allow_updates_when_focused:`Never
         ()
     in
@@ -5403,59 +5363,359 @@ let%expect_test "labelling a range form" =
     |}]
 ;;
 
-let%test_module "Querybox as typeahead" =
-  (module struct
-    module Data = struct
-      module T = struct
-        type t =
-          | Option_A
-          | Option_B
-          | Option_C
-        [@@deriving variants, enumerate, sexp, equal, compare]
-      end
-
-      include T
-
-      let to_string = function
-        | Option_A -> "Option A"
-        | Option_B -> "Option B"
-        | Option_C -> "Option C"
-      ;;
-
-      include Comparable.Make (T)
+module%test [@name "Querybox as typeahead"] _ = struct
+  module Data = struct
+    module T = struct
+      type t =
+        | Option_A
+        | Option_B
+        | Option_C
+      [@@deriving variants, enumerate, sexp, equal, compare]
     end
 
-    let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
-      Form.Elements.Query_box.single_opt
-        (module Data)
-        ~all_options:(Bonsai.return Data.all)
-        ~to_string
-        ~on_hover_item:
-          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+    include T
+
+    let to_string = function
+      | Option_A -> "Option A"
+      | Option_B -> "Option B"
+      | Option_C -> "Option C"
     ;;
 
-    let view_computation ?to_string () graph =
-      let form = shared_computation ?to_string () graph in
+    include Comparable.Make (T)
+  end
+
+  let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
+    Form.Elements.Query_box.single_opt
+      (module Data)
+      ~all_options:(Bonsai.return Data.all)
+      ~to_string
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+  ;;
+
+  let view_computation ?to_string () graph =
+    let form = shared_computation ?to_string () graph in
+    let%arr form in
+    Form.view form
+  ;;
+
+  let view_and_inject_computation graph =
+    let form = shared_computation () graph in
+    let%arr form in
+    Form.view form, Form.set form
+  ;;
+
+  let%expect_test "Initial typeahead state" =
+    let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
+    Handle.show handle;
+    [%expect
+      {|
+      <div>
+        <input id="bonsai_path_replaced_in_test"
+               type="text"
+               class="input_hash_replaced_in_test"
+               #value=""
+               @on_blur
+               @on_focus
+               @on_input
+               @on_keydown> </input>
+        <div data-test="query-box-item-container"
+             id="bonsai_path_replaced_in_test"
+             tabindex="-1"
+             @on_blur
+             @on_wheel
+             style={
+               position: relative;
+             }>
+          <div> </div>
+        </div>
+      </div>
+      |}]
+  ;;
+
+  let%expect_test "Change typeahead contents" =
+    let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
+    Handle.store_view handle;
+    Handle.input_text handle ~selector:"input" ~text:(Data.to_string Data.Option_C);
+    Handle.show_diff handle;
+    [%expect
+      {|
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+                 class="input_hash_replaced_in_test"
+      -|         #value=""
+      +|         #value="Option C"
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+      -|    <div> </div>
+      +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
+      +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
+      +|        <span> Option C </span>
+      +|      </div>
+      +|    </div>
+          </div>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "use setter" =
+    let handle =
+      Handle.create
+        (module struct
+          type incoming = Data.t option
+          type t = Vdom.Node.t * (Data.t option -> unit Ui_effect.t)
+
+          let view (vdom, _) =
+            let module V = (val Result_spec.vdom ()) in
+            V.view vdom
+          ;;
+
+          let to_vdom (vdom, _) = vdom
+          let incoming (_, inject) = inject
+        end)
+        view_and_inject_computation
+    in
+    Handle.store_view handle;
+    Handle.do_actions handle [ Some Data.Option_A ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+      +|         placeholder="Option A"
+                 class="input_hash_replaced_in_test"
+                 #value=""
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+            <div> </div>
+          </div>
+      |}];
+    Handle.do_actions handle [ None ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+      -|         placeholder="Option A"
+                 class="input_hash_replaced_in_test"
+                 #value=""
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+            <div> </div>
+          </div>
+      |}]
+  ;;
+
+  let%expect_test "Select element using partial input" =
+    let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
+    Handle.show handle;
+    [%expect
+      {|
+      <div>
+        <input id="bonsai_path_replaced_in_test"
+               type="text"
+               class="input_hash_replaced_in_test"
+               #value=""
+               @on_blur
+               @on_focus
+               @on_input
+               @on_keydown> </input>
+        <div data-test="query-box-item-container"
+             id="bonsai_path_replaced_in_test"
+             tabindex="-1"
+             @on_blur
+             @on_wheel
+             style={
+               position: relative;
+             }>
+          <div> </div>
+        </div>
+      </div>
+      |}];
+    (* "O" is not unique, all options are matched. *)
+    Handle.input_text handle ~selector:"input" ~text:"O";
+    Handle.show_diff handle;
+    [%expect
+      {|
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+                 class="input_hash_replaced_in_test"
+      -|         #value=""
+      +|         #value="O"
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+      -|    <div> </div>
+      +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
+      +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
+      +|        <span> Option A </span>
+      +|      </div>
+      +|      <div @on_click @on_mouseenter>
+      +|        <span> Option B </span>
+      +|      </div>
+      +|      <div @on_click @on_mouseenter>
+      +|        <span> Option C </span>
+      +|      </div>
+      +|    </div>
+          </div>
+        </div>
+      |}];
+    Handle.input_text handle ~selector:"input" ~text:"C";
+    Handle.show_diff handle;
+    [%expect
+      {|
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+                 class="input_hash_replaced_in_test"
+      -|         #value="O"
+      +|         #value="C"
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+            <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
+              <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
+      -|        <span> Option A </span>
+      -|      </div>
+      -|      <div @on_click @on_mouseenter>
+      -|        <span> Option B </span>
+      -|      </div>
+      -|      <div @on_click @on_mouseenter>
+                <span> Option C </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "dynamic [to_string]." =
+    let to_string_var = Bonsai.Expert.Var.create Data.to_string in
+    let to_string = Bonsai.Expert.Var.value to_string_var in
+    let handle = Handle.create (Result_spec.vdom ()) (view_computation ~to_string ()) in
+    Handle.input_text handle ~selector:"input" ~text:"";
+    Handle.store_view handle;
+    Bonsai.Expert.Var.set to_string_var (fun data -> Data.to_string data ^ "!");
+    Handle.show_diff handle;
+    [%expect
+      {|
+                 class="input_hash_replaced_in_test"
+                 #value=""
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
+            <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
+              <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
+      -|        <span> Option A </span>
+      +|        <span> Option A! </span>
+              </div>
+              <div @on_click @on_mouseenter>
+      -|        <span> Option B </span>
+      +|        <span> Option B! </span>
+              </div>
+              <div @on_click @on_mouseenter>
+      -|        <span> Option C </span>
+      +|        <span> Option C! </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "Handle unknown option" =
+    let computation graph =
+      let form =
+        Form.Elements.Query_box.single_opt
+          (module Data)
+          ~all_options:(Bonsai.return Data.all)
+          ~handle_unknown_option:
+            (Bonsai.return (fun _ ->
+               print_endline "in handle_uknown_option";
+               Some Data.Option_A))
+          ~on_hover_item:
+            (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+          graph
+      in
       let%arr form in
       Form.view form
-    ;;
+    in
+    let handle = Handle.create (Result_spec.vdom ()) computation in
+    Handle.store_view handle;
+    [%expect {| |}];
+    Handle.input_text handle ~selector:"input" ~text:"unknown option";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      in handle_uknown_option
 
-    let view_and_inject_computation graph =
-      let form = shared_computation () graph in
-      let%arr form in
-      Form.view form, Form.set form
-    ;;
-
-    let%expect_test "Initial typeahead state" =
-      let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
-      Handle.show handle;
-      [%expect
-        {|
         <div>
           <input id="bonsai_path_replaced_in_test"
                  type="text"
                  class="input_hash_replaced_in_test"
-                 #value=""
+      -|         #value=""
+      +|         #value="unknown option"
                  @on_blur
                  @on_focus
                  @on_input
@@ -5468,319 +5728,17 @@ let%test_module "Querybox as typeahead" =
                style={
                  position: relative;
                }>
-            <div> </div>
+      -|    <div> </div>
+      +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
+      +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
+      +|        <span> Option_A </span>
+      +|      </div>
+      +|    </div>
           </div>
         </div>
-        |}]
-    ;;
-
-    let%expect_test "Change typeahead contents" =
-      let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
-      Handle.store_view handle;
-      Handle.input_text handle ~selector:"input" ~text:(Data.to_string Data.Option_C);
-      Handle.show_diff handle;
-      [%expect
-        {|
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   class="input_hash_replaced_in_test"
-        -|         #value=""
-        +|         #value="Option C"
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-        -|    <div> </div>
-        +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
-        +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
-        +|        <span> Option C </span>
-        +|      </div>
-        +|    </div>
-            </div>
-          </div>
-        |}]
-    ;;
-
-    let%expect_test "use setter" =
-      let handle =
-        Handle.create
-          (module struct
-            type incoming = Data.t option
-            type t = Vdom.Node.t * (Data.t option -> unit Ui_effect.t)
-
-            let view (vdom, _) =
-              let module V = (val Result_spec.vdom ()) in
-              V.view vdom
-            ;;
-
-            let to_vdom (vdom, _) = vdom
-            let incoming (_, inject) = inject
-          end)
-          view_and_inject_computation
-      in
-      Handle.store_view handle;
-      Handle.do_actions handle [ Some Data.Option_A ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-        +|         placeholder="Option A"
-                   class="input_hash_replaced_in_test"
-                   #value=""
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-              <div> </div>
-            </div>
-        |}];
-      Handle.do_actions handle [ None ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-        -|         placeholder="Option A"
-                   class="input_hash_replaced_in_test"
-                   #value=""
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-              <div> </div>
-            </div>
-        |}]
-    ;;
-
-    let%expect_test "Select element using partial input" =
-      let handle = Handle.create (Result_spec.vdom ()) (view_computation ()) in
-      Handle.show handle;
-      [%expect
-        {|
-        <div>
-          <input id="bonsai_path_replaced_in_test"
-                 type="text"
-                 class="input_hash_replaced_in_test"
-                 #value=""
-                 @on_blur
-                 @on_focus
-                 @on_input
-                 @on_keydown> </input>
-          <div data-test="query-box-item-container"
-               id="bonsai_path_replaced_in_test"
-               tabindex="-1"
-               @on_blur
-               @on_wheel
-               style={
-                 position: relative;
-               }>
-            <div> </div>
-          </div>
-        </div>
-        |}];
-      (* "O" is not unique, all options are matched. *)
-      Handle.input_text handle ~selector:"input" ~text:"O";
-      Handle.show_diff handle;
-      [%expect
-        {|
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   class="input_hash_replaced_in_test"
-        -|         #value=""
-        +|         #value="O"
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-        -|    <div> </div>
-        +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
-        +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
-        +|        <span> Option A </span>
-        +|      </div>
-        +|      <div @on_click @on_mouseenter>
-        +|        <span> Option B </span>
-        +|      </div>
-        +|      <div @on_click @on_mouseenter>
-        +|        <span> Option C </span>
-        +|      </div>
-        +|    </div>
-            </div>
-          </div>
-        |}];
-      Handle.input_text handle ~selector:"input" ~text:"C";
-      Handle.show_diff handle;
-      [%expect
-        {|
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   class="input_hash_replaced_in_test"
-        -|         #value="O"
-        +|         #value="C"
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-              <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
-                <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
-        -|        <span> Option A </span>
-        -|      </div>
-        -|      <div @on_click @on_mouseenter>
-        -|        <span> Option B </span>
-        -|      </div>
-        -|      <div @on_click @on_mouseenter>
-                  <span> Option C </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        |}]
-    ;;
-
-    let%expect_test "dynamic [to_string]." =
-      let to_string_var = Bonsai.Expert.Var.create Data.to_string in
-      let to_string = Bonsai.Expert.Var.value to_string_var in
-      let handle = Handle.create (Result_spec.vdom ()) (view_computation ~to_string ()) in
-      Handle.input_text handle ~selector:"input" ~text:"";
-      Handle.store_view handle;
-      Bonsai.Expert.Var.set to_string_var (fun data -> Data.to_string data ^ "!");
-      Handle.show_diff handle;
-      [%expect
-        {|
-                   class="input_hash_replaced_in_test"
-                   #value=""
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-              <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
-                <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
-        -|        <span> Option A </span>
-        +|        <span> Option A! </span>
-                </div>
-                <div @on_click @on_mouseenter>
-        -|        <span> Option B </span>
-        +|        <span> Option B! </span>
-                </div>
-                <div @on_click @on_mouseenter>
-        -|        <span> Option C </span>
-        +|        <span> Option C! </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        |}]
-    ;;
-
-    let%expect_test "Handle unknown option" =
-      let computation graph =
-        let form =
-          Form.Elements.Query_box.single_opt
-            (module Data)
-            ~all_options:(Bonsai.return Data.all)
-            ~handle_unknown_option:
-              (Bonsai.return (fun _ ->
-                 print_endline "in handle_uknown_option";
-                 Some Data.Option_A))
-            ~on_hover_item:
-              (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
-            graph
-        in
-        let%arr form in
-        Form.view form
-      in
-      let handle = Handle.create (Result_spec.vdom ()) computation in
-      Handle.store_view handle;
-      [%expect {| |}];
-      Handle.input_text handle ~selector:"input" ~text:"unknown option";
-      Handle.show_diff handle;
-      [%expect
-        {|
-        in handle_uknown_option
-
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   class="input_hash_replaced_in_test"
-        -|         #value=""
-        +|         #value="unknown option"
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-        -|    <div> </div>
-        +|    <div class="list_container_hash_replaced_in_test" style={ position: absolute; }>
-        +|      <div class="selected_item_hash_replaced_in_test" @on_click @on_mouseenter>
-        +|        <span> Option_A </span>
-        +|      </div>
-        +|    </div>
-            </div>
-          </div>
-        |}]
-    ;;
-  end)
-;;
+      |}]
+  ;;
+end
 
 let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.list" =
   let component =
@@ -6180,217 +6138,214 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.nonemp
     |}]
 ;;
 
-let%test_module "Form.Typed.Record.make_table" =
-  (module struct
-    module T = struct
-      type t =
-        { a : int
-        ; b : string
-        }
-      [@@deriving typed_fields, sexp]
-    end
+module%test [@name "Form.Typed.Record.make_table"] _ = struct
+  module T = struct
+    type t =
+      { a : int
+      ; b : string
+      }
+    [@@deriving typed_fields, sexp]
+  end
 
-    let component =
-      Form.Typed.Record.make_table
-        (module struct
-          module Typed_field = T.Typed_field
+  let component =
+    Form.Typed.Record.make_table
+      (module struct
+        module Typed_field = T.Typed_field
 
-          let label_for_field : type a. a Typed_field.t -> string = function
-            | A -> "Alpha"
-            | B -> "Bravo"
-          ;;
+        let label_for_field : type a. a Typed_field.t -> string = function
+          | A -> "Alpha"
+          | B -> "Bravo"
+        ;;
 
-          let label_for_field = `Computed label_for_field
+        let label_for_field = `Computed label_for_field
 
-          let form_for_field
-            : type a. a Typed_field.t -> Bonsai.graph -> (a, Vdom.Node.t) Form.t Bonsai.t
-            =
-            fun typed_field graph ->
-            match typed_field with
-            | A -> Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
-            | B ->
-              Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
-          ;;
-        end)
-    ;;
+        let form_for_field
+          : type a. a Typed_field.t -> Bonsai.graph -> (a, Vdom.Node.t) Form.t Bonsai.t
+          =
+          fun typed_field graph ->
+          match typed_field with
+          | A -> Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+          | B -> Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+        ;;
+      end)
+  ;;
 
-    let%expect_test "interacting with the table" =
-      let handle =
-        Handle.create
-          (form_result_spec
-             ~filter_printed_attributes:(fun ~key:_ ~data:_ -> false)
-             [%sexp_of: T.t list])
-          component
-      in
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ())
+  let%expect_test "interacting with the table" =
+    let handle =
+      Handle.create
+        (form_result_spec
+           ~filter_printed_attributes:(fun ~key:_ ~data:_ -> false)
+           [%sexp_of: T.t list])
+        component
+    in
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ())
 
-        ==============
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th> Alpha </th>
-                <th> Bravo </th>
-                <th> Remove </th>
-              </tr>
-            </thead>
-            <tbody> </tbody>
-          </table>
-          <button> + </button>
-        </div>
-        |}];
-      Handle.click_on handle ~selector:"button";
-      Handle.show handle;
-      [%expect
-        {|
-        (Error "Expected an integer")
+      ==============
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th> Alpha </th>
+              <th> Bravo </th>
+              <th> Remove </th>
+            </tr>
+          </thead>
+          <tbody> </tbody>
+        </table>
+        <button> + </button>
+      </div>
+      |}];
+    Handle.click_on handle ~selector:"button";
+    Handle.show handle;
+    [%expect
+      {|
+      (Error "Expected an integer")
 
-        ==============
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th> Alpha </th>
-                <th> Bravo </th>
-                <th> Remove </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <div>
-                    <button> X </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button> + </button>
-        </div>
-        |}];
-      Handle.input_text handle ~selector:"td:nth-child(1) > input" ~text:"123";
-      Handle.input_text handle ~selector:"td:nth-child(2) > input" ~text:"abc";
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok ((
-          (a 123)
-          (b abc))))
+      ==============
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th> Alpha </th>
+              <th> Bravo </th>
+              <th> Remove </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button> + </button>
+      </div>
+      |}];
+    Handle.input_text handle ~selector:"td:nth-child(1) > input" ~text:"123";
+    Handle.input_text handle ~selector:"td:nth-child(2) > input" ~text:"abc";
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok ((
+        (a 123)
+        (b abc))))
 
-        ==============
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th> Alpha </th>
-                <th> Bravo </th>
-                <th> Remove </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <div>
-                    <button> X </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button> + </button>
-        </div>
-        |}]
-    ;;
+      ==============
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th> Alpha </th>
+              <th> Bravo </th>
+              <th> Remove </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button> + </button>
+      </div>
+      |}]
+  ;;
 
-    let%expect_test "setting into the table" =
-      let handle =
-        Handle.create
-          (form_result_spec
-             ~filter_printed_attributes:(fun ~key:_ ~data:_ -> false)
-             [%sexp_of: T.t list])
-          component
-      in
-      Handle.do_actions
-        handle
-        [ [ { T.a = 1; b = "a" }; { a = 2; b = "b" }; { a = 3; b = "c" } ] ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok (
-          ((a 1) (b a))
-          ((a 2) (b b))
-          ((a 3) (b c))))
+  let%expect_test "setting into the table" =
+    let handle =
+      Handle.create
+        (form_result_spec
+           ~filter_printed_attributes:(fun ~key:_ ~data:_ -> false)
+           [%sexp_of: T.t list])
+        component
+    in
+    Handle.do_actions
+      handle
+      [ [ { T.a = 1; b = "a" }; { a = 2; b = "b" }; { a = 3; b = "c" } ] ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        ((a 1) (b a))
+        ((a 2) (b b))
+        ((a 3) (b c))))
 
-        ==============
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th> Alpha </th>
-                <th> Bravo </th>
-                <th> Remove </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <div>
-                    <button> X </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <div>
-                    <button> X </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <input> </input>
-                </td>
-                <td>
-                  <div>
-                    <button> X </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button> + </button>
-        </div>
-        |}]
-    ;;
-  end)
-;;
+      ==============
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th> Alpha </th>
+              <th> Bravo </th>
+              <th> Remove </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <input> </input>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button> + </button>
+      </div>
+      |}]
+  ;;
+end

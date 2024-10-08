@@ -32,6 +32,7 @@ module Expert = struct
       ; for_testing : For_testing.t Lazy.t
       ; focus : 'focus
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
+      ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
       }
     [@@deriving fields ~getters]
   end
@@ -56,6 +57,40 @@ module Expert = struct
       Effect.Ignore
     | `Node_test | `Node_jsdom_test ->
       Effect.of_sync_fun (fun () -> print_endline (f ())) ()
+  ;;
+
+  let column_width_tracker ~sexp_of_model ~equal ~default_model graph =
+    let column_widths, set_column_width =
+      Bonsai.state_machine0
+        graph
+        ~sexp_of_model
+        ~equal
+        ~default_model
+        ~apply_action:
+          (fun
+            (_ : _ Bonsai.Apply_action_context.t) model (column_id, `Px_float width) ->
+          (* While checking for float equality is usually not a good idea,
+               this is meant to handle the specific case when a column has
+               "display:none", in which case the width will be exactly 0.0, so
+               there is no concern about float rounding errors. *)
+          Map.update model column_id ~f:(fun prev ->
+            if Float.equal width 0.0
+            then (
+              match prev with
+              | None -> Hidden { prev_width_px = None }
+              | Some (Column_size.Visible { width_px }) ->
+                Hidden { prev_width_px = Some width_px }
+              | Some (Hidden _ as prev) -> prev)
+            else (
+              let rounded = Float.round_decimal ~decimal_digits:2 width in
+              Visible { width_px = rounded })))
+    in
+    let column_widths = Bonsai.cutoff ~equal column_widths in
+    let set_column_width =
+      let%arr set_column_width in
+      fun ~column_id width -> set_column_width (column_id, width)
+    in
+    column_widths, set_column_width
   ;;
 
   let implementation
@@ -124,35 +159,29 @@ module Expert = struct
     end
     in
     let column_widths, set_column_width =
-      Bonsai.state_machine0
+      column_width_tracker
         graph
         ~sexp_of_model:[%sexp_of: Column_widths_model.t]
         ~equal:[%equal: Column_widths_model.t]
         ~default_model:(Map.empty (module Column_cmp))
-        ~apply_action:
-          (fun
-            (_ : _ Bonsai.Apply_action_context.t) model (column_id, `Px_float width) ->
-          (* While checking for float equality is usually not a good idea,
-               this is meant to handle the specific case when a column has
-               "display:none", in which case the width will be exactly 0.0, so
-               there is no concern about float rounding errors. *)
-          Map.update model column_id ~f:(fun prev ->
-            if Float.equal width 0.0
-            then (
-              match prev with
-              | None -> Hidden { prev_width_px = None }
-              | Some (Visible { width_px }) -> Hidden { prev_width_px = Some width_px }
-              | Some (Hidden _ as prev) -> prev)
-            else (
-              let rounded = Float.round_decimal ~decimal_digits:2 width in
-              Visible { width_px = rounded })))
     in
-    let column_widths =
-      Bonsai.cutoff ~equal:[%equal: Column_widths_model.t] column_widths
+    let column_widths_for_reporting, set_column_width_for_reporting =
+      (* this "for_reporting" map is kept separately so that the autosizer can
+         keep the primary [column_widths] value for explicitly set column widths,
+         while this tracker maintains all the currently-known sizes. *)
+      column_width_tracker
+        graph
+        ~sexp_of_model:[%sexp_of: Column_widths_model.t]
+        ~equal:[%equal: Column_widths_model.t]
+        ~default_model:(Map.empty (module Column_cmp))
     in
     let set_column_width =
-      let%arr set_column_width in
-      fun ~column_id width -> set_column_width (column_id, width)
+      let%arr set_column_width and set_column_width_for_reporting in
+      fun ~column_id size ->
+        Effect.Many
+          [ set_column_width ~column_id size
+          ; set_column_width_for_reporting ~column_id size
+          ]
     in
     let row_count = collated >>| Collated.num_filtered_rows in
     let header_height_px =
@@ -475,6 +504,7 @@ module Expert = struct
         ~autosize
         ~column_widths
         ~set_column_width
+        ~set_column_width_for_reporting
         ~set_header_client_rect
         graph
     in
@@ -521,12 +551,27 @@ module Expert = struct
       let low, high = low, Int.max low high in
       low, high
     in
-    let%arr view and range and body_for_testing and focus and set_column_width in
+    let column_widths =
+      let%arr column_widths_for_reporting in
+      lazy
+        (Map.to_alist column_widths_for_reporting
+         |> List.filter_map ~f:(function
+           | column_id, Visible { width_px }
+           | column_id, Hidden { prev_width_px = Some width_px } ->
+             Some (column_id, `Px_float width_px)
+           | _, Hidden { prev_width_px = None } -> None))
+    in
+    let%arr view
+    and range
+    and body_for_testing
+    and focus
+    and set_column_width
+    and column_widths in
     let for_testing =
       let%map.Lazy body = body_for_testing in
       { For_testing.body }
     in
-    { Result.view; range; for_testing; focus; set_column_width }
+    { Result.view; range; for_testing; focus; set_column_width; column_widths }
   ;;
 
   let component
@@ -614,6 +659,7 @@ module Basic = struct
       ; num_filtered_rows : int
       ; sortable_state : 'column_id Sortable.t
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
+      ; column_widths : ('column_id * [ `Px_float of float ]) list lazy_t
       }
     [@@deriving fields ~getters]
   end
@@ -777,7 +823,8 @@ module Basic = struct
            fun (low, high) -> set_rank_range (Collate.Which_range.Between (low, high)))
         graph
     in
-    let%arr { view; for_testing; range = _; focus; set_column_width } = result
+    let%arr { view; for_testing; range = _; focus; set_column_width; column_widths } =
+      result
     and num_filtered_rows
     and sortable_state in
     { Result.view
@@ -786,6 +833,7 @@ module Basic = struct
     ; num_filtered_rows
     ; sortable_state
     ; set_column_width
+    ; column_widths
     }
   ;;
 end

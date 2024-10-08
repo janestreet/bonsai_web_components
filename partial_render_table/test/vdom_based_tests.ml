@@ -358,8 +358,18 @@ let%expect_test "resize-column" =
     let test = Test.create ~should_print_styles:true (Test.Component.default ()) in
     Handle.recompute_view_until_stable test.handle;
     Handle.store_view test.handle;
+    let () =
+      let (lazy widths) = (Handle.last_result test.handle).column_widths in
+      print_s [%message (widths : (Indexed_column_id.t * [ `Px_float of float ]) list)];
+      [%expect {| (widths ()) |}]
+    in
     resize test ~idx:0 ~width:10.0;
     Handle.recompute_view_until_stable test.handle;
+    let () =
+      let (lazy widths) = (Handle.last_result test.handle).column_widths in
+      print_s [%message (widths : (Indexed_column_id.t * [ `Px_float of float ]) list)];
+      [%expect {| (widths ((0 (Px_float 10)))) |}]
+    in
     Handle.show_diff ~location_style:Separator test.handle;
     [%expect
       {|

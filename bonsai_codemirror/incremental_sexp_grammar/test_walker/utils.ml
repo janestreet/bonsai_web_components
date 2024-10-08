@@ -98,10 +98,14 @@ let quick_test_noncompliant_from_gen ?trials grammar =
     assert_errors (Sexp.to_string x) ~grammar:grammar.untyped)
 ;;
 
-let quickcheck_tests ~sexp_of grammar generator =
-  quick_test_compliant_from_type ~sexp_of grammar generator;
+let quickcheck_tests_no_type grammar =
   quick_test_compliant_from_gen grammar;
   quick_test_noncompliant_from_gen grammar
+;;
+
+let quickcheck_tests ~sexp_of grammar generator =
+  quick_test_compliant_from_type ~sexp_of grammar generator;
+  quickcheck_tests_no_type grammar
 ;;
 
 module Make_sexp_tester (M : S) = struct

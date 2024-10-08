@@ -2,7 +2,7 @@ open! Core
 open Bonsai_web
 open Bonsai_web_test
 open Bonsai.Let_syntax
-module Popover = Bonsai_web_ui_popover
+module Popover = Bonsai_web_ui_popover_deprecated
 
 module Open_close = struct
   type t =
@@ -44,7 +44,7 @@ end
 let%expect_test "External open and closing" =
   let popover graph =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
-      Popover.component
+      (Popover.component [@alert "-deprecated"] [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.return Popover.Direction.Right)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
@@ -121,7 +121,7 @@ let%expect_test "Popover changing directions" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
   let popover graph =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
-      Popover.component
+      (Popover.component [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
@@ -190,7 +190,7 @@ let%expect_test "Opening and closing from within popover base" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
   let popover graph =
     let popover =
-      Popover.component
+      (Popover.component [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
@@ -255,7 +255,7 @@ let%expect_test "Opening from base and closing from dialog" =
   let direction_var = Bonsai.Expert.Var.create Popover.Direction.Right in
   let popover graph =
     let popover =
-      Popover.component
+      (Popover.component [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return false)
         ~direction:(Bonsai.Expert.Var.value direction_var)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
@@ -365,7 +365,7 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
   List.iter hook_triggers ~f:(fun trigger_hook ->
     let popover graph =
       let popover =
-        Popover.component
+        (Popover.component [@alert "-deprecated"])
           ~popover_extra_attr:(Bonsai.return (Vdom.Attr.create "data-test" id))
           ~close_when_clicked_outside:(Bonsai.return true)
             (* NOTE: [close_when_clicked_outside] is set to true. *)
@@ -422,13 +422,13 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
 let%expect_test "Nested popover" =
   let popover graph =
     let popover =
-      Popover.component
+      (Popover.component [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return true)
         ~direction:(Bonsai.return Popover.Direction.Right)
         ~alignment:(Bonsai.return Popover.Alignment.Center)
         ~popover:(fun ~close:close_popover1 graph ->
           let%sub { Popover.Result.wrap; open_; close = _; toggle = _; is_open = _ } =
-            Popover.component
+            (Popover.component [@alert "-deprecated"])
               ~close_when_clicked_outside:(Bonsai.return true)
               ~direction:(Bonsai.return Popover.Direction.Right)
               ~alignment:(Bonsai.return Popover.Alignment.Center)
@@ -623,223 +623,218 @@ let%expect_test "Nested popover" =
     |}]
 ;;
 
-let%test_module "interactions with [with_model_resetter]" =
-  (module struct
-    module Popover_result_spec = struct
-      type t = Vdom.Node.t * Popover.Result.t * unit Effect.t
+module%test [@name "interactions with [with_model_resetter]"] _ = struct
+  module Popover_result_spec = struct
+    type t = Vdom.Node.t * Popover.Result.t * unit Effect.t
 
-      type incoming =
-        | Open
-        | Close
-        | Reset
-      [@@deriving variants]
+    type incoming =
+      | Open
+      | Close
+      | Reset
+    [@@deriving variants]
 
-      let get_vdom (vdom, _, _) = vdom
+    let get_vdom (vdom, _, _) = vdom
 
-      let view (vdom, _, _) =
-        vdom
-        |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
-        |> Virtual_dom_test_helpers.Node_helpers.to_string_html
-             ?filter_printed_attributes:None
-             ~censor_paths:true
-             ~censor_hash:true
-      ;;
-
-      let incoming
-        (_, { Popover.Result.open_; close; wrap = _; toggle = _; is_open = _ }, reset)
-        = function
-        | Open -> open_
-        | Close -> close
-        | Reset -> reset
-      ;;
-    end
-
-    let popover graph =
-      let state, resetter =
-        Bonsai.with_model_resetter
-          ~f:(fun graph ->
-            let popover =
-              Popover.component
-                ~close_when_clicked_outside:(Bonsai.return true)
-                ~direction:(Bonsai.return Popover.Direction.Right)
-                ~alignment:(Bonsai.return Popover.Alignment.Center)
-                ~popover:(fun ~close:_ graph ->
-                  let x, reset =
-                    Bonsai.with_model_resetter
-                      ~f:(fun _graph -> Bonsai.return (View.text "Popover!"))
-                      graph
-                  in
-                  let%arr x and reset in
-                  Vdom.Node.div [ x; button ~on_click:reset "reset-popover" ])
-                ()
-                graph
-            in
-            let x, reset =
-              Bonsai.with_model_resetter
-                ~f:(fun _graph -> Bonsai.return (View.text "Popover base!"))
-                graph
-            in
-            let%arr ({ Popover.Result.wrap; _ } as popover) = popover
-            and x
-            and reset in
-            wrap (Vdom.Node.div [ x; button ~on_click:reset "reset-base" ]), popover)
-          graph
-      in
-      let%sub vdom, popover = state in
-      let%arr vdom and popover and resetter in
-      vdom, popover, resetter
+    let view (vdom, _, _) =
+      vdom
+      |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
+      |> Virtual_dom_test_helpers.Node_helpers.to_string_html
+           ?filter_printed_attributes:None
+           ~censor_paths:true
+           ~censor_hash:true
     ;;
 
-    let%expect_test "resetting entire computation" =
-      let handle = Handle.create (module Popover_result_spec) popover in
-      Handle.show handle;
-      [%expect
-        {|
-        <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+    let incoming
+      (_, { Popover.Result.open_; close; wrap = _; toggle = _; is_open = _ }, reset)
+      = function
+      | Open -> open_
+      | Close -> close
+      | Reset -> reset
+    ;;
+  end
+
+  let popover graph =
+    let state, resetter =
+      Bonsai.with_model_resetter
+        ~f:(fun graph ->
+          let popover =
+            (Popover.component [@alert "-deprecated"])
+              ~close_when_clicked_outside:(Bonsai.return true)
+              ~direction:(Bonsai.return Popover.Direction.Right)
+              ~alignment:(Bonsai.return Popover.Alignment.Center)
+              ~popover:(fun ~close:_ graph ->
+                let x, reset =
+                  Bonsai.with_model_resetter
+                    ~f:(fun _graph -> Bonsai.return (View.text "Popover!"))
+                    graph
+                in
+                let%arr x and reset in
+                Vdom.Node.div [ x; button ~on_click:reset "reset-popover" ])
+              ()
+              graph
+          in
+          let x, reset =
+            Bonsai.with_model_resetter
+              ~f:(fun _graph -> Bonsai.return (View.text "Popover base!"))
+              graph
+          in
+          let%arr ({ Popover.Result.wrap; _ } as popover) = popover
+          and x
+          and reset in
+          wrap (Vdom.Node.div [ x; button ~on_click:reset "reset-base" ]), popover)
+        graph
+    in
+    let%sub vdom, popover = state in
+    let%arr vdom and popover and resetter in
+    vdom, popover, resetter
+  ;;
+
+  let%expect_test "resetting entire computation" =
+    let handle = Handle.create (module Popover_result_spec) popover in
+    Handle.show handle;
+    [%expect
+      {|
+      <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+        <div>
+          <span> Popover base! </span>
+          <button id="reset-base" @on_click> reset-base </button>
+        </div>
+      </span>
+      |}];
+    Handle.do_actions handle [ Open ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+      +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
           <div>
             <span> Popover base! </span>
             <button id="reset-base" @on_click> reset-base </button>
           </div>
+      +|  <div id="bonsai_path_replaced_in_test"
+      +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
+      +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
+      +|       global-click-listener=((capture <fun>))
+      +|       global-contextmenu-listener=((capture <fun>))
+      +|       global-keydown-listener=((capture <fun>))>
+      +|    <div>
+      +|      <span> Popover! </span>
+      +|      <button id="reset-popover" @on_click> reset-popover </button>
+      +|    </div>
+      +|  </div>
         </span>
-        |}];
-      Handle.do_actions handle [ Open ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-        +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
-            <div>
-              <span> Popover base! </span>
-              <button id="reset-base" @on_click> reset-base </button>
-            </div>
-        +|  <div id="bonsai_path_replaced_in_test"
-        +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
-        +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-        +|       global-click-listener=((capture <fun>))
-        +|       global-contextmenu-listener=((capture <fun>))
-        +|       global-keydown-listener=((capture <fun>))>
-        +|    <div>
-        +|      <span> Popover! </span>
-        +|      <button id="reset-popover" @on_click> reset-popover </button>
-        +|    </div>
-        +|  </div>
-          </span>
-        |}];
-      Handle.do_actions handle [ Reset ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
-        +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-            <div>
-              <span> Popover base! </span>
-              <button id="reset-base" @on_click> reset-base </button>
-            </div>
-        -|  <div id="bonsai_path_replaced_in_test"
-        -|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
-        -|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-        -|       global-click-listener=((capture <fun>))
-        -|       global-contextmenu-listener=((capture <fun>))
-        -|       global-keydown-listener=((capture <fun>))>
-        -|    <div>
-        -|      <span> Popover! </span>
-        -|      <button id="reset-popover" @on_click> reset-popover </button>
-        -|    </div>
-        -|  </div>
-          </span>
-        |}]
-    ;;
-
-    let%expect_test "resetting popover" =
-      let handle = Handle.create (module Popover_result_spec) popover in
-      Handle.show handle;
-      [%expect
-        {|
-        <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+      |}];
+    Handle.do_actions handle [ Reset ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
+      +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
           <div>
             <span> Popover base! </span>
             <button id="reset-base" @on_click> reset-base </button>
           </div>
+      -|  <div id="bonsai_path_replaced_in_test"
+      -|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
+      -|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
+      -|       global-click-listener=((capture <fun>))
+      -|       global-contextmenu-listener=((capture <fun>))
+      -|       global-keydown-listener=((capture <fun>))>
+      -|    <div>
+      -|      <span> Popover! </span>
+      -|      <button id="reset-popover" @on_click> reset-popover </button>
+      -|    </div>
+      -|  </div>
         </span>
-        |}];
-      Handle.do_actions handle [ Open ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-        +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
-            <div>
-              <span> Popover base! </span>
-              <button id="reset-base" @on_click> reset-base </button>
-            </div>
-        +|  <div id="bonsai_path_replaced_in_test"
-        +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
-        +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-        +|       global-click-listener=((capture <fun>))
-        +|       global-contextmenu-listener=((capture <fun>))
-        +|       global-keydown-listener=((capture <fun>))>
-        +|    <div>
-        +|      <span> Popover! </span>
-        +|      <button id="reset-popover" @on_click> reset-popover </button>
-        +|    </div>
-        +|  </div>
-          </span>
-        |}];
-      Handle.click_on
-        ~get_vdom:Popover_result_spec.get_vdom
-        ~selector:"#reset-popover"
-        handle;
-      Handle.show_diff handle
-    ;;
+      |}]
+  ;;
 
-    let%expect_test "resetting returned output" =
-      let handle = Handle.create (module Popover_result_spec) popover in
-      Handle.show handle;
-      [%expect
-        {|
-        <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+  let%expect_test "resetting popover" =
+    let handle = Handle.create (module Popover_result_spec) popover in
+    Handle.show handle;
+    [%expect
+      {|
+      <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+        <div>
+          <span> Popover base! </span>
+          <button id="reset-base" @on_click> reset-base </button>
+        </div>
+      </span>
+      |}];
+    Handle.do_actions handle [ Open ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+      +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
           <div>
             <span> Popover base! </span>
             <button id="reset-base" @on_click> reset-base </button>
           </div>
+      +|  <div id="bonsai_path_replaced_in_test"
+      +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
+      +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
+      +|       global-click-listener=((capture <fun>))
+      +|       global-contextmenu-listener=((capture <fun>))
+      +|       global-keydown-listener=((capture <fun>))>
+      +|    <div>
+      +|      <span> Popover! </span>
+      +|      <button id="reset-popover" @on_click> reset-popover </button>
+      +|    </div>
+      +|  </div>
         </span>
-        |}];
-      Handle.do_actions handle [ Open ];
-      Handle.show_diff handle;
-      [%expect
-        {|
-        -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-        +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
-            <div>
-              <span> Popover base! </span>
-              <button id="reset-base" @on_click> reset-base </button>
-            </div>
-        +|  <div id="bonsai_path_replaced_in_test"
-        +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
-        +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-        +|       global-click-listener=((capture <fun>))
-        +|       global-contextmenu-listener=((capture <fun>))
-        +|       global-keydown-listener=((capture <fun>))>
-        +|    <div>
-        +|      <span> Popover! </span>
-        +|      <button id="reset-popover" @on_click> reset-popover </button>
-        +|    </div>
-        +|  </div>
-          </span>
-        |}];
-      Handle.click_on
-        ~get_vdom:Popover_result_spec.get_vdom
-        ~selector:"#reset-base"
-        handle;
-      Handle.show_diff handle
-    ;;
-  end)
-;;
+      |}];
+    Handle.click_on
+      ~get_vdom:Popover_result_spec.get_vdom
+      ~selector:"#reset-popover"
+      handle;
+    Handle.show_diff handle
+  ;;
+
+  let%expect_test "resetting returned output" =
+    let handle = Handle.create (module Popover_result_spec) popover in
+    Handle.show handle;
+    [%expect
+      {|
+      <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+        <div>
+          <span> Popover base! </span>
+          <button id="reset-base" @on_click> reset-base </button>
+        </div>
+      </span>
+      |}];
+    Handle.do_actions handle [ Open ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
+      +|<span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
+          <div>
+            <span> Popover base! </span>
+            <button id="reset-base" @on_click> reset-base </button>
+          </div>
+      +|  <div id="bonsai_path_replaced_in_test"
+      +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
+      +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
+      +|       global-click-listener=((capture <fun>))
+      +|       global-contextmenu-listener=((capture <fun>))
+      +|       global-keydown-listener=((capture <fun>))>
+      +|    <div>
+      +|      <span> Popover! </span>
+      +|      <button id="reset-popover" @on_click> reset-popover </button>
+      +|    </div>
+      +|  </div>
+        </span>
+      |}];
+    Handle.click_on ~get_vdom:Popover_result_spec.get_vdom ~selector:"#reset-base" handle;
+    Handle.show_diff handle
+  ;;
+end
 
 let%expect_test "popover with an extra base attr" =
   let popover graph =
     let%sub ({ Popover.Result.wrap; _ } as popover) =
-      Popover.component
+      (Popover.component [@alert "-deprecated"])
         ~close_when_clicked_outside:(Bonsai.return false)
         ~base_extra_attr:
           (Bonsai.return (Vdom.Attr.create "data-test" "I am attached as a base attr."))

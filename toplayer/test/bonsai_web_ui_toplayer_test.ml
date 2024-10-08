@@ -101,6 +101,17 @@ module Helper = struct
   end
 
   module Result = struct
+    module Selectors = struct
+      let app_root_id = "app-root-for-tests"
+      let app_root = "#" ^ app_root_id
+      let anchored_popovers_id = "anchored-popovers-for-tests"
+      let anchored_popovers = "#" ^ anchored_popovers_id
+      let virtual_popovers_id = "virtual-popovers-for-tests"
+      let virtual_popovers = "#" ^ virtual_popovers_id
+      let modals_id = "modals-for-tests"
+      let modals = "#" ^ modals_id
+    end
+
     type t =
       { anchored_popovers : Anchored_popover.t list
       ; virtual_popovers : Virtual_popover.t list
@@ -136,10 +147,10 @@ module Helper = struct
       let modal_vdom = List.map modals ~f:(fun x -> to_vdom (`Modal x)) in
       {%html|
           <html id="html-for-tests">
-            <div id="app-root-for-tests">%{app_vdom}</div>
-            <div id="anchored-popovers-for-tests">*{anchored_vdom}</div>
-            <div id="virtual-popovers-for-tests">*{virtual_vdom}</div>
-            <div id="modals-for-tests">*{modal_vdom}</div>
+            <div id=%{Selectors.app_root_id}>%{app_vdom}</div>
+            <div id=%{Selectors.anchored_popovers_id}>*{anchored_vdom}</div>
+            <div id=%{Selectors.virtual_popovers_id}>*{virtual_vdom}</div>
+            <div id=%{Selectors.modals_id}>*{modal_vdom}</div>
           </html>
         |}
     ;;
@@ -391,590 +402,574 @@ let test_component ?position ?alignment ?offset ?match_anchor_side_length ~conte
     })
 ;;
 
-let%test_module "vdom output" =
-  (module struct
-    let toggle_button ~label open_ close is_open =
-      let%arr open_ and close and is_open in
-      let on_click = if is_open then close else open_ in
-      let formatted_id =
-        "toggle-" ^ Capitalization.apply_to_words Kebab_case (String.split ~on:' ' label)
-      in
-      {%html|
-          <button id=%{formatted_id} on_click=%{fun _ -> on_click}>
-            Toggle popover %{formatted_id#String}
-          </button>
-        |}
-    ;;
+module%test [@name "vdom output"] _ = struct
+  let toggle_button ~label open_ close is_open =
+    let%arr open_ and close and is_open in
+    let on_click = if is_open then close else open_ in
+    let formatted_id =
+      "toggle-" ^ Capitalization.apply_to_words Kebab_case (String.split ~on:' ' label)
+    in
+    {%html|
+        <button id=%{formatted_id} on_click=%{fun _ -> on_click}>
+          Toggle popover %{formatted_id#String}
+        </button>
+      |}
+  ;;
 
-    let anchored_with_toggle ~label graph =
-      let attr, { Controls.open_; close; is_open } =
-        Popover.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
-      in
-      attr, toggle_button ~label open_ close is_open
-    ;;
+  let anchored_with_toggle ~label graph =
+    let attr, { Controls.open_; close; is_open } =
+      Popover.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
+    in
+    attr, toggle_button ~label open_ close is_open
+  ;;
 
-    let virtual_with_toggle ~label graph =
-      let { Controls.open_; close; is_open } =
-        Popover.create_virtual
-          ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
-          (Anchor.of_coordinate ~x:0. ~y:0. |> return)
-          graph
-      in
-      toggle_button ~label open_ close is_open
-    ;;
+  let virtual_with_toggle ~label graph =
+    let { Controls.open_; close; is_open } =
+      Popover.create_virtual
+        ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
+        (Anchor.of_coordinate ~x:0. ~y:0. |> return)
+        graph
+    in
+    toggle_button ~label open_ close is_open
+  ;;
 
-    let create_nested_content
-      ?(num_anchored = 1)
-      ?(num_virtual = 1)
-      ~prefix
-      ()
-      ~close:_
-      graph
+  let create_nested_content
+    ?(num_anchored = 1)
+    ?(num_virtual = 1)
+    ~prefix
+    ()
+    ~close:_
+    graph
+    =
+    let anchored_attrs, anchored_togglers =
+      List.init num_anchored ~f:(fun i ->
+        anchored_with_toggle
+          ~label:[%string "%{prefix}Nested Anchored %{i + 1#Int}"]
+          graph)
+      |> List.unzip
+    in
+    let virtual_togglers =
+      List.init num_virtual ~f:(fun i ->
+        virtual_with_toggle ~label:[%string "%{prefix}Nested Virtual %{i + 1#Int}"] graph)
+    in
+    let%arr anchored_attrs = Bonsai.all anchored_attrs
+    and anchored_togglers = Bonsai.all anchored_togglers
+    and virtual_togglers = Bonsai.all virtual_togglers in
+    let id =
+      [%string "%{prefix}-root"] |> String.filter ~f:(fun c -> not (Char.equal c ' '))
+    in
+    {%html|
+        <div>
+          <div id=%{id} *{anchored_attrs}></div>
+          *{anchored_togglers} *{virtual_togglers}
+        </div>
+      |}
+  ;;
+
+  let test_popovers_and_virtual_popovers graph =
+    let anchored1, toggle_anchored1 = anchored_with_toggle ~label:"Anchored 1" graph in
+    let anchored2, toggle_anchored2 = anchored_with_toggle ~label:"Anchored 2" graph in
+    let ( anchored3
+        , { Controls.open_ = open_anchored3
+          ; close = close_anchored3
+          ; is_open = is_open_anchored3
+          } )
       =
-      let anchored_attrs, anchored_togglers =
-        List.init num_anchored ~f:(fun i ->
-          anchored_with_toggle
-            ~label:[%string "%{prefix}Nested Anchored %{i + 1#Int}"]
-            graph)
-        |> List.unzip
-      in
-      let virtual_togglers =
-        List.init num_virtual ~f:(fun i ->
-          virtual_with_toggle
-            ~label:[%string "%{prefix}Nested Virtual %{i + 1#Int}"]
-            graph)
-      in
-      let%arr anchored_attrs = Bonsai.all anchored_attrs
-      and anchored_togglers = Bonsai.all anchored_togglers
-      and virtual_togglers = Bonsai.all virtual_togglers in
-      let id =
-        [%string "%{prefix}-root"] |> String.filter ~f:(fun c -> not (Char.equal c ' '))
-      in
+      Popover.create ~content:(create_nested_content ~prefix:"Anchored " ()) graph
+    in
+    let toggle_anchored3 =
+      toggle_button ~label:"Anchored 3" open_anchored3 close_anchored3 is_open_anchored3
+    in
+    let toggle_virtual1 = virtual_with_toggle ~label:"Virtual 1" graph in
+    let toggle_virtual2 = virtual_with_toggle ~label:"Virtual 2" graph in
+    let { Controls.open_ = open_virtual3
+        ; close = close_virtual3
+        ; is_open = is_open_virtual3
+        }
+      =
+      Popover.create_virtual
+        ~content:(create_nested_content ~prefix:"Virtual " ())
+        (Anchor.of_coordinate ~x:0. ~y:0. |> return)
+        graph
+    in
+    let toggle_virtual3 =
+      toggle_button ~label:"Virtual 3" open_virtual3 close_virtual3 is_open_virtual3
+    in
+    let app_root =
+      let%arr anchored1
+      and anchored2
+      and anchored3
+      and toggle_anchored1
+      and toggle_anchored2
+      and toggle_anchored3
+      and toggle_virtual1
+      and toggle_virtual2
+      and toggle_virtual3 in
       {%html|
           <div>
-            <div id=%{id} *{anchored_attrs}></div>
-            *{anchored_togglers} *{virtual_togglers}
+            <div
+              class="anchored-root"
+              %{anchored1}
+              %{anchored2}
+              %{anchored3}
+            ></div>
+            %{toggle_anchored1} %{toggle_anchored2} %{toggle_anchored3} %{toggle_virtual1}
+            %{toggle_virtual2} %{toggle_virtual3}
           </div>
         |}
-    ;;
+    in
+    Helper.wrap_app_vdom app_root
+  ;;
 
-    let test_popovers_and_virtual_popovers graph =
-      let anchored1, toggle_anchored1 = anchored_with_toggle ~label:"Anchored 1" graph in
-      let anchored2, toggle_anchored2 = anchored_with_toggle ~label:"Anchored 2" graph in
-      let ( anchored3
-          , { Controls.open_ = open_anchored3
-            ; close = close_anchored3
-            ; is_open = is_open_anchored3
-            } )
-        =
-        Popover.create ~content:(create_nested_content ~prefix:"Anchored " ()) graph
-      in
-      let toggle_anchored3 =
-        toggle_button ~label:"Anchored 3" open_anchored3 close_anchored3 is_open_anchored3
-      in
-      let toggle_virtual1 = virtual_with_toggle ~label:"Virtual 1" graph in
-      let toggle_virtual2 = virtual_with_toggle ~label:"Virtual 2" graph in
-      let { Controls.open_ = open_virtual3
-          ; close = close_virtual3
-          ; is_open = is_open_virtual3
-          }
-        =
-        Popover.create_virtual
-          ~content:(create_nested_content ~prefix:"Virtual " ())
-          (Anchor.of_coordinate ~x:0. ~y:0. |> return)
-          graph
-      in
-      let toggle_virtual3 =
-        toggle_button ~label:"Virtual 3" open_virtual3 close_virtual3 is_open_virtual3
-      in
-      let app_root =
-        let%arr anchored1
-        and anchored2
-        and anchored3
-        and toggle_anchored1
-        and toggle_anchored2
-        and toggle_anchored3
-        and toggle_virtual1
-        and toggle_virtual2
-        and toggle_virtual3 in
-        {%html|
-            <div>
-              <div
-                class="anchored-root"
-                %{anchored1}
-                %{anchored2}
-                %{anchored3}
-              ></div>
-              %{toggle_anchored1} %{toggle_anchored2} %{toggle_anchored3} %{toggle_virtual1}
-              %{toggle_virtual2} %{toggle_virtual3}
-            </div>
-          |}
-      in
-      Helper.wrap_app_vdom app_root
-    ;;
+  let%expect_test "Multiple and nested" =
+    let handle =
+      Handle.create (Result_spec.vdom Fn.id) test_popovers_and_virtual_popovers
+    in
+    Handle.show handle;
+    [%expect
+      {|
+      <html id="html-for-tests">
+        <div id="app-root-for-tests">
+          <div>
+            <div class="anchored-root"> </div>
+            <button id="toggle-anchored-1" @on_click>  Toggle popover  toggle-anchored-1 </button>
 
-    let%expect_test "Multiple and nested" =
-      let handle =
-        Handle.create (Result_spec.vdom Fn.id) test_popovers_and_virtual_popovers
-      in
-      Handle.show handle;
-      [%expect
-        {|
-        <html id="html-for-tests">
+            <button id="toggle-anchored-2" @on_click>  Toggle popover  toggle-anchored-2 </button>
+
+            <button id="toggle-anchored-3" @on_click>  Toggle popover  toggle-anchored-3 </button>
+
+            <button id="toggle-virtual-1" @on_click>  Toggle popover  toggle-virtual-1 </button>
+            <button id="toggle-virtual-2" @on_click>  Toggle popover  toggle-virtual-2 </button>
+
+            <button id="toggle-virtual-3" @on_click>  Toggle popover  toggle-virtual-3 </button>
+          </div>
+        </div>
+        <div id="anchored-popovers-for-tests"> </div>
+        <div id="virtual-popovers-for-tests"> </div>
+        <div id="modals-for-tests"> </div>
+      </html>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-anchored-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
           <div id="app-root-for-tests">
             <div>
-              <div class="anchored-root"> </div>
+      -|      <div class="anchored-root"> </div>
+      +|      <div class="anchored-root"
+      +|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
               <button id="toggle-anchored-1" @on_click>  Toggle popover  toggle-anchored-1 </button>
 
-              <button id="toggle-anchored-2" @on_click>  Toggle popover  toggle-anchored-2 </button>
 
-              <button id="toggle-anchored-3" @on_click>  Toggle popover  toggle-anchored-3 </button>
-
-              <button id="toggle-virtual-1" @on_click>  Toggle popover  toggle-virtual-1 </button>
-              <button id="toggle-virtual-2" @on_click>  Toggle popover  toggle-virtual-2 </button>
-
-              <button id="toggle-virtual-3" @on_click>  Toggle popover  toggle-virtual-3 </button>
             </div>
           </div>
-          <div id="anchored-popovers-for-tests"> </div>
+      -|  <div id="anchored-popovers-for-tests"> </div>
+      +|  <div id="anchored-popovers-for-tests">
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
+      +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|           vdom_toplayer_popover_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test"> Anchored 1 </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+      +|  </div>
           <div id="virtual-popovers-for-tests"> </div>
           <div id="modals-for-tests"> </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-anchored-3";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+            <div>
+              <div class="anchored-root"
+      -|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
+      +|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length()))((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
+              <button id="toggle-anchored-1" @on_click>  Toggle popover  toggle-anchored-1 </button>
+
+
+              <div class="nested-popovers-for-tests"> </div>
+            </div>
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
+      +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|           vdom_toplayer_popover_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test">
+      +|          <div>
+      +|            <div id="Anchored-root"> </div>
+      +|            <button id="toggle-anchored-nested-anchored-1" @on_click>  Toggle popover  toggle-anchored-nested-anchored-1 </button>
+      +|
+      +|            <button id="toggle-anchored-nested-virtual-1" @on_click>  Toggle popover  toggle-anchored-nested-virtual-1 </button>
+      +|          </div>
+      +|        </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+          </div>
+          <div id="virtual-popovers-for-tests"> </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-anchored-nested-anchored-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+                <div class="popover_dom__inline_class_hash_replaced_in_test">
+                  <div>
+      -|            <div id="Anchored-root"> </div>
+      +|            <div id="Anchored-root"
+      +|                 vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
+                    <button id="toggle-anchored-nested-anchored-1" @on_click>  Toggle popover  toggle-anchored-nested-anchored-1 </button>
+
+
+                <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+              </div>
+      -|      <div class="nested-popovers-for-tests"> </div>
+      +|      <div class="nested-popovers-for-tests">
+      +|        <div class="popover-for-tests">
+      +|          <div popover="manual"
+      +|               tabindex="-1"
+      +|               data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|               class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
+      +|               custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
+      +|               floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|               vdom_toplayer_popover_inertness=()
+      +|               vdom_toplayer_restore_focus_on_close=()>
+      +|            <div class="popover_dom__inline_class_hash_replaced_in_test"> Anchored Nested Anchored 1 </div>
+      +|            <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|          </div>
+      +|          <div class="nested-popovers-for-tests"> </div>
+      +|        </div>
+      +|      </div>
+            </div>
+          </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+            </div>
+          </div>
+      -|  <div id="virtual-popovers-for-tests"> </div>
+      +|  <div id="virtual-popovers-for-tests">
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           id="bonsai_path_replaced_in_test"
+      +|           class="default_theme_helpers__inline_class_hash_replaced_in_test default_theme_helpers__inline_class_hash_replaced_in_test floating_hash_replaced_in_test popover_hash_replaced_in_test toplayer_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
+      +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|           global-click-listener=((bubbling <fun>))
+      +|           global-keydown-listener=((bubbling <fun>))
+      +|           global-mousedown-listener=((capture <fun>))
+      +|           vdom_toplayer_popover_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()
+      +|           @on_keydown>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test"> Virtual 1 </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+      +|  </div>
+          <div id="modals-for-tests"> </div>
         </html>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-anchored-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-            <div id="app-root-for-tests">
-              <div>
-        -|      <div class="anchored-root"> </div>
-        +|      <div class="anchored-root"
-        +|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
-                <button id="toggle-anchored-1" @on_click>  Toggle popover  toggle-anchored-1 </button>
-
-
-              </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-3";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+              <div class="nested-popovers-for-tests"> </div>
             </div>
-        -|  <div id="anchored-popovers-for-tests"> </div>
-        +|  <div id="anchored-popovers-for-tests">
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
-        +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|           vdom_toplayer_popover_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Anchored 1 </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-        +|  </div>
-            <div id="virtual-popovers-for-tests"> </div>
-            <div id="modals-for-tests"> </div>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-anchored-3";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-              <div>
-                <div class="anchored-root"
-        -|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
-        +|           vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length()))((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
-                <button id="toggle-anchored-1" @on_click>  Toggle popover  toggle-anchored-1 </button>
-
-
-                <div class="nested-popovers-for-tests"> </div>
-              </div>
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
-        +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|           vdom_toplayer_popover_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test">
-        +|          <div>
-        +|            <div id="Anchored-root"> </div>
-        +|            <button id="toggle-anchored-nested-anchored-1" @on_click>  Toggle popover  toggle-anchored-nested-anchored-1 </button>
-        +|
-        +|            <button id="toggle-anchored-nested-virtual-1" @on_click>  Toggle popover  toggle-anchored-nested-virtual-1 </button>
-        +|          </div>
-        +|        </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           id="bonsai_path_replaced_in_test"
+      +|           class="default_theme_helpers__inline_class_hash_replaced_in_test default_theme_helpers__inline_class_hash_replaced_in_test floating_hash_replaced_in_test popover_hash_replaced_in_test toplayer_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
+      +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|           global-click-listener=((bubbling <fun>))
+      +|           global-keydown-listener=((bubbling <fun>))
+      +|           global-mousedown-listener=((capture <fun>))
+      +|           vdom_toplayer_popover_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()
+      +|           @on_keydown>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test">
+      +|          <div>
+      +|            <div id="Virtual-root"> </div>
+      +|            <button id="toggle-virtual-nested-anchored-1" @on_click>  Toggle popover  toggle-virtual-nested-anchored-1 </button>
+      +|
+      +|            <button id="toggle-virtual-nested-virtual-1" @on_click>  Toggle popover  toggle-virtual-nested-virtual-1 </button>
+      +|          </div>
+      +|        </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+          </div>
+          <div id="modals-for-tests"> </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-nested-virtual-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+              <div class="nested-popovers-for-tests"> </div>
             </div>
-            <div id="virtual-popovers-for-tests"> </div>
-        |}];
-      Handle.click_on
-        ~get_vdom:Fn.id
-        handle
-        ~selector:"#toggle-anchored-nested-anchored-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-                  <div class="ppx_css_anonymous_class_hash_replaced_in_test">
-                    <div>
-        -|            <div id="Anchored-root"> </div>
-        +|            <div id="Anchored-root"
-        +|                 vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
-                      <button id="toggle-anchored-nested-anchored-1" @on_click>  Toggle popover  toggle-anchored-nested-anchored-1 </button>
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           id="bonsai_path_replaced_in_test"
+      +|           class="default_theme_helpers__inline_class_hash_replaced_in_test default_theme_helpers__inline_class_hash_replaced_in_test floating_hash_replaced_in_test popover_hash_replaced_in_test toplayer_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
+      +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|           global-click-listener=((bubbling <fun>))
+      +|           global-keydown-listener=((bubbling <fun>))
+      +|           global-mousedown-listener=((capture <fun>))
+      +|           vdom_toplayer_popover_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()
+      +|           @on_keydown>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test"> Virtual Nested Virtual 1 </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+            <div class="popover-for-tests">
+              <div popover="manual"
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-nested-anchored-1";
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-3";
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-1";
+    Handle.recompute_view_until_stable handle
+  ;;
+
+  let modal_with_toggle ~label graph =
+    let { Controls.open_; close; is_open } =
+      Modal.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
+    in
+    toggle_button ~label open_ close is_open
+  ;;
+
+  let test_modals graph =
+    let toggle_modal1 = modal_with_toggle ~label:"Modal 1" graph in
+    let toggle_modal2 = modal_with_toggle ~label:"Modal 2" graph in
+    let { Controls.open_ = open_modal3; close = close_modal3; is_open = is_open_modal3 } =
+      Modal.create ~content:(create_nested_content ~prefix:"Modal " ()) graph
+    in
+    let toggle_modal3 =
+      toggle_button ~label:"Modal 3" open_modal3 close_modal3 is_open_modal3
+    in
+    let app_root =
+      let%arr toggle_modal1 and toggle_modal2 and toggle_modal3 in
+      {%html|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
+    in
+    Helper.wrap_app_vdom app_root
+  ;;
+
+  let%expect_test "Multiple and nested" =
+    let handle = Handle.create (Result_spec.vdom Fn.id) test_modals in
+    Handle.show handle;
+    [%expect
+      {|
+      <html id="html-for-tests">
+        <div id="app-root-for-tests">
+          <div>
+            <button id="toggle-modal-1" @on_click>  Toggle popover  toggle-modal-1 </button>
+
+            <button id="toggle-modal-2" @on_click>  Toggle popover  toggle-modal-2 </button>
+
+            <button id="toggle-modal-3" @on_click>  Toggle popover  toggle-modal-3 </button>
+          </div>
+        </div>
+        <div id="anchored-popovers-for-tests"> </div>
+        <div id="virtual-popovers-for-tests"> </div>
+        <div id="modals-for-tests"> </div>
+      </html>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+          <div id="anchored-popovers-for-tests"> </div>
+          <div id="virtual-popovers-for-tests"> </div>
+      -|  <div id="modals-for-tests"> </div>
+      +|  <div id="modals-for-tests">
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           data-testing-modal=""
+      +|           id="bonsai_path_replaced_in_test"
+      +|           class="default_theme_helpers__inline_class_hash_replaced_in_test default_theme_helpers__inline_class_hash_replaced_in_test floating_hash_replaced_in_test modal__inline_class_hash_replaced_in_test modal_hash_replaced_in_test popover_hash_replaced_in_test toplayer_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
+      +|           global-click-listener=((bubbling <fun>))
+      +|           global-keydown-listener=((bubbling <fun>))
+      +|           global-mousedown-listener=((capture <fun>))
+      +|           vdom_toplayer_modal_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()
+      +|           vdom_toplayer_show_on_mount=()
+      +|           @on_keydown
+      +|           @on_toggle>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test"> Modal 1 </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+      +|  </div>
+        </html>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-3";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+              <div class="nested-popovers-for-tests"> </div>
+            </div>
+      +|    <div class="popover-for-tests">
+      +|      <div popover="manual"
+      +|           tabindex="-1"
+      +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|           data-testing-modal=""
+      +|           id="bonsai_path_replaced_in_test"
+      +|           class="default_theme_helpers__inline_class_hash_replaced_in_test default_theme_helpers__inline_class_hash_replaced_in_test floating_hash_replaced_in_test modal__inline_class_hash_replaced_in_test modal_hash_replaced_in_test popover_hash_replaced_in_test toplayer_hash_replaced_in_test"
+      +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
+      +|           global-click-listener=((bubbling <fun>))
+      +|           global-keydown-listener=((bubbling <fun>))
+      +|           global-mousedown-listener=((capture <fun>))
+      +|           vdom_toplayer_modal_inertness=()
+      +|           vdom_toplayer_restore_focus_on_close=()
+      +|           vdom_toplayer_show_on_mount=()
+      +|           @on_keydown
+      +|           @on_toggle>
+      +|        <div class="popover_dom__inline_class_hash_replaced_in_test">
+      +|          <div>
+      +|            <div id="Modal-root"> </div>
+      +|            <button id="toggle-modal-nested-anchored-1" @on_click>  Toggle popover  toggle-modal-nested-anchored-1 </button>
+      +|
+      +|            <button id="toggle-modal-nested-virtual-1" @on_click>  Toggle popover  toggle-modal-nested-virtual-1 </button>
+      +|          </div>
+      +|        </div>
+      +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|      </div>
+      +|      <div class="nested-popovers-for-tests"> </div>
+      +|    </div>
+          </div>
+        </html>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-nested-anchored-1";
+    Handle.recompute_view_until_stable handle;
+    Handle.show_diff ~diff_context:2 handle;
+    [%expect
+      {|
+                <div class="popover_dom__inline_class_hash_replaced_in_test">
+                  <div>
+      -|            <div id="Modal-root"> </div>
+      +|            <div id="Modal-root"
+      +|                 vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
+                    <button id="toggle-modal-nested-anchored-1" @on_click>  Toggle popover  toggle-modal-nested-anchored-1 </button>
 
 
-                  <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-                </div>
-        -|      <div class="nested-popovers-for-tests"> </div>
-        +|      <div class="nested-popovers-for-tests">
-        +|        <div class="popover-for-tests">
-        +|          <div popover="manual"
-        +|               tabindex="-1"
-        +|               data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|               class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
-        +|               custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
-        +|               floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|               vdom_toplayer_popover_inertness=()
-        +|               vdom_toplayer_restore_focus_on_close=()>
-        +|            <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Anchored Nested Anchored 1 </div>
-        +|            <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|          </div>
-        +|          <div class="nested-popovers-for-tests"> </div>
-        +|        </div>
-        +|      </div>
+                <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
               </div>
+      -|      <div class="nested-popovers-for-tests"> </div>
+      +|      <div class="nested-popovers-for-tests">
+      +|        <div class="popover-for-tests">
+      +|          <div popover="manual"
+      +|               tabindex="-1"
+      +|               data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+      +|               class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
+      +|               custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
+      +|               floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
+      +|               vdom_toplayer_popover_inertness=()
+      +|               vdom_toplayer_restore_focus_on_close=()>
+      +|            <div class="popover_dom__inline_class_hash_replaced_in_test"> Modal Nested Anchored 1 </div>
+      +|            <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+      +|          </div>
+      +|          <div class="nested-popovers-for-tests"> </div>
+      +|        </div>
+      +|      </div>
             </div>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-              </div>
-            </div>
-        -|  <div id="virtual-popovers-for-tests"> </div>
-        +|  <div id="virtual-popovers-for-tests">
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           id="bonsai_path_replaced_in_test"
-        +|           class="floating_hash_replaced_in_test popover_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test toplayer_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
-        +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|           global-click-listener=((bubbling <fun>))
-        +|           global-keydown-listener=((bubbling <fun>))
-        +|           global-mousedown-listener=((capture <fun>))
-        +|           vdom_toplayer_popover_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()
-        +|           @on_keydown>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Virtual 1 </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-        +|  </div>
-            <div id="modals-for-tests"> </div>
-          </html>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-3";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-                <div class="nested-popovers-for-tests"> </div>
-              </div>
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           id="bonsai_path_replaced_in_test"
-        +|           class="floating_hash_replaced_in_test popover_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test toplayer_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
-        +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|           global-click-listener=((bubbling <fun>))
-        +|           global-keydown-listener=((bubbling <fun>))
-        +|           global-mousedown-listener=((capture <fun>))
-        +|           vdom_toplayer_popover_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()
-        +|           @on_keydown>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test">
-        +|          <div>
-        +|            <div id="Virtual-root"> </div>
-        +|            <button id="toggle-virtual-nested-anchored-1" @on_click>  Toggle popover  toggle-virtual-nested-anchored-1 </button>
-        +|
-        +|            <button id="toggle-virtual-nested-virtual-1" @on_click>  Toggle popover  toggle-virtual-nested-virtual-1 </button>
-        +|          </div>
-        +|        </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-            </div>
-            <div id="modals-for-tests"> </div>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-nested-virtual-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-                <div class="nested-popovers-for-tests"> </div>
-              </div>
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           id="bonsai_path_replaced_in_test"
-        +|           class="floating_hash_replaced_in_test popover_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test toplayer_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
-        +|           floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|           global-click-listener=((bubbling <fun>))
-        +|           global-keydown-listener=((bubbling <fun>))
-        +|           global-mousedown-listener=((capture <fun>))
-        +|           vdom_toplayer_popover_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()
-        +|           @on_keydown>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Virtual Nested Virtual 1 </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-              <div class="popover-for-tests">
-                <div popover="manual"
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-nested-anchored-1";
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-3";
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-virtual-1";
-      Handle.recompute_view_until_stable handle
-    ;;
+          </div>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-nested-anchored-1";
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-3";
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-1";
+    Handle.recompute_view_until_stable handle
+  ;;
 
-    let modal_with_toggle ~label graph =
+  module Modal_test_result = struct
+    type t =
+      { app_root : Vdom.Node.t
+      ; modal_desc : Sexp.t
+      }
+
+    let sexp_of_t { modal_desc; _ } = modal_desc
+    let get_vdom { app_root; _ } = app_root
+  end
+
+  let%expect_test "modals pass through lock_body_scroll" =
+    let lock_body_scroll = Var.create false in
+    let component graph =
       let { Controls.open_; close; is_open } =
-        Modal.create ~content:(fun ~close:_ _ -> return {%html|%{label#String}|}) graph
+        Modal.create
+          ~lock_body_scroll:(Var.value lock_body_scroll)
+          ~content:(fun ~close:_ _ -> return {%html|Hi|})
+          graph
       in
-      toggle_button ~label open_ close is_open
-    ;;
-
-    let test_modals graph =
-      let toggle_modal1 = modal_with_toggle ~label:"Modal 1" graph in
-      let toggle_modal2 = modal_with_toggle ~label:"Modal 2" graph in
-      let { Controls.open_ = open_modal3; close = close_modal3; is_open = is_open_modal3 }
-        =
-        Modal.create ~content:(create_nested_content ~prefix:"Modal " ()) graph
-      in
-      let toggle_modal3 =
-        toggle_button ~label:"Modal 3" open_modal3 close_modal3 is_open_modal3
+      let toggle =
+        let%arr open_ and close and is_open in
+        if is_open then close else open_
       in
       let app_root =
-        let%arr toggle_modal1 and toggle_modal2 and toggle_modal3 in
-        {%html|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
+        let%arr toggle in
+        {%html|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
       in
-      Helper.wrap_app_vdom app_root
-    ;;
-
-    let%expect_test "Multiple and nested" =
-      let handle = Handle.create (Result_spec.vdom Fn.id) test_modals in
-      Handle.show handle;
-      [%expect
-        {|
-        <html id="html-for-tests">
-          <div id="app-root-for-tests">
-            <div>
-              <button id="toggle-modal-1" @on_click>  Toggle popover  toggle-modal-1 </button>
-
-              <button id="toggle-modal-2" @on_click>  Toggle popover  toggle-modal-2 </button>
-
-              <button id="toggle-modal-3" @on_click>  Toggle popover  toggle-modal-3 </button>
-            </div>
-          </div>
-          <div id="anchored-popovers-for-tests"> </div>
-          <div id="virtual-popovers-for-tests"> </div>
-          <div id="modals-for-tests"> </div>
-        </html>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-            <div id="anchored-popovers-for-tests"> </div>
-            <div id="virtual-popovers-for-tests"> </div>
-        -|  <div id="modals-for-tests"> </div>
-        +|  <div id="modals-for-tests">
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           data-testing-modal=""
-        +|           id="bonsai_path_replaced_in_test"
-        +|           class="floating_hash_replaced_in_test modal_hash_replaced_in_test popover_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test toplayer_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
-        +|           global-click-listener=((bubbling <fun>))
-        +|           global-keydown-listener=((bubbling <fun>))
-        +|           global-mousedown-listener=((capture <fun>))
-        +|           vdom_toplayer_modal_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()
-        +|           vdom_toplayer_show_on_mount=()
-        +|           @on_keydown
-        +|           @on_toggle>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Modal 1 </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-        +|  </div>
-          </html>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-3";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-                <div class="nested-popovers-for-tests"> </div>
-              </div>
-        +|    <div class="popover-for-tests">
-        +|      <div popover="manual"
-        +|           tabindex="-1"
-        +|           data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|           data-testing-modal=""
-        +|           id="bonsai_path_replaced_in_test"
-        +|           class="floating_hash_replaced_in_test modal_hash_replaced_in_test popover_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test toplayer_hash_replaced_in_test"
-        +|           custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)")(--ppx_css_anonymous_var_1_hash_replaced_in_test white)(--ppx_css_anonymous_var_2_hash_replaced_in_test black)(--ppx_css_anonymous_var_3_hash_replaced_in_test 1px)(--ppx_css_anonymous_var_4_hash_replaced_in_test grey))
-        +|           global-click-listener=((bubbling <fun>))
-        +|           global-keydown-listener=((bubbling <fun>))
-        +|           global-mousedown-listener=((capture <fun>))
-        +|           vdom_toplayer_modal_inertness=()
-        +|           vdom_toplayer_restore_focus_on_close=()
-        +|           vdom_toplayer_show_on_mount=()
-        +|           @on_keydown
-        +|           @on_toggle>
-        +|        <div class="ppx_css_anonymous_class_hash_replaced_in_test">
-        +|          <div>
-        +|            <div id="Modal-root"> </div>
-        +|            <button id="toggle-modal-nested-anchored-1" @on_click>  Toggle popover  toggle-modal-nested-anchored-1 </button>
-        +|
-        +|            <button id="toggle-modal-nested-virtual-1" @on_click>  Toggle popover  toggle-modal-nested-virtual-1 </button>
-        +|          </div>
-        +|        </div>
-        +|        <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|      </div>
-        +|      <div class="nested-popovers-for-tests"> </div>
-        +|    </div>
-            </div>
-          </html>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-nested-anchored-1";
-      Handle.recompute_view_until_stable handle;
-      Handle.show_diff ~diff_context:2 handle;
-      [%expect
-        {|
-                  <div class="ppx_css_anonymous_class_hash_replaced_in_test">
-                    <div>
-        -|            <div id="Modal-root"> </div>
-        +|            <div id="Modal-root"
-        +|                 vdom_toplayer_popover=(((content <vdom.node>)(popover_attrs(<vdom.attr> <vdom.attr> <vdom.attr> <vdom.attr>))(arrow())(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(match_anchor_side_length())))> </div>
-                      <button id="toggle-modal-nested-anchored-1" @on_click>  Toggle popover  toggle-modal-nested-anchored-1 </button>
-
-
-                  <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-                </div>
-        -|      <div class="nested-popovers-for-tests"> </div>
-        +|      <div class="nested-popovers-for-tests">
-        +|        <div class="popover-for-tests">
-        +|          <div popover="manual"
-        +|               tabindex="-1"
-        +|               data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
-        +|               class="currently-untestable floating_hash_replaced_in_test popover_hash_replaced_in_test"
-        +|               custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)")(--ppx_css_anonymous_var_6_hash_replaced_in_test"var(--floatingMaxHeight)"))
-        +|               floating_positioning_virtual=((prepare <fun>)(position Auto)(alignment Center)(offset((main_axis 0)(cross_axis 0)))(strategy Fixed)(match_anchor_side_length())(arrow_selector([data-floating-ui-arrow-parent]))(anchor <anchor>))
-        +|               vdom_toplayer_popover_inertness=()
-        +|               vdom_toplayer_restore_focus_on_close=()>
-        +|            <div class="ppx_css_anonymous_class_hash_replaced_in_test"> Modal Nested Anchored 1 </div>
-        +|            <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
-        +|          </div>
-        +|          <div class="nested-popovers-for-tests"> </div>
-        +|        </div>
-        +|      </div>
-              </div>
-            </div>
-        |}];
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-nested-anchored-1";
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-3";
-      Handle.click_on ~get_vdom:Fn.id handle ~selector:"#toggle-modal-1";
-      Handle.recompute_view_until_stable handle
-    ;;
-
-    module Modal_test_result = struct
-      type t =
-        { app_root : Vdom.Node.t
-        ; modal_desc : Sexp.t
-        }
-
-      let sexp_of_t { modal_desc; _ } = modal_desc
-      let get_vdom { app_root; _ } = app_root
-    end
-
-    let%expect_test "modals pass through lock_body_scroll" =
-      let lock_body_scroll = Var.create false in
-      let component graph =
-        let { Controls.open_; close; is_open } =
-          Modal.create
-            ~lock_body_scroll:(Var.value lock_body_scroll)
-            ~content:(fun ~close:_ _ -> return {%html|Hi|})
-            graph
-        in
-        let toggle =
-          let%arr open_ and close and is_open in
-          if is_open then close else open_
-        in
-        let app_root =
-          let%arr toggle in
-          {%html|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
-        in
-        let result = Helper.get_toplayer_elements app_root in
-        let modal_desc =
-          match%arr result with
-          | { modals = []; _ } -> [%sexp "No Modals"]
-          | { modals = [ { lock_body_scroll; _ } ]; _ } ->
-            [%message "One modal" (lock_body_scroll : bool)]
-          | _ -> [%sexp "More than one modal"]
-        in
-        let%arr modal_desc and app_root in
-        { Modal_test_result.modal_desc; app_root }
+      let result = Helper.get_toplayer_elements app_root in
+      let modal_desc =
+        match%arr result with
+        | { modals = []; _ } -> [%sexp "No Modals"]
+        | { modals = [ { lock_body_scroll; _ } ]; _ } ->
+          [%message "One modal" (lock_body_scroll : bool)]
+        | _ -> [%sexp "More than one modal"]
       in
-      let handle =
-        Handle.create (Result_spec.sexp (module Modal_test_result)) component
-      in
-      Handle.show handle;
-      [%expect {| "No Modals" |}];
-      Handle.click_on
-        ~get_vdom:Modal_test_result.get_vdom
-        handle
-        ~selector:"#toggle-button";
-      Handle.recompute_view_until_stable handle;
-      Handle.show handle;
-      [%expect {| ("One modal" (lock_body_scroll false)) |}];
-      Var.set lock_body_scroll true;
-      Handle.recompute_view_until_stable handle;
-      Handle.show handle;
-      [%expect {| ("One modal" (lock_body_scroll true)) |}];
-      Handle.click_on
-        ~get_vdom:Modal_test_result.get_vdom
-        handle
-        ~selector:"#toggle-button";
-      Handle.recompute_view_until_stable handle;
-      Handle.show handle;
-      [%expect {| "No Modals" |}]
-    ;;
-  end)
-;;
+      let%arr modal_desc and app_root in
+      { Modal_test_result.modal_desc; app_root }
+    in
+    let handle = Handle.create (Result_spec.sexp (module Modal_test_result)) component in
+    Handle.show handle;
+    [%expect {| "No Modals" |}];
+    Handle.click_on ~get_vdom:Modal_test_result.get_vdom handle ~selector:"#toggle-button";
+    Handle.recompute_view_until_stable handle;
+    Handle.show handle;
+    [%expect {| ("One modal" (lock_body_scroll false)) |}];
+    Var.set lock_body_scroll true;
+    Handle.recompute_view_until_stable handle;
+    Handle.show handle;
+    [%expect {| ("One modal" (lock_body_scroll true)) |}];
+    Handle.click_on ~get_vdom:Modal_test_result.get_vdom handle ~selector:"#toggle-button";
+    Handle.recompute_view_until_stable handle;
+    Handle.show handle;
+    [%expect {| "No Modals" |}]
+  ;;
+end
 
 (* Test that virtual and anchored are consistent, and that inputs are propogated to the
    hooks correctly. *)

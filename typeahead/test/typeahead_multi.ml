@@ -83,14 +83,14 @@ let%expect_test "Attrs are NOT merged when  \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (ppx_css_anonymous_class_hash_43ce83b642))
-     (second (ppx_css_anonymous_class_hash_da95232e07)))
+     (first (typeahead_multi__inline_class_hash_4e85d48206))
+     (second (typeahead_multi__inline_class_hash_f82722b415)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
              placeholder="Select a value"
              value=""
-             class="ppx_css_anonymous_class_hash_replaced_in_test"
+             class="typeahead_multi__inline_class_hash_replaced_in_test"
              #value=""
              @on_blur
              @on_change
@@ -126,7 +126,7 @@ let%expect_test "Attrs are merged when `Merge is applied" =
              list="bonsai_path_replaced_in_test"
              placeholder="Select a value"
              value=""
-             class="ppx_css_anonymous_class_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test"
+             class="typeahead_multi__inline_class_hash_replaced_in_test typeahead_multi__inline_class_hash_replaced_in_test"
              #value=""
              @on_blur
              @on_change

@@ -661,7 +661,7 @@ let rec process_token t_without_registering_token (token : Token.t) =
     in
     let t_done = List.filter ok_ts ~f:is_done in
     (match t_done, ok_ts with
-     | res :: _, _ | _, [ res ] -> ok (res.stack @ rest)
+     | res :: _, _ | _, [ res ] -> no_error, { res with stack = res.stack @ rest }
      | _, [] ->
        let errors =
          List.map in_error ~f:(fun (builder, tokens) -> builder tokens)

@@ -1239,28 +1239,55 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
     |}]
 ;;
 
-let%test_module "optimization: the query box only loads its data when interacted with" =
-  (module struct
-    let component =
-      Bonsai_web_ui_query_box.create
-        (module Int)
-        ~max_visible_items:(Bonsai.return 3)
-        ~f:(fun query _graph ->
-          let%arr query in
-          print_endline "Generating options...";
-          Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
-        ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
-        ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
-        ~on_hover_item:
-          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
-        ()
-    ;;
+module%test
+  [@name "optimization: the query box only loads its data when interacted with"] _ =
+struct
+  let component =
+    Bonsai_web_ui_query_box.create
+      (module Int)
+      ~max_visible_items:(Bonsai.return 3)
+      ~f:(fun query _graph ->
+        let%arr query in
+        print_endline "Generating options...";
+        Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
+      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+      ()
+  ;;
 
-    let%expect_test "focusing the input loads the data" =
-      let handle = Handle.create (Result_spec.vdom get_vdom) component in
-      Handle.show handle;
-      [%expect
-        {|
+  let%expect_test "focusing the input loads the data" =
+    let handle = Handle.create (Result_spec.vdom get_vdom) component in
+    Handle.show handle;
+    [%expect
+      {|
+      <div>
+        <input id="bonsai_path_replaced_in_test"
+               type="text"
+               #value=""
+               @on_blur
+               @on_focus
+               @on_input
+               @on_keydown> </input>
+        <div data-test="query-box-item-container"
+             id="bonsai_path_replaced_in_test"
+             tabindex="-1"
+             @on_blur
+             @on_wheel
+             style={
+               position: relative;
+             }>
+          <div> </div>
+        </div>
+      </div>
+      |}];
+    focus handle;
+    Handle.show_diff handle;
+    [%expect
+      {|
+      Generating options...
+
         <div>
           <input id="bonsai_path_replaced_in_test"
                  type="text"
@@ -1277,48 +1304,103 @@ let%test_module "optimization: the query box only loads its data when interacted
                style={
                  position: relative;
                }>
+      -|    <div> </div>
+      +|    <div style={ position: absolute; }>
+      +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
+      +|      <div @on_click @on_mouseenter> orange </div>
+      +|      <div @on_click @on_mouseenter> kiwi </div>
+      +|    </div>
+          </div>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "inputting text loads the data" =
+    let handle = Handle.create (Result_spec.vdom get_vdom) component in
+    Handle.show handle;
+    [%expect
+      {|
+      <div>
+        <input id="bonsai_path_replaced_in_test"
+               type="text"
+               #value=""
+               @on_blur
+               @on_focus
+               @on_input
+               @on_keydown> </input>
+        <div data-test="query-box-item-container"
+             id="bonsai_path_replaced_in_test"
+             tabindex="-1"
+             @on_blur
+             @on_wheel
+             style={
+               position: relative;
+             }>
+          <div> </div>
+        </div>
+      </div>
+      |}];
+    input_text handle "some text";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      Generating options...
+
+        <div>
+          <input id="bonsai_path_replaced_in_test"
+                 type="text"
+      -|         #value=""
+      +|         #value="some text"
+                 @on_blur
+                 @on_focus
+                 @on_input
+                 @on_keydown> </input>
+          <div data-test="query-box-item-container"
+               id="bonsai_path_replaced_in_test"
+               tabindex="-1"
+               @on_blur
+               @on_wheel
+               style={
+                 position: relative;
+               }>
             <div> </div>
           </div>
         </div>
-        |}];
-      focus handle;
-      Handle.show_diff handle;
-      [%expect
-        {|
-        Generating options...
+      |}]
+  ;;
 
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   #value=""
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-        -|    <div> </div>
-        +|    <div style={ position: absolute; }>
-        +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
-        +|      <div @on_click @on_mouseenter> orange </div>
-        +|      <div @on_click @on_mouseenter> kiwi </div>
-        +|    </div>
-            </div>
-          </div>
-        |}]
-    ;;
+  let%expect_test "clicking a key loads the data" =
+    let handle = Handle.create (Result_spec.vdom get_vdom) component in
+    Handle.show handle;
+    [%expect
+      {|
+      <div>
+        <input id="bonsai_path_replaced_in_test"
+               type="text"
+               #value=""
+               @on_blur
+               @on_focus
+               @on_input
+               @on_keydown> </input>
+        <div data-test="query-box-item-container"
+             id="bonsai_path_replaced_in_test"
+             tabindex="-1"
+             @on_blur
+             @on_wheel
+             style={
+               position: relative;
+             }>
+          <div> </div>
+        </div>
+      </div>
+      |}];
+    keydown handle ArrowDown;
+    Handle.show_diff handle;
+    [%expect
+      {|
+      ("default prevented" (key ArrowDown))
+      Generating options...
 
-    let%expect_test "inputting text loads the data" =
-      let handle = Handle.create (Result_spec.vdom get_vdom) component in
-      Handle.show handle;
-      [%expect
-        {|
         <div>
           <input id="bonsai_path_replaced_in_test"
                  type="text"
@@ -1335,99 +1417,17 @@ let%test_module "optimization: the query box only loads its data when interacted
                style={
                  position: relative;
                }>
-            <div> </div>
+      -|    <div> </div>
+      +|    <div style={ position: absolute; }>
+      +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
+      +|      <div @on_click @on_mouseenter> orange </div>
+      +|      <div @on_click @on_mouseenter> kiwi </div>
+      +|    </div>
           </div>
         </div>
-        |}];
-      input_text handle "some text";
-      Handle.show_diff handle;
-      [%expect
-        {|
-        Generating options...
-
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-        -|         #value=""
-        +|         #value="some text"
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-              <div> </div>
-            </div>
-          </div>
-        |}]
-    ;;
-
-    let%expect_test "clicking a key loads the data" =
-      let handle = Handle.create (Result_spec.vdom get_vdom) component in
-      Handle.show handle;
-      [%expect
-        {|
-        <div>
-          <input id="bonsai_path_replaced_in_test"
-                 type="text"
-                 #value=""
-                 @on_blur
-                 @on_focus
-                 @on_input
-                 @on_keydown> </input>
-          <div data-test="query-box-item-container"
-               id="bonsai_path_replaced_in_test"
-               tabindex="-1"
-               @on_blur
-               @on_wheel
-               style={
-                 position: relative;
-               }>
-            <div> </div>
-          </div>
-        </div>
-        |}];
-      keydown handle ArrowDown;
-      Handle.show_diff handle;
-      [%expect
-        {|
-        ("default prevented" (key ArrowDown))
-        Generating options...
-
-          <div>
-            <input id="bonsai_path_replaced_in_test"
-                   type="text"
-                   #value=""
-                   @on_blur
-                   @on_focus
-                   @on_input
-                   @on_keydown> </input>
-            <div data-test="query-box-item-container"
-                 id="bonsai_path_replaced_in_test"
-                 tabindex="-1"
-                 @on_blur
-                 @on_wheel
-                 style={
-                   position: relative;
-                 }>
-        -|    <div> </div>
-        +|    <div style={ position: absolute; }>
-        +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
-        +|      <div @on_click @on_mouseenter> orange </div>
-        +|      <div @on_click @on_mouseenter> kiwi </div>
-        +|    </div>
-            </div>
-          </div>
-        |}]
-    ;;
-  end)
-;;
+      |}]
+  ;;
+end
 
 let%expect_test "[modify_input_on_select] field works" =
   let handle =

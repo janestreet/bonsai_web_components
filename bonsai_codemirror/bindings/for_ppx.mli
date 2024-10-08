@@ -951,6 +951,7 @@ module Commands : sig
   val cursor_doc_end : View.Command.t [@@js.global]
   val select_doc_end : View.Command.t [@@js.global]
   val insert_newline_and_indent : View.Command.t [@@js.global]
+  val insert_blank_line : View.Command.t [@@js.global]
   val select_all : View.Command.t [@@js.global]
   val delete_char_backward : View.Command.t [@@js.global]
   val delete_char_forward : View.Command.t [@@js.global]
@@ -1027,6 +1028,7 @@ module History : sig
   val redo : View.Command.t [@@js.global]
   val undo_selection : View.Command.t [@@js.global]
   val redo_selection : View.Command.t [@@js.global]
+  val history_keymap : View.Key_binding.t list [@@js.global]
 end
 
 module Search : sig

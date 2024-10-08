@@ -1,6 +1,7 @@
 (library
  (name codemirror_incremental_sexp_grammar_test_walker)
- (libraries codemirror_incremental_sexp_grammar core sexp_grammar
+ (libraries codemirror_incremental_sexp_grammar core
+   expect_test_helpers_core.expect_test_helpers_base sexp_grammar
    sexp_grammar_validation)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

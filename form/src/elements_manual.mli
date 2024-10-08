@@ -502,12 +502,12 @@ end
 module Range : sig
   val int
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:int
-    -> ?max:int
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:int
-    -> step:int
+    -> ?min:int Bonsai.t
+    -> ?max:int Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:int Bonsai.t
+    -> step:int Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> Bonsai.graph
@@ -515,12 +515,12 @@ module Range : sig
 
   val float
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:float
-    -> ?max:float
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:float
-    -> step:float
+    -> ?min:float Bonsai.t
+    -> ?max:float Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:float Bonsai.t
+    -> step:float Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> Bonsai.graph

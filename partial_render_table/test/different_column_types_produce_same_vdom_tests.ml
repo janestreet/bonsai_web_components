@@ -552,8 +552,8 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -568,8 +568,8 @@ let%expect_test "Flat vdom" =
                        }> JANE0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -584,8 +584,8 @@ let%expect_test "Flat vdom" =
                        }> 0. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -600,8 +600,8 @@ let%expect_test "Flat vdom" =
                        }> 0. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -616,8 +616,8 @@ let%expect_test "Flat vdom" =
                        }> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -632,8 +632,8 @@ let%expect_test "Flat vdom" =
                        }> 0. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -648,8 +648,8 @@ let%expect_test "Flat vdom" =
                        }> 0. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -670,8 +670,8 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -686,8 +686,8 @@ let%expect_test "Flat vdom" =
                        }> JANE1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -702,8 +702,8 @@ let%expect_test "Flat vdom" =
                        }> 1. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -718,8 +718,8 @@ let%expect_test "Flat vdom" =
                        }> 1. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -734,8 +734,8 @@ let%expect_test "Flat vdom" =
                        }> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -750,8 +750,8 @@ let%expect_test "Flat vdom" =
                        }> 1. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -766,8 +766,8 @@ let%expect_test "Flat vdom" =
                        }> 1. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -788,8 +788,8 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -804,8 +804,8 @@ let%expect_test "Flat vdom" =
                        }> JANE2 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -820,8 +820,8 @@ let%expect_test "Flat vdom" =
                        }> 2. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -836,8 +836,8 @@ let%expect_test "Flat vdom" =
                        }> 2. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -852,8 +852,8 @@ let%expect_test "Flat vdom" =
                        }> 2 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -868,8 +868,8 @@ let%expect_test "Flat vdom" =
                        }> 2. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -884,8 +884,8 @@ let%expect_test "Flat vdom" =
                        }> 2. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -906,8 +906,8 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -922,8 +922,8 @@ let%expect_test "Flat vdom" =
                        }> JANE3 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -938,8 +938,8 @@ let%expect_test "Flat vdom" =
                        }> 3. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -954,8 +954,8 @@ let%expect_test "Flat vdom" =
                        }> 3. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -970,8 +970,8 @@ let%expect_test "Flat vdom" =
                        }> 3 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -986,8 +986,8 @@ let%expect_test "Flat vdom" =
                        }> 3. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1002,8 +1002,8 @@ let%expect_test "Flat vdom" =
                        }> 3. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1024,8 +1024,8 @@ let%expect_test "Flat vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1040,8 +1040,8 @@ let%expect_test "Flat vdom" =
                        }> JANE4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1056,8 +1056,8 @@ let%expect_test "Flat vdom" =
                        }> 4. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1072,8 +1072,8 @@ let%expect_test "Flat vdom" =
                        }> 4. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1088,8 +1088,8 @@ let%expect_test "Flat vdom" =
                        }> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1104,8 +1104,8 @@ let%expect_test "Flat vdom" =
                        }> 4. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1120,8 +1120,8 @@ let%expect_test "Flat vdom" =
                        }> 4. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1327,8 +1327,8 @@ let%expect_test "Grouped vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1343,8 +1343,8 @@ let%expect_test "Grouped vdom" =
                        }> 0. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        display: none;
                        height: 1px;
@@ -1360,8 +1360,8 @@ let%expect_test "Grouped vdom" =
                        }> </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1382,8 +1382,8 @@ let%expect_test "Grouped vdom" =
                    height: 1px;
                    display: table-row;
                  }>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;
@@ -1398,8 +1398,8 @@ let%expect_test "Grouped vdom" =
                        }> 1. </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        display: none;
                        height: 1px;
@@ -1415,8 +1415,8 @@ let%expect_test "Grouped vdom" =
                        }> </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test ppx_css_anonymous_class_hash_replaced_in_test">
-                <div class="ppx_css_anonymous_class_hash_replaced_in_test"
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+                <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 1px;
                        min-height: 1px;

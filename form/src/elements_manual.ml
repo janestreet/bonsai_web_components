@@ -1718,19 +1718,28 @@ module Range = struct
   (* The default values of [min]/[max]/[default] match the browser spec. *)
   let float
     ?(extra_attrs = Bonsai.return [])
-    ?(min = 0.)
-    ?(max = 100.)
+    ?(min = Bonsai.return 0.)
+    ?(max = Bonsai.return 100.)
     ?left_label
     ?right_label
-    ?(default = (min +. max) /. 2.)
+    ?default
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
     graph
     =
+    let default =
+      Option.value
+        default
+        ~default:
+          (let%arr min and max in
+           (min +. max) /. 2.)
+    in
+    let left_label = Bonsai.transpose_opt left_label in
+    let right_label = Bonsai.transpose_opt right_label in
     let unvalidated =
       let view =
-        let%arr extra_attrs in
+        let%arr extra_attrs and left_label and min and max and right_label and step in
         fun ~state ~set_state ~theme ->
           let input =
             View.Form_inputs.range
@@ -1750,9 +1759,13 @@ module Range = struct
           | elements ->
             Vdom.Node.span ~attrs:[ Vdom.Attr.style (Css_gen.flex_container ()) ] elements
       in
-      Basic_stateful.make_themed (Bonsai.state default) ~view graph
+      let value_with_override graph =
+        let%sub state, set_state = Bonsai_extra.value_with_override default graph in
+        state, set_state
+      in
+      Basic_stateful.make_themed value_with_override ~view graph
     in
-    let%arr unvalidated in
+    let%arr min and max and unvalidated in
     Form.validate unvalidated ~f:(validate_range ~min ~max)
   ;;
 
@@ -1768,7 +1781,7 @@ module Range = struct
     ()
     graph
     =
-    let int x = Option.map x ~f:Int.to_float in
+    let int x = Option.map x ~f:(Bonsai.map ~f:Int.to_float) in
     let float =
       float
         ?extra_attrs
@@ -1778,7 +1791,7 @@ module Range = struct
         ?right_label
         ?default:(int default)
         ~allow_updates_when_focused
-        ~step:(Int.to_float step)
+        ~step:(Bonsai.map step ~f:Int.to_float)
         ()
         graph
     in

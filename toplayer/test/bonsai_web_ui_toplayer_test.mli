@@ -53,6 +53,13 @@ module Modal : sig
 end
 
 module Result : sig
+  module Selectors : sig
+    val app_root : string
+    val anchored_popovers : string
+    val virtual_popovers : string
+    val modals : string
+  end
+
   (* NOTE: These could probably be [Bonsai.t]s, but it's pretty likely that we'll
      eventually want to provide a non-Bonsai API for accessing them in tests. *)
   type t =

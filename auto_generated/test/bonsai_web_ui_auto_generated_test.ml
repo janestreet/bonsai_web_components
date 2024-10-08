@@ -2725,422 +2725,439 @@ let%expect_test "model state is not shared between variants even when they have 
     |}]
 ;;
 
-let%test_module "Stabilization tests" =
-  (module struct
-    let filter_don't_stabilize output =
-      String.split_lines output
-      |> List.filter ~f:(fun line -> String.equal line "stabilized")
-      |> String.concat ~sep:"\n"
-      |> print_endline
-    ;;
+module%test [@name "Stabilization tests"] _ = struct
+  let filter_don't_stabilize output =
+    String.split_lines output
+    |> List.filter ~f:(fun line -> String.equal line "stabilized")
+    |> String.concat ~sep:"\n"
+    |> print_endline
+  ;;
 
-    let%expect_test "A simple record doesn't stabilize" =
-      let module T = struct
+  let%expect_test "A simple record doesn't stabilize" =
+    let module T = struct
+      type t =
+        { a : int
+        ; b : string
+        ; c : bool
+        }
+      [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ { T.a = 10; b = "hello world"; c = true } ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect {| |}]
+  ;;
+
+  let%expect_test "A list stabilizes once" =
+    let module T = struct
+      type t = int list [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ [ 1; 2; 3; 4 ] ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect {| stabilized |}]
+  ;;
+
+  let%expect_test "A variant stabilizes once" =
+    let module T = struct
+      type t =
+        | A of int
+        | B of bool
+      [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ B false ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect {| stabilized |}]
+  ;;
+
+  let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
+                   type (depth 2)"
+    =
+    let module T = struct
+      type s =
+        | A of int
+        | B of bool
+
+      and t = s list [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ [ A 1; B false; B true; A 4 ] ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect
+      {|
+      stabilized
+      stabilized
+      |}]
+  ;;
+
+  let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
+                   type (depth 3)"
+    =
+    let module T = struct
+      type r =
+        | A of int
+        | B of bool
+
+      and s = r list
+
+      and t =
+        | C of s
+        | D of float
+      [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ C [ A 1; B false; B true; A 4 ] ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect
+      {|
+      stabilized
+      stabilized
+      stabilized
+      |}]
+  ;;
+
+  let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
+                   type (depth 4)"
+    =
+    let module T = struct
+      type q =
+        | A of int
+        | B of bool
+
+      and r = q list
+
+      and s =
+        | C of r
+        | D of float
+
+      and t = s list [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions
+      handle
+      [ [ C [ A 1; B false; B true; A 4 ]; D 1.; C [ B true; B false; A 1; A 10 ] ] ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect
+      {|
+      stabilized
+      stabilized
+      stabilized
+      stabilized
+      |}]
+  ;;
+
+  let%expect_test "maps!" =
+    let module S = struct
+      module T = struct
         type t =
-          { a : int
-          ; b : string
-          ; c : bool
-          }
-        [@@deriving sexp, sexp_grammar]
+          | None
+          | Some of t
+        [@@deriving compare, sexp, sexp_grammar]
       end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ { T.a = 10; b = "hello world"; c = true } ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect {| |}]
-    ;;
 
-    let%expect_test "A list stabilizes once" =
-      let module T = struct
-        type t = int list [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ [ 1; 2; 3; 4 ] ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect {| stabilized |}]
-    ;;
+      include T
+      include Comparable.Make (T)
+    end
+    in
+    let module T = struct
+      type s = S.t Map.M(S).t list
+      and t = s list [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    let m =
+      S.Map.of_alist_exn
+        S.[ None, None; Some None, Some None; Some (Some None), Some (Some None) ]
+    in
+    Handle.do_actions handle [ [ [ m; m ]; [ m; m ] ] ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect
+      {|
+      stabilized
+      stabilized
+      stabilized
+      stabilized
+      stabilized
+      |}]
+  ;;
 
-    let%expect_test "A variant stabilizes once" =
-      let module T = struct
-        type t =
-          | A of int
-          | B of bool
-        [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ B false ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect {| stabilized |}]
-    ;;
+  let%expect_test "records with defaults!" =
+    let module T = struct
+      type s =
+        | My of int
+        | Your of string
+        | Our of bool
 
-    let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
-                     type (depth 2)"
-      =
-      let module T = struct
-        type s =
-          | A of int
-          | B of bool
+      and r =
+        { b : s [@sexp.default My 10]
+        ; a : bool [@sexp.default false]
+        ; c : int [@sexp.default 0]
+        ; aa : int [@sexp.default 3]
+        }
 
-        and t = s list [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ [ A 1; B false; B true; A 4 ] ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect
-        {|
-        stabilized
-        stabilized
-        |}]
-    ;;
-
-    let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
-                     type (depth 3)"
-      =
-      let module T = struct
-        type r =
-          | A of int
-          | B of bool
-
-        and s = r list
-
-        and t =
-          | C of s
-          | D of float
-        [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ C [ A 1; B false; B true; A 4 ] ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect
-        {|
-        stabilized
-        stabilized
-        stabilized
-        |}]
-    ;;
-
-    let%expect_test "Nested lists and variants stabilize linearly with the depth of the \
-                     type (depth 4)"
-      =
-      let module T = struct
-        type q =
-          | A of int
-          | B of bool
-
-        and r = q list
-
-        and s =
-          | C of r
-          | D of float
-
-        and t = s list [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions
-        handle
-        [ [ C [ A 1; B false; B true; A 4 ]; D 1.; C [ B true; B false; A 1; A 10 ] ] ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect
-        {|
-        stabilized
-        stabilized
-        stabilized
-        stabilized
-        |}]
-    ;;
-
-    let%expect_test "maps!" =
-      let module S = struct
-        module T = struct
-          type t =
-            | None
-            | Some of t
-          [@@deriving compare, sexp, sexp_grammar]
-        end
-
-        include T
-        include Comparable.Make (T)
-      end
-      in
-      let module T = struct
-        type s = S.t Map.M(S).t list
-        and t = s list [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      let m =
-        S.Map.of_alist_exn
-          S.[ None, None; Some None, Some None; Some (Some None), Some (Some None) ]
-      in
-      Handle.do_actions handle [ [ [ m; m ]; [ m; m ] ] ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect
-        {|
-        stabilized
-        stabilized
-        stabilized
-        stabilized
-        stabilized
-        |}]
-    ;;
-
-    let%expect_test "records with defaults!" =
-      let module T = struct
-        type s =
-          | My of int
-          | Your of string
-          | Our of bool
-
-        and r =
-          { b : s [@sexp.default My 10]
-          ; a : bool [@sexp.default false]
-          ; c : int [@sexp.default 0]
-          ; aa : int [@sexp.default 3]
-          }
-
-        and t = r [@@deriving sexp, sexp_grammar]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.print_stabilizations handle;
-      Handle.do_actions handle [ { c = 1; aa = 4; b = Your "hi"; a = true } ];
-      Handle.recompute_view_until_stable handle;
-      filter_don't_stabilize [%expect.output];
-      [%expect
-        {|
-        stabilized
-        stabilized
-        |}]
-    ;;
-  end)
-;;
+      and t = r [@@deriving sexp, sexp_grammar]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.print_stabilizations handle;
+    Handle.do_actions handle [ { c = 1; aa = 4; b = Your "hi"; a = true } ];
+    Handle.recompute_view_until_stable handle;
+    filter_don't_stabilize [%expect.output];
+    [%expect
+      {|
+      stabilized
+      stabilized
+      |}]
+  ;;
+end
 
 (* This module attempts to exercise some of the trickier recursive cases. They are based
    on the tests in [lib/sexp_grammar/test/test_regression.ml]. *)
-let%test_module "regressions" =
-  (module struct
-    module type S = sig
-      type t [@@deriving sexp_grammar, sexp]
+module%test [@name "regressions"] _ = struct
+  module type S = sig
+    type t [@@deriving sexp_grammar, sexp]
 
-      val example : t
-    end
+    val example : t
+  end
 
-    let test (module T : S) =
-      let handle = sexp_form_handle (module T) in
-      Handle.show handle;
-      Handle.do_actions handle [ T.example ];
-      Handle.show handle
-    ;;
+  let test (module T : S) =
+    let handle = sexp_form_handle (module T) in
+    Handle.show handle;
+    Handle.do_actions handle [ T.example ];
+    Handle.show handle
+  ;;
 
-    (* Grammar validation should not fail when a type variable appears inside
+  (* Grammar validation should not fail when a type variable appears inside
        the body type expression of a recursion expression, e.g.,
        ... (Recursive (Tycon r ((Tyvar a))) ...) ... *)
-    let%expect_test "tyvar inside recursion body" =
-      test
-        (module struct
-          type 'a recursive = { self : 'a recursive option }
-          [@@deriving sexp_grammar, sexp]
+  let%expect_test "tyvar inside recursion body" =
+    test
+      (module struct
+        type 'a recursive = { self : 'a recursive option } [@@deriving sexp_grammar, sexp]
 
-          type 'b recursive_with_reference =
-            { this : 'b recursive_with_reference option
-            ; that : 'b recursive
-            }
-          [@@deriving sexp_grammar, sexp]
+        type 'b recursive_with_reference =
+          { this : 'b recursive_with_reference option
+          ; that : 'b recursive
+          }
+        [@@deriving sexp_grammar, sexp]
 
-          type t = int recursive_with_reference [@@deriving sexp_grammar, sexp]
+        type t = int recursive_with_reference [@@deriving sexp_grammar, sexp]
 
-          let example =
-            { this = Some { this = None; that = { self = None } }
-            ; that = { self = Some { self = None } }
-            }
-          ;;
-        end);
-      [%expect
-        {|
-        (Ok ((this ()) (that ((self ())))))
+        let example =
+          { this = Some { this = None; that = { self = None } }
+          ; that = { self = Some { self = None } }
+          }
+        ;;
+      end);
+    [%expect
+      {|
+      (Ok ((this ()) (that ((self ())))))
 
-        ==============
-        <div>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+      </div>
 
-        (Ok ((this (((this ()) (that ((self ())))))) (that ((self (((self ()))))))))
+      (Ok ((this (((this ()) (that ((self ())))))) (that ((self (((self ()))))))))
 
-        ==============
-        <div>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
-        |}]
-    ;;
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+      </div>
+      |}]
+  ;;
 
-    (* Grammar validation should not fail when an earlier-defined type constructor
+  (* Grammar validation should not fail when an earlier-defined type constructor
        appears inside the body type expression of a recursion expression, e.g.,
        ... (Recursive (Tycon l ((Tycon t ()))) ...) ... *)
-    let%expect_test "tycon inside recursion body" =
-      test
-        (module struct
-          type 'a u = U of 'a u option [@@deriving quickcheck, sexp, sexp_grammar]
-          type t = T of t u [@@deriving quickcheck, sexp, sexp_grammar]
+  let%expect_test "tycon inside recursion body" =
+    test
+      (module struct
+        type 'a u = U of 'a u option [@@deriving quickcheck, sexp, sexp_grammar]
+        type t = T of t u [@@deriving quickcheck, sexp, sexp_grammar]
 
-          let example = T (U (Some (U None)))
-        end);
-      [%expect
-        {|
-        (Error "a value is required")
+        let example = T (U (Some (U None)))
+      end);
+    [%expect
+      {|
+      (Error "a value is required")
 
-        ==============
+      ==============
+      <select id="bonsai_path_replaced_in_test"
+              class="widget-dropdown"
+              @on_change
+              style={
+                width: 100.00%;
+              }>
+        <option value="0" #selected="true">  </option>
+        <option value="1" #selected="false"> t </option>
+      </select>
+
+      (Ok (T (U ((U ())))))
+
+      ==============
+      <div>
         <select id="bonsai_path_replaced_in_test"
                 class="widget-dropdown"
                 @on_change
                 style={
                   width: 100.00%;
                 }>
-          <option value="0" #selected="true">  </option>
-          <option value="1" #selected="false"> t </option>
+          <option value="0" #selected="false">  </option>
+          <option value="1" #selected="true"> t </option>
         </select>
+        <select id="bonsai_path_replaced_in_test"
+                class="widget-dropdown"
+                @on_change
+                style={
+                  width: 100.00%;
+                }>
+          <option value="0" #selected="false">  </option>
+          <option value="1" #selected="true"> u </option>
+        </select>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+        <select id="bonsai_path_replaced_in_test"
+                class="widget-dropdown"
+                @on_change
+                style={
+                  width: 100.00%;
+                }>
+          <option value="0" #selected="false">  </option>
+          <option value="1" #selected="true"> u </option>
+        </select>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="false"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
+      </div>
+      |}]
+  ;;
 
-        (Ok (T (U ((U ())))))
-
-        ==============
-        <div>
-          <select id="bonsai_path_replaced_in_test"
-                  class="widget-dropdown"
-                  @on_change
-                  style={
-                    width: 100.00%;
-                  }>
-            <option value="0" #selected="false">  </option>
-            <option value="1" #selected="true"> t </option>
-          </select>
-          <select id="bonsai_path_replaced_in_test"
-                  class="widget-dropdown"
-                  @on_change
-                  style={
-                    width: 100.00%;
-                  }>
-            <option value="0" #selected="false">  </option>
-            <option value="1" #selected="true"> u </option>
-          </select>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <select id="bonsai_path_replaced_in_test"
-                  class="widget-dropdown"
-                  @on_change
-                  style={
-                    width: 100.00%;
-                  }>
-            <option value="0" #selected="false">  </option>
-            <option value="1" #selected="true"> u </option>
-          </select>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
-        |}]
-    ;;
-
-    (* This test shows a case where a type can refer to another type
+  (* This test shows a case where a type can refer to another type
        of the same base name. *)
-    let%expect_test "tycon inside recursion body with same base name" =
-      test
-        (module struct
-          module T = struct
-            type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
-          end
+  let%expect_test "tycon inside recursion body with same base name" =
+    test
+      (module struct
+        module T = struct
+          type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
+        end
 
-          type t = { that : t T.t } [@@deriving quickcheck, sexp, sexp_grammar]
+        type t = { that : t T.t } [@@deriving quickcheck, sexp, sexp_grammar]
 
-          let example = { that = { this = Some { this = None } } }
-        end);
-      [%expect
-        {|
-        (Ok ((that ((this ())))))
+        let example = { that = { this = Some { this = None } } }
+      end);
+    [%expect
+      {|
+      (Ok ((that ((this ())))))
 
-        ==============
+      ==============
+      <input @key=bonsai_path_replaced_in_test
+             type="checkbox"
+             id="bonsai_path_replaced_in_test"
+             #checked="false"
+             @on_click
+             style={
+               margin-left: 0px;
+             }> </input>
+
+      (Ok ((that ((this (((this ()))))))))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3149,52 +3166,52 @@ let%test_module "regressions" =
                style={
                  margin-left: 0px;
                }> </input>
+      </div>
+      |}]
+  ;;
 
-        (Ok ((that ((this (((this ()))))))))
-
-        ==============
-        <div>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
-        |}]
-    ;;
-
-    (* This test shows a case where a recursive type can transitively depend on another type
+  (* This test shows a case where a recursive type can transitively depend on another type
        of the same name where no explicit namespace qualification happens in the definition. *)
-    let%expect_test "tycon inside recursion body with same explicitly qualified name" =
-      test
-        (module struct
-          module T = struct
-            type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
-            type 'a u = 'a t [@@deriving quickcheck, sexp, sexp_grammar]
-          end
+  let%expect_test "tycon inside recursion body with same explicitly qualified name" =
+    test
+      (module struct
+        module T = struct
+          type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
+          type 'a u = 'a t [@@deriving quickcheck, sexp, sexp_grammar]
+        end
 
-          open T
+        open T
 
-          type t = { that : t u } [@@deriving quickcheck, sexp, sexp_grammar]
+        type t = { that : t u } [@@deriving quickcheck, sexp, sexp_grammar]
 
-          let example = { that = { this = Some { this = None } } }
-        end);
-      [%expect
-        {|
-        (Ok ((that ((this ())))))
+        let example = { that = { this = Some { this = None } } }
+      end);
+    [%expect
+      {|
+      (Ok ((that ((this ())))))
 
-        ==============
+      ==============
+      <input @key=bonsai_path_replaced_in_test
+             type="checkbox"
+             id="bonsai_path_replaced_in_test"
+             #checked="false"
+             @on_click
+             style={
+               margin-left: 0px;
+             }> </input>
+
+      (Ok ((that ((this (((this ()))))))))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3203,50 +3220,50 @@ let%test_module "regressions" =
                style={
                  margin-left: 0px;
                }> </input>
+      </div>
+      |}]
+  ;;
 
-        (Ok ((that ((this (((this ()))))))))
-
-        ==============
-        <div>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
-        |}]
-    ;;
-
-    (* This test shows a case where a type can transitively depend on another type
+  (* This test shows a case where a type can transitively depend on another type
        which has the same name in (essentially) the same scope. *)
-    let%expect_test "tycon inside recursion body with same fully qualified name" =
-      test
-        (module struct
-          open struct
-            type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
-            type 'a u = 'a t [@@deriving quickcheck, sexp, sexp_grammar]
-          end
+  let%expect_test "tycon inside recursion body with same fully qualified name" =
+    test
+      (module struct
+        open struct
+          type 'a t = { this : 'a t option } [@@deriving quickcheck, sexp, sexp_grammar]
+          type 'a u = 'a t [@@deriving quickcheck, sexp, sexp_grammar]
+        end
 
-          type t = { that : t u } [@@deriving quickcheck, sexp, sexp_grammar]
+        type t = { that : t u } [@@deriving quickcheck, sexp, sexp_grammar]
 
-          let example = { that = { this = Some { this = None } } }
-        end);
-      [%expect
-        {|
-        (Ok ((that ((this ())))))
+        let example = { that = { this = Some { this = None } } }
+      end);
+    [%expect
+      {|
+      (Ok ((that ((this ())))))
 
-        ==============
+      ==============
+      <input @key=bonsai_path_replaced_in_test
+             type="checkbox"
+             id="bonsai_path_replaced_in_test"
+             #checked="false"
+             @on_click
+             style={
+               margin-left: 0px;
+             }> </input>
+
+      (Ok ((that ((this (((this ()))))))))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="checkbox"
+               id="bonsai_path_replaced_in_test"
+               #checked="true"
+               @on_click
+               style={
+                 margin-left: 0px;
+               }> </input>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3255,91 +3272,69 @@ let%test_module "regressions" =
                style={
                  margin-left: 0px;
                }> </input>
+      </div>
+      |}]
+  ;;
 
-        (Ok ((that ((this (((this ()))))))))
-
-        ==============
-        <div>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="true"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-          <input @key=bonsai_path_replaced_in_test
-                 type="checkbox"
-                 id="bonsai_path_replaced_in_test"
-                 #checked="false"
-                 @on_click
-                 style={
-                   margin-left: 0px;
-                 }> </input>
-        </div>
-        |}]
-    ;;
-
-    (* This regression test contains a grammar which contains a recursive call that would
+  (* This regression test contains a grammar which contains a recursive call that would
        overwrite the value of the Tyvar "a" in the environment to be (Tyvar "a"). Interpreting
        this grammar incorrectly would lead to an infinite recursion (look up "a", which
        results in looking up "a", ad infinitum).
 
        Instead, we should interpret the type variables in their original environment. *)
-    let%expect_test "silly list with recursive type" =
-      let module T = struct
-        type 'a t' =
-          | Empty
-          | Cons of
-              { left : 'a t'
-              ; value : 'a
-              }
-        [@@deriving sexp, sexp_grammar]
+  let%expect_test "silly list with recursive type" =
+    let module T = struct
+      type 'a t' =
+        | Empty
+        | Cons of
+            { left : 'a t'
+            ; value : 'a
+            }
+      [@@deriving sexp, sexp_grammar]
 
-        type t = int t' [@@deriving sexp_grammar, sexp]
-      end
-      in
-      let handle = sexp_form_handle (module T) in
-      Handle.do_actions handle [ Cons { left = Empty; value = 1 } ];
-      Handle.show handle;
-      [%expect
-        {|
-        (Ok (
-          Cons
-          (left  Empty)
-          (value 1)))
+      type t = int t' [@@deriving sexp_grammar, sexp]
+    end
+    in
+    let handle = sexp_form_handle (module T) in
+    Handle.do_actions handle [ Cons { left = Empty; value = 1 } ];
+    Handle.show handle;
+    [%expect
+      {|
+      (Ok (
+        Cons
+        (left  Empty)
+        (value 1)))
 
-        ==============
-        <div>
-          <select id="bonsai_path_replaced_in_test"
-                  class="widget-dropdown"
-                  @on_change
-                  style={
-                    width: 100.00%;
-                  }>
-            <option value="0" #selected="false">  </option>
-            <option value="1" #selected="false"> empty </option>
-            <option value="2" #selected="true"> cons </option>
-          </select>
-          <select id="bonsai_path_replaced_in_test"
-                  class="widget-dropdown"
-                  @on_change
-                  style={
-                    width: 100.00%;
-                  }>
-            <option value="0" #selected="false">  </option>
-            <option value="1" #selected="true"> empty </option>
-            <option value="2" #selected="false"> cons </option>
-          </select>
-          <input type="number"
-                 step="1"
-                 placeholder=""
-                 spellcheck="false"
-                 id="bonsai_path_replaced_in_test"
-                 value:normalized=1
-                 @on_input> </input>
-        </div>
-        |}]
-    ;;
-  end)
-;;
+      ==============
+      <div>
+        <select id="bonsai_path_replaced_in_test"
+                class="widget-dropdown"
+                @on_change
+                style={
+                  width: 100.00%;
+                }>
+          <option value="0" #selected="false">  </option>
+          <option value="1" #selected="false"> empty </option>
+          <option value="2" #selected="true"> cons </option>
+        </select>
+        <select id="bonsai_path_replaced_in_test"
+                class="widget-dropdown"
+                @on_change
+                style={
+                  width: 100.00%;
+                }>
+          <option value="0" #selected="false">  </option>
+          <option value="1" #selected="true"> empty </option>
+          <option value="2" #selected="false"> cons </option>
+        </select>
+        <input type="number"
+               step="1"
+               placeholder=""
+               spellcheck="false"
+               id="bonsai_path_replaced_in_test"
+               value:normalized=1
+               @on_input> </input>
+      </div>
+      |}]
+  ;;
+end

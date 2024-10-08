@@ -36,6 +36,7 @@ module Header : sig
       :  Themed.t
       -> column_width:Css_gen.Length.t
       -> set_column_width:([> `Px_float of float ] -> unit Ui_effect.t)
+      -> set_column_width_for_reporting:([> `Px_float of float ] -> unit Ui_effect.t)
       -> visible:bool
       -> resizable:bool
       -> label:Vdom.Node.t

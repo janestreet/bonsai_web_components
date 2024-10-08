@@ -45,6 +45,10 @@ module Basic : sig
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
       (** [set_column_width] cannot set the width of the column smaller than the minimum
           width of the header. *)
+      ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
+      (** [column_widths] returns the widths of the columns.  For hidden columns, it will
+         use the last-known width.  The list may be empty on the first frame after the 
+         table has been included in the page. *)
       }
     [@@deriving fields ~getters]
   end
@@ -282,6 +286,7 @@ module Expert : sig
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
       (** [set_column_width] cannot set the width of the column smaller than the minimum
           width of the header. *)
+      ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
       }
     [@@deriving fields ~getters]
   end

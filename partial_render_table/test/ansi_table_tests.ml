@@ -3123,287 +3123,285 @@ let%expect_test "focus down when presence says that all responses are None" =
     |}]
 ;;
 
-let%test_module "focus by key `key_rank` fallback" =
-  (module struct
-    let test () =
-      let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
-      let collate =
-        Bonsai.return
-          { Incr_map_collate.Collate.filter = ()
-          ; order = ()
-          ; key_range = To 4
-          ; rank_range = All_rows
-          }
+module%test [@name "focus by key `key_rank` fallback"] _ = struct
+  let test () =
+    let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
+    let collate =
+      Bonsai.return
+        { Incr_map_collate.Collate.filter = ()
+        ; order = ()
+        ; key_range = To 4
+        ; rank_range = All_rows
+        }
+    in
+    Test.create ~stats:true ~map:big_map ~should_set_bounds:false (fun input filter ->
+      let key_rank ~actual_key_rank:_ graph =
+        let sleep = Bonsai.Clock.sleep graph in
+        let%arr sleep in
+        fun row_key ->
+          let%bind.Effect () = sleep (Time_ns.Span.of_ms 10.) in
+          Effect.return (Some ((row_key mod 2) + 2))
       in
-      Test.create ~stats:true ~map:big_map ~should_set_bounds:false (fun input filter ->
-        let key_rank ~actual_key_rank:_ graph =
-          let sleep = Bonsai.Clock.sleep graph in
-          let%arr sleep in
-          fun row_key ->
-            let%bind.Effect () = sleep (Time_ns.Span.of_ms 10.) in
-            Effect.return (Some ((row_key mod 2) + 2))
-        in
-        Test.Component.expert_for_testing_compute_presence_and_key_rank
-          ~collate
-          ~presence
-          ~key_rank
-          ()
-          input
-          filter)
-    ;;
+      Test.Component.expert_for_testing_compute_presence_and_key_rank
+        ~collate
+        ~presence
+        ~key_rank
+        ()
+        input
+        filter)
+  ;;
 
-    let%expect_test "focus by key should fall back to provided `key_rank` if the key \
-                     isn't in the current `Collated.t` range"
-      =
-      let test = test () in
-      Handle.recompute_view_until_stable test.handle;
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.do_actions test.handle [ Focus_row 150 ];
-      (* It doesn't focus immediately; we have to wait for the effect to complete.*)
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 10);
-      Handle.show test.handle;
-      [%expect
-        {|
-        scrolling to index 2 at 30.0px
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │ * │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}]
-    ;;
+  let%expect_test "focus by key should fall back to provided `key_rank` if the key isn't \
+                   in the current `Collated.t` range"
+    =
+    let test = test () in
+    Handle.recompute_view_until_stable test.handle;
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.do_actions test.handle [ Focus_row 150 ];
+    (* It doesn't focus immediately; we have to wait for the effect to complete.*)
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 10);
+    Handle.show test.handle;
+    [%expect
+      {|
+      scrolling to index 2 at 30.0px
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │ * │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}]
+  ;;
 
-    let%expect_test "dispatching another focus action while `key_rank` is pending should \
-                     'cancel' it."
-      =
-      let test = test () in
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.do_actions test.handle [ Focus_row 150 ];
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.do_actions test.handle [ Focus_down ];
-      Handle.show test.handle;
-      [%expect
-        {|
-        scrolling to index 0 at 0.0px
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │ * │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 10);
-      Handle.recompute_view_until_stable test.handle;
-      (* Focus should not have changed, because the pending `key_rank` effect should have
+  let%expect_test "dispatching another focus action while `key_rank` is pending should \
+                   'cancel' it."
+    =
+    let test = test () in
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.do_actions test.handle [ Focus_row 150 ];
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.do_actions test.handle [ Focus_down ];
+    Handle.show test.handle;
+    [%expect
+      {|
+      scrolling to index 0 at 0.0px
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │ * │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 10);
+    Handle.recompute_view_until_stable test.handle;
+    (* Focus should not have changed, because the pending `key_rank` effect should have
          been "cancelled". *)
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │ * │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}]
-    ;;
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │ * │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}]
+  ;;
 
-    let%expect_test "If 2 `key_rank` calls are being processed in parallel, the last one \
-                     scheduled should win"
-      =
-      let test = test () in
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.do_actions test.handle [ Focus_row 150 ];
-      Handle.recompute_view_until_stable test.handle;
-      Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 5);
-      Handle.do_actions test.handle [ Focus_row 151 ];
-      Handle.recompute_view_until_stable test.handle;
-      Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 6);
-      (* At this point, the first call should have finished, but it's been "cancelled". *)
-      Handle.show test.handle;
-      [%expect
-        {|
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │   │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}];
-      Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 5);
-      Handle.recompute_view_until_stable test.handle;
-      (* And now, everything should be completed. *)
-      Handle.show test.handle;
-      [%expect
-        {|
-        scrolling to index 3 at 40.0px
-        ((focused ()) (num_filtered_rows ()))
-        ┌────────────────┬───────┐
-        │ metric         │ value │
-        ├────────────────┼───────┤
-        │ rows-before    │ 0     │
-        │ rows-after     │ 95    │
-        │ num-filtered   │ 99    │
-        │ num-unfiltered │ 99    │
-        └────────────────┴───────┘
-        ┌───┬─────┬─────┐
-        │ > │ #   │ key │
-        ├───┼─────┼─────┤
-        │   │ 0   │ 1   │
-        │   │ 100 │ 2   │
-        │   │ 200 │ 3   │
-        │ * │ 300 │ 4   │
-        └───┴─────┴─────┘
-        |}]
-    ;;
-  end)
-;;
+  let%expect_test "If 2 `key_rank` calls are being processed in parallel, the last one \
+                   scheduled should win"
+    =
+    let test = test () in
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.do_actions test.handle [ Focus_row 150 ];
+    Handle.recompute_view_until_stable test.handle;
+    Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 5);
+    Handle.do_actions test.handle [ Focus_row 151 ];
+    Handle.recompute_view_until_stable test.handle;
+    Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 6);
+    (* At this point, the first call should have finished, but it's been "cancelled". *)
+    Handle.show test.handle;
+    [%expect
+      {|
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │   │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}];
+    Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 5);
+    Handle.recompute_view_until_stable test.handle;
+    (* And now, everything should be completed. *)
+    Handle.show test.handle;
+    [%expect
+      {|
+      scrolling to index 3 at 40.0px
+      ((focused ()) (num_filtered_rows ()))
+      ┌────────────────┬───────┐
+      │ metric         │ value │
+      ├────────────────┼───────┤
+      │ rows-before    │ 0     │
+      │ rows-after     │ 95    │
+      │ num-filtered   │ 99    │
+      │ num-unfiltered │ 99    │
+      └────────────────┴───────┘
+      ┌───┬─────┬─────┐
+      │ > │ #   │ key │
+      ├───┼─────┼─────┤
+      │   │ 0   │ 1   │
+      │   │ 100 │ 2   │
+      │   │ 200 │ 3   │
+      │ * │ 300 │ 4   │
+      └───┴─────┴─────┘
+      |}]
+  ;;
+end
 
 let%expect_test "show that scrolling out of a basic table will keep the focus" =
   let test =
@@ -3848,73 +3846,69 @@ let%expect_test "dynamic row height" =
     |}]
 ;;
 
-let%test_module "dynamic columns with visibility" =
-  (module struct
-    let setup ~visibility_starts_out_as =
-      let visibility_of_first_column =
-        Bonsai.Expert.Var.create visibility_starts_out_as
-      in
-      let map =
-        [ 1; 2; 3; 4; 5; 6; 7 ]
-        |> List.map ~f:(fun i -> i, i)
-        |> Int.Map.of_alist_exn
-        |> Bonsai.return
-      in
-      let component graph =
-        let%sub collate, _ =
-          let collate =
-            { Collate.filter = None
-            ; order = Compare.Unchanged
-            ; key_range = Collate.Which_range.All_rows
-            ; rank_range = Collate.Which_range.All_rows
-            }
-          in
-          Table_expert.collate
-            ~filter_equal:phys_equal
-            ~filter_to_predicate:Fn.id
-            ~order_equal:phys_equal
-            ~order_to_compare:Fn.id
-            map
-            (Bonsai.return collate)
-            graph
+module%test [@name "dynamic columns with visibility"] _ = struct
+  let setup ~visibility_starts_out_as =
+    let visibility_of_first_column = Bonsai.Expert.Var.create visibility_starts_out_as in
+    let map =
+      [ 1; 2; 3; 4; 5; 6; 7 ]
+      |> List.map ~f:(fun i -> i, i)
+      |> Int.Map.of_alist_exn
+      |> Bonsai.return
+    in
+    let component graph =
+      let%sub collate, _ =
+        let collate =
+          { Collate.filter = None
+          ; order = Compare.Unchanged
+          ; key_range = Collate.Which_range.All_rows
+          ; rank_range = Collate.Which_range.All_rows
+          }
         in
-        let%sub { view; _ } =
-          Table_expert.component
-            (module Int)
-            ~focus:Table_expert.Focus.None
-            ~row_height:(Bonsai.return (`Px 20))
-            ~columns:
-              ((let%map visibility_of_first_column =
-                  Bonsai.Expert.Var.value visibility_of_first_column
-                in
-                [ Table_expert.Columns.Dynamic_columns.column
-                    ~header:(Vdom.Node.text "a")
-                    ~cell:(fun ~key:_ ~data -> Vdom.Node.textf "%d" data)
-                    ~visible:visibility_of_first_column
-                    ()
-                ])
-               |> Table_expert.Columns.Dynamic_columns.lift)
-            collate
-            graph
-        in
-        view
+        Table_expert.collate
+          ~filter_equal:phys_equal
+          ~filter_to_predicate:Fn.id
+          ~order_equal:phys_equal
+          ~order_to_compare:Fn.id
+          map
+          (Bonsai.return collate)
+          graph
       in
-      component, Bonsai.Expert.Var.set visibility_of_first_column
-    ;;
+      let%sub { view; _ } =
+        Table_expert.component
+          (module Int)
+          ~focus:Table_expert.Focus.None
+          ~row_height:(Bonsai.return (`Px 20))
+          ~columns:
+            ((let%map visibility_of_first_column =
+                Bonsai.Expert.Var.value visibility_of_first_column
+              in
+              [ Table_expert.Columns.Dynamic_columns.column
+                  ~header:(Vdom.Node.text "a")
+                  ~cell:(fun ~key:_ ~data -> Vdom.Node.textf "%d" data)
+                  ~visible:visibility_of_first_column
+                  ()
+              ])
+             |> Table_expert.Columns.Dynamic_columns.lift)
+          collate
+          graph
+      in
+      view
+    in
+    component, Bonsai.Expert.Var.set visibility_of_first_column
+  ;;
 
-    let%expect_test "REGRESSION: starting a column as invisible shouldn't crash" =
-      let component, _set_visibility = setup ~visibility_starts_out_as:false in
-      let (_ : _ Handle.t) = Handle.create (Result_spec.vdom Fn.id) component in
-      ();
-      [%expect {| |}]
-    ;;
+  let%expect_test "REGRESSION: starting a column as invisible shouldn't crash" =
+    let component, _set_visibility = setup ~visibility_starts_out_as:false in
+    let (_ : _ Handle.t) = Handle.create (Result_spec.vdom Fn.id) component in
+    ();
+    [%expect {| |}]
+  ;;
 
-    let%expect_test "REGRESSION: toggling a column to be invisible shouldn't crash" =
-      let component, set_visibility = setup ~visibility_starts_out_as:true in
-      let handle = Handle.create (Result_spec.vdom Fn.id) component in
-      set_visibility false;
-      Handle.recompute_view handle;
-      [%expect {| |}]
-    ;;
-  end)
-;;
+  let%expect_test "REGRESSION: toggling a column to be invisible shouldn't crash" =
+    let component, set_visibility = setup ~visibility_starts_out_as:true in
+    let handle = Handle.create (Result_spec.vdom Fn.id) component in
+    set_visibility false;
+    Handle.recompute_view handle;
+    [%expect {| |}]
+  ;;
+end

@@ -17,3 +17,5 @@ val quickcheck_tests
   -> 'b Sexp_grammar.t
   -> 'a Base_quickcheck.Generator.t
   -> unit
+
+val quickcheck_tests_no_type : 'a Sexp_grammar.t -> unit

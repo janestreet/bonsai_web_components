@@ -210,6 +210,7 @@ module Header = struct
       (themed_attrs : Themed.t)
       ~column_width
       ~set_column_width
+      ~set_column_width_for_reporting
       ~visible
       ~resizable
       ~label
@@ -222,10 +223,10 @@ module Header = struct
           Bonsai_web_ui_element_size_hooks.Size_tracker.on_change (fun ~width ~height:_ ->
             set_column_width (`Px_float width))
         | true ->
-          (* This is just here for compatibility with tests. The test expects to find an
-             element with the sizetracker attribute  *)
-          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change
-            (fun ~width:_ ~height:_ -> Effect.Ignore)
+          (* Set the reporting value so that users of the [Prt.Result.column_widths] field
+             get the right results. *)
+          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change (fun ~width ~height:_ ->
+            set_column_width_for_reporting (`Px_float width))
       in
       let node = if autosize then Vdom.Node.th else Vdom.Node.td in
       node

@@ -58,3 +58,4 @@ val component
   -> unit
   -> Bonsai.graph
   -> Result.t Bonsai.t
+[@@deprecated "[since 2024-09] use [Bonsai_web_ui_toplayer.Popover] instead"]
