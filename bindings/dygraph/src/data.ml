@@ -6,6 +6,19 @@ open Gen_js_api
 type t = Ojs.t
 
 let t_to_js x = x
+let time_to_float time = Time_ns.to_span_since_epoch time |> Time_ns.Span.to_ms
+
+module Expert = struct
+  let time_ns_to_js_date time =
+    let date =
+      new%js Js.date_fromTimeValue (time_to_float time |> Js_of_ocaml.Js.float)
+    in
+    (Stdlib.Obj.magic (date : Js.date Js.t) : Ojs.t)
+  ;;
+
+  let t_of_js x = x
+end
+
 let create data = Ojs.array_to_js (Ojs.array_to_js Ojs.float_to_js) data
 
 let create' data ~x_to_js ~y_to_js =
@@ -24,25 +37,23 @@ let create_option data =
   create' data ~x_to_js:Ojs.float_to_js ~y_to_js:(Ojs.option_to_js Ojs.float_to_js)
 ;;
 
-let time_ns_to_js time =
-  let date =
-    new%js Js.date_fromTimeValue
-      (Time_ns.to_span_since_epoch time |> Time_ns.Span.to_ms |> Js_of_ocaml.Js.float)
-  in
-  (Stdlib.Obj.magic (date : Js.date Js.t) : Ojs.t)
-;;
-
 let create_date data ~zone =
   let date_to_js date =
-    Time_ns.of_date_ofday ~zone date Time_ns.Ofday.start_of_day |> time_ns_to_js
+    Time_ns.of_date_ofday ~zone date Time_ns.Ofday.start_of_day
+    |> Expert.time_ns_to_js_date
   in
   create' data ~x_to_js:date_to_js ~y_to_js:Ojs.float_to_js
 ;;
 
-let create_time_ns data = create' data ~x_to_js:time_ns_to_js ~y_to_js:Ojs.float_to_js
+let create_time_ns data =
+  create' data ~x_to_js:Expert.time_ns_to_js_date ~y_to_js:Ojs.float_to_js
+;;
 
 let create_time_ns_option data =
-  create' data ~x_to_js:time_ns_to_js ~y_to_js:(Ojs.option_to_js Ojs.float_to_js)
+  create'
+    data
+    ~x_to_js:Expert.time_ns_to_js_date
+    ~y_to_js:(Ojs.option_to_js Ojs.float_to_js)
 ;;
 
 let create_from_independent_series' ~min ~equal series =
@@ -101,7 +112,10 @@ let create_from_independent_time_series' series =
 
 let create_from_independent_time_series series =
   let data = create_from_independent_time_series' series in
-  create' data ~x_to_js:time_ns_to_js ~y_to_js:(Ojs.option_to_js Ojs.float_to_js)
+  create'
+    data
+    ~x_to_js:Expert.time_ns_to_js_date
+    ~y_to_js:(Ojs.option_to_js Ojs.float_to_js)
 ;;
 
 let%expect_test "test [create_from_independent_time_series]" =

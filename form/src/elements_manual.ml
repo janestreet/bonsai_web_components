@@ -753,6 +753,8 @@ module Typeahead = struct
         ~all_options
         ~extra_attrs
         graph
+        ~attr_merge_behavior:
+          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
     in
     let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
@@ -806,6 +808,8 @@ module Typeahead = struct
         ~extra_attrs
         ~all_options
         graph
+        ~attr_merge_behavior:
+          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
     in
     let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
@@ -1493,7 +1497,7 @@ module Multiple = struct
           if not (Seqnum_for_list.equal my_seqnum most_recent_seqnum)
           then
             (* if the lists aren't the same length and the seqnums aren't the same, it's
-               because another setter happened after this one, so we shouldn't do anything 
+               because another setter happened after this one, so we shouldn't do anything
                here, and let the next setter do its thing. *)
             ()
           else (
@@ -1507,7 +1511,7 @@ module Multiple = struct
                 context
                 (Ui_effect.Many setters_applied)
             | Error `Unequal_lengths ->
-              (* If the lists aren't the same size, then another call to [set] modified the 
+              (* If the lists aren't the same size, then another call to [set] modified the
                length.  Because the seqnum for the action matches the current seqnum, we
                know we're the last in the sequence, so we can update the length _again_
                and try the whole transaction again. *)
@@ -1638,6 +1642,62 @@ let validate_range ?min ?max value =
 ;;
 
 module Number = struct
+  let float_opt_unvalidated
+    ?(extra_attrs = Bonsai.return [])
+    ?min
+    ?max
+    ?default
+    ~step
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
+    let view =
+      let%arr extra_attrs in
+      fun ~state ~set_state ~theme ->
+        View.Form_inputs.number
+          theme
+          ~attrs:extra_attrs
+          ?min
+          ?max
+          ~disabled:false
+          ~step
+          ~allow_updates_when_focused
+          ~value:state
+          ~set_value:set_state
+          ()
+    in
+    Basic_stateful.make_themed (Bonsai.state_opt ?default_model:default) ~view graph
+  ;;
+
+  let value_not_specified = Or_error.error_s [%message "value not specified"]
+
+  let float_opt
+    ?(extra_attrs = Bonsai.return [])
+    ?min
+    ?max
+    ?default
+    ~step
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
+    let%arr unvalidated =
+      float_opt_unvalidated
+        ~extra_attrs
+        ?min
+        ?max
+        ?default
+        ~step
+        ~allow_updates_when_focused
+        ()
+        graph
+    in
+    Form.validate unvalidated ~f:(function
+      | None -> Ok ()
+      | Some float -> validate_range ?min ?max float)
+  ;;
+
   let float
     ?(extra_attrs = Bonsai.return [])
     ?min
@@ -1649,29 +1709,22 @@ module Number = struct
     (local_ graph)
     =
     let optional_unvalidated =
-      let view =
-        let%arr extra_attrs in
-        fun ~state ~set_state ~theme ->
-          View.Form_inputs.number
-            theme
-            ~attrs:extra_attrs
-            ?min
-            ?max
-            ~disabled:false
-            ~step
-            ~allow_updates_when_focused
-            ~value:state
-            ~set_value:set_state
-            ()
-      in
-      Basic_stateful.make_themed (Bonsai.state_opt ?default_model:default) ~view graph
+      float_opt_unvalidated
+        ~extra_attrs
+        ?min
+        ?max
+        ?default
+        ~step
+        ~allow_updates_when_focused
+        ()
+        graph
     in
     let%arr optional_unvalidated in
     Form.project'
       optional_unvalidated
       ~parse:(function
         | Some value -> Ok value
-        | None -> Or_error.error_s [%message "value not specified"])
+        | None -> value_not_specified)
       ~unparse:Option.return
     |> Form.validate ~f:(validate_range ?min ?max)
   ;;
@@ -1707,19 +1760,28 @@ module Range = struct
   (* The default values of [min]/[max]/[default] match the browser spec. *)
   let float
     ?(extra_attrs = Bonsai.return [])
-    ?(min = 0.)
-    ?(max = 100.)
+    ?(min = Bonsai.return 0.)
+    ?(max = Bonsai.return 100.)
     ?left_label
     ?right_label
-    ?(default = (min +. max) /. 2.)
+    ?default
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
     (local_ graph)
     =
+    let default =
+      Option.value
+        default
+        ~default:
+          (let%arr min and max in
+           (min +. max) /. 2.)
+    in
+    let left_label = Bonsai.transpose_opt left_label in
+    let right_label = Bonsai.transpose_opt right_label in
     let unvalidated =
       let view =
-        let%arr extra_attrs in
+        let%arr extra_attrs and left_label and min and max and right_label and step in
         fun ~state ~set_state ~theme ->
           let input =
             View.Form_inputs.range
@@ -1739,9 +1801,13 @@ module Range = struct
           | elements ->
             Vdom.Node.span ~attrs:[ Vdom.Attr.style (Css_gen.flex_container ()) ] elements
       in
-      Basic_stateful.make_themed (Bonsai.state default) ~view graph
+      let value_with_override graph =
+        let%sub state, set_state = Bonsai_extra.value_with_override default graph in
+        state, set_state
+      in
+      Basic_stateful.make_themed value_with_override ~view graph
     in
-    let%arr unvalidated in
+    let%arr min and max and unvalidated in
     Form.validate unvalidated ~f:(validate_range ~min ~max)
   ;;
 
@@ -1757,7 +1823,7 @@ module Range = struct
     ()
     (local_ graph)
     =
-    let int x = Option.map x ~f:Int.to_float in
+    let int x = Option.map x ~f:(Bonsai.map ~f:Int.to_float) in
     let float =
       float
         ?extra_attrs
@@ -1767,7 +1833,7 @@ module Range = struct
         ?right_label
         ?default:(int default)
         ~allow_updates_when_focused
-        ~step:(Int.to_float step)
+        ~step:(Bonsai.map step ~f:Int.to_float)
         ()
         graph
     in
@@ -2047,7 +2113,9 @@ module Query_box = struct
     ?initial_query
     ?max_visible_items
     ?suggestion_list_kind
-    ?selected_item_attr
+    ?on_focus
+    ?on_hover_item
+    ?focused_item_attr
     ?extra_list_container_attr
     ?(extra_input_attr = Bonsai.return Vdom.Attr.empty)
     ?(extra_attr = Bonsai.return Vdom.Attr.empty)
@@ -2079,7 +2147,9 @@ module Query_box = struct
         ?initial_query
         ?max_visible_items
         ?suggestion_list_kind
-        ?selected_item_attr
+        ?on_focus
+        ?on_hover_item
+        ?focused_item_attr
         ?extra_list_container_attr
         ~extra_input_attr
         ~extra_attr
@@ -2103,7 +2173,9 @@ module Query_box = struct
     ?initial_query
     ?max_visible_items
     ?suggestion_list_kind
-    ?selected_item_attr
+    ?on_focus
+    ?on_hover_item
+    ?focused_item_attr
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
@@ -2118,7 +2190,9 @@ module Query_box = struct
          ?initial_query
          ?max_visible_items
          ?suggestion_list_kind
-         ?selected_item_attr
+         ?on_focus
+         ?on_hover_item
+         ?focused_item_attr
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
@@ -2194,11 +2268,13 @@ module Query_box = struct
 
   let underlying_query_box_component
     (type a cmp)
+    ?on_focus
+    ?on_hover_item
     ?(extra_input_attr = Bonsai.return Vdom.Attr.empty)
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     ~extra_attr
     ~(to_string : (a -> string) Bonsai.t)
-    ~selected_item_attr
+    ~focused_item_attr
     ~extra_list_container_attr
     ~all_options
     ~handle_unknown_option
@@ -2210,10 +2286,12 @@ module Query_box = struct
       Vdom.Attr.many [ Query_box_styles.input; extra_input_attr ]
     in
     create_opt
+      ?on_focus
+      ?on_hover_item
       (module M)
       ~extra_attr
       ~extra_input_attr
-      ~selected_item_attr
+      ~focused_item_attr
       ~extra_list_container_attr
       ~selection_to_string:to_string
       ~f:(fun query (local_ graph) ->
@@ -2279,11 +2357,13 @@ module Query_box = struct
 
   let single_opt
     (type a cmp)
+    ?on_focus
+    ?on_hover_item
     ?extra_attrs
     ?extra_input_attr
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
@@ -2307,9 +2387,9 @@ module Query_box = struct
     in
     let to_option_description = optional_computation to_option_description graph in
     let handle_unknown_option = optional_computation handle_unknown_option graph in
-    let selected_item_attr =
+    let focused_item_attr =
       optional_computation_value_map
-        selected_item_attr
+        focused_item_attr
         ~default:Query_box_styles.selected_item
         ~f:Fn.id
         graph
@@ -2329,11 +2409,13 @@ module Query_box = struct
         ~f:(fun acc a -> Map.set acc ~key:a ~data:())
     in
     underlying_query_box_component
+      ?on_focus
+      ?on_hover_item
       ?extra_input_attr
       (module M)
       ~extra_attr
       ~to_string
-      ~selected_item_attr
+      ~focused_item_attr
       ~extra_list_container_attr
       ~all_options
       ~handle_unknown_option
@@ -2342,11 +2424,13 @@ module Query_box = struct
   ;;
 
   let single
+    ?on_focus
+    ?on_hover_item
     ?extra_attrs
     ?extra_input_attr
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     m
@@ -2355,11 +2439,13 @@ module Query_box = struct
     =
     let%map.Bonsai form =
       single_opt
+        ?on_focus
+        ?on_hover_item
         ?extra_attrs
         ?extra_input_attr
         ?to_string
         ?to_option_description
-        ?selected_item_attr
+        ?focused_item_attr
         ?extra_list_container_attr
         ?handle_unknown_option
         m

@@ -486,17 +486,28 @@ module Number : sig
     -> unit
     -> local_ Bonsai.graph
     -> (float, Vdom.Node.t) Form.t Bonsai.t
+
+  val float_opt
+    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?min:float
+    -> ?max:float
+    -> ?default:float
+    -> step:float
+    -> ?allow_updates_when_focused:[ `Always | `Never ]
+    -> unit
+    -> local_ Bonsai.graph
+    -> (float option, Vdom.Node.t) Form.t Bonsai.t
 end
 
 module Range : sig
   val int
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:int
-    -> ?max:int
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:int
-    -> step:int
+    -> ?min:int Bonsai.t
+    -> ?max:int Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:int Bonsai.t
+    -> step:int Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -504,12 +515,12 @@ module Range : sig
 
   val float
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:float
-    -> ?max:float
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:float
-    -> step:float
+    -> ?min:float Bonsai.t
+    -> ?max:float Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:float Bonsai.t
+    -> step:float Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -683,7 +694,9 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -701,7 +714,9 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -715,11 +730,13 @@ module Query_box : sig
     -> ('k, Vdom.Node.t) Form.t Bonsai.t
 
   val single
-    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
@@ -731,11 +748,13 @@ module Query_box : sig
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val single_opt
-    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)

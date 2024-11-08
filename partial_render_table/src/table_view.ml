@@ -1,28 +1,17 @@
 open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
+module Styling = Bonsai_web_ui_partial_render_table_styling
 
-module Theming = struct
+module Which_styling = struct
   type t =
-    [ `Legacy_don't_use_theme
-    | `Themed
-    ]
+    | This_one of Styling.t Bonsai.t
+    | From_theme
+    | Legacy_unsafe_raw_classnames
 end
 
 module Themed = struct
-  type t =
-    { header_cell : Vdom.Attr.t
-    ; header_row : Vdom.Attr.t
-    ; header : Vdom.Attr.t
-    ; autosize_table_bottom_border_element : Vdom.Attr.t
-    ; autosize_table_cell_wrapper : Vdom.Attr.t
-    ; cell : Vdom.Attr.t
-    ; cell_focused : Vdom.Attr.t
-    ; row : Vdom.Attr.t
-    ; row_focused : Vdom.Attr.t
-    ; body : Vdom.Attr.t
-    ; table : Vdom.Attr.t
-    }
+  type t = Styling.Expert.t
 
   module Legacy_style =
     [%css
@@ -36,35 +25,29 @@ module Themed = struct
 
   module Prt_view = Bonsai_web_ui_view.For_components.Prt
 
-  let create ?autosize theme () = function
-    | `Legacy_don't_use_theme ->
-      { header_cell = Legacy_style.header_cell
-      ; header_row = Vdom.Attr.empty
-      ; header = Vdom.Attr.class_ "prt-table-header"
-      ; autosize_table_cell_wrapper = Vdom.Attr.empty
-      ; autosize_table_bottom_border_element = Vdom.Attr.empty
-      ; cell = Vdom.Attr.class_ "prt-table-cell"
-      ; cell_focused = Vdom.Attr.class_ "prt-table-cell-selected"
-      ; row = Vdom.Attr.class_ "prt-table-row"
-      ; row_focused = Vdom.Attr.class_ "prt-table-row-selected"
-      ; body = Vdom.Attr.empty
-      ; table = Vdom.Attr.empty
-      }
-    | `Themed ->
-      let styling = Prt_view.styling ?autosize theme () in
-      { header_cell = styling.header_cell
-      ; header_row = styling.header_row
-      ; header = styling.header
-      ; autosize_table_cell_wrapper = styling.autosize_table_cell_wrapper
-      ; autosize_table_bottom_border_element =
-          styling.autosize_table_bottom_border_element
-      ; cell = styling.cell
-      ; cell_focused = styling.cell_focused
-      ; row = styling.row
-      ; row_focused = styling.row_focused
-      ; body = styling.body
-      ; table = styling.table
-      }
+  let resolve ~resize_column_widths_to_fit which_styling (local_ graph) =
+    let theme = View.Theme.current graph in
+    match which_styling with
+    | Which_styling.Legacy_unsafe_raw_classnames ->
+      return
+        { Styling.Expert.header_cell = Legacy_style.header_cell
+        ; header_row = Vdom.Attr.empty
+        ; header = Vdom.Attr.class_ "prt-table-header"
+        ; autosize_table_cell_wrapper = Vdom.Attr.empty
+        ; autosize_table_bottom_border_element = Vdom.Attr.empty
+        ; cell = Vdom.Attr.class_ "prt-table-cell"
+        ; cell_focused = Vdom.Attr.class_ "prt-table-cell-selected"
+        ; row = Vdom.Attr.class_ "prt-table-row"
+        ; row_focused = Vdom.Attr.class_ "prt-table-row-selected"
+        ; body = Vdom.Attr.empty
+        ; table = Vdom.Attr.empty
+        }
+    | From_theme ->
+      let%arr theme and resize_column_widths_to_fit in
+      Styling.Private.resolve ~resize_column_widths_to_fit (Prt_view.styling theme)
+    | This_one styling ->
+      let%arr styling and resize_column_widths_to_fit in
+      Styling.Private.resolve ~resize_column_widths_to_fit styling
   ;;
 end
 
@@ -128,6 +111,10 @@ module Functional_style =
         overflow: hidden;
         display: inline-block;
         contain: strict;
+      }
+
+      .autosize_wrapped_cell {
+        display: block;
       }
       |}]
 
@@ -210,24 +197,27 @@ module Header = struct
       (themed_attrs : Themed.t)
       ~column_width
       ~set_column_width
+      ~set_column_width_for_reporting
       ~visible
       ~resizable
       ~label
-      ~autosize
+      ~resize_column_widths_to_fit
       ()
       =
       let on_change_tracker =
-        match autosize with
+        match resize_column_widths_to_fit with
         | false ->
-          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change (fun ~width ~height:_ ->
-            set_column_width (`Px_float width))
-        | true ->
-          (* This is just here for compatibility with tests. The test expects to find an
-             element with the sizetracker attribute  *)
           Bonsai_web_ui_element_size_hooks.Size_tracker.on_change
-            (fun ~width:_ ~height:_ -> Effect.Ignore)
+            (fun { border_box = { width; height = _ }; content_box = _ } ->
+               set_column_width (`Px_float width))
+        | true ->
+          (* Set the reporting value so that users of the [Prt.Result.column_widths] field
+             get the right results. *)
+          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change
+            (fun { border_box = { width; height = _ }; content_box = _ } ->
+               set_column_width_for_reporting (`Px_float width))
       in
-      let node = if autosize then Vdom.Node.th else Vdom.Node.td in
+      let node = if resize_column_widths_to_fit then Vdom.Node.th else Vdom.Node.td in
       node
         ~attrs:
           [ themed_attrs.header_cell
@@ -242,13 +232,19 @@ module Header = struct
         [ label ]
     ;;
 
-    let spacer_view (themed_attrs : Themed.t) ~colspan ~autosize () =
-      let node = if autosize then Vdom.Node.th else Vdom.Node.td in
+    let spacer_view (themed_attrs : Themed.t) ~colspan ~resize_column_widths_to_fit () =
+      let node = if resize_column_widths_to_fit then Vdom.Node.th else Vdom.Node.td in
       node ~attrs:[ themed_attrs.header_cell; attr_colspan colspan ] []
     ;;
 
-    let group_view (themed_attrs : Themed.t) ~colspan ~autosize ~label () =
-      let node = if autosize then Vdom.Node.th else Vdom.Node.td in
+    let group_view
+      (themed_attrs : Themed.t)
+      ~colspan
+      ~resize_column_widths_to_fit
+      ~label
+      ()
+      =
+      let node = if resize_column_widths_to_fit then Vdom.Node.th else Vdom.Node.td in
       node
         ~attrs:
           [ themed_attrs.header_cell
@@ -269,7 +265,12 @@ module Header = struct
 
   type t = Vdom.Node.t
 
-  let view_impl (themed_attrs : Themed.t) ~set_header_client_rect ~autosize header_rows =
+  let view_impl
+    (themed_attrs : Themed.t)
+    ~set_header_client_rect
+    ~resize_column_widths_to_fit
+    header_rows
+    =
     let attrs =
       [ themed_attrs.header
       ; Bonsai_web_ui_element_size_hooks.Visibility_tracker.detect
@@ -278,22 +279,31 @@ module Header = struct
       ; Functional_style.partial_render_table_header
       ]
     in
-    match autosize with
+    match resize_column_widths_to_fit with
     | false -> Vdom.Node.table ~attrs [ Vdom.Node.tbody header_rows ]
     | true -> Vdom.Node.thead ~attrs header_rows
   ;;
 
   (* Fun fact: the header is the only part of partial_render_table that is displayed
      as an actual HTML table!.... unless you're using the table_view *)
-  let view (themed_attrs : Themed.t) ~set_header_client_rect ~autosize header_rows =
-    view_impl themed_attrs ~set_header_client_rect ~autosize header_rows
+  let view
+    (themed_attrs : Themed.t)
+    ~set_header_client_rect
+    ~resize_column_widths_to_fit
+    header_rows
+    =
+    view_impl
+      themed_attrs
+      ~set_header_client_rect
+      ~resize_column_widths_to_fit
+      header_rows
   ;;
 end
 
 module Cell = struct
   module Col_styles = struct
     (* First index is for the set_or_wrap node, the second index is for the inner wrapper
-    for the autosize variant *)
+    for the resize_column_widths_to_fit variant *)
     type t = Vdom.Attr.t list * Vdom.Attr.t list
 
     (* Css_gen is really slow, so we need to re-use the results of all these functions
@@ -308,7 +318,7 @@ module Cell = struct
         with type t = column_id
          and type comparator_witness = cmp)
       ~(themed_attrs : Themed.t)
-      ~autosize
+      ~resize_column_widths_to_fit
       ~row_height
       ~(col_widths : (column_id, Column_size.t, cmp) Map.t)
       ~(leaves : column_id Header_tree.leaf list)
@@ -321,10 +331,12 @@ module Cell = struct
           @> create ~field:"max-height" ~value:h)
       in
       let styles_by_column =
-        List.map
+        List.fold
           leaves
+          ~init:(Map.empty (module Col_cmp))
           ~f:
             (fun
+              acc
               { visible = is_visible
               ; column_id
               ; leaf_header = _
@@ -332,44 +344,46 @@ module Cell = struct
               ; resizable = _
               }
             ->
-            let visible_styles =
-              match is_visible with
-              | false -> Css_gen.display `None
-              | true -> Css_gen.empty
-            in
-            let attrs =
-              match autosize with
-              | false ->
-                let width_styles =
-                  (* We use the previous width even when hidden, so that the rendering engine has
+            match Map.find acc column_id with
+            | Some _ -> acc
+            | None ->
+              let visible_styles =
+                match is_visible with
+                | false -> Css_gen.display `None
+                | true -> Css_gen.empty
+              in
+              let attrs =
+                match resize_column_widths_to_fit with
+                | false ->
+                  let width_styles =
+                    (* We use the previous width even when hidden, so that the rendering engine has
                    less work to do if re-adding a column. Columns that are not currently visible
                    are hidden via `display: None`. *)
-                  let w =
-                    match Map.find col_widths column_id with
-                    | None | Some (Hidden { prev_width_px = None }) -> "0.00px"
-                    | Some (Hidden { prev_width_px = Some width })
-                    | Some (Visible { width_px = width }) -> float_to_px_string width
+                    let w =
+                      match Map.find col_widths column_id with
+                      | None | Some (Hidden { prev_width_px = None }) -> "0.00px"
+                      | Some (Hidden { prev_width_px = Some width })
+                      | Some (Visible { width_px = width }) -> float_to_px_string width
+                    in
+                    Css_gen.(
+                      create ~field:"width" ~value:w
+                      @> create ~field:"min-width" ~value:w
+                      @> create ~field:"max-width" ~value:w)
                   in
-                  Css_gen.(
-                    create ~field:"width" ~value:w
-                    @> create ~field:"min-width" ~value:w
-                    @> create ~field:"max-width" ~value:w)
-                in
-                ( [ Vdom.Attr.style
-                      Css_gen.(height_styles @> width_styles @> visible_styles)
-                  ; themed_attrs.cell
-                  ]
-                , [] )
-              | true ->
-                let autosize_cell_styles = {%css|overflow: hidden;|} in
-                (* Height has to be applied to both the wrapper and the inner element *)
-                ( [ themed_attrs.cell; Vdom.Attr.style height_styles ]
-                , [ Vdom.Attr.style Css_gen.(visible_styles @> height_styles)
-                  ; autosize_cell_styles
-                  ] )
-            in
-            column_id, attrs)
-        |> Map.of_alist_exn (module Col_cmp)
+                  ( [ Vdom.Attr.style
+                        Css_gen.(height_styles @> width_styles @> visible_styles)
+                    ; themed_attrs.cell
+                    ]
+                  , [] )
+                | true ->
+                  let autosize_cell_styles = {%css|overflow: hidden;|} in
+                  (* Height has to be applied to both the wrapper and the inner element *)
+                  ( [ themed_attrs.cell; Vdom.Attr.style height_styles ]
+                  , [ Vdom.Attr.style Css_gen.(visible_styles @> height_styles)
+                    ; autosize_cell_styles
+                    ] )
+              in
+              Map.add_exn acc ~key:column_id ~data:attrs)
       in
       Staged.stage (fun column -> Map.find_exn styles_by_column column)
     ;;
@@ -382,7 +396,7 @@ module Cell = struct
     ~is_focused
     ~col_styles:(col_styles, wrapper_styles)
     ~on_cell_click
-    ~autosize
+    ~resize_column_widths_to_fit
     content
     =
     let focused_attr =
@@ -391,7 +405,7 @@ module Cell = struct
     let shared_attrs =
       Vdom.Attr.on_click (fun _ -> on_cell_click) :: focused_attr :: col_styles
     in
-    match autosize with
+    match resize_column_widths_to_fit with
     | false -> set_or_wrap content ~attrs:(Functional_style.cell :: shared_attrs)
     | true ->
       (* In order for the table cell to have a constrained height, we have to wrap the
@@ -415,7 +429,12 @@ module Cell = struct
       *)
       Vdom.Node.div
         ~attrs:[ themed_attrs.autosize_table_cell_wrapper; {%css|contain: strict;|} ]
-        [ Vdom.Node.div ~attrs:wrapper_styles [ set_or_wrap ~attrs:shared_attrs content ]
+        [ Vdom.Node.div
+            ~attrs:wrapper_styles
+            [ set_or_wrap
+                ~attrs:(Functional_style.autosize_wrapped_cell :: shared_attrs)
+                content
+            ]
         ]
   ;;
 end
@@ -424,13 +443,13 @@ module Row = struct
   module Styles = struct
     type t = Css_gen.t
 
-    let create ~row_height ~row_width ~autosize =
+    let create ~row_height ~row_width ~resize_column_widths_to_fit =
       let h = int_to_px_string row_height in
       let w = float_to_px_string row_width in
       let open Css_gen in
       create ~field:"height" ~value:h
       @>
-      match autosize with
+      match resize_column_widths_to_fit with
       | false -> create ~field:"width" ~value:w @> flex_container ()
       | true -> Css_gen.empty
     ;;
@@ -438,10 +457,17 @@ module Row = struct
 
   type t = Vdom.Node.t
 
-  let view (themed_attrs : Themed.t) ~styles ~is_focused ~extra_attrs ~autosize cells =
+  let view
+    (themed_attrs : Themed.t)
+    ~styles
+    ~is_focused
+    ~extra_attrs
+    ~resize_column_widths_to_fit
+    cells
+    =
     let focused_attr = if is_focused then themed_attrs.row_focused else Vdom.Attr.empty in
     let display_style =
-      if autosize
+      if resize_column_widths_to_fit
       then Vdom.Attr.style (Css_gen.create ~field:"display" ~value:"table-row")
       else Vdom.Attr.empty
     in
@@ -554,10 +580,10 @@ module Body = struct
       rows
   ;;
 
-  let view themed_attrs ~padding_top ~padding_bottom ~rows ~autosize =
+  let view themed_attrs ~padding_top ~padding_bottom ~rows ~resize_column_widths_to_fit =
     Vdom.Node.lazy_
       (lazy
-        ((match autosize with
+        ((match resize_column_widths_to_fit with
           | false -> view_impl
           | true -> table_view_impl)
            themed_attrs
@@ -572,8 +598,9 @@ module Table = struct
     (themed_attrs : Themed.t)
     ~private_body_classname
     ~vis_change_attr
-    ~total_height
-    ~autosize
+    ~header_height
+    ~rows_height
+    ~resize_column_widths_to_fit
     head
     body
     =
@@ -581,8 +608,12 @@ module Table = struct
        However, the number is accurate, and scientific notation is in spec.
        https://developer.mozilla.org/en-US/docs/Web/CSS/number *)
     let inner_container_attrs =
+      let total_height =
+        Float.of_int rows_height
+        +. if resize_column_widths_to_fit then header_height else 0.
+      in
       [ Vdom.Attr.class_ private_body_classname
-      ; Vdom.Attr.style Css_gen.(height (`Px total_height))
+      ; Vdom.Attr.style Css_gen.(height (`Px_float total_height))
         (* This attr determines where the visible client rect is for the body. If the
            structure of the elements it is placed on changes, row index/scroll position
            calculation may need to be corrected. *)
@@ -590,7 +621,7 @@ module Table = struct
       ]
     in
     let children =
-      match autosize with
+      match resize_column_widths_to_fit with
       | false ->
         [ head
         ; Vdom.Node.div

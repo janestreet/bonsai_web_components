@@ -14,18 +14,18 @@ depends: [
   "async_kernel"
   "bin_prot"
   "bonsai"
+  "bonsai_concrete"
   "bonsai_web"
   "bonsai_web_test"
   "core"
   "core_kernel"
   "expect_test_helpers_core"
   "fuzzy_match"
-  "incr_dom"
   "incr_map"
   "incremental"
   "js_of_ocaml_patches"
+  "ocaml-embed-file"
   "ordinal_abbreviation"
-  "parsexp_prefix"
   "patdiff"
   "ppx_bench"
   "ppx_css"
@@ -43,10 +43,9 @@ depends: [
   "virtual_dom"
   "virtual_dom_toplayer"
   "dune"                     {>= "3.11.0"}
-  "gen_js_api"               {>= "1.0.8"}
+  "gen_js_api"               {= "1.1.2+jst"}
   "js_of_ocaml"              {>= "5.1.1" & < "5.7.0"}
   "js_of_ocaml-ppx"          {>= "5.1.1" & < "5.7.0"}
-  "ocaml-embed-file"
   "re"                       {>= "1.8.0"}
   "uri"                      {>= "3.0.0"}
 ]

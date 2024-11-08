@@ -1,6 +1,13 @@
 open Js_of_ocaml
 open Gen_js_api
 
+module Dom_event = struct
+  type t = Dom_html.event Js.t
+
+  let t_to_js : t -> Ojs.t = Obj.magic
+  let t_of_js : Ojs.t -> t = Obj.magic
+end
+
 module Dom_html_element = struct
   type t = Dom_html.element Js.t
 

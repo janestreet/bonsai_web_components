@@ -1,6 +1,6 @@
 (library
  (name mutable_state_tracker_test)
- (libraries core bonsai_web_ui_low_level_vdom bonsai bonsai_test
+ (libraries bonsai bonsai_test bonsai_web_ui_low_level_vdom core
    virtual_dom.ui_effect)
  (preprocess
   (pps bonsai.ppx_bonsai ppx_jane)))

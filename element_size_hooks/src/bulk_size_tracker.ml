@@ -147,9 +147,10 @@ module Hook = struct
       Weak_map.delete weakmap (element :> Dom.node Js.t);
       (Lazy.force observer)##unobserve element;
       List.iter (Input.to_alist old_input) ~f:(fun (Input.Packed.T (group_key, keys)) ->
-        let tracker = Trackers.find_exn !Trackers.the_one_and_only group_key in
-        List.iter keys ~f:(fun key ->
-          Vdom.Effect.Expert.handle_non_dom_event_exn (tracker [ Remove key ])))
+        let tracker = Trackers.find !Trackers.the_one_and_only group_key in
+        Option.iter tracker ~f:(fun tracker ->
+          List.iter keys ~f:(fun key ->
+            Vdom.Effect.Expert.handle_non_dom_event_exn (tracker [ Remove key ]))))
     ;;
   end
 

@@ -34,7 +34,8 @@ let rec render_header
   ~acc
   ~column_widths
   ~set_column_width
-  ~autosize
+  ~set_column_width_for_reporting
+  ~resize_column_widths_to_fit
   =
   let recurse =
     render_header
@@ -42,10 +43,17 @@ let rec render_header
       ~level:(level + 1)
       ~column_widths
       ~set_column_width
-      ~autosize
+      ~set_column_width_for_reporting
+      ~resize_column_widths_to_fit
   in
   let recurse_no_level_change =
-    render_header ~themed_attrs ~level ~column_widths ~set_column_width ~autosize
+    render_header
+      ~themed_attrs
+      ~level
+      ~column_widths
+      ~set_column_width
+      ~set_column_width_for_reporting
+      ~resize_column_widths_to_fit
   in
   match header with
   | Header_tree.Leaf { visible; leaf_header; resizable; initial_width; column_id } ->
@@ -59,8 +67,9 @@ let rec render_header
       Table_view.Header.Header_cell.leaf_view
         themed_attrs
         ~column_width
-        ~autosize
+        ~resize_column_widths_to_fit
         ~set_column_width:(set_column_width ~column_id)
+        ~set_column_width_for_reporting:(set_column_width_for_reporting ~column_id)
         ~visible
         ~resizable
         ~label:leaf_header
@@ -72,7 +81,7 @@ let rec render_header
       Table_view.Header.Header_cell.spacer_view
         themed_attrs
         ~colspan:(Header_tree.colspan header)
-        ~autosize
+        ~resize_column_widths_to_fit
         ()
     in
     let acc = Acc.visit_non_leaf acc ~level ~node in
@@ -82,7 +91,7 @@ let rec render_header
       Table_view.Header.Header_cell.group_view
         themed_attrs
         ~colspan:(Header_tree.colspan header)
-        ~autosize
+        ~resize_column_widths_to_fit
         ~label:group_header
         ()
     in
@@ -92,7 +101,14 @@ let rec render_header
     List.fold children ~init:acc ~f:(fun acc -> recurse_no_level_change ~acc)
 ;;
 
-let render_header ~themed_attrs headers ~column_widths ~set_column_width ~autosize =
+let render_header
+  ~themed_attrs
+  headers
+  ~column_widths
+  ~set_column_width
+  ~set_column_width_for_reporting
+  ~resize_column_widths_to_fit
+  =
   headers
   |> render_header
        ~themed_attrs
@@ -100,29 +116,43 @@ let render_header ~themed_attrs headers ~column_widths ~set_column_width ~autosi
        ~level:0
        ~column_widths
        ~set_column_width
-       ~autosize
+       ~set_column_width_for_reporting
+       ~resize_column_widths_to_fit
   |> Acc.finalize ~themed_attrs
 ;;
 
 let component
   (type column_id column_id_cmp)
   ~themed_attrs
-  ~autosize
+  ~resize_column_widths_to_fit
   (headers : column_id Header_tree.t Bonsai.t)
   ~(column_widths : (column_id, Column_size.t, column_id_cmp) Map.t Bonsai.t)
   ~(set_column_width :
+      (column_id:column_id -> [< `Px_float of float ] -> unit Effect.t) Bonsai.t)
+  ~(set_column_width_for_reporting :
       (column_id:column_id -> [< `Px_float of float ] -> unit Effect.t) Bonsai.t)
   ~set_header_client_rect
   (local_ _graph)
   =
   let%arr set_column_width
+  and set_column_width_for_reporting
   and set_header_client_rect
   and headers
   and column_widths
-  and autosize
+  and resize_column_widths_to_fit
   and themed_attrs in
   let header_rows =
-    render_header headers ~themed_attrs ~set_column_width ~column_widths ~autosize
+    render_header
+      headers
+      ~themed_attrs
+      ~set_column_width
+      ~set_column_width_for_reporting
+      ~column_widths
+      ~resize_column_widths_to_fit
   in
-  Table_view.Header.view themed_attrs ~set_header_client_rect ~autosize header_rows
+  Table_view.Header.view
+    themed_attrs
+    ~set_header_client_rect
+    ~resize_column_widths_to_fit
+    header_rows
 ;;

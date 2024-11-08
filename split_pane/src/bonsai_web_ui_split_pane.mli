@@ -169,6 +169,7 @@ val create
   -> ?on_container_resize:On_container_resize.t Bonsai.t
   -> ?constraints:Constraint.t list Bonsai.t
   -> ?panel_extra_attrs:Panel_extra_attrs.t Bonsai.t
+  -> ?container_extra_attrs:Vdom.Attr.t list Bonsai.t
   -> direction:Split_dir.t Bonsai.t
   -> first_panel:Vdom.Node.t Bonsai.t
   -> second_panel:Vdom.Node.t Bonsai.t

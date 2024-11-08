@@ -151,7 +151,12 @@ module T = struct
   let init side element =
     let state = State.create ~side () in
     let on_pointer_move _ event =
-      State.set_pointer_x state (Float.of_int event##.clientX)
+      let event : Js_of_ocaml_patches.Dom_html.pointerEvent Js.t =
+        Js_of_ocaml.Js.Unsafe.coerce event
+      in
+      State.set_pointer_x
+        state
+        (event##.clientX |> Js.to_float |> Int.of_float |> Int.to_float)
     in
     let on_pointer_up _ _ =
       set_cursor "initial";
@@ -162,11 +167,14 @@ module T = struct
       State.cancel_schedule state
     in
     let on_pointer_down _ event =
+      let event : Js_of_ocaml_patches.Dom_html.pointerEvent Js.t =
+        Js_of_ocaml.Js.Unsafe.coerce event
+      in
       (* We use currentTarget to ensure it is the node we attached the event
          listener to instead of a child node *)
       let target = event##.currentTarget in
-      let clientX : int = event##.clientX in
-      State.set_last_pointer_x state (Some (Float.of_int clientX));
+      let clientX = Js.to_float event##.clientX in
+      State.set_last_pointer_x state (Some clientX);
       State.on_pointer_event ~event:Move state Dom_html.document ~f:on_pointer_move;
       State.on_pointer_event ~event:Up state Dom_html.document ~f:on_pointer_up;
       State.schedule state ~f:(fun _ -> do_update_width target state);

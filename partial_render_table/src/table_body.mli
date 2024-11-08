@@ -28,7 +28,7 @@ end
 
 val component
   :  themed_attrs:Table_view.Themed.t Bonsai.t
-  -> autosize:bool Bonsai.t
+  -> resize_column_widths_to_fit:bool Bonsai.t
   -> key_comparator:('key, 'cmp) Bonsai.comparator
   -> column_id_comparator:('column_id, 'column_id_cmp) Bonsai.comparator
   -> row_height:[< `Px of int ] Bonsai.t

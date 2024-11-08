@@ -3,20 +3,21 @@ open Bonsai_web
 
 (** A textbox with suggested results, modeled off of Chrome's address bar.
 
-    - "Enter" invokes [on_select] with the selected suggestion. If the suggestion
+    - "Enter" invokes [on_select] with the focused suggestion. If the suggestion
       list is closed, the callback is not invoked, because of course nothing is
-      selected; instead the suggestion list is opened.
+      focused; instead the suggestion list is opened.
     - "Clicking" on the suggestion list invokes [on_select].
-    - Focusing the the text input opens the suggestion list
     - "Escape" or unfocusing the text input closes the suggestion list
-    - "Tab" and "Down Arrow" move the selected item down. If the suggestion
-      list is closed, it gets opened, and the selected item is set to the top
+    - "Tab" and "Down Arrow" move the focused item down. If the suggestion
+      list is closed, it gets opened, and the focused item is set to the top
       item.
-    - "Shift-Tab" and "Up Arrow" move the selected item up. Again, if the list
-      is closed, it gets opened, but selection is sent to the bottom item.
+    - "Shift-Tab" and "Up Arrow" move the focused item up. Again, if the list
+      is closed, it gets opened, but focus is sent to the bottom item.
     - Editing the textbox content re-filters the items.
-    - Changing the selected suggestion has no effect on the textbox content,
-      since there might not be a string which exactly selects an item.
+
+    Notably, there is a difference between "selection" and "focus". Selection is an effect
+    that runs when the user clicks on an item, or presses enter. Focus is a styling
+    mechanism, allowing the user to keyboard-navigate through the suggestion list.
 
     Only [max_visible_items] are rendered at once, so even with thousands of
     suggestions, DOM updates should be very quick.
@@ -45,8 +46,33 @@ module Expand_direction : sig
   [@@deriving sexp, compare, enumerate, equal]
 end
 
+module On_focus : sig
+  type t =
+    | Focus_first_item
+    (** Focuses the the first item in the suggestion list. If [suggestion_list_kind] is
+        [Transient_overlay]  this will also cause the suggestion list to appear as soon
+        as the textbox is focused. *)
+    | Do_nothing
+    (** Do nothing until the user starts typing, or presses up/down. If
+        [suggestion_list_kind] is [Transient_overlay] the suggestion list will remain
+        hidden until the user begins typing. *)
+  [@@deriving sexp, compare, enumerate, equal]
+end
+
+module On_hover_item : sig
+  type t =
+    | Do_nothing
+    (** Do nothing when the mouse hovers over an item in the suggestion list.
+        This is the recommended behavior, since you can style hovered items with the
+        CSS `:hover` selector.  *)
+    | Focus_hovered_item
+    (** This is not recommended, because users typically do not expect hovering to change
+        application state. *)
+  [@@deriving sexp, compare, enumerate, equal]
+end
+
 type 'k t =
-  { selected_item : 'k option
+  { focused_item : 'k option
   ; view : Vdom.Node.t
   ; query : string
   ; set_query : string -> unit Effect.t
@@ -64,8 +90,14 @@ val create
        (** The value defaults to Down. Read doc comment on the type for more info. *)
   -> ?expand_direction:Expand_direction.t Bonsai.t
        (** If provided, the attributes in this value will be attached to
-      the vdom node representing the currently selected item in the list. *)
-  -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+      the vdom node representing the currently focused item in the list. *)
+  -> ?on_focus:On_focus.t Bonsai.t
+       (** The value defaults to Focus_first_item. Read doc comment on the type for more
+           info. *)
+  -> ?on_hover_item:On_hover_item.t Bonsai.t
+       (** The value defaults to [Do_nothing]. We recommend using [:hover] CSS to style
+           hovered querybox suggestions. *)
+  -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
        (** If provided, [extra_list_container_attr] will be added to the
       vdom node containing the list of suggestions. *)
   -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
@@ -76,7 +108,7 @@ val create
        (** If provided [on_blur] will be called whenever a blur triggered outside of the
       query box (including both input and item list) occurs. *)
   -> ?on_blur:unit Ui_effect.t Bonsai.t
-       (** The value defaults to [fun selected_key query -> ""], which resets the
+       (** The value defaults to [fun focused_key query -> ""], which resets the
       input box whenever the user selects an option. The text inside of the input box will
       become the result of this function. *)
   -> ?modify_input_on_select:('k -> string -> string) Bonsai.t
@@ -87,8 +119,7 @@ val create
       and it is expected that you use this to do your own filtering and
       return the filtered map. *)
   -> f:(string Bonsai.t -> local_ Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
-       (** [on_select] is called when [enter] is hit when an item is
-      selected. *)
+       (** [on_select] is called when [enter] is hit, or an item is clicked. *)
   -> on_select:('k -> unit Effect.t) Bonsai.t
   -> unit
   -> local_ Bonsai.graph
@@ -117,7 +148,9 @@ val stringable
   -> ?max_visible_items:int Bonsai.t
   -> ?suggestion_list_kind:Suggestion_list_kind.t Bonsai.t
   -> ?expand_direction:Expand_direction.t Bonsai.t
-  -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+  -> ?on_focus:On_focus.t Bonsai.t
+  -> ?on_hover_item:On_hover_item.t Bonsai.t
+  -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_attr:Vdom.Attr.t Bonsai.t

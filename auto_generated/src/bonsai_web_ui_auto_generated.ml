@@ -482,6 +482,18 @@ let form
       |> List.map ~f:Grammar_helper.Tags.strip_tags
       |> List.map ~f:(fun { name; _ } -> name)
     in
+    let sexp_dot_bool_fields =
+      let%arr fields in
+      List.filter_map fields ~f:(fun field ->
+        let field, _ = Grammar_helper.Tags.collect_and_strip_tags field in
+        match field.required with
+        | true -> None
+        | false ->
+          (match field.args with
+           | Cons _ | Many _ | Fields _ -> None
+           | Empty -> Some field.name))
+      |> String.Set.of_list
+    in
     let forms =
       let fields_by_name =
         let%arr fields in
@@ -535,7 +547,7 @@ let form
       |> Form.View.record
     in
     let set =
-      let%arr forms and allow_extra_fields in
+      let%arr forms and allow_extra_fields and sexp_dot_bool_fields in
       fun sexp ->
         let sexp_map =
           match sexp with
@@ -543,7 +555,17 @@ let form
           | List fields ->
             List.filter_map fields ~f:(function
               | List [ Atom name; value ] -> Some (name, Sexp.List [ value ])
-              | _ -> None)
+              | List [ Atom name ] when Set.mem sexp_dot_bool_fields name ->
+                Some (name, Sexp.Atom "true")
+              | ignored_sexp ->
+                eprint_s
+                  [%message
+                    "Potential BUG in sexp grammar auto-generated forms. Please report \
+                     to bonsai developers. A sub-field of a sexp is getting ignored \
+                     while calling Form.set"
+                      [%here]
+                      (ignored_sexp : Sexp.t)];
+                None)
             |> String.Map.of_alist_exn
         in
         Map.merge sexp_map forms ~f:(fun ~key -> function

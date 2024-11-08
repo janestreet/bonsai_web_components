@@ -1,0 +1,8 @@
+(library
+ (name codemirror_sexp)
+ (libraries bonsai bonsai_web_ui_codemirror codemirror
+   codemirror_incremental_sexp_grammar codemirror_sexp_kernel core iarray
+   js_of_ocaml core_kernel.nonempty_list parsexp_prefix sexp_grammar
+   sexp_grammar.completion sexp_grammar.completion_protocol)
+ (preprocess
+  (pps ppx_jane ppx_css ppx_anonymous_record)))

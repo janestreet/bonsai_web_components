@@ -1,0 +1,6 @@
+(library
+ (name bonsai_experimental_snips_test)
+ (libraries bonsai_experimental_snips bonsai_web bonsai_web_test core
+   expect_test_helpers_core.expect_test_helpers_base)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai)))

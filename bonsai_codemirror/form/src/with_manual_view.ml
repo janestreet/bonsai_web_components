@@ -43,15 +43,13 @@ struct
   ;;
 end
 
-let empty_state =
-  Codemirror.State.Editor_state.create (Codemirror.State.Editor_state_config.create ())
-;;
-
 module Basic = struct
   module Forms = Make_forms (struct
       type t = unit
 
-      let create_codemirror ~name () = Codemirror_ui.of_initial_state ~name empty_state
+      let create_codemirror ~name () =
+        Codemirror_ui.of_initial_state ~name Codemirror_initial_state.empty
+      ;;
     end)
 
   let string = Forms.string
@@ -83,7 +81,7 @@ module Dynamic_extensions = struct
           model
           ~equal
           ~name
-          ~initial_state:empty_state
+          ~initial_state:Codemirror_initial_state.empty
           ~compute_extensions
           value
       ;;
@@ -143,7 +141,7 @@ module Sexp_grammar_autocomplete = struct
       type nonrec t = t
 
       let create_codemirror ~name (T { extra_extension; sexp_grammar }) =
-        Codemirror_ui.with_sexp_grammar_autocompletion ?extra_extension ~name sexp_grammar
+        Codemirror_sexp.Autocomplete.with_extension ?extra_extension ~name sexp_grammar
       ;;
     end)
 

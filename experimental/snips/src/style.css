@@ -1,0 +1,19 @@
+@layer snips {
+  :root:has(> body > .root),
+  body:has(> .root),
+  .root {
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+  }
+
+  .root {
+    overflow:hidden;
+  }
+
+  :root:has(> body > .root),
+  body:has(> .root) {
+    overflow:clip;
+  }
+}

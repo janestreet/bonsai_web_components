@@ -9,7 +9,7 @@
     ../../codemirror_themes/src/nord.js
     ../../codemirror_themes/src/solarized-dark.js
     ../../codemirror_themes/src/solarized-light.js ./vscode.js))
- (libraries codemirror core ppx_typed_fields.typed_variants_lib
-   bonsai_web.ui_view gen_js_api js_of_ocaml)
+ (libraries bonsai_web.ui_view codemirror core gen_js_api js_of_ocaml
+   ppx_typed_fields.typed_variants_lib)
  (preprocess
-  (pps ppx_jane bonsai.ppx_bonsai ppx_typed_fields)))
+  (pps ppx_jane bonsai.ppx_bonsai)))

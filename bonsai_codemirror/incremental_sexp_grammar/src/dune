@@ -1,0 +1,6 @@
+(library
+ (name codemirror_incremental_sexp_grammar)
+ (libraries core core_kernel.nonempty_list parsexp_symbolic_automaton
+   sexp_grammar string_distance zarith)
+ (preprocess
+  (pps ppx_jane)))

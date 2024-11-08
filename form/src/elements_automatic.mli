@@ -468,12 +468,12 @@ end
 module Range : sig
   val int
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:int
-    -> ?max:int
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:int
-    -> step:int
+    -> ?min:int Bonsai.t
+    -> ?max:int Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:int Bonsai.t
+    -> step:int Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -481,12 +481,12 @@ module Range : sig
 
   val float
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?min:float
-    -> ?max:float
-    -> ?left_label:Vdom.Node.t
-    -> ?right_label:Vdom.Node.t
-    -> ?default:float
-    -> step:float
+    -> ?min:float Bonsai.t
+    -> ?max:float Bonsai.t
+    -> ?left_label:Vdom.Node.t Bonsai.t
+    -> ?right_label:Vdom.Node.t Bonsai.t
+    -> ?default:float Bonsai.t
+    -> step:float Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -656,10 +656,11 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
@@ -674,10 +675,11 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
@@ -691,11 +693,12 @@ module Query_box : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+         (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)
     -> all_options:'a list Bonsai.t
@@ -706,11 +709,12 @@ module Query_box : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
+    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+         (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)
     -> all_options:'a list Bonsai.t

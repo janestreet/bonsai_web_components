@@ -4,8 +4,8 @@ open Js_of_ocaml
 
 let is_browser =
   match Bonsai_web.am_running_how with
-  | `Browser | `Browser_benchmark -> true
-  | `Node | `Node_benchmark | `Node_test -> false
+  | `Browser | `Browser_test | `Browser_benchmark -> true
+  | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test -> false
 ;;
 
 let query_selector s =

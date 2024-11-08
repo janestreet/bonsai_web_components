@@ -9,7 +9,12 @@ let portals = Bonsai.Expert.Var.create String.Map.empty
 let get_portal_root () : Dom_html.element Js.t =
   match am_running_how with
   | `Browser -> Dom_html.document##.documentElement
-  | `Browser_benchmark | `Node | `Node_benchmark | `Node_test -> Js.Unsafe.obj [||]
+  | `Browser_test
+  | `Browser_benchmark
+  | `Node
+  | `Node_benchmark
+  | `Node_test
+  | `Node_jsdom_test -> Js.Unsafe.obj [||]
 ;;
 
 let apply_action_sync ~path action =

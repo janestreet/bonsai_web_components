@@ -92,10 +92,35 @@ module T = struct
                    let entry = Js.array_get entries i in
                    Js.Optdef.iter entry process
                  done;
-                 (* unobserve and immediately re-observe in order to trigger a
-                   recomputation of the intersection rect. *)
-                 observer##unobserve (element :> #Dom.node Js.t);
-                 observer##observe (element :> #Dom.node Js.t)))
+                 (* [InteractionObserver]'s callback only runs when the target element's
+                    visibility has crossed one or more thresholds. This isn't ideal for the
+                    purposes of this tracker, because the element might have moved, but
+                    the same percentage of it is still visible. Also, a set of thresholds
+                    is discrete, but we want to observe _every_ change.
+
+                    However:
+
+                    > The observer callback will always fire the first render cycle after
+                    > observe() is called, even if the observed element has not yet moved
+                    > with respect to the viewport.
+                    > --- https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe
+
+                    And so, every time the callback runs, we unobserve and reobserve the
+                    element, which means that the callback will run every frame with an
+                    up-to-date entry.
+
+                    If a DOM node is not connected to the document, `observe` seems to run
+                    immediately and synchronously, not in the next frame. As a result, we
+                    would enter into an infinite loop, crashing the tab. Therefore, we only
+                    run this [unobserve] -> [observe] hack if the node is connected. *)
+                 let dom_node : < isConnected : bool Js.t Js.readonly_prop > Js.t =
+                   Js.Unsafe.coerce element
+                 in
+                 match Js.to_bool dom_node##.isConnected with
+                 | true ->
+                   observer##unobserve (element :> #Dom.node Js.t);
+                   observer##observe (element :> #Dom.node Js.t)
+                 | false -> ()))
            (IntersectionObserver.empty_intersection_observer_options ()))
     and process entry =
       let client_rect = Bbox.of_client_rect entry##.boundingClientRect in

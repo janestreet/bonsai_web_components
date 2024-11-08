@@ -34,7 +34,7 @@ module Language = struct
     | Rust
     | Xml
     | FSharp
-  [@@deriving equal]
+  [@@deriving equal, string]
 
   let of_stream_parser lang =
     lang
@@ -404,7 +404,40 @@ module Simple_widget = struct
   ;;
 
   let destroy ~prev_input:_ ~state ~element:_ = Codemirror.View.Editor_view.destroy state
-  let to_vdom_for_testing = `Sexp_of_input
+
+  let to_vdom_for_testing =
+    `Custom
+      (fun { Input.language
+           ; line_wrapping
+           ; line_numbers
+           ; on_line_number_click
+           ; scroll_to
+           ; code
+           ; theme
+           ; extension = _
+           } ->
+        Virtual_dom.Vdom.Node.create
+          name
+          ~attrs:
+            (Virtual_dom.Vdom.Attr.create "language" (Language.to_string language)
+             :: Virtual_dom.Vdom.Attr.create
+                  "theme"
+                  (Bonsai_web_ui_view.Expert.For_codemirror.Theme.sexp_of_t theme
+                   |> Sexp.to_string_hum)
+             :: List.filter_opt
+                  [ Option.some_if
+                      line_wrapping
+                      (Virtual_dom.Vdom.Attr.bool_property "line_wrapping" true)
+                  ; Option.some_if
+                      line_numbers
+                      (Virtual_dom.Vdom.Attr.bool_property "line_numbers" true)
+                  ; Option.map on_line_number_click ~f:(fun _ ->
+                      Virtual_dom.Vdom.Attr.create "@on_line_number_click" "")
+                  ; Option.map scroll_to ~f:(fun scroll_to ->
+                      Virtual_dom.Vdom.Attr.create "scroll_to" (Int.to_string scroll_to))
+                  ])
+          [ Virtual_dom.Vdom.Node.text code ])
+  ;;
 end
 
 let create = unstage (Virtual_dom.Vdom.Node.widget_of_module (module Simple_widget))

@@ -32,7 +32,7 @@ module Controls = struct
     }
 
   let element_contains node other_node =
-    Js.Unsafe.meth_call node "contains" [| Js.Unsafe.inject other_node |]
+    Js.Unsafe.meth_call node "contains" [| Js.Unsafe.inject other_node |] |> Js.to_bool
   ;;
 
   let element_inert (element : Dom_html.element Js.t) =

@@ -39,7 +39,7 @@ let return_false_1 _ = false
 let rows
   (type key cmp column_id column_id_cmp kind)
   ~themed_attrs
-  ~autosize
+  ~resize_column_widths_to_fit
   ~(key_comparator : (key, cmp) Bonsai.comparator)
   ~(column_id_comparator : (column_id, column_id_cmp) Bonsai.comparator)
   ~row_height
@@ -68,22 +68,22 @@ let rows
   let col_styles =
     let%arr themed_attrs
     and (`Px row_height) = row_height
-    and autosize
+    and resize_column_widths_to_fit
     and col_widths
     and leaves in
     Table_view.Cell.Col_styles.create
       column_id_comparator
       ~themed_attrs
-      ~autosize
+      ~resize_column_widths_to_fit
       ~row_height
       ~col_widths
       ~leaves
   in
   let row_styles =
     let%arr (`Px row_height) = row_height
-    and autosize
+    and resize_column_widths_to_fit
     and row_width in
-    Table_view.Row.Styles.create ~row_height ~row_width ~autosize
+    Table_view.Row.Styles.create ~row_height ~row_width ~resize_column_widths_to_fit
   in
   let is_row_focused =
     let%arr visually_focused in
@@ -117,7 +117,7 @@ let rows
         and col_styles
         and key, cells = key_and_cells
         and themed_attrs
-        and autosize in
+        and resize_column_widths_to_fit in
         let col_styles column_id = (Staged.unstage col_styles) column_id in
         List.map cells ~f:(fun (column_id, cell) ->
           Table_view.Cell.view
@@ -125,13 +125,13 @@ let rows
             ~is_focused:(is_focused column_id)
             ~col_styles:(col_styles column_id)
             ~on_cell_click:(Effect.lazy_ (lazy (on_cell_click key column_id)))
-            ~autosize
+            ~resize_column_widths_to_fit
             cell)
       in
       let%arr themed_attrs
       and key, _ = key_and_cells
       and cells
-      and autosize
+      and resize_column_widths_to_fit
       and is_row_focused
       and row_styles
       and extra_row_attrs in
@@ -141,7 +141,7 @@ let rows
         ~extra_attrs
         ~styles:row_styles
         ~is_focused:(is_row_focused key)
-        ~autosize
+        ~resize_column_widths_to_fit
         cells)
     graph
 ;;
@@ -149,7 +149,7 @@ let rows
 let component
   (type key data cmp col col_cmp kind)
   ~themed_attrs
-  ~autosize
+  ~resize_column_widths_to_fit
   ~(key_comparator : (key, cmp) Bonsai.comparator)
   ~(column_id_comparator : (col, col_cmp) Bonsai.comparator)
   ~row_height
@@ -179,7 +179,7 @@ let component
   let rows =
     rows
       ~themed_attrs
-      ~autosize
+      ~resize_column_widths_to_fit
       ~key_comparator
       ~column_id_comparator
       ~row_height
@@ -201,9 +201,14 @@ let component
     in
     let%arr padding_top, padding_bottom = padding_top_and_bottom
     and themed_attrs
-    and autosize
+    and resize_column_widths_to_fit
     and rows in
-    Table_view.Body.view themed_attrs ~padding_top ~padding_bottom ~rows ~autosize
+    Table_view.Body.view
+      themed_attrs
+      ~padding_top
+      ~padding_bottom
+      ~rows
+      ~resize_column_widths_to_fit
   in
   let for_testing =
     let%arr cells and collated and visually_focused and headers in

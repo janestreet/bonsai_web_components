@@ -1,0 +1,5 @@
+(library
+ (name codemirror_incremental_sexp_grammar_test_tokenizer)
+ (libraries codemirror_incremental_sexp_grammar core)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai ppx_quick_test)))

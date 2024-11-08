@@ -9,6 +9,11 @@ type t
 
 val t_to_js : t -> Ojs.t
 
+(** [time_to_float] gives you a float value in the format that Dygraphs expects. This is
+    useful for computing [dateWindow] ranges for time series plots, since the range type
+    expects to have a float for low and high. *)
+val time_to_float : Time_ns.t -> float
+
 (** [create] is the right constructor when your x-values are floats. *)
 val create : float array array -> t
 
@@ -38,3 +43,13 @@ val create_time_ns_option : (Time_ns.t * float option array) array -> t
 
 val create_from_independent_series : (float * float) array array -> t
 val create_from_independent_time_series : (Time_ns.t * float) array array -> t
+
+module Expert : sig
+  val time_ns_to_js_date : Time_ns.t -> Ojs.t
+
+  (** If you understand exactly how Dygraphs represents values, you can allocate the
+      points array directly and pass it in here. This saves you from doing a full copy of
+      your data in order to convert from OCaml to JS values, and it means that you don't
+      have to allocate any intermediate arrays or tuples. *)
+  val t_of_js : Ojs.t -> t
+end

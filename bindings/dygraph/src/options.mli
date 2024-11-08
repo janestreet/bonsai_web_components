@@ -543,7 +543,7 @@ val create
       Type: number
       Default: 3.0
   *)
-  -> ?dateWindow:Range.t
+  -> ?dateWindow:Range.Spec.t
   (** dateWindow http://dygraphs.com/options.html#dateWindow
 
       Initially zoom in on a section of the graph. Is of the form [earliest, latest],

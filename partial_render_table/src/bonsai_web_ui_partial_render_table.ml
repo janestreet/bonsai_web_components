@@ -5,11 +5,14 @@ open Incr_map_collate
 open Bonsai_web_ui_partial_render_table_protocol
 module Bbox = Bonsai_web_ui_element_size_hooks.Visibility_tracker.Bbox
 module Order = Order
+module Sort_state = Sort_state
+module Sort_kind = Sort_kind
 module Sortable = Sortable
 module Focus_by_row = Focus.By_row
 module Focus_by_cell = Focus.By_cell
 module Scroll = Bonsai_web_ui_scroll_utilities
-module Indexed_column_id = Column.Indexed_column_id
+module Indexed_column_id = Old_columns.Indexed_column_id
+module Which_styling = Table_view.Which_styling
 
 module For_testing = struct
   module Table_body = Table_body.For_testing
@@ -18,6 +21,9 @@ module For_testing = struct
 end
 
 let default_preload = 70
+
+module Column_structure = New_columns.Column_structure
+module Render_cell = New_columns.Render_cell
 
 module Expert = struct
   module Focus = struct
@@ -32,18 +38,24 @@ module Expert = struct
       ; for_testing : For_testing.t Lazy.t
       ; focus : 'focus
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
+      ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
       }
     [@@deriving fields ~getters]
   end
 
+  module New_columns = struct
+    type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) Column_intf.t
+
+    include New_columns.Expert
+  end
+
   module Columns = struct
+    type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
+
     module Indexed_column_id = Indexed_column_id
-
-    type ('key, 'data, 'column) t = ('key, 'data, 'column) Column_intf.t
-
-    module Dynamic_cells = Column.Dynamic_cells
-    module Dynamic_columns = Column.Dynamic_columns
-    module Dynamic_experimental = Column.Dynamic_experimental
+    module Dynamic_cells = Old_columns.Dynamic_cells
+    module Dynamic_columns = Old_columns.Dynamic_columns
+    module Dynamic_experimental = Old_columns.Dynamic_experimental
   end
 
   module Row_height_model = struct
@@ -52,15 +64,51 @@ module Expert = struct
 
   let print_in_tests f =
     match Bonsai_web.am_running_how with
-    | `Browser | `Browser_benchmark | `Node | `Node_benchmark -> Effect.Ignore
-    | `Node_test -> Effect.of_sync_fun (fun () -> print_endline (f ())) ()
+    | `Browser | `Browser_test | `Browser_benchmark | `Node | `Node_benchmark ->
+      Effect.Ignore
+    | `Node_test | `Node_jsdom_test ->
+      Effect.of_sync_fun (fun () -> print_endline (f ())) ()
+  ;;
+
+  let column_width_tracker ~sexp_of_model ~equal ~default_model graph =
+    let column_widths, set_column_width =
+      Bonsai.state_machine0
+        graph
+        ~sexp_of_model
+        ~equal
+        ~default_model
+        ~apply_action:
+          (fun
+            (_ : _ Bonsai.Apply_action_context.t) model (column_id, `Px_float width) ->
+          (* While checking for float equality is usually not a good idea,
+               this is meant to handle the specific case when a column has
+               "display:none", in which case the width will be exactly 0.0, so
+               there is no concern about float rounding errors. *)
+          Map.update model column_id ~f:(fun prev ->
+            if Float.equal width 0.0
+            then (
+              match prev with
+              | None -> Hidden { prev_width_px = None }
+              | Some (Column_size.Visible { width_px }) ->
+                Hidden { prev_width_px = Some width_px }
+              | Some (Hidden _ as prev) -> prev)
+            else (
+              let rounded = Float.round_decimal ~decimal_digits:2 width in
+              Visible { width_px = rounded })))
+    in
+    let column_widths = Bonsai.cutoff ~equal column_widths in
+    let set_column_width =
+      let%arr set_column_width in
+      fun ~column_id width -> set_column_width (column_id, width)
+    in
+    column_widths, set_column_width
   ;;
 
   let implementation
     (type column column_cmp key presence data cmp)
     ?extra_row_attrs
-    ~autosize
-    ~theming
+    ~resize_column_widths_to_fit
+    ~styling
     ~preload_rows
     (key_comparator : (key, cmp) Bonsai.comparator)
     (column_id_comparator : (column, column_cmp) Bonsai.comparator)
@@ -76,10 +124,8 @@ module Expert = struct
       | None -> Bonsai.return (fun _ -> [])
       | Some extra_row_attrs -> extra_row_attrs
     in
-    let theme = View.Theme.current graph in
     let themed_attrs =
-      let%arr theme and autosize in
-      Table_view.Themed.create ~autosize theme () theming
+      Table_view.Themed.resolve ~resize_column_widths_to_fit styling graph
     in
     let row_height =
       let%arr (`Px row_height) = row_height in
@@ -122,35 +168,29 @@ module Expert = struct
     end
     in
     let column_widths, set_column_width =
-      Bonsai.state_machine0
+      column_width_tracker
         graph
         ~sexp_of_model:[%sexp_of: Column_widths_model.t]
         ~equal:[%equal: Column_widths_model.t]
         ~default_model:(Map.empty (module Column_cmp))
-        ~apply_action:
-          (fun
-            (_ : _ Bonsai.Apply_action_context.t) model (column_id, `Px_float width) ->
-          (* While checking for float equality is usually not a good idea,
-               this is meant to handle the specific case when a column has
-               "display:none", in which case the width will be exactly 0.0, so
-               there is no concern about float rounding errors. *)
-          Map.update model column_id ~f:(fun prev ->
-            if Float.equal width 0.0
-            then (
-              match prev with
-              | None -> Hidden { prev_width_px = None }
-              | Some (Visible { width_px }) -> Hidden { prev_width_px = Some width_px }
-              | Some (Hidden _ as prev) -> prev)
-            else (
-              let rounded = Float.round_decimal ~decimal_digits:2 width in
-              Visible { width_px = rounded })))
     in
-    let column_widths =
-      Bonsai.cutoff ~equal:[%equal: Column_widths_model.t] column_widths
+    let column_widths_for_reporting, set_column_width_for_reporting =
+      (* This "for_reporting" map is kept separately so that the [resize_column_widths_to_fit] can
+         keep the primary [column_widths] value for explicitly set column widths,
+         while this tracker maintains all the currently-known sizes. *)
+      column_width_tracker
+        graph
+        ~sexp_of_model:[%sexp_of: Column_widths_model.t]
+        ~equal:[%equal: Column_widths_model.t]
+        ~default_model:(Map.empty (module Column_cmp))
     in
     let set_column_width =
-      let%arr set_column_width in
-      fun ~column_id width -> set_column_width (column_id, width)
+      let%arr set_column_width and set_column_width_for_reporting in
+      fun ~column_id size ->
+        Effect.Many
+          [ set_column_width ~column_id size
+          ; set_column_width_for_reporting ~column_id size
+          ]
     in
     let row_count = collated >>| Collated.num_filtered_rows in
     let header_height_px =
@@ -167,9 +207,9 @@ module Expert = struct
       let%arr table_body_visible_rect
       and table_body_client_rect
       and header_client_rect
-        (* We need to know about autosize because the sticky header takes up 0 height in
+        (* We need to know about resize_column_widths_to_fit because the sticky header takes up 0 height in
            the table container, so it doesn't technically occlude anything initially. *)
-      and autosize
+      and resize_column_widths_to_fit
       and header_height_px in
       fun (`Px row_height_px) ->
         let row_height_px = Float.of_int row_height_px in
@@ -187,12 +227,12 @@ module Expert = struct
             let header_offset =
               Float.min header_height_px (header_max_y -. client_body_min_y)
             in
-            match autosize with
-            (* autosize:false shifts the top of the header down in position due to the
+            match resize_column_widths_to_fit with
+            (* resize_column_widths_to_fit:false shifts the top of the header down in position due to the
                attr that calculates visible client rect being on an element that only
                contains the header *)
             | false -> header_offset, 0.
-            (* When autosize:true, the header is in the same container as the body. That
+            (* When resize_column_widths_to_fit:true, the header is in the same container as the body. That
                container is where the visible client rect attr is attached, so the client
                rect also considers the header as part of what is visible. Due to this, we
                have to subtract the header height from the bottom of the rect, as we're
@@ -218,7 +258,7 @@ module Expert = struct
       and range_without_preload
       and midpoint_of_container_x, _ = midpoint_of_container
       and table_body_selector
-      and autosize
+      and resize_column_widths_to_fit
       and (`Px row_height_px) = row_height in
       fun index ->
         let range_start, range_end =
@@ -235,15 +275,15 @@ module Expert = struct
         let row_height_px = Float.of_int row_height_px in
         let to_top =
           let header_offset =
-            match autosize with
+            match resize_column_widths_to_fit with
             (* scrolling this row to the top of the display involves
              scrolling to a pixel that is actually [header_height] _above_
              the target row. *)
-            (* autosize:false shifts the top of the header down in position due to the
+            (* resize_column_widths_to_fit:false shifts the top of the header down in position due to the
                attr that calculates visible client rect being on an element that only
                contains the header *)
             | false -> header_height_px
-            (* When autosize:true, the header is in the same container as the body. That
+            (* When resize_column_widths_to_fit:true, the header is in the same container as the body. That
                container is where the visible client rect attr is attached, so the client
                rect also considers the header as part of what is visible. Due to this, we
                have to subtract the header height from the bottom of the rect, as we're
@@ -255,8 +295,8 @@ module Expert = struct
         in
         let to_bottom =
           let header_offset =
-            match autosize with
-            (* In autosize:true, the header is in the same container as the body, so we
+            match resize_column_widths_to_fit with
+            (* In resize_column_widths_to_fit:true, the header is in the same container as the body, so we
                need to account for the headers height in row offset calculations *)
             | true -> header_height_px
             | false -> 0.
@@ -451,7 +491,7 @@ module Expert = struct
     let%sub body, body_for_testing =
       Table_body.component
         ~themed_attrs
-        ~autosize
+        ~resize_column_widths_to_fit
         ~key_comparator
         ~column_id_comparator
         ~row_height
@@ -470,9 +510,10 @@ module Expert = struct
       Table_header.component
         headers
         ~themed_attrs
-        ~autosize
+        ~resize_column_widths_to_fit
         ~column_widths
         ~set_column_width
+        ~set_column_width_for_reporting
         ~set_header_client_rect
         graph
     in
@@ -485,7 +526,7 @@ module Expert = struct
           ~visible_rect_changed:(fun visible_bounds ->
             set_table_body_visible_rect visible_bounds)
       in
-      let total_height =
+      let rows_height =
         let%arr row_count
         and (`Px row_height_px) = row_height in
         row_count * row_height_px
@@ -494,15 +535,17 @@ module Expert = struct
       and body
       and private_body_classname
       and vis_change_attr
-      and total_height
-      and autosize
+      and header_height_px
+      and rows_height
+      and resize_column_widths_to_fit
       and themed_attrs in
       Table_view.Table.view
         themed_attrs
         ~private_body_classname
         ~vis_change_attr
-        ~total_height
-        ~autosize
+        ~header_height:header_height_px
+        ~rows_height
+        ~resize_column_widths_to_fit
         head
         body
     in
@@ -519,18 +562,33 @@ module Expert = struct
       let low, high = low, Int.max low high in
       low, high
     in
-    let%arr view and range and body_for_testing and focus and set_column_width in
+    let column_widths =
+      let%arr column_widths_for_reporting in
+      lazy
+        (Map.to_alist column_widths_for_reporting
+         |> List.filter_map ~f:(function
+           | column_id, Visible { width_px }
+           | column_id, Hidden { prev_width_px = Some width_px } ->
+             Some (column_id, `Px_float width_px)
+           | _, Hidden { prev_width_px = None } -> None))
+    in
+    let%arr view
+    and range
+    and body_for_testing
+    and focus
+    and set_column_width
+    and column_widths in
     let for_testing =
       let%map.Lazy body = body_for_testing in
       { For_testing.body }
     in
-    { Result.view; range; for_testing; focus; set_column_width }
+    { Result.view; range; for_testing; focus; set_column_width; column_widths }
   ;;
 
   let component
     (type key focus presence data cmp column_id)
-    ?(theming = `Themed)
-    ?(autosize = Bonsai.return false)
+    ?(styling = Which_styling.From_theme)
+    ?(resize_column_widths_to_fit = Bonsai.return false)
     ?(preload_rows = default_preload)
     ?extra_row_attrs
     (key_comparator : (key, cmp) Bonsai.comparator)
@@ -546,9 +604,9 @@ module Expert = struct
     let assoc cells = T.instantiate_cells value key_comparator cells in
     implementation
       ?extra_row_attrs
-      ~autosize
+      ~resize_column_widths_to_fit
       ~preload_rows
-      ~theming
+      ~styling
       key_comparator
       column_id
       ~focus
@@ -568,25 +626,31 @@ module Expert = struct
     ~(order_to_compare : order -> _)
     (data : (k, v, cmp) Map.t Bonsai.t)
     (collate : (k, filter, order) Collate.t Bonsai.t)
+    (local_ graph)
     =
     let data_and_collate = Bonsai.both data collate in
-    Bonsai.Incr.compute data_and_collate ~f:(fun data_and_collate ->
-      let open Ui_incr.Let_syntax in
-      let%pattern_bind data, collate = data_and_collate in
-      Incr_map_collate.collate
-        ?operation_order
-        ~filter_equal
-        ~order_equal
-        ~filter_to_predicate
-        ~order_to_compare
-        data
-        collate
-      |> fun x ->
-      let key_rank =
-        let%map.Incremental key_rank = Incr_map_collate.key_rank x in
-        Effect.of_sync_fun key_rank
-      in
-      Incremental.both (Incr_map_collate.collated x) key_rank)
+    let%sub collated, key_rank =
+      Bonsai.Incr.compute
+        data_and_collate
+        ~f:(fun data_and_collate ->
+          let open Ui_incr.Let_syntax in
+          let%pattern_bind data, collate = data_and_collate in
+          let collate_result =
+            Incr_map_collate.collate
+              ?operation_order
+              ~filter_equal
+              ~order_equal
+              ~filter_to_predicate
+              ~order_to_compare
+              data
+              collate
+          in
+          Ui_incr.both
+            (Incr_map_collate.collated collate_result)
+            (Ui_incr.map (Incr_map_collate.key_rank collate_result) ~f:Effect.of_sync_fun))
+        graph
+    in
+    collated, key_rank
   ;;
 end
 
@@ -605,25 +669,32 @@ module Basic = struct
   end
 
   module Result = struct
-    type ('focus, 'column_id) t =
+    type ('focus, 'key, 'column_id) t =
       { view : Vdom.Node.t
       ; for_testing : For_testing.t Lazy.t
       ; focus : 'focus
       ; num_filtered_rows : int
       ; sortable_state : 'column_id Sortable.t
       ; set_column_width : column_id:'column_id -> [ `Px_float of float ] -> unit Effect.t
+      ; column_widths : ('column_id * [ `Px_float of float ]) list lazy_t
+      ; key_rank : 'key -> int option Effect.t
       }
     [@@deriving fields ~getters]
   end
 
-  module Columns = struct
-    module Indexed_column_id = Indexed_column_id
-
+  module New_columns = struct
     type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) Column_intf.with_sorter
 
-    module Dynamic_cells = Column.Dynamic_cells_with_sorter
-    module Dynamic_columns = Column.Dynamic_columns_with_sorter
-    module Dynamic_experimental = Column.Dynamic_experimental_with_sorter
+    include New_columns.Basic
+  end
+
+  module Columns = struct
+    type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
+
+    module Indexed_column_id = Indexed_column_id
+    module Dynamic_cells = Old_columns.Dynamic_cells_with_sorter
+    module Dynamic_columns = Old_columns.Dynamic_columns_with_sorter
+    module Dynamic_experimental = Old_columns.Dynamic_experimental_with_sorter
   end
 
   module Rank_range = struct
@@ -634,8 +705,8 @@ module Basic = struct
 
   let component
     : type key presence focus data cmp column_id.
-      ?theming:Table_view.Theming.t
-      -> ?autosize:bool Bonsai.t
+      ?styling:Which_styling.t
+      -> ?resize_column_widths_to_fit:bool Bonsai.t
       -> ?filter:(key:key -> data:data -> bool) Bonsai.t
       -> ?override_sort:
            (key compare -> (key * data) compare -> (key * data) compare) Bonsai.t
@@ -650,10 +721,10 @@ module Basic = struct
       -> columns:(key, data, column_id) Column_intf.with_sorter
       -> (key, data, cmp) Map.t Bonsai.t
       -> local_ Bonsai.graph
-      -> (focus, column_id) Result.t Bonsai.t
+      -> (focus, key, column_id) Result.t Bonsai.t
     =
-    fun ?(theming = `Themed)
-      ?(autosize = Bonsai.return false)
+    fun ?(styling = Which_styling.From_theme)
+      ?(resize_column_widths_to_fit = Bonsai.return false)
       ?filter
       ?override_sort
       ?default_sort
@@ -715,7 +786,7 @@ module Basic = struct
       let key_range = Collate.Which_range.All_rows in
       { Collate.filter; order; key_range; rank_range }
     in
-    let%sub collated, key_rank =
+    let collated, key_rank =
       Expert.collate
         ~filter_equal:phys_equal
         ~filter_to_predicate:Fn.id
@@ -754,8 +825,8 @@ module Basic = struct
       Expert.implementation
         ?extra_row_attrs
         ~preload_rows
-        ~theming
-        ~autosize
+        ~styling
+        ~resize_column_widths_to_fit
         key_comparator
         column_id
         ~focus
@@ -775,15 +846,19 @@ module Basic = struct
            fun (low, high) -> set_rank_range (Collate.Which_range.Between (low, high)))
         graph
     in
-    let%arr { view; for_testing; range = _; focus; set_column_width } = result
+    let%arr { view; for_testing; range = _; focus; set_column_width; column_widths } =
+      result
     and num_filtered_rows
-    and sortable_state in
+    and sortable_state
+    and key_rank in
     { Result.view
     ; for_testing
     ; focus
     ; num_filtered_rows
     ; sortable_state
     ; set_column_width
+    ; column_widths
+    ; key_rank
     }
   ;;
 end

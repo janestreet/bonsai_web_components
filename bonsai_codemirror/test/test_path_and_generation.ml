@@ -4,7 +4,7 @@ open! Bonsai_web
 open Bonsai.Let_syntax
 
 module Path_and_generation =
-  Bonsai_web_ui_codemirror.Private.For_tests.Path_and_generation
+  Bonsai_web_ui_codemirror.Private_for_tests.Path_and_generation
 
 module Action = struct
   type t =

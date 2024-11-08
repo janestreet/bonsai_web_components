@@ -5,6 +5,12 @@ module type Model = Bonsai_web.Proc.Model
 open! Bonsai_web
 open! Bonsai_web_ui_common_components
 
+module Attr_merge_behavior = struct
+  type t =
+    | Legacy_do_not_merge
+    | Merge
+end
+
 (** This provides an implementation of [inputs] with associated [datalist] element.
 
     See the full spec here:
@@ -68,6 +74,7 @@ type 'a t =
 let input
   ?(placeholder = "")
   ?(value = "")
+  ?(attr_merge_behavior = Attr_merge_behavior.Merge)
   ~set_focused
   ~extra_attrs
   ~to_string
@@ -80,41 +87,44 @@ let input
   =
   Vdom.Node.lazy_
     (lazy
-      (Vdom.Node.input
-         ~attrs:
-           [ Vdom.Attr.many_without_merge
-               (extra_attrs
-                @ [ Vdom.Attr.type_ "text"
-                  ; Vdom.Attr.create "list" id
-                  ; Vdom.Attr.placeholder placeholder
-                    (* Both Attr.value and Attr.string_property value must be set. The former only affects
+      (let attrs =
+         let attrs =
+           extra_attrs
+           @ [ Vdom.Attr.type_ "text"
+             ; Vdom.Attr.create "list" id
+             ; Vdom.Attr.placeholder placeholder
+               (* Both Attr.value and Attr.string_property value must be set. The former only affects
                      initial control state while the latter affects the control state whilst the form is
                      being used. *)
-                  ; Vdom.Attr.value value
-                  ; Vdom.Attr.on_focus (fun _ -> set_focused true)
-                  ; Vdom.Attr.on_blur (fun _ -> set_focused false)
-                  ; Vdom.Attr.string_property "value" value
-                  ; Vdom.Attr.on_input (fun _ -> on_input)
-                  ; Vdom.Attr.on_change (fun _ input ->
-                      let maybe_t =
-                        match input with
-                        | "" ->
-                          (* Since [Search.find] is substring-based, if the input is the
+             ; Vdom.Attr.value value
+             ; Vdom.Attr.on_focus (fun _ -> set_focused true)
+             ; Vdom.Attr.on_blur (fun _ -> set_focused false)
+             ; Vdom.Attr.string_property "value" value
+             ; Vdom.Attr.on_input (fun _ -> on_input)
+             ; Vdom.Attr.on_change (fun _ input ->
+                 let maybe_t =
+                   match input with
+                   | "" ->
+                     (* Since [Search.find] is substring-based, if the input is the
                              empty string, it'll match all of the options. In practice, this
                              isn't what users expect: clearing the input ought to select
                              nothing. *)
-                          None
-                        | nonempty_input ->
-                          Search.find
-                            ~to_string
-                            ~needle:nonempty_input
-                            ~haystack:all_options
-                            ~handle_unknown_option
-                      in
-                      on_change maybe_t input)
-                  ])
-           ]
-         ()))
+                     None
+                   | nonempty_input ->
+                     Search.find
+                       ~to_string
+                       ~needle:nonempty_input
+                       ~haystack:all_options
+                       ~handle_unknown_option
+                 in
+                 on_change maybe_t input)
+             ]
+         in
+         match attr_merge_behavior with
+         | Attr_merge_behavior.Legacy_do_not_merge -> Vdom.Attr.many_without_merge attrs
+         | Merge -> Vdom.Attr.many attrs
+       in
+       Vdom.Node.input ~attrs:[ attrs ] ()))
 ;;
 
 let datalist ?filter_options_by ~id ~all_options ~to_string ~to_option_description () =
@@ -140,8 +150,8 @@ let show_datalist ~focused ~show_datalist_in_test =
   then true
   else (
     match Bonsai_web.am_running_how with
-    | `Browser | `Browser_benchmark | `Node | `Node_benchmark -> false
-    | `Node_test -> show_datalist_in_test)
+    | `Browser | `Browser_test | `Browser_benchmark | `Node | `Node_benchmark -> false
+    | `Node_test | `Node_jsdom_test -> show_datalist_in_test)
 ;;
 
 let create_internal
@@ -152,6 +162,7 @@ let create_internal
   ?to_string
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
+  ?(attr_merge_behavior = Attr_merge_behavior.Merge)
   (module M : Model with type t = t)
   ~equal
   ~all_options
@@ -204,6 +215,7 @@ let create_internal
       ~on_input
       ~to_string
       ~value:current_input
+      ~attr_merge_behavior
       ()
   in
   let datalist =
@@ -247,6 +259,7 @@ let input
   ~inject_selected_options
   ~on_set_change
   ~set_focused
+  ~attr_merge_behavior
   ()
   (local_ _graph)
   =
@@ -300,6 +313,7 @@ let input
     ~on_change
     ~to_string
     ~set_focused
+    ~attr_merge_behavior
     ()
 ;;
 
@@ -312,6 +326,7 @@ let create_multi_internal
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
   ?(split = List.return)
+  ?(attr_merge_behavior = Attr_merge_behavior.Merge)
   (module M : Bonsai.Comparator
     with type comparator_witness = comparator_witness
      and type t = t)
@@ -371,6 +386,7 @@ let create_multi_internal
       ~on_set_change
       ~split
       ~set_focused
+      ~attr_merge_behavior
       ()
       graph
   in

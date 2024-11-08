@@ -357,8 +357,8 @@ module Test = struct
     ;;
 
     let default
-      ?theming
-      ?autosize
+      ?styling
+      ?resize_column_widths_to_fit
       ?(preload_rows = 0)
       ?(is_column_b_visible = Bonsai.return true)
       ?override_sort
@@ -374,8 +374,8 @@ module Test = struct
       { component =
           Table.component
             (module Int)
-            ?theming
-            ?autosize
+            ?styling
+            ?resize_column_widths_to_fit
             ~focus:(By_row { on_change = focus_changed })
             ~filter
             ?override_sort
@@ -395,8 +395,8 @@ module Test = struct
     ;;
 
     let default_cell_focus
-      ?theming
-      ?autosize
+      ?styling
+      ?resize_column_widths_to_fit
       ?(preload_rows = 0)
       ?(is_column_b_visible = Bonsai.return true)
       ?override_sort
@@ -411,8 +411,8 @@ module Test = struct
       { component =
           Table.component
             (module Int)
-            ?theming
-            ?autosize
+            ?styling
+            ?resize_column_widths_to_fit
             ~focus:(By_cell { on_change = focus_changed' })
             ~filter
             ?override_sort
@@ -431,8 +431,8 @@ module Test = struct
     ;;
 
     let default'
-      ?(theming = `Themed)
-      ?autosize
+      ?styling
+      ?resize_column_widths_to_fit
       ?(with_groups = false)
       ?(preload_rows = 0)
       ?(is_column_b_visible = true)
@@ -448,8 +448,8 @@ module Test = struct
       { component =
           Table.component
             (module Int)
-            ~theming
-            ?autosize
+            ?styling
+            ?resize_column_widths_to_fit
             ~focus:(By_row { on_change = focus_changed })
             ~filter
             ~row_height:(Bonsai.return (`Px 1))
@@ -466,7 +466,7 @@ module Test = struct
     ;;
 
     let expert_for_testing_compute_presence_and_key_rank
-      ?(theming = `Themed)
+      ?styling
       ~collate
       ~presence
       ~key_rank
@@ -475,7 +475,7 @@ module Test = struct
       _filter
       =
       let component (local_ graph) =
-        let%sub collation, actual_key_rank =
+        let collation, actual_key_rank =
           Table_expert.collate
             ~filter_equal:[%compare.equal: unit]
             ~order_equal:[%compare.equal: unit]
@@ -498,7 +498,7 @@ module Test = struct
         let key_rank = key_rank ~actual_key_rank graph in
         Table_expert.component
           (module Int)
-          ~theming
+          ?styling
           ~focus:
             (By_row
                { on_change = Bonsai.return (Fn.const Effect.Ignore)
@@ -548,23 +548,29 @@ module Test = struct
   let clear_bounds_for_handle handle ~get_vdom = set_bounds_helper handle ~get_vdom None
   let clear_bounds t = clear_bounds_for_handle t.handle ~get_vdom:t.get_vdom
 
-  let resize_column_for_handle handle ~get_vdom ~idx ~autosize ~width =
+  let resize_column_for_handle handle ~get_vdom ~idx ~resize_column_widths_to_fit ~width =
     Handle.trigger_hook
       handle
       ~get_vdom
       ~selector:
         (sprintf
            "%s[size_tracker]:nth-child(%d)"
-           (if autosize then "th" else "td")
+           (if resize_column_widths_to_fit then "th" else "td")
            (idx + 1))
       ~name:"size_tracker"
       Bonsai_web_ui_element_size_hooks.Size_tracker.For_testing.type_id
-      { Bonsai_web_ui_element_size_hooks.Size_tracker.For_testing.Dimensions.width
-      ; height = 0.0
+      { Bonsai_web_ui_element_size_hooks.Size_tracker.Dimensions.border_box =
+          { width; height = 0.0 }
+      ; content_box = { width = 0.0; height = 0.0 }
       }
   ;;
 
-  let resize_column t ~idx ~width ~autosize =
-    resize_column_for_handle t.handle ~get_vdom:t.get_vdom ~idx ~width ~autosize
+  let resize_column t ~idx ~width ~resize_column_widths_to_fit =
+    resize_column_for_handle
+      t.handle
+      ~get_vdom:t.get_vdom
+      ~idx
+      ~width
+      ~resize_column_widths_to_fit
   ;;
 end

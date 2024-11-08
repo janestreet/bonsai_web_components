@@ -226,7 +226,6 @@ function vscodeHighlightStyle(
         }, {
             tag: [_highlight.tags.comment],
             color: tokenComment,
-            fontStyle: 'italic'
         }, {
             tag: _highlight.tags.strong,
             fontWeight: 'bold',

@@ -172,8 +172,8 @@ let add_event_listener, remove_event_listener =
   let install =
     Bonsai.Effect.of_sync_fun (fun (typ, path, handler) ->
       match Bonsai_web.am_running_how with
-      | `Node_test -> print_endline "adding window event listener"
-      | `Browser | `Browser_benchmark ->
+      | `Node_test | `Node_jsdom_test -> print_endline "adding window event listener"
+      | `Browser | `Browser_test | `Browser_benchmark ->
         let listener =
           Dom_html.addEventListener Dom_html.window typ (Dom.handler handler) Js._true
         in
@@ -184,8 +184,8 @@ let add_event_listener, remove_event_listener =
   let uninstall =
     Bonsai.Effect.of_sync_fun (fun path ->
       match Bonsai_web.am_running_how with
-      | `Node_test -> print_endline "removing window event listener"
-      | `Browser | `Browser_benchmark ->
+      | `Node_test | `Node_jsdom_test -> print_endline "removing window event listener"
+      | `Browser | `Browser_test | `Browser_benchmark ->
         Map.find !active path |> Option.iter ~f:Dom_html.removeEventListener
       | `Node | `Node_benchmark -> ())
   in
@@ -256,12 +256,17 @@ let create_with_drop_position
       Vdom.Attr.many
         [ Vdom.Attr.on_pointerdown (fun event ->
             let (event
-                  : < composedPath : 'a Js.js_array Js.t Js.meth ; Dom_html.pointerEvent >
+                  : < composedPath : 'a Js.js_array Js.t Js.meth
+                    ; Js_of_ocaml_patches.Dom_html.pointerEvent >
                       Js.t)
               =
               Js.Unsafe.coerce event
             in
-            let position = { Position.x = event##.clientX; y = event##.clientY } in
+            let position =
+              { Position.x = event##.clientX |> Js.to_float |> Int.of_float
+              ; y = event##.clientY |> Js.to_float |> Int.of_float
+              }
+            in
             let bounding_rect =
               (Js.Opt.to_option event##.currentTarget |> Option.value_exn)##getBoundingClientRect
             in
@@ -309,7 +314,8 @@ let create_with_drop_position
         path_for_pointermove
         (fun (event : Dom_html.pointerEvent Js.t) ->
            let (event
-                 : < composedPath : 'a Js.js_array Js.t Js.meth ; Dom_html.pointerEvent >
+                 : < composedPath : 'a Js.js_array Js.t Js.meth
+                   ; Js_of_ocaml_patches.Dom_html.pointerEvent >
                      Js.t)
              =
              Js.Unsafe.coerce event
@@ -333,7 +339,11 @@ let create_with_drop_position
               It makes sense that client coordinates is correct because the
               dragged element itself uses fixed positioning, which is roughly
               equivalent to client coordinates.  *)
-           let position = { Position.x = event##.clientX; y = event##.clientY } in
+           let position =
+             { Position.x = event##.clientX |> Js.to_float |> Int.of_float
+             ; y = event##.clientY |> Js.to_float |> Int.of_float
+             }
+           in
            let path = Js.to_array event##composedPath |> Array.to_list in
            let target =
              List.find_map path ~f:(fun element ->

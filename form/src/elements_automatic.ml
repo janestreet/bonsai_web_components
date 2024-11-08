@@ -943,10 +943,11 @@ module Query_box = struct
     ?initial_query
     ?max_visible_items
     ?suggestion_list_kind
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
+    ?on_hover_item
     ~selection_to_string
     ~f
     ()
@@ -957,10 +958,11 @@ module Query_box = struct
          ?initial_query
          ?max_visible_items
          ?suggestion_list_kind
-         ?selected_item_attr
+         ?focused_item_attr
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
+         ?on_hover_item
          ~selection_to_string
          ~f
          ())
@@ -971,10 +973,11 @@ module Query_box = struct
     ?initial_query
     ?max_visible_items
     ?suggestion_list_kind
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
+    ?on_hover_item
     ~selection_to_string
     ~f
     ()
@@ -985,10 +988,11 @@ module Query_box = struct
          ?initial_query
          ?max_visible_items
          ?suggestion_list_kind
-         ?selected_item_attr
+         ?focused_item_attr
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
+         ?on_hover_item
          ~selection_to_string
          ~f
          ())
@@ -998,10 +1002,11 @@ module Query_box = struct
     ?extra_attrs
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     m
+    ?on_hover_item
     ~all_options
     =
     Conversion.with_extra_attrs
@@ -1010,10 +1015,11 @@ module Query_box = struct
           ~extra_attrs
           ?to_string
           ?to_option_description
-          ?selected_item_attr
+          ?focused_item_attr
           ?extra_list_container_attr
           ?handle_unknown_option
           m
+          ?on_hover_item
           ~all_options)
       extra_attrs
   ;;
@@ -1022,10 +1028,11 @@ module Query_box = struct
     ?extra_attrs
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     m
+    ?on_hover_item
     ~all_options
     =
     Conversion.with_extra_attrs
@@ -1034,10 +1041,11 @@ module Query_box = struct
           ~extra_attrs
           ?to_string
           ?to_option_description
-          ?selected_item_attr
+          ?focused_item_attr
           ?extra_list_container_attr
           ?handle_unknown_option
           m
+          ?on_hover_item
           ~all_options)
       extra_attrs
   ;;
