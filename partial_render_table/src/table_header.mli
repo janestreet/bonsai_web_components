@@ -6,7 +6,7 @@ open! Incr_map_collate
 
 val component
   :  themed_attrs:Table_view.Themed.t Bonsai.t
-  -> autosize:bool Bonsai.t
+  -> resize_column_widths_to_fit:bool Bonsai.t
   -> 'column_id Header_tree.t Bonsai.t
   -> column_widths:('column_id, Column_size.t, 'column_id_cmp) Map.t Bonsai.t
   -> set_column_width:

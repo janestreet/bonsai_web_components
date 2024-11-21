@@ -1,6 +1,13 @@
 open Js_of_ocaml
 open Gen_js_api
 
+module Dom_event : sig
+  type t = Dom_html.event Js.t
+
+  val t_to_js : t -> Ojs.t
+  val t_of_js : Ojs.t -> t
+end
+
 module Dom_html_element : sig
   type t = Dom_html.element Js.t
 

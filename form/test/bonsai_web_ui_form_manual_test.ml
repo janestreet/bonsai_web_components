@@ -3971,7 +3971,7 @@ let%expect_test "query box" =
         Map.filter_map value ~f:(fun data ->
           if String.is_prefix ~prefix:query data then Some (Vdom.Node.text data) else None))
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
       graph
   in
@@ -5235,7 +5235,7 @@ let%expect_test "query box set to value not in all_options" =
       ~all_options:(Bonsai.return [ "a"; "b" ])
       ~handle_unknown_option:(Bonsai.return (fun _ -> None))
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
   in
   let handle = Handle.create (form_result_spec [%sexp_of: string]) component in
   Handle.do_actions handle [ "c" ];
@@ -5390,7 +5390,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
       ~all_options:(Bonsai.return Data.all)
       ~to_string
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
   ;;
 
   let view_computation ?to_string () graph =
@@ -5695,7 +5695,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                print_endline "in handle_uknown_option";
                Some Data.Option_A))
           ~on_hover_item:
-            (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+            (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
           graph
       in
       let%arr form in

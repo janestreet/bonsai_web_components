@@ -72,7 +72,10 @@ let%expect_test "column visibility" =
   let test =
     Test.create
       ~should_print_styles:true
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ~is_column_b_visible ())
+      (Test.Component.default
+         ~styling:Legacy_unsafe_raw_classnames
+         ~is_column_b_visible
+         ())
   in
   Handle.recompute_view_until_stable test.handle;
   Handle.store_view test.handle;
@@ -228,7 +231,7 @@ let%expect_test "column visibility" =
 let%expect_test "stabilization of view range" =
   let test =
     Test.create
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ())
+      (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
       ~visible_range:(0, 2)
       ~should_set_bounds:false
   in
@@ -353,11 +356,11 @@ let%expect_test "resize-column" =
   let test =
     Test.create
       ~should_print_styles:true
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ())
+      (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
   in
   Handle.recompute_view_until_stable test.handle;
   Handle.store_view test.handle;
-  Test.resize_column test ~idx:0 ~width:10.0 ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:10.0 ~resize_column_widths_to_fit:false;
   Handle.recompute_view_until_stable test.handle;
   Handle.show_diff ~location_style:Separator test.handle;
   [%expect
@@ -399,7 +402,7 @@ let%expect_test "resize-column" =
         <div class="default_partial_render_table_body partial-render-table-body-"
              bounds-change=<opaque>
              style={
-               height: 3px;
+               height: 3.00px;
              }>
           <div style={ padding-top: 0px; padding-bottom: 0px; }>
             <div>
@@ -552,7 +555,7 @@ let%expect_test "big table" =
     Test.create
       ~map:big_map
       ~visible_range:(50, 50)
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ())
+      (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
   in
   Handle.recompute_view_until_stable test.handle;
   Handle.show test.handle;
@@ -737,7 +740,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
     Test.create
       ~map:big_map
       ~visible_range:(50, 50)
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ())
+      (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
   in
   Handle.recompute_view_until_stable test.handle;
   Handle.store_view test.handle;
@@ -873,9 +876,11 @@ let%expect_test "table body is not recomputed more often than necessary" =
      it causes the size_tracker hook on every column to fire. If you have a large table
      with lots of columns and lots of rows, it can be expensive to recompute the table
      body n times, once for each column. *)
-  let test = Test.create (Test.Component.default ~theming:`Legacy_don't_use_theme ()) in
+  let test =
+    Test.create (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
+  in
   Test.print_message_on_result_recomputation test;
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Handle.recompute_view test.handle;
   Test.set_bounds test ~low:0 ~high:300;
   Handle.recompute_view test.handle;
@@ -888,7 +893,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   Handle.recompute_view test.handle;
   [%expect {| |}];
   (* Re-setting a column to its existing width should not cause a re-fire *)
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Handle.recompute_view test.handle;
   [%expect {| |}];
   (* Re-setting the bounds to the same value should not cause a re-fire *)
@@ -901,7 +906,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   let test =
     Test.create (fun input _filter_var ->
       let component graph =
-        let%sub collation, key_rank =
+        let collation, key_rank =
           Table_expert.collate
             ~filter_equal:[%compare.equal: unit]
             ~order_equal:[%compare.equal: unit]
@@ -928,7 +933,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
         in
         Table_expert.component
           (module Int)
-          ~theming:`Legacy_don't_use_theme
+          ~styling:Legacy_unsafe_raw_classnames
           ~focus:
             (By_row
                { on_change = Bonsai.return (Fn.const Effect.Ignore)
@@ -951,7 +956,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   in
   Test.print_message_on_result_recomputation test;
   Handle.recompute_view test.handle;
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Test.set_bounds test ~low:0 ~high:300;
   Handle.recompute_view test.handle;
   [%expect
@@ -978,7 +983,10 @@ let%expect_test "test is browser" =
 let%expect_test "sorting legacy renderer" =
   let test =
     Test.create
-      (Test.Component.default ~theming:`Legacy_don't_use_theme ~use_legacy_header:true ())
+      (Test.Component.default
+         ~styling:Legacy_unsafe_raw_classnames
+         ~use_legacy_header:true
+         ())
   in
   Handle.recompute_view_until_stable test.handle;
   Handle.show test.handle;
@@ -1366,7 +1374,9 @@ let%expect_test "sorting legacy renderer" =
 ;;
 
 let%expect_test "sorting default renderer" =
-  let test = Test.create (Test.Component.default ~theming:`Legacy_don't_use_theme ()) in
+  let test =
+    Test.create (Test.Component.default ~styling:Legacy_unsafe_raw_classnames ())
+  in
   Handle.recompute_view_until_stable test.handle;
   Handle.show test.handle;
   [%expect
@@ -1761,7 +1771,7 @@ let%expect_test "removed columns still count toward the total table width" =
   let component =
     Table.Basic.component
       (module Int)
-      ~theming:`Legacy_don't_use_theme
+      ~styling:Legacy_unsafe_raw_classnames
       ~focus:None
       ~row_height:(Bonsai.return (`Px 20))
       ~columns:(Column.lift (Bonsai.Expert.Var.value columns_var))
@@ -1776,7 +1786,12 @@ let%expect_test "removed columns still count toward the total table width" =
       component
   in
   let resize_column ~idx ~width =
-    Shared.Test.resize_column_for_handle handle ~get_vdom ~idx ~autosize:false ~width
+    Shared.Test.resize_column_for_handle
+      handle
+      ~get_vdom
+      ~idx
+      ~resize_column_widths_to_fit:false
+      ~width
   in
   Handle.recompute_view handle;
   Handle.show handle;
@@ -1969,7 +1984,7 @@ let%expect_test "removed columns still count toward the total table width" =
   let component =
     Table.Basic.component
       (module Int)
-      ~theming:`Legacy_don't_use_theme
+      ~styling:Legacy_unsafe_raw_classnames
       ~focus:None
       ~row_height:(Bonsai.return (`Px 1))
       ~preload_rows:1

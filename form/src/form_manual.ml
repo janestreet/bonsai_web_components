@@ -308,6 +308,7 @@ module Dynamic = struct
     ~equal_result
     ?(one_at_a_time = false)
     ?debounce_ui
+    ?extend_view_with_error
     (t : (a, view) t Bonsai.t)
     ~unparse
     ~parse
@@ -372,10 +373,14 @@ module Dynamic = struct
              ~time_to_stable:(Bonsai.return time_to_stable)
              graph)
     in
-    let%arr t and validation and is_stable in
+    let%arr t
+    and validation
+    and is_stable
+    and extend_view_with_error = Bonsai.transpose_opt extend_view_with_error in
     let validating_error = Error (Error.of_string "validating...") in
     project'
       t
+      ?extend_view_with_error
       ~parse:(fun x ->
         if not is_stable
         then validating_error
@@ -393,6 +398,7 @@ module Dynamic = struct
     ~equal
     ?one_at_a_time
     ?debounce_ui
+    ?extend_view_with_error
     (t : (a, view) t Bonsai.t)
     ~f
     graph
@@ -412,6 +418,7 @@ module Dynamic = struct
       ~equal_result:equal
       ?one_at_a_time
       ?debounce_ui
+      ?extend_view_with_error
       t
       ~unparse:Fn.id
       ~parse

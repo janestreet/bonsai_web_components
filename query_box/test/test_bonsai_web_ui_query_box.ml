@@ -25,12 +25,12 @@ module Spec = struct
         ~censor_hash:true
         (Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn (get_vdom box))
     in
-    let selected_item =
-      match box.Bonsai_web_ui_query_box.selected_item with
+    let focused_item =
+      match box.Bonsai_web_ui_query_box.focused_item with
       | None -> "None"
       | Some item -> Int.to_string item
     in
-    [%string "Selected item: %{selected_item}\n\n%{html}"]
+    [%string "Focused item: %{focused_item}\n\n%{html}"]
   ;;
 end
 
@@ -51,7 +51,7 @@ let create
       ~f:(fun query _graph ->
         let%arr query in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
-      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
       ?on_blur
       ?on_focus:(Option.map on_focus ~f:Bonsai.return)
       ~on_hover_item
@@ -79,13 +79,13 @@ let%expect_test "changing text does filtering" =
   let handle =
     create
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   Handle.show handle;
   [%expect
     {|
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -98,13 +98,13 @@ let%expect_test "changing text does filtering" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -115,13 +115,13 @@ let%expect_test "changing text does filtering" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
     </div>
@@ -132,7 +132,7 @@ let%expect_test "keybindings and filtering behavior" =
   let handle =
     create
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   Handle.store_view handle;
@@ -141,13 +141,13 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -159,7 +159,7 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -174,13 +174,13 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key ArrowDown))
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -193,14 +193,14 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 1
+    Focused item: 1
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
-          <div class="selected-item"> orange </div>
+          <div class="focused-item"> orange </div>
           <div> kiwi </div>
         </div>
       </div>
@@ -212,7 +212,7 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
@@ -220,25 +220,25 @@ let%expect_test "keybindings and filtering behavior" =
         <div>
           <div> apple </div>
           <div> orange </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
     |}];
-  (* Closing and reopening the suggestion list resets what item is selected. *)
+  (* Closing and reopening the suggestion list resets what item is focused. *)
   keydown handle Escape;
   Handle.recompute_view handle;
   keydown handle Enter;
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -252,43 +252,43 @@ let%expect_test "keybindings and filtering behavior" =
     {|
     ("default prevented" (key Tab))
 
-    -|Selected item: 0
-    +|Selected item: 1
+    -|Focused item: 0
+    +|Focused item: 1
 
       <div>
         <input> </input>
         <div data-test="query-box-item-container">
           <div>
-    -|      <div class="selected-item"> apple </div>
+    -|      <div class="focused-item"> apple </div>
     -|      <div> orange </div>
     +|      <div> apple </div>
-    +|      <div class="selected-item"> orange </div>
+    +|      <div class="focused-item"> orange </div>
             <div> kiwi </div>
           </div>
         </div>
       </div>
     |}];
-  (* Filtering down to a selected item, and then removing the filter should
+  (* Filtering down to a focused item, and then removing the filter should
      have no effect on the selection, since it isn't based in the an integer
      index. *)
   input_text handle "o";
   input_text handle "";
   Handle.show_diff handle;
   [%expect {| |}];
-  (* Filtering such that the selected item gets removed should set the selected
+  (* Filtering such that the focused item gets removed should set the focused
      item to its nearest neighbor, even if the removed item comes back into the map. *)
   input_text handle "a";
   input_text handle "";
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -300,7 +300,7 @@ let%expect_test "keybindings and filtering behavior" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -315,7 +315,7 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
-    Selected item: 3
+    Focused item: 3
 
     <div>
       <input> </input>
@@ -323,7 +323,7 @@ let%expect_test "keybindings and filtering behavior" =
         <div>
           <div> orange </div>
           <div> kiwi </div>
-          <div class="selected-item"> dragon fruit </div>
+          <div class="focused-item"> dragon fruit </div>
         </div>
       </div>
     </div>
@@ -336,7 +336,7 @@ let%expect_test "keybindings and filtering behavior" =
   [%expect
     {|
     ("blur effect for" query-box)
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -354,13 +354,13 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     create
       ~items
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   Handle.show handle;
   [%expect
     {|
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -379,7 +379,7 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     {|
     ("default prevented" (key Tab))
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
@@ -387,7 +387,7 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
         <div>
           <div> ab </div>
           <div> ac </div>
-          <div class="selected-item"> de </div>
+          <div class="focused-item"> de </div>
         </div>
       </div>
     </div>
@@ -397,13 +397,13 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
   Handle.show handle;
   [%expect
     {|
-    Selected item: 1
+    Focused item: 1
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> ac </div>
+          <div class="focused-item"> ac </div>
         </div>
       </div>
     </div>
@@ -437,9 +437,9 @@ let%expect_test "partial-rendering" =
     Bonsai_web_ui_query_box.create
       (module String)
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ~on_select:(Bonsai.return (fun _ -> Effect.Ignore))
-      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
       ~max_visible_items:(Bonsai.return 4)
       ~f:(fun query _graph ->
         let%arr query in
@@ -468,7 +468,7 @@ let%expect_test "partial-rendering" =
       <input> </input>
       <div>
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> apricot </div>
           <div> avocado </div>
           <div> banana </div>
@@ -484,7 +484,7 @@ let%expect_test "partial-rendering" =
       <input> </input>
       <div>
         <div>
-          <div class="selected-item"> strawberry </div>
+          <div class="focused-item"> strawberry </div>
           <div> watermelon </div>
         </div>
       </div>
@@ -500,13 +500,13 @@ let%expect_test "partial-rendering" =
       <div>
         <div>
           <div> strawberry </div>
-          <div class="selected-item"> watermelon </div>
+          <div class="focused-item"> watermelon </div>
         </div>
       </div>
     </div>
     |}];
   input_text handle "";
-  (* Even after unfiltering the list of fruits, "watermelon" remains selected,
+  (* Even after unfiltering the list of fruits, "watermelon" remains focused,
      and the list is offset to ensure that it is visible. *)
   Handle.show handle;
   [%expect
@@ -518,7 +518,7 @@ let%expect_test "partial-rendering" =
           <div> raspberry </div>
           <div> strawberry </div>
           <div> tangerine </div>
-          <div class="selected-item"> watermelon </div>
+          <div class="focused-item"> watermelon </div>
         </div>
       </div>
     </div>
@@ -533,7 +533,7 @@ let%expect_test "partial-rendering" =
       <input> </input>
       <div>
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> apricot </div>
           <div> avocado </div>
           <div> banana </div>
@@ -554,7 +554,7 @@ let%expect_test "partial-rendering" =
           <div> raspberry </div>
           <div> strawberry </div>
           <div> tangerine </div>
-          <div class="selected-item"> watermelon </div>
+          <div class="focused-item"> watermelon </div>
         </div>
       </div>
     </div>
@@ -565,7 +565,7 @@ let%expect_test "partial-rendering" =
   keydown handle ArrowUp;
   keydown handle ArrowUp;
   keydown handle ArrowUp;
-  (* Observe that the selected item is at the top of list of completions. *)
+  (* Observe that the focused item is at the top of list of completions. *)
   Handle.show handle;
   [%expect
     {|
@@ -578,7 +578,7 @@ let%expect_test "partial-rendering" =
       <input> </input>
       <div>
         <div>
-          <div class="selected-item"> grapefruit </div>
+          <div class="focused-item"> grapefruit </div>
           <div> orange </div>
           <div> raspberry </div>
           <div> strawberry </div>
@@ -592,20 +592,20 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
   let handle =
     create
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   input_text handle "kiwi";
   Handle.show handle;
   [%expect
     {|
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
@@ -616,14 +616,14 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
           <div> orange </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
           <div> dragon fruit </div>
         </div>
       </div>
@@ -635,20 +635,20 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
   let handle =
     create
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   input_text handle "kiwi";
   Handle.show handle;
   [%expect
     {|
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
@@ -659,7 +659,7 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
@@ -667,7 +667,7 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
         <div>
           <div> apple </div>
           <div> orange </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
@@ -678,7 +678,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   let handle =
     create
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ~expand_direction:Up
       ()
   in
@@ -686,14 +686,14 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -704,12 +704,12 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 3
+    Focused item: 3
 
     <div>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> dragon fruit </div>
+          <div class="focused-item"> dragon fruit </div>
           <div> kiwi </div>
           <div> orange </div>
         </div>
@@ -722,13 +722,13 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> dragon fruit </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
           <div> orange </div>
         </div>
       </div>
@@ -740,14 +740,14 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowDown))
-    Selected item: 1
+    Focused item: 1
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> dragon fruit </div>
           <div> kiwi </div>
-          <div class="selected-item"> orange </div>
+          <div class="focused-item"> orange </div>
         </div>
       </div>
       <input> </input>
@@ -758,13 +758,13 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key Tab))
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> dragon fruit </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
           <div> orange </div>
         </div>
       </div>
@@ -776,12 +776,12 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
-    Selected item: 3
+    Focused item: 3
 
     <div>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> dragon fruit </div>
+          <div class="focused-item"> dragon fruit </div>
           <div> kiwi </div>
           <div> orange </div>
         </div>
@@ -794,14 +794,14 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
   [%expect
     {|
     ("default prevented" (key ArrowUp))
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -817,21 +817,21 @@ let%expect_test "The element containing all the items should be focusable withou
       ~on_blur:(Bonsai.return (Effect.print_s [%message "on_blur called"]))
       ~expand_direction:Up
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   focus handle;
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -842,14 +842,14 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -861,7 +861,7 @@ let%expect_test "The element containing all the items should be focusable withou
   [%expect
     {|
     "on_blur called"
-    Selected item: None
+    Focused item: None
 
     <div>
       <div data-test="query-box-item-container">
@@ -874,14 +874,14 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -892,14 +892,14 @@ let%expect_test "The element containing all the items should be focusable withou
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <div data-test="query-box-item-container">
         <div>
           <div> kiwi </div>
           <div> orange </div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
       <input> </input>
@@ -911,7 +911,7 @@ let%expect_test "The element containing all the items should be focusable withou
   [%expect
     {|
     "on_blur called"
-    Selected item: None
+    Focused item: None
 
     <div>
       <div data-test="query-box-item-container">
@@ -927,32 +927,32 @@ let%expect_test "clicking on item invokes the callback and closes the list" =
     create
       ~expand_direction:Down
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   focus handle;
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
       </div>
     </div>
     |}];
-  Handle.click_on handle ~get_vdom ~selector:".selected-item";
+  Handle.click_on handle ~get_vdom ~selector:".focused-item";
   Handle.show handle;
   [%expect
     {|
     (item 0)
-    Selected item: None
+    Focused item: None
 
     <div>
       <input> </input>
@@ -968,20 +968,20 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
     create
       ~expand_direction:Down
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   focus handle;
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -995,7 +995,7 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
   Handle.show handle;
   [%expect
     {|
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
@@ -1003,7 +1003,7 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
         <div>
           <div> apple </div>
           <div> orange </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
@@ -1015,20 +1015,20 @@ let%expect_test "mousewheel on an item selects it" =
     create
       ~expand_direction:Down
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   focus handle;
   Handle.show handle;
   [%expect
     {|
-    Selected item: 0
+    Focused item: 0
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
           <div> orange </div>
           <div> kiwi </div>
         </div>
@@ -1042,7 +1042,7 @@ let%expect_test "mousewheel on an item selects it" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 2
+    Focused item: 2
 
     <div>
       <input> </input>
@@ -1050,7 +1050,7 @@ let%expect_test "mousewheel on an item selects it" =
         <div>
           <div> apple </div>
           <div> orange </div>
-          <div class="selected-item"> kiwi </div>
+          <div class="focused-item"> kiwi </div>
         </div>
       </div>
     </div>
@@ -1063,14 +1063,14 @@ let%expect_test "mousewheel on an item selects it" =
   Handle.show handle;
   [%expect
     {|
-    Selected item: 1
+    Focused item: 1
 
     <div>
       <input> </input>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
-          <div class="selected-item"> orange </div>
+          <div class="focused-item"> orange </div>
           <div> kiwi </div>
         </div>
       </div>
@@ -1091,10 +1091,10 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
         let%arr query
         and items = Bonsai.Expert.Var.value items in
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
-      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
       ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
       graph
   in
@@ -1119,7 +1119,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
       <div data-test="query-box-item-container">
         <div>
           <div> a </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> e </div>
         </div>
       </div>
@@ -1134,7 +1134,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> e </div>
         </div>
       </div>
@@ -1149,7 +1149,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> d </div>
         </div>
       </div>
@@ -1174,10 +1174,10 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
           ~score:(fun _query _item -> 1)
           ~query_is_as_strict:(fun q ~as_ -> String.is_substring q ~substring:as_)
           ~to_result:(fun item ~key:_ ~data:_ -> Node.text item))
-      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
       ~on_select:(Bonsai.return (fun (_, item) -> Effect.print_s [%message (item : int)]))
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   in
   let handle =
@@ -1201,7 +1201,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
       <div data-test="query-box-item-container">
         <div>
           <div> a </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> e </div>
         </div>
       </div>
@@ -1216,7 +1216,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> e </div>
         </div>
       </div>
@@ -1231,7 +1231,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
-          <div class="selected-item"> c </div>
+          <div class="focused-item"> c </div>
           <div> d </div>
         </div>
       </div>
@@ -1250,10 +1250,10 @@ struct
         let%arr query in
         print_endline "Generating options...";
         Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
-      ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+      ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
       ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ()
   ;;
 
@@ -1306,7 +1306,7 @@ struct
                }>
       -|    <div> </div>
       +|    <div style={ position: absolute; }>
-      +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
+      +|      <div class="focused-item" @on_click @on_mouseenter> apple </div>
       +|      <div @on_click @on_mouseenter> orange </div>
       +|      <div @on_click @on_mouseenter> kiwi </div>
       +|    </div>
@@ -1419,7 +1419,7 @@ struct
                }>
       -|    <div> </div>
       +|    <div style={ position: absolute; }>
-      +|      <div class="selected-item" @on_click @on_mouseenter> apple </div>
+      +|      <div class="focused-item" @on_click @on_mouseenter> apple </div>
       +|      <div @on_click @on_mouseenter> orange </div>
       +|      <div @on_click @on_mouseenter> kiwi </div>
       +|    </div>
@@ -1439,11 +1439,11 @@ let%expect_test "[modify_input_on_select] field works" =
         ~f:(fun query _graph ->
           let%arr query in
           Map.filter items ~f:(String.is_prefix ~prefix:query) |> Map.map ~f:Node.text)
-        ~selected_item_attr:(Bonsai.return (Attr.class_ "selected-item"))
+        ~focused_item_attr:(Bonsai.return (Attr.class_ "focused-item"))
         ~on_select:(Bonsai.return (fun item -> Effect.print_s [%message (item : int)]))
         ~modify_input_on_select:(Bonsai.return (fun _ _ -> "oran"))
         ~on_hover_item:
-          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
         ()
         graph
     in
@@ -1465,13 +1465,13 @@ let%expect_test "[modify_input_on_select] field works" =
       <input #value="apple"> </input>
       <div data-test="query-box-item-container">
         <div>
-          <div class="selected-item"> apple </div>
+          <div class="focused-item"> apple </div>
         </div>
       </div>
     </div>
     |}];
   (* Clicking on "apple" selects it and sets the value of the input to "oran" *)
-  Handle.click_on handle ~get_vdom ~selector:".selected-item";
+  Handle.click_on handle ~get_vdom ~selector:".focused-item";
   Handle.show_diff handle;
   [%expect
     {|
@@ -1482,7 +1482,7 @@ let%expect_test "[modify_input_on_select] field works" =
     +|  <input #value="oran"> </input>
         <div data-test="query-box-item-container">
     -|    <div>
-    -|      <div class="selected-item"> apple </div>
+    -|      <div class="focused-item"> apple </div>
     -|    </div>
     +|    <div> </div>
         </div>
@@ -1498,7 +1498,7 @@ let%expect_test "[modify_input_on_select] field works" =
         <div data-test="query-box-item-container">
     -|    <div> </div>
     +|    <div>
-    +|      <div class="selected-item"> orange </div>
+    +|      <div class="focused-item"> orange </div>
     +|    </div>
         </div>
       </div>
@@ -1509,12 +1509,12 @@ let bisimulate_both_focus
   ~(f :
       Bonsai_web_ui_query_box.On_focus.t
       -> expect_diff:
-           (do_nothing:(unit -> unit) -> select_first_element:(unit -> unit) -> unit)
+           (do_nothing:(unit -> unit) -> focus_first_element:(unit -> unit) -> unit)
       -> unit)
   =
-  f Do_nothing ~expect_diff:(fun ~do_nothing ~select_first_element:_ -> do_nothing ());
-  f Select_first_item ~expect_diff:(fun ~do_nothing:_ ~select_first_element ->
-    select_first_element ())
+  f Do_nothing ~expect_diff:(fun ~do_nothing ~focus_first_element:_ -> do_nothing ());
+  f Focus_first_item ~expect_diff:(fun ~do_nothing:_ ~focus_first_element ->
+    focus_first_element ())
 ;;
 
 let%expect_test "Different on_focus_behavior" =
@@ -1523,7 +1523,7 @@ let%expect_test "Different on_focus_behavior" =
       create
         ~on_focus
         ~on_hover_item:
-          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+          (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
         ()
     in
     Handle.store_view handle;
@@ -1536,7 +1536,7 @@ let%expect_test "Different on_focus_behavior" =
         [%expect
           {|
           Attempted to focus, but nothing was focusable on-screen!
-          Selected item: None
+          Focused item: None
 
           <div>
             <input> </input>
@@ -1545,16 +1545,16 @@ let%expect_test "Different on_focus_behavior" =
             </div>
           </div>
           |}])
-      ~select_first_element:(fun () ->
+      ~focus_first_element:(fun () ->
         [%expect
           {|
-          Selected item: 0
+          Focused item: 0
 
           <div>
             <input> </input>
             <div data-test="query-box-item-container">
               <div>
-                <div class="selected-item"> apple </div>
+                <div class="focused-item"> apple </div>
                 <div> orange </div>
                 <div> kiwi </div>
               </div>
@@ -1570,37 +1570,37 @@ let%expect_test "Different on_focus_behavior" =
           {|
           ("default prevented" (key ArrowDown))
 
-          -|Selected item: None
-          +|Selected item: 0
+          -|Focused item: None
+          +|Focused item: 0
 
             <div>
               <input> </input>
               <div data-test="query-box-item-container">
           -|    <div> </div>
           +|    <div>
-          +|      <div class="selected-item"> apple </div>
+          +|      <div class="focused-item"> apple </div>
           +|      <div> orange </div>
           +|      <div> kiwi </div>
           +|    </div>
               </div>
             </div>
           |}])
-      ~select_first_element:(fun () ->
+      ~focus_first_element:(fun () ->
         [%expect
           {|
           ("default prevented" (key ArrowDown))
 
-          -|Selected item: 0
-          +|Selected item: 1
+          -|Focused item: 0
+          +|Focused item: 1
 
             <div>
               <input> </input>
               <div data-test="query-box-item-container">
                 <div>
-          -|      <div class="selected-item"> apple </div>
+          -|      <div class="focused-item"> apple </div>
           -|      <div> orange </div>
           +|      <div> apple </div>
-          +|      <div class="selected-item"> orange </div>
+          +|      <div class="focused-item"> orange </div>
                   <div> kiwi </div>
                 </div>
               </div>
@@ -1616,7 +1616,7 @@ let bisimulate_hover_behaviors
       -> unit)
   =
   f Do_nothing ~expect_diff:(fun ~do_nothing ~select_hovered_element:_ -> do_nothing ());
-  f Select_hovered_item ~expect_diff:(fun ~do_nothing:_ ~select_hovered_element ->
+  f Focus_hovered_item ~expect_diff:(fun ~do_nothing:_ ~select_hovered_element ->
     select_hovered_element ())
 ;;
 
@@ -1627,13 +1627,13 @@ let%expect_test "different on_hover_item behaviors" =
     Handle.show handle;
     [%expect
       {|
-      Selected item: 0
+      Focused item: 0
 
       <div>
         <input> </input>
         <div data-test="query-box-item-container">
           <div>
-            <div class="selected-item"> apple </div>
+            <div class="focused-item"> apple </div>
             <div> orange </div>
             <div> kiwi </div>
           </div>
@@ -1655,18 +1655,18 @@ let%expect_test "different on_hover_item behaviors" =
         (* Mousing over should select the item. *)
         [%expect
           {|
-          -|Selected item: 0
-          +|Selected item: 2
+          -|Focused item: 0
+          +|Focused item: 2
 
             <div>
               <input> </input>
               <div data-test="query-box-item-container">
                 <div>
-          -|      <div class="selected-item"> apple </div>
+          -|      <div class="focused-item"> apple </div>
           +|      <div> apple </div>
                   <div> orange </div>
           -|      <div> kiwi </div>
-          +|      <div class="selected-item"> kiwi </div>
+          +|      <div class="focused-item"> kiwi </div>
                 </div>
               </div>
             </div>
@@ -1675,4 +1675,47 @@ let%expect_test "different on_hover_item behaviors" =
         (* Mousing over should not select the item and there should be no diff. *)
         [%expect
           {| Attempted to mouse over an element, but that element is not hoverable! |}]))
+;;
+
+let%expect_test "inputting text and hitting enter immediately selects the correct item" =
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
+      ()
+  in
+  keydown handle ArrowDown;
+  Handle.show handle;
+  [%expect
+    {|
+    ("default prevented" (key ArrowDown))
+    Focused item: 0
+
+    <div>
+      <input> </input>
+      <div data-test="query-box-item-container">
+        <div>
+          <div class="focused-item"> apple </div>
+          <div> orange </div>
+          <div> kiwi </div>
+        </div>
+      </div>
+    </div>
+    |}];
+  input_text handle "kiwi";
+  keydown handle Enter;
+  Handle.show handle;
+  [%expect
+    {|
+    ("default prevented" (key Enter))
+    (item 2)
+    Focused item: None
+
+    <div>
+      <input> </input>
+      <div data-test="query-box-item-container">
+        <div> </div>
+      </div>
+    </div>
+    |}]
 ;;

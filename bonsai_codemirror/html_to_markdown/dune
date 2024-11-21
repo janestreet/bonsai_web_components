@@ -1,0 +1,6 @@
+(library
+ (name codemirror_html_to_markdown)
+ (libraries codemirror core html_to_markdown js_of_ocaml lambdasoup
+   lambda_soup_js)
+ (preprocess
+  (pps ppx_jane ppx_css js_of_ocaml-ppx)))

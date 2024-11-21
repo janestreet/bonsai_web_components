@@ -1,17 +1,22 @@
 open! Core
 open! Bonsai_web
+module Styling = Bonsai_web_ui_partial_render_table_styling
 
-module Theming : sig
+module Which_styling : sig
   type t =
-    [ `Legacy_don't_use_theme
-    | `Themed
-    ]
+    | This_one of Styling.t Bonsai.t
+    | From_theme
+    | Legacy_unsafe_raw_classnames
 end
 
 module Themed : sig
   type t
 
-  val create : ?autosize:bool -> View.Theme.t -> unit -> Theming.t -> t
+  val resolve
+    :  resize_column_widths_to_fit:bool Bonsai.t
+    -> Which_styling.t
+    -> Bonsai.graph
+    -> t Bonsai.t
 end
 
 module Header_label : sig
@@ -40,16 +45,21 @@ module Header : sig
       -> visible:bool
       -> resizable:bool
       -> label:Vdom.Node.t
-      -> autosize:bool
+      -> resize_column_widths_to_fit:bool
       -> unit
       -> t
 
-    val spacer_view : Themed.t -> colspan:int -> autosize:bool -> unit -> t
+    val spacer_view
+      :  Themed.t
+      -> colspan:int
+      -> resize_column_widths_to_fit:bool
+      -> unit
+      -> t
 
     val group_view
       :  Themed.t
       -> colspan:int
-      -> autosize:bool
+      -> resize_column_widths_to_fit:bool
       -> label:Vdom.Node.t
       -> unit
       -> t
@@ -67,7 +77,7 @@ module Header : sig
     :  Themed.t
     -> set_header_client_rect:
          (Bonsai_web_ui_element_size_hooks.Visibility_tracker.Bbox.t -> unit Ui_effect.t)
-    -> autosize:bool
+    -> resize_column_widths_to_fit:bool
     -> Header_row.t list
     -> t
 end
@@ -81,7 +91,7 @@ module Cell : sig
             with type t = 'column_id
              and type comparator_witness = 'cmp)
       -> themed_attrs:Themed.t
-      -> autosize:bool
+      -> resize_column_widths_to_fit:bool
       -> row_height:int
       -> col_widths:('column_id, Column_size.t, 'cmp) Map.t
       -> leaves:'column_id Header_tree.leaf list
@@ -95,7 +105,7 @@ module Cell : sig
     -> is_focused:bool
     -> col_styles:Col_styles.t
     -> on_cell_click:unit Effect.t
-    -> autosize:bool
+    -> resize_column_widths_to_fit:bool
     -> Vdom.Node.t
     -> t
 end
@@ -104,7 +114,11 @@ module Row : sig
   module Styles : sig
     type t
 
-    val create : row_height:int -> row_width:float -> autosize:bool -> t
+    val create
+      :  row_height:int
+      -> row_width:float
+      -> resize_column_widths_to_fit:bool
+      -> t
   end
 
   type t
@@ -114,7 +128,7 @@ module Row : sig
     -> styles:Styles.t
     -> is_focused:bool
     -> extra_attrs:Vdom.Attr.t list
-    -> autosize:bool
+    -> resize_column_widths_to_fit:bool
     -> Cell.t list
     -> t
 end
@@ -138,7 +152,7 @@ module Body : sig
     -> padding_top:int
     -> padding_bottom:int
     -> rows:(Body_row_key.t, Row.t, Body_row_key.comparator_witness) Map.t
-    -> autosize:bool
+    -> resize_column_widths_to_fit:bool
     -> t
 end
 
@@ -147,8 +161,9 @@ module Table : sig
     :  Themed.t
     -> private_body_classname:string
     -> vis_change_attr:Vdom.Attr.t
-    -> total_height:int
-    -> autosize:bool
+    -> header_height:float
+    -> rows_height:int
+    -> resize_column_widths_to_fit:bool
     -> Header.t
     -> Body.t
     -> Vdom.Node.t

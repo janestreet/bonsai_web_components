@@ -24,6 +24,7 @@ depends: [
   "incr_map"
   "incremental"
   "js_of_ocaml_patches"
+  "ocaml-embed-file"
   "ordinal_abbreviation"
   "patdiff"
   "ppx_bench"
@@ -45,7 +46,6 @@ depends: [
   "gen_js_api"               {>= "1.0.8"}
   "js_of_ocaml"              {>= "5.1.1" & < "5.7.0"}
   "js_of_ocaml-ppx"          {>= "5.1.1" & < "5.7.0"}
-  "ocaml-embed-file"
   "re"                       {>= "1.8.0"}
   "uri"                      {>= "3.0.0"}
 ]

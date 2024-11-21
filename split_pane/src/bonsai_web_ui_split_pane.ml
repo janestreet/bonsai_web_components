@@ -619,6 +619,7 @@ let create_separator ~listeners ~direction ~size ~extra_attr =
 
 let create_from_parameters
   ?(panel_extra_attrs = Bonsai.return Panel_extra_attrs.default)
+  ?(container_extra_attrs = Bonsai.return [])
   parameters
   ~first_panel
   ~second_panel
@@ -630,7 +631,7 @@ let create_from_parameters
        (only depending on inject_action) so that the tracker isn't being continuously
        recreated *)
     let%arr inject_action in
-    Size_tracker.on_change (fun ~width ~height ->
+    Size_tracker.on_change (fun { border_box = { width; height }; content_box = _ } ->
       inject_action
         (Container_resized (Container_dimensions.Fields.create ~width ~height)))
   in
@@ -639,6 +640,7 @@ let create_from_parameters
     and inject_action
     and size_change_attr
     and { Parameters.separator_size_px; direction; separator_color; _ } = parameters
+    and container_extra_attrs
     and panel_extra_attrs in
     let separator_listeners =
       if State.is_dragging state
@@ -734,7 +736,7 @@ let create_from_parameters
               [ second_panel ]
           ]
       in
-      let node = Node.div ~attrs:[ wrapper_attr ] children in
+      let node = Node.div ~attrs:([ wrapper_attr ] @ container_extra_attrs) children in
       { node
       ; inject_set_size
       ; panel_sizes = State.panel_sizes ~direction ~separator_size_px state
@@ -751,6 +753,7 @@ let create
   ?(on_container_resize = Bonsai.return Parameters.default.on_container_resize)
   ?(constraints = Bonsai.return Parameters.default.constraints)
   ?panel_extra_attrs
+  ?(container_extra_attrs = Bonsai.return [])
   ~direction
   ~first_panel
   ~second_panel
@@ -777,13 +780,21 @@ let create
     ; direction
     }
   in
-  create_from_parameters ?panel_extra_attrs parameters ~first_panel ~second_panel graph
+  create_from_parameters
+    ?panel_extra_attrs
+    ~container_extra_attrs
+    parameters
+    ~first_panel
+    ~second_panel
+    graph
 ;;
 
 module For_testing = struct
   module Parameters = Parameters
 
-  let create_from_parameters = create_from_parameters ?panel_extra_attrs:None
+  let create_from_parameters =
+    create_from_parameters ?panel_extra_attrs:None ?container_extra_attrs:None
+  ;;
 
   module Container_dimensions = Container_dimensions
   module Action = Action

@@ -6,4 +6,4 @@
    ppx_typed_fields.typed_variants_lib bonsai_concrete.ui_incr uri
    uri_parsing)
  (preprocess
-  (pps ppx_jane js_of_ocaml-ppx ppx_typed_fields)))
+  (pps ppx_jane js_of_ocaml-ppx)))

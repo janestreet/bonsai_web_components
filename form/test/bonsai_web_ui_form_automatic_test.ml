@@ -5773,7 +5773,7 @@ let%expect_test "query box" =
       (module String)
       ~selection_to_string:(Bonsai.return Fn.id)
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       ~f:(fun query _graph ->
         let%arr query and value in
         Map.filter_map value ~f:(fun data ->
@@ -7148,7 +7148,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
   let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
     Form.Elements.Query_box.single_opt
       ~on_hover_item:
-        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+        (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
       (module Data)
       ~all_options:(Bonsai.return Data.all)
       ~to_string
@@ -7562,7 +7562,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                print_endline "in handle_unknown_option";
                Some Data.Option_A))
           ~on_hover_item:
-            (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Select_hovered_item)
+            (Bonsai.return Bonsai_web_ui_query_box.On_hover_item.Focus_hovered_item)
           graph
       in
       let%arr form in

@@ -383,7 +383,7 @@ and t_to_js : t -> Ojs.t = fun (x116 : Ojs.t) -> x116
 
 let create
   :  ?axisLabelFontSize:int -> ?axisLabelWidth:int -> ?axisLineColor:Color.t
-  -> ?axisLineWidth:float -> ?axisTickSize:float -> ?dateWindow:Range.t
+  -> ?axisLineWidth:float -> ?axisTickSize:float -> ?dateWindow:Range.Spec.t
   -> ?drawAxesAtZero:bool -> ?drawAxis:bool -> ?includeZero:bool -> ?logscale:bool
   -> ?panEdgeFraction:float -> ?valueRange:Range.Spec.t -> ?xAxisHeight:int
   -> ?xRangePad:float -> ?yRangePad:float -> ?customBars:bool -> ?errorBars:bool
@@ -434,7 +434,7 @@ let create
     ?axisLineColor:(x120 : Color.t option)
     ?axisLineWidth:(x121 : float option)
     ?axisTickSize:(x122 : float option)
-    ?dateWindow:(x123 : Range.t option)
+    ?dateWindow:(x123 : Range.Spec.t option)
     ?drawAxesAtZero:(x124 : bool option)
     ?drawAxis:(x125 : bool option)
     ?includeZero:(x126 : bool option)
@@ -556,7 +556,7 @@ let create
    | Some x336 -> Ojs.set_prop_ascii x215 "axisTickSize" (Ojs.float_to_js x336)
    | None -> ());
   (match x123 with
-   | Some x335 -> Ojs.set_prop_ascii x215 "dateWindow" (Range.t_to_js x335)
+   | Some x335 -> Ojs.set_prop_ascii x215 "dateWindow" (Range.Spec.t_to_js x335)
    | None -> ());
   (match x124 with
    | Some x334 -> Ojs.set_prop_ascii x215 "drawAxesAtZero" (Ojs.bool_to_js x334)

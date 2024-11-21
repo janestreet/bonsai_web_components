@@ -373,7 +373,7 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
   let handle =
     Handle.create
       (module struct
-        type t = (unit, Indexed_column_id.t) Table.Basic.Result.t
+        type t = (unit, int, Indexed_column_id.t) Table.Basic.Result.t
         type incoming = unit
 
         let view { Table.Basic.Result.for_testing; _ } =
@@ -582,9 +582,7 @@ let%expect_test "table with col groups" =
 ;;
 
 let%expect_test "locking focus prevents moving focus" =
-  let test =
-    Test.create ~stats:false (Test.Component.default_cell_focus ~theming:`Themed ())
-  in
+  let test = Test.create ~stats:false (Test.Component.default_cell_focus ()) in
   Handle.show test.handle;
   [%expect
     {|
@@ -2899,7 +2897,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     |> Bonsai.return
   in
   let component graph =
-    let%sub collate, key_rank =
+    let collate, key_rank =
       let collate =
         let%map rank_range = Bonsai.Expert.Var.value rank_range in
         { Collate.filter = None
@@ -3856,7 +3854,7 @@ module%test [@name "dynamic columns with visibility"] _ = struct
       |> Bonsai.return
     in
     let component graph =
-      let%sub collate, _ =
+      let collate, _ =
         let collate =
           { Collate.filter = None
           ; order = Compare.Unchanged

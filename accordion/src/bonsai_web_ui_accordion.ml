@@ -15,6 +15,7 @@ let component
   ?(extra_title_attrs = Bonsai.return [])
   ?(extra_title_container_attrs = Bonsai.return [])
   ?(extra_content_attrs = Bonsai.return [])
+  ?(click_event_propagation_behavior = return `Allow)
   ~starts_open
   ~title
   ~content
@@ -31,10 +32,20 @@ let component
   let view =
     let theme = View.Theme.current graph in
     let title_attrs =
-      let%arr extra_title_attrs and toggle and theme and is_open in
+      let%arr extra_title_attrs
+      and toggle
+      and theme
+      and is_open
+      and click_event_propagation_behavior in
       let constants = View.constants theme in
       [ Style.title
-      ; Vdom.Attr.on_click (fun _ -> toggle)
+      ; Vdom.Attr.on_click (fun event ->
+          let () =
+            match click_event_propagation_behavior with
+            | `Stop -> Js_of_ocaml.Dom_html.stopPropagation event
+            | `Allow -> ()
+          in
+          toggle)
       ; (if is_open then Style.title_open else Style.title_closed)
       ; Style.Variables.set
           ~border:(Css_gen.Color.to_string_css constants.extreme_primary_border)

@@ -7,4 +7,4 @@
    patdiff.expect_test_patdiff js_of_ocaml core_kernel.nonempty_list
    virtual_dom.ui_effect)
  (preprocess
-  (pps ppx_jane js_of_ocaml-ppx ppx_typed_fields bonsai.ppx_bonsai)))
+  (pps ppx_jane js_of_ocaml-ppx bonsai.ppx_bonsai)))

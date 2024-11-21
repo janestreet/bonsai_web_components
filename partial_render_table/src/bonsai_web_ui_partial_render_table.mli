@@ -1,13 +1,22 @@
 open! Core
 open! Bonsai_web
+module Sortable = Sortable
 module Order = Bonsai_web_ui_partial_render_table_protocol.Order
-module Sort_state := Bonsai_web_ui_partial_render_table_protocol.Sort_state
-module Sort_kind := Bonsai_web_ui_partial_render_table_protocol.Sort_kind
+module Sort_state = Bonsai_web_ui_partial_render_table_protocol.Sort_state
+module Sort_kind = Bonsai_web_ui_partial_render_table_protocol.Sort_kind
+module Styling := Bonsai_web_ui_partial_render_table_styling
 
 module For_testing : sig
   module Table_body = Table_body.For_testing
 
   type t = { body : Table_body.t }
+end
+
+module Which_styling : sig
+  type t =
+    | This_one of Styling.t Bonsai.t
+    | From_theme
+    | Legacy_unsafe_raw_classnames
 end
 
 module Focus_by_row = Focus.By_row
@@ -18,6 +27,80 @@ module Indexed_column_id : sig
 
   val of_int : int -> t
   val to_int : t -> int
+end
+
+(** The first step to creating a PRT is specifying the columns.
+
+    You'll need a ['column_id] type, which is typically a hand-written variant, or a GADT
+    derived through the [typed_fields] ppx. *)
+module Column_structure : sig
+  (** A [Columns.Structure.t] defines which columns your table should have,
+      which order they should appear in, and if/how they should be grouped.
+
+      A dynamic set of columns allows your columns to change arbitrarily at
+      runtime, but will be less performant than a static set. *)
+  type 'column_id t
+
+  val flat : 'column_id list -> 'column_id t
+  val flat_dynamic : 'column_id list Bonsai.t -> 'column_id t
+
+  type 'column_id structure := 'column_id t
+
+  module Group : sig
+    type 'column_id t
+
+    val leaf : 'column_id -> 'column_id t
+    val group : label:Vdom.Node.t Bonsai.t -> 'column_id t list -> 'column_id t
+    val lift : 'column_id t list -> 'column_id structure
+  end
+
+  module Group_dynamic : sig
+    type 'column_id t
+
+    val leaf : 'column_id -> 'column_id t
+    val group : label:Vdom.Node.t -> 'column_id t list -> 'column_id t
+    val lift : 'column_id t list Bonsai.t -> 'column_id structure
+  end
+
+  (** Allows you to configure initial widths for each column.
+      Changes to the function argument won't do anything after the initial render.
+
+      If you don't care for some fields, consider using [default_initial_width]*)
+  val with_initial_widths
+    :  'column_id t
+    -> f:('column_id -> Css_gen.Length.t) Bonsai.t
+    -> 'column_id t
+
+  (** [with_is_resizable] allows you to disable users from manually resizing some columns. *)
+  val with_is_resizable : 'column_id t -> f:('column_id -> bool) Bonsai.t -> 'column_id t
+
+  (** By default, columns have a width of 50px.
+      If using auto-resizing columns, this will serve as a min width. *)
+  val default_initial_width : Css_gen.Length.t
+end
+
+module Render_cell : sig
+  (** A [Render_cell.t] specifies how the cells in your table should be rendered,
+      as a function of the column id, row key, and data.
+
+      [Pure] is 1.5-4x faster than [Stateful_rows], which is 1.5-3x faster than [Stateful_cells].
+      See: [../bench/bin/main.ml].
+
+      Table that don't need stateful components in cells should use [Pure]. Most other
+      tables should try to use [Stateful_rows] over [Stateful_cells]. *)
+  type ('key, 'data, 'column_id) t =
+    | Pure of ('column_id -> 'key -> 'data -> Vdom.Node.t) Bonsai.t
+    | Stateful_rows of
+        ('key Bonsai.t
+         -> 'data Bonsai.t
+         -> Bonsai.graph
+         -> ('column_id -> Vdom.Node.t) Bonsai.t)
+    | Stateful_cells of
+        ('column_id Bonsai.t
+         -> 'key Bonsai.t
+         -> 'data Bonsai.t
+         -> Bonsai.graph
+         -> Vdom.Node.t Bonsai.t)
 end
 
 module Basic : sig
@@ -36,7 +119,7 @@ module Basic : sig
   end
 
   module Result : sig
-    type ('focus, 'column_id) t =
+    type ('focus, 'key, 'column_id) t =
       { view : Vdom.Node.t
       ; for_testing : For_testing.t Lazy.t
       ; focus : 'focus
@@ -47,160 +130,44 @@ module Basic : sig
           width of the header. *)
       ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
       (** [column_widths] returns the widths of the columns.  For hidden columns, it will
-         use the last-known width.  The list may be empty on the first frame after the 
+         use the last-known width.  The list may be empty on the first frame after the
          table has been included in the page. *)
+      ; key_rank : 'key -> int option Effect.t
+      (** [key_rank] resolves to the index of a key after sorting + filtering,
+          if present in the table. *)
       }
     [@@deriving fields ~getters]
   end
 
-  module Columns : sig
-    (** There are a few ways to specify the columns on a partial render, table,
-        and they each have their own tradeoffs and capibilities.  You can not
-        mix-and-match column kinds.  Read the doc comments for each of the
-        submodules to learn more.  *)
-    module Indexed_column_id = Indexed_column_id
-
+  module New_columns : sig
     type ('key, 'data, 'column_id) t
-    type ('key, 'data, 'column_id) columns := ('key, 'data, 'column_id) t
 
-    module Dynamic_experimental : sig
-      module Sort_kind : sig
-        type ('key, 'data) sort := 'key * 'data -> 'key * 'data -> int
+    val build
+      :  ?sorts:
+           ('column_id Bonsai.t
+            -> Bonsai.graph
+            -> ('key, 'data) Sort_kind.t option Bonsai.t)
+      -> ('column_id, _) Bonsai.comparator
+      -> columns:'column_id Column_structure.t
+      -> render_header:
+           ('column_id Bonsai.t -> Bonsai.graph -> (Sort_state.t -> Vdom.Node.t) Bonsai.t)
+      -> render_cell:('key, 'data, 'column_id) Render_cell.t
+      -> ('key, 'data, 'column_id) t
 
-        (** A [Sort_kind.t] consists of [forward] (ascending) and [reverse] (descending)
-            sorting implementations. *)
-        type ('key, 'data) t = ('key, 'data) Sort_kind.t =
-          { forward : ('key, 'data) sort
-          ; reverse : ('key, 'data) sort
-          }
-
-        (** Most sort functions are reversible, so you can create a [t] from a
-            "forward" sort function via [reversible], or a "backward" sort function via
-            [reversible']. *)
-        val reversible : forward:('key, 'data) sort -> ('key, 'data) t
-
-        val reversible' : reverse:('key, 'data) sort -> ('key, 'data) t
-      end
-
-      val build
-        :  ?sorts:
-             ('column_id Bonsai.t
-              -> Bonsai.graph
-              -> ('key, 'data) Sort_kind.t option Bonsai.t)
-        -> ('column_id, _) Bonsai.comparator
-        -> columns:'column_id list Bonsai.t
-        -> render_header:
-             ('column_id Bonsai.t
-              -> Bonsai.graph
-              -> (Sort_state.t -> Vdom.Node.t) Bonsai.t)
-        -> render_cell:
-             ('column_id Bonsai.t
-              -> 'key Bonsai.t
-              -> 'data Bonsai.t
-              -> Bonsai.graph
-              -> Vdom.Node.t Bonsai.t)
-        -> ('key, 'data, 'column_id) columns
-
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_experimental.Sortable
-    end
-
-    module Dynamic_cells : sig
-      (** Dynamic_cells is a column-specification format with the following
-          tradeoffs:
-
-          - Pro: Each cell is it's own bonsai computation, so you can stick complex
-            components in side of them, like forms, or graphs.
-          - Con: The set of columns must be statically known ahead of time, and can
-            not be determined dynamically. *)
-
-      type ('key, 'data) t
-
-      val column
-        :  ?sort:('key * 'data -> 'key * 'data -> int) Bonsai.t
-             (** If this column is sortable, you can provide the sorting function here *)
-        -> ?sort_reversed:('key * 'data -> 'key * 'data -> int) Bonsai.t
-             (** If the column has a specialized "reverse order", you can provide it here. *)
-        -> ?initial_width:Css_gen.Length.t
-        -> ?visible:bool Bonsai.t
-             (** [visible] can be set to [false] to hide the whole column. *)
-        -> ?resizable:bool Bonsai.t
-             (** [resizable] can be set to [false] disable resizing for this column. *)
-        -> header:(Sort_state.t -> Vdom.Node.t) Bonsai.t
-             (** [header] determines the contents of the column header. *)
-        -> cell:
-             (key:'key Bonsai.t
-              -> data:'data Bonsai.t
-              -> Bonsai.graph
-              -> Vdom.Node.t Bonsai.t)
-             (** [cell] is the function determines the contents of every cell in this column. *)
-        -> unit
-        -> ('key, 'data) t
-
-      (** [group ~label children] builds a header-group that has [children] underneath it.
-          The content of header-group is set to [label] *)
-      val group : label:Vdom.Node.t Bonsai.t -> ('key, 'data) t list -> ('key, 'data) t
-
-      (** [expand ~label child] builds a header-group that has a single child underneath it. *)
-      val expand : label:Vdom.Node.t Bonsai.t -> ('key, 'data) t -> ('key, 'data) t
-
-      (** [lift] pulls a list of columns out into a column specification for use in the primary APIs  *)
-      val lift : ('key, 'data) t list -> ('key, 'data, Indexed_column_id.t) columns
-
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_cells_with_sorter.Sortable
-    end
-
-    module Dynamic_columns : sig
-      (** Dynamic_columns is a column-specification format with the
-          following tradeoffs:
-
-          - Pro: The set of columns, and how to render them can be determined
-            dynamically ([lift] takes a column list inside a Value.t)
-          - Con: Cells are computed with plain functions, and can not maintain
-            state. *)
-      type ('key, 'data) t
-
-      val column
-        :  ?sort:('key * 'data -> 'key * 'data -> int)
-             (** If this column is sortable, you can provide the sorting function here *)
-        -> ?sort_reversed:('key * 'data -> 'key * 'data -> int)
-             (** If the column has a specialized "reverse order", you can provide it here. *)
-        -> ?initial_width:Css_gen.Length.t
-        -> ?visible:bool (** [visible] can be set to [false] to hide the whole column. *)
-        -> ?resizable:bool
-             (** [resizable] can be set to [false] disable resizing for this column. *)
-        -> header:(Sort_state.t -> Vdom.Node.t)
-             (** [header] determines the contents of the column header. *)
-        -> cell:(key:'key -> data:'data -> Vdom.Node.t)
-             (** [cell] is the function determines the contents of every cell in this column. *)
-        -> unit
-        -> ('key, 'data) t
-
-      (** [group ~label children] builds a header-group that has [children] underneath it.
-          The content of header-group is set to [label] *)
-      val group : label:Vdom.Node.t -> ('key, 'data) t list -> ('key, 'data) t
-
-      (** [lift] pulls a list of columns out into a column specification for use in the primary APIs  *)
-      val lift
-        :  ('key, 'data) t list Bonsai.t
-        -> ('key, 'data, Indexed_column_id.t) columns
-
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_columns_with_sorter.Sortable
-    end
+    (** [Sortable] provides types, state, and ui helper functions to sort your table
+      data by one or more columns. *)
+    module Sortable = Sortable
   end
 
   type 'a compare := 'a -> 'a -> int
 
   (** This is the main UI component for the table content. *)
   val component
-    :  ?theming:Table_view.Theming.t
-    -> ?autosize:bool Bonsai.t
-         (** If [autosize] is [true], columns will autoresize to fit content. The
+    :  ?styling:Which_styling.t
+         (** [styling] defaults to [From_theme]. You can use [This of Styling.t] to style
+             a PRT without having to go through the theme. *)
+    -> ?resize_column_widths_to_fit:bool Bonsai.t
+         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit content. The
         [set_column_width] effect, and draggable resize UI, will only set min-width.
 
         If [false], columns can be set to any size, but will not autoresize. *)
@@ -225,18 +192,24 @@ module Basic : sig
     -> ?preload_rows:int
     -> ?extra_row_attrs:('key -> Vdom.Attr.t list) Bonsai.t
          (** [extra_row_attrs] will be added to the themed/functional attrs attached by the PRT
-        on each row. In general, theming of the PRT should be done by passing
-        [~theming:`Themed] and customizing the PRT-related attributes in the theme.
+        on each row. In general, styling of the PRT should be done through [~styling].
         However, this parameter can be used to attach attributes for testing. *)
     -> ('key, 'cmp) Bonsai.comparator
     -> focus:('focus, 'presence, 'key, 'column_id) Focus.t
     -> row_height:[ `Px of int ] Bonsai.t
          (** [row_height] is the height of every row in the table. If the row height
         is specified to be 0px or less, we instead use 1px. *)
-    -> columns:('key, 'data, 'column_id) Columns.t
+    -> columns:('key, 'data, 'column_id) New_columns.t
     -> ('key, 'data, 'cmp) Map.t Bonsai.t (** The input data for the table *)
     -> Bonsai.graph
-    -> ('focus, 'column_id) Result.t Bonsai.t
+    -> ('focus, 'key, 'column_id) Result.t Bonsai.t
+
+  (** Deprecated except for [Dynamic_cols], which may be more performant.
+      Use [New_columns] instead. *)
+  module Columns :
+    Old_columns_intf.Basic
+    with type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
+     and type Indexed_column_id.t = Indexed_column_id.t
 end
 
 module Expert : sig
@@ -291,78 +264,23 @@ module Expert : sig
     [@@deriving fields ~getters]
   end
 
-  module Columns : sig
-    module Indexed_column_id = Indexed_column_id
-
+  module New_columns : sig
     type ('key, 'data, 'column_id) t
-    type ('key, 'data, 'column_id) columns := ('key, 'data, 'column_id) t
 
-    module Dynamic_experimental : sig
-      val build
-        :  ('column_id, 'a) Bonsai.comparator
-        -> columns:'column_id list Bonsai.t
-        -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
-        -> render_cell:
-             ('column_id Bonsai.t
-              -> 'key Bonsai.t
-              -> 'data Bonsai.t
-              -> Bonsai.graph
-              -> Vdom.Node.t Bonsai.t)
-        -> ('key, 'data, 'column_id) columns
+    val build
+      :  ('column_id, _) Bonsai.comparator
+      -> columns:'column_id Column_structure.t
+      -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_cell:('key, 'data, 'column_id) Render_cell.t
+      -> ('key, 'data, 'column_id) t
 
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_experimental.Sortable
-    end
-
-    module Dynamic_cells : sig
-      type ('key, 'data) t
-
-      val column
-        :  ?initial_width:Css_gen.Length.t
-        -> ?visible:bool Bonsai.t
-        -> ?resizable:bool Bonsai.t
-        -> header:Vdom.Node.t Bonsai.t
-        -> cell:
-             (key:'key Bonsai.t
-              -> data:'data Bonsai.t
-              -> Bonsai.graph
-              -> Vdom.Node.t Bonsai.t)
-        -> unit
-        -> ('key, 'data) t
-
-      val group : label:Vdom.Node.t Bonsai.t -> ('key, 'data) t list -> ('key, 'data) t
-      val lift : ('key, 'data) t list -> ('key, 'data, Indexed_column_id.t) columns
-
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_cells.Sortable
-    end
-
-    module Dynamic_columns : sig
-      type ('key, 'data) t
-
-      val column
-        :  ?initial_width:Css_gen.Length.t
-        -> ?visible:bool
-        -> ?resizable:bool
-        -> header:Vdom.Node.t
-        -> cell:(key:'key -> data:'data -> Vdom.Node.t)
-        -> unit
-        -> ('key, 'data) t
-
-      val group : label:Vdom.Node.t -> ('key, 'data) t list -> ('key, 'data) t
-
-      val lift
-        :  ('key, 'data) t list Bonsai.t
-        -> ('key, 'data, Indexed_column_id.t) columns
-
-      (** [Sortable] provides types, state, and ui helper functions to sort your table
-          data by one or more columns. *)
-      module Sortable = Column.Dynamic_columns.Sortable
-    end
+    (** [Sortable] provides types, state, and ui helper functions to sort your table
+    data by one or more columns. *)
+    module Sortable = Sortable
   end
 
+  (** [collate] is useful for tests, and other situations where you want to use a
+      [Server_side] collated table, but you have all the data on the client. *)
   val collate
     :  ?operation_order:[ `Filter_first | `Sort_first ]
     -> filter_equal:('filter -> 'filter -> bool)
@@ -385,12 +303,12 @@ module Expert : sig
        (** A [Collate.t] is a specification for how to perform collation: it's where the
         ['filter], ['order], and rank range are defined. *)
     -> Bonsai.graph
-    -> (('k, 'v) Collated.t * ('k -> int option Effect.t)) Bonsai.t
+    -> ('k, 'v) Collated.t Bonsai.t * ('k -> int option Effect.t) Bonsai.t
 
   val component
-    :  ?theming:Table_view.Theming.t
-    -> ?autosize:bool Bonsai.t
-         (** If [autosize] is [true], columns will autoresize to fit content. The
+    :  ?styling:Which_styling.t
+    -> ?resize_column_widths_to_fit:bool Bonsai.t
+         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit content. The
         [set_column_width] effect, and draggable resize UI, will only set min-width.
 
         If [false], columns can be set to any size, but will not autoresize. *)
@@ -401,15 +319,14 @@ module Expert : sig
         benefits of partial rendering. *)
     -> ?extra_row_attrs:('key -> Vdom.Attr.t list) Bonsai.t
          (** [extra_row_attrs] will be added to the themed/functional attrs attached by the PRT
-        on each row. In general, theming of the PRT should be done by passing
-        [~theming:`Themed] and customizing the PRT-related attributes in the theme.
+        on each row. In general, styling of the PRT should be done through [~styling].
         However, this parameter can be used to attach attributes for testing. *)
     -> ('key, 'cmp) Bonsai.comparator
     -> focus:('focus, 'presence, 'key, 'column_id) Focus.t
     -> row_height:[ `Px of int ] Bonsai.t
          (** [row_height] is the height of every row in the table. If the row height
         is specified to be 0px or less, we instead use 1px. *)
-    -> columns:('key, 'row, 'column_id) Columns.t
+    -> columns:('key, 'row, 'column_id) New_columns.t
     -> ('key, 'row) Collated.t Bonsai.t
        (** The collated value is the proper input to the component.
         You can use [Expert.collate] to get a Collated.t value, or do
@@ -417,4 +334,11 @@ module Expert : sig
         library manually. *)
     -> Bonsai.graph
     -> ('focus, 'column_id) Result.t Bonsai.t
+
+  (** Deprecated except for [Dynamic_cols], which may be more performant.
+      Use [New_columns] instead. *)
+  module Columns :
+    Old_columns_intf.Expert
+    with type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
+     and type Indexed_column_id.t = Indexed_column_id.t
 end

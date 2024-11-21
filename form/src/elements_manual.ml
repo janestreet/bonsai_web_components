@@ -2067,7 +2067,7 @@ module Query_box = struct
     ?suggestion_list_kind
     ?on_focus
     ?on_hover_item
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?(extra_input_attr = Bonsai.return Vdom.Attr.empty)
     ?(extra_attr = Bonsai.return Vdom.Attr.empty)
@@ -2101,7 +2101,7 @@ module Query_box = struct
         ?suggestion_list_kind
         ?on_focus
         ?on_hover_item
-        ?selected_item_attr
+        ?focused_item_attr
         ?extra_list_container_attr
         ~extra_input_attr
         ~extra_attr
@@ -2127,7 +2127,7 @@ module Query_box = struct
     ?suggestion_list_kind
     ?on_focus
     ?on_hover_item
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?extra_input_attr
     ?extra_attr
@@ -2144,7 +2144,7 @@ module Query_box = struct
          ?suggestion_list_kind
          ?on_focus
          ?on_hover_item
-         ?selected_item_attr
+         ?focused_item_attr
          ?extra_list_container_attr
          ?extra_input_attr
          ?extra_attr
@@ -2226,7 +2226,7 @@ module Query_box = struct
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
     ~extra_attr
     ~(to_string : (a -> string) Bonsai.t)
-    ~selected_item_attr
+    ~focused_item_attr
     ~extra_list_container_attr
     ~all_options
     ~handle_unknown_option
@@ -2243,7 +2243,7 @@ module Query_box = struct
       (module M)
       ~extra_attr
       ~extra_input_attr
-      ~selected_item_attr
+      ~focused_item_attr
       ~extra_list_container_attr
       ~selection_to_string:to_string
       ~f:(fun query graph ->
@@ -2315,7 +2315,7 @@ module Query_box = struct
     ?extra_input_attr
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
@@ -2339,9 +2339,9 @@ module Query_box = struct
     in
     let to_option_description = optional_computation to_option_description graph in
     let handle_unknown_option = optional_computation handle_unknown_option graph in
-    let selected_item_attr =
+    let focused_item_attr =
       optional_computation_value_map
-        selected_item_attr
+        focused_item_attr
         ~default:Query_box_styles.selected_item
         ~f:Fn.id
         graph
@@ -2367,7 +2367,7 @@ module Query_box = struct
       (module M)
       ~extra_attr
       ~to_string
-      ~selected_item_attr
+      ~focused_item_attr
       ~extra_list_container_attr
       ~all_options
       ~handle_unknown_option
@@ -2382,7 +2382,7 @@ module Query_box = struct
     ?extra_input_attr
     ?to_string
     ?to_option_description
-    ?selected_item_attr
+    ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
     m
@@ -2397,7 +2397,7 @@ module Query_box = struct
         ?extra_input_attr
         ?to_string
         ?to_option_description
-        ?selected_item_attr
+        ?focused_item_attr
         ?extra_list_container_attr
         ?handle_unknown_option
         m

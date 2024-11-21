@@ -656,7 +656,7 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -672,7 +672,7 @@ module Query_box : sig
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -687,7 +687,7 @@ module Query_box : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
@@ -703,7 +703,7 @@ module Query_box : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)

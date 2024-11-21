@@ -2,7 +2,7 @@ open! Core
 open! Import
 open! Bonsai_web
 open! Js_of_ocaml
-module Dims = Size_tracker.For_testing.Dimensions
+module Dims = Size_tracker.Dimension
 
 module Behavior = struct
   type t =

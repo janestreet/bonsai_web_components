@@ -628,6 +628,13 @@ module View : sig
     type t = Decoration.t State.Range_set.t
   end
 
+  module Dom_event_handlers : sig
+    type t
+    type handler = Dom_event.t -> editor_view -> unit
+
+    val create : ?paste:handler -> unit -> t [@@js.builder]
+  end
+
   module Editor_view : sig
     type t = editor_view
 
@@ -644,6 +651,7 @@ module View : sig
     val has_focus : t -> bool [@@js.get]
     val destroy : t -> unit [@@js.call]
     val line_wrapping : State.Extension.t [@@js.global]
+    val dom_event_handlers : Dom_event_handlers.t -> State.Extension.t [@@js.global]
     val editable : (bool, bool) State.Facet.t [@@js.global]
     val dark_theme : (bool, bool) State.Facet.t [@@js.global]
     val decorations : (Decoration_set.t, Decoration_set.t) State.Facet.t [@@js.global]
@@ -771,6 +779,53 @@ module View : sig
   end
 
   val keymap : Key_binding.t list State.Facet.multi_out [@@js.global]
+
+  module Tooltip_view : sig
+    type t
+
+    module Offset : sig
+      type t =
+        { x : int
+        ; y : int
+        }
+    end
+
+    val create
+      :  dom:Dom_html_element.t
+      -> ?offset:Offset.t
+      -> ?overlap:bool
+      -> ?resize:bool
+      -> unit
+      -> t
+    [@@js.builder]
+
+    val t_of_js : Ojs.t -> t
+    val t_to_js : t -> Ojs.t
+  end
+
+  module Tooltip : sig
+    type t
+
+    val create
+      :  pos:int
+      -> ?end_:int
+      -> create:(view:Editor_view.t -> Tooltip_view.t)
+      -> ?above:bool
+      -> ?strict_side:bool
+      -> ?arrow:bool
+      -> unit
+      -> t
+    [@@js.builder]
+
+    val t_of_js : Ojs.t -> t
+    val t_to_js : t -> Ojs.t
+  end
+
+  module Hover_tooltip_source : sig
+    type t = view:Editor_view.t -> pos:int -> side:int -> Tooltip.t option
+  end
+
+  val hover_tooltip : source:Hover_tooltip_source.t -> State.Extension.t [@@js.global]
 end
 
 module Autocomplete : sig
@@ -786,7 +841,12 @@ module Autocomplete : sig
       -> ?info:([ `Str of string | `Dom of t -> Dom_html_element.t ][@js.union])
       -> ?type_:string
       -> ?boost:int
-      -> ?apply:string
+      -> ?apply:
+           ([ `Str of string
+            | `Fn of
+              view:View.Editor_view.t -> completion:t -> from:int -> to_:int -> unit
+            ]
+           [@js.union])
       -> unit
       -> t
     [@@js.builder]

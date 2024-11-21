@@ -221,19 +221,24 @@ module Dynamic : sig
       Bonsai.Effect_throttling.poll to make sure that only one instance of the effect
 
       [debounce_ui] can be set to a timespan.  When set, the validation status won't
-      update until the input form value has been stable for the given span of time *)
+      update until the input form value has been stable for the given span of time
+
+      [extend_view_with_error] is only called with errors that come from _this_ call *)
   val validate_via_effect
     :  ?sexp_of_model:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> ?one_at_a_time:bool
     -> ?debounce_ui:Time_ns.Span.t
+    -> ?extend_view_with_error:('view -> Error.t -> 'view) Bonsai.t
     -> ('a, 'view) t Bonsai.t
     -> f:('a -> unit Or_error.t Effect.t) Bonsai.t
     -> Bonsai.graph
     -> ('a, 'view) t Bonsai.t
 
   (** This works the same as [validate_via_effect], but keeps track of the result and
-      uses that as the value for the form. *)
+      uses that as the value for the form.
+
+      [extend_view_with_error] is only called with errors that come from _this_ call *)
   val project_via_effect
     :  ?sexp_of_input:('a -> Sexp.t)
     -> ?sexp_of_result:('b -> Sexp.t)
@@ -241,6 +246,7 @@ module Dynamic : sig
     -> equal_result:('b -> 'b -> bool)
     -> ?one_at_a_time:bool
     -> ?debounce_ui:Time_ns.Span.t
+    -> ?extend_view_with_error:('view -> Error.t -> 'view) Bonsai.t
     -> ('a, 'view) t Bonsai.t
     -> unparse:('b -> 'a)
     -> parse:('a -> 'b Or_error.t Effect.t) Bonsai.t

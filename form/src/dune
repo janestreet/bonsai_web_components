@@ -3,7 +3,7 @@
  (public_name bonsai_web_components.web_ui_form)
  (flags :standard -alert -private_bonsai_view_library)
  (preprocess
-  (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css ppx_typed_fields))
+  (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css))
  (libraries bonsai bonsai.extra bonsai_web bonsai_web_ui_common_components
    bonsai_web_ui_extendy bonsai_web_ui_file bonsai_web_ui_file_from_web_file
    bonsai_web.ui_form_view bonsai_web_ui_freeform_multiselect

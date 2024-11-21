@@ -696,7 +696,7 @@ module Query_box : sig
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
     -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
     -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -713,7 +713,7 @@ module Query_box : sig
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
     -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
     -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -730,7 +730,7 @@ module Query_box : sig
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
@@ -748,7 +748,7 @@ module Query_box : sig
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
-    -> ?selected_item_attr:Vdom.Attr.t Bonsai.t
+    -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)

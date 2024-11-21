@@ -12,4 +12,4 @@
  (libraries bonsai_web.ui_view codemirror core gen_js_api js_of_ocaml
    ppx_typed_fields.typed_variants_lib)
  (preprocess
-  (pps ppx_jane bonsai.ppx_bonsai ppx_typed_fields)))
+  (pps ppx_jane bonsai.ppx_bonsai)))

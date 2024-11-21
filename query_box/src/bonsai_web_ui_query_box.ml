@@ -7,7 +7,7 @@ module Model = struct
   type 'k suggestion_list_state =
     | Closed
     | First_item
-    | Selected of 'k
+    | Focused of 'k
   [@@deriving equal, sexp, compare]
 
   type 'k t =
@@ -50,29 +50,29 @@ end
 
 module On_focus = struct
   type t =
-    | Select_first_item
+    | Focus_first_item
     | Do_nothing
   [@@deriving sexp, compare, enumerate, equal]
 end
 
 module On_hover_item = struct
   type t =
-    | Select_hovered_item
     | Do_nothing
+    | Focus_hovered_item
   [@@deriving sexp, compare, enumerate, equal]
 end
 
 let select_key ~first_try ~then_try ~else_use =
   match first_try with
-  | Some (key, _) -> Model.Selected key
+  | Some (key, _) -> Model.Focused key
   | None ->
     (match then_try with
-     | (lazy (Some (key, _))) -> Model.Selected key
+     | (lazy (Some (key, _))) -> Model.Focused key
      | (lazy None) -> else_use)
 ;;
 
 type 'k t =
-  { selected_item : 'k option
+  { focused_item : 'k option
   ; view : Vdom.Node.t
   ; query : string
   ; set_query : string -> unit Effect.t
@@ -87,14 +87,14 @@ let create
   ?(max_visible_items = Bonsai.return 10)
   ?(suggestion_list_kind = Bonsai.return Suggestion_list_kind.Transient_overlay)
   ?(expand_direction = Bonsai.return Expand_direction.Down)
-  ?(on_focus = Bonsai.return On_focus.Select_first_item)
+  ?(on_focus = Bonsai.return On_focus.Focus_first_item)
   ?(on_hover_item = Bonsai.return On_hover_item.Do_nothing)
-  ?(selected_item_attr = Bonsai.return Attr.empty)
+  ?(focused_item_attr = Bonsai.return Attr.empty)
   ?(extra_list_container_attr = Bonsai.return Attr.empty)
   ?(extra_input_attr = Bonsai.return Attr.empty)
   ?(extra_attr = Bonsai.return Attr.empty)
   ?(on_blur = Bonsai.return (Effect.return ()))
-  ?(modify_input_on_select = Bonsai.return (fun _selected_key _query -> ""))
+  ?(modify_input_on_select = Bonsai.return (fun _focused_key _query -> ""))
   ~f
   ~on_select
   ()
@@ -128,11 +128,11 @@ let create
           action
         ->
         let suggestion_list_state =
-          (* We normalize which item is selected in case the list has changed
+          (* We normalize which item is focused in case the list has changed
                  since the last action. Normalization just means setting the
-                 selected key to the closest thing that actually exists. *)
+                 focused key to the closest thing that actually exists. *)
           match model.suggestion_list_state with
-          | Selected key ->
+          | Focused key ->
             select_key
               ~first_try:(Map.closest_key items `Less_or_equal_to key)
               ~then_try:(lazy (Map.closest_key items `Greater_or_equal_to key))
@@ -142,37 +142,37 @@ let create
         in
         let next_suggestion_list_state () =
           match suggestion_list_state with
-          | Selected key ->
+          | Focused key ->
             select_key
               ~first_try:(Map.closest_key items `Greater_than key)
               ~then_try:(lazy (Map.min_elt items))
-              ~else_use:(Selected key)
+              ~else_use:(Focused key)
           | First_item ->
             (match Map.min_elt items with
              | None -> First_item
              | Some (first_key, _) ->
                (match Map.closest_key items `Greater_than first_key with
-                | None -> Selected first_key
-                | Some (second_key, _) -> Selected second_key))
+                | None -> Focused first_key
+                | Some (second_key, _) -> Focused second_key))
           | Closed -> First_item
         in
         let prev_suggestion_list_state () =
           match model.suggestion_list_state with
-          | Selected key ->
+          | Focused key ->
             select_key
               ~first_try:(Map.closest_key items `Less_than key)
               ~then_try:(lazy (Map.max_elt items))
-              ~else_use:(Selected key)
+              ~else_use:(Focused key)
           | First_item | Closed ->
             (match Map.max_elt items with
              | None -> First_item
-             | Some (last_key, _) -> Selected last_key)
+             | Some (last_key, _) -> Focused last_key)
         in
         match action with
         | Action.Set_query query ->
           let suggestion_list_state =
             match suggestion_list_state with
-            | Selected key -> Model.Selected key
+            | Focused key -> Model.Focused key
             | First_item | Closed -> First_item
           in
           let offset = model.offset in
@@ -213,7 +213,7 @@ let create
           { model with suggestion_list_state; offset }
         | Move_to { key; offset } ->
           if Map.mem items key
-          then { model with suggestion_list_state = Selected key; offset }
+          then { model with suggestion_list_state = Focused key; offset }
           else model
         | Move_next_with_fixed_offset ->
           { model with suggestion_list_state = next_suggestion_list_state () }
@@ -229,9 +229,9 @@ let create
         let%arr model and inject and items and max_visible_items in
         model, inject, items, max_visible_items)
   in
-  let selected_key =
+  let focused_key =
     match%sub suggestion_list_state with
-    | Selected key ->
+    | Focused key ->
       let%arr key and items in
       (match Map.closest_key items `Less_or_equal_to key with
        | Some (key, _) -> Some key
@@ -247,21 +247,21 @@ let create
     | Closed -> Bonsai.return None
   in
   let items =
-    let%arr items and max_visible_items and selected_key and offset in
-    match selected_key with
-    | Some selected_key ->
+    let%arr items and max_visible_items and focused_key and offset in
+    match focused_key with
+    | Some focused_key ->
       let length = ref 0 in
       let items = ref items in
       let result = ref (Map.empty (module Key)) in
       (* We alternate between taking something larger and smaller than the
-         selected key until we have taken [max_visible_items] or have exhausted
+         focused key until we have taken [max_visible_items] or have exhausted
          the source list. This is probably not done in the most efficient
          manner, but it's O(max_visible_items * log(number_of_items)), which is
          probably acceptable if [max_visible_items] is small. *)
       let visible_items = min max_visible_items (Map.length !items) in
       let offset = min offset visible_items in
       let add_element_from_side side =
-        match Map.closest_key !items side selected_key with
+        match Map.closest_key !items side focused_key with
         | Some (key, data) ->
           result := Map.set !result ~key ~data;
           items := Map.remove !items key;
@@ -301,17 +301,17 @@ let create
         let%arr key
         and item
         and get_items
-        and selected_key
-        and selected_item_attr
+        and focused_key
+        and focused_item_attr
         and inject
         and on_select
         and query
         and modify_input_on_select
         and on_hover_item in
-        let selected_attr =
-          match selected_key with
-          | Some selected_key when Key.comparator.compare key selected_key = 0 ->
-            selected_item_attr
+        let focused_attr =
+          match focused_key with
+          | Some focused_key when Key.comparator.compare key focused_key = 0 ->
+            focused_item_attr
           | _ -> Attr.empty
         in
         let move_to_effect =
@@ -326,13 +326,13 @@ let create
         in
         let on_mouseenter =
           match on_hover_item with
-          | On_hover_item.Select_hovered_item ->
+          | On_hover_item.Focus_hovered_item ->
             Attr.on_mouseenter (fun _ -> move_to_effect)
           | Do_nothing -> Vdom.Attr.empty
         in
         let attr =
           Attr.many
-            [ selected_attr
+            [ focused_attr
             ; on_mouseenter
             ; Attr.on_click (fun _ ->
                 Effect.Many
@@ -350,7 +350,8 @@ let create
   in
   let handle_keydown =
     let%arr inject
-    and selected_key
+    and focused_key_potentially_stale = focused_key
+    and focused_key = Bonsai.peek focused_key graph
     and on_select
     and expand_direction
     and suggestion_list_state
@@ -360,8 +361,9 @@ let create
     let open Vdom in
     let open Js_of_ocaml in
     fun ev ->
-      let move_next = Effect.Many [ inject Move_next; Effect.Prevent_default ] in
-      let move_prev = Effect.Many [ inject Move_prev; Effect.Prevent_default ] in
+      let with_prevent_default effect = Effect.Many [ effect; Effect.Prevent_default ] in
+      let move_next = with_prevent_default (inject Move_next) in
+      let move_prev = with_prevent_default (inject Move_prev) in
       let up, down =
         match expand_direction with
         | Up -> move_next, move_prev
@@ -370,34 +372,49 @@ let create
       match Dom_html.Keyboard_code.of_event ev with
       | ArrowUp -> up
       | Tab when Js.to_bool ev##.shiftKey ->
-        (match selected_key with
+        (match focused_key_potentially_stale with
          | Some _ -> up
          | None -> Effect.Ignore)
       | ArrowDown -> down
       | Tab ->
-        (match selected_key with
+        (match focused_key_potentially_stale with
          | Some _ -> down
          | None -> Effect.Ignore)
       | Escape ->
         (match suggestion_list_state with
          | Closed -> blur_input
-         | First_item | Selected _ -> inject Action.Close_suggestions)
+         | First_item | Focused _ -> inject Action.Close_suggestions)
       | Enter ->
-        (match selected_key with
-         | Some key ->
-           Effect.Many
-             [ on_select key
-             ; inject (Set_query (modify_input_on_select key query))
-             ; inject Close_suggestions
-             ; Effect.Prevent_default
-             ]
-         | None -> inject Open_suggestions)
+        (* The text in the input field might have changed between the last stabilize
+           and this keydown event, so we need to force a stabilize to ensure we select
+           the correct key. *)
+        (match focused_key_potentially_stale with
+         (* NOTE: We match on the stale value so that we have the chance of being able
+            to prevent default. *)
+         | None -> inject Open_suggestions
+         | Some _ ->
+           (match%bind.Effect focused_key with
+            | Active (Some key) ->
+              Effect.Many
+                [ on_select key
+                ; inject (Set_query (modify_input_on_select key query))
+                ; inject Close_suggestions
+                ]
+            | Active None -> inject Open_suggestions
+            | Inactive ->
+              eprint_s
+                [%message
+                  "Potential BUG: bonsai_web_ui_query_box is ignoring Enter keystroke \
+                   due to inactive focused_key"
+                    [%here]];
+              Effect.Ignore)
+           |> with_prevent_default)
       | _ -> Effect.Ignore
   in
   let suggestion_container_id = Bonsai.path_id graph in
   let input_id = Bonsai.path_id graph in
   let%arr query
-  and selected_key
+  and focused_key
   and inject
   and handle_keydown
   and suggestion_list_kind
@@ -416,7 +433,7 @@ let create
   let container_position, suggestions_position, is_open =
     match suggestion_list_kind with
     | Suggestion_list_kind.Transient_overlay ->
-      let is_open = Option.is_some selected_key in
+      let is_open = Option.is_some focused_key in
       ( Attr.style (Css_gen.position `Relative)
       , Attr.style (Css_gen.position `Absolute)
       , is_open )
@@ -444,7 +461,7 @@ let create
   let on_focus =
     match on_focus with
     | Do_nothing -> Vdom.Attr.empty
-    | Select_first_item ->
+    | Focus_first_item ->
       Attr.on_focus (fun _ ->
         Effect.all_unit [ inject_initialize_suggestion_list; inject Open_suggestions ])
   in
@@ -517,7 +534,7 @@ let create
        | Up -> [ suggestions_container; input ]
        | Down -> [ input; suggestions_container ])
   in
-  { selected_item = selected_key
+  { focused_item = focused_key
   ; view
   ; query
   ; set_query = (fun query -> inject (Set_query query))
@@ -642,7 +659,7 @@ let stringable
   ?expand_direction
   ?on_focus
   ?on_hover_item
-  ?selected_item_attr
+  ?focused_item_attr
   ?extra_list_container_attr
   ?extra_input_attr
   ?extra_attr
@@ -680,7 +697,7 @@ let stringable
       ?expand_direction
       ?on_focus
       ?on_hover_item
-      ?selected_item_attr
+      ?focused_item_attr
       ?extra_list_container_attr
       ?extra_input_attr
       ?extra_attr
@@ -711,7 +728,7 @@ let stringable
         ?expand_direction
         ?on_focus
         ?on_hover_item
-        ?selected_item_attr
+        ?focused_item_attr
         ?extra_list_container_attr
         ?extra_input_attr
         ?extra_attr
@@ -736,5 +753,5 @@ let stringable
         graph
     in
     let%arr result in
-    { result with selected_item = Option.map result.selected_item ~f:snd }
+    { result with focused_item = Option.map result.focused_item ~f:snd }
 ;;

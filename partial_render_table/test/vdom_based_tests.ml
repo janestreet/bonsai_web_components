@@ -347,7 +347,7 @@ let%expect_test "stabilization of view range" =
 
 let%expect_test "resize-column" =
   let resize_via_size_changed_hook (test : _ Test.t) ~idx ~width =
-    Test.resize_column test ~idx ~width ~autosize:false
+    Test.resize_column test ~idx ~width ~resize_column_widths_to_fit:false
   in
   let resize_via_result_function (test : (_, Indexed_column_id.t) Test.t) ~idx ~width =
     Handle.do_actions
@@ -411,7 +411,7 @@ let%expect_test "resize-column" =
           <div class="default_partial_render_table_body partial-render-table-body-"
                bounds-change=<opaque>
                style={
-                 height: 3px;
+                 height: 3.00px;
                }>
             <div class="body" style={ padding-top: 0px; padding-bottom: 0px; }>
               <div>
@@ -883,7 +883,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
      body n times, once for each column. *)
   let test = Test.create (Test.Component.default ()) in
   Test.print_message_on_result_recomputation test;
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Handle.recompute_view test.handle;
   Test.set_bounds test ~low:0 ~high:300;
   Handle.recompute_view test.handle;
@@ -896,7 +896,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   Handle.recompute_view test.handle;
   [%expect {| |}];
   (* Re-setting a column to its existing width should not cause a re-fire *)
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Handle.recompute_view test.handle;
   [%expect {| |}];
   (* Re-setting the bounds to the same value should not cause a re-fire *)
@@ -909,7 +909,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   let test =
     Test.create (fun input _filter_var ->
       let component graph =
-        let%sub collation, key_rank =
+        let collation, key_rank =
           Table_expert.collate
             ~filter_equal:[%compare.equal: unit]
             ~order_equal:[%compare.equal: unit]
@@ -958,7 +958,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
   in
   Test.print_message_on_result_recomputation test;
   Handle.recompute_view test.handle;
-  Test.resize_column test ~idx:0 ~width:1. ~autosize:false;
+  Test.resize_column test ~idx:0 ~width:1. ~resize_column_widths_to_fit:false;
   Test.set_bounds test ~low:0 ~high:300;
   Handle.recompute_view test.handle;
   [%expect
@@ -2267,8 +2267,8 @@ let%expect_test "removed columns still count toward the total table width" =
       </div>
     </div>
     |}];
-  resize_column ~idx:0 ~width:10. ~autosize:false;
-  resize_column ~idx:1 ~width:20. ~autosize:false;
+  resize_column ~idx:0 ~width:10. ~resize_column_widths_to_fit:false;
+  resize_column ~idx:1 ~width:20. ~resize_column_widths_to_fit:false;
   Handle.show handle;
   [%expect
     {|
@@ -2311,7 +2311,7 @@ let%expect_test "removed columns still count toward the total table width" =
     |}];
   Bonsai.Expert.Var.set columns_var [ column_a; column_b; column_c ];
   Handle.recompute_view handle;
-  resize_column ~idx:2 ~width:30. ~autosize:false;
+  resize_column ~idx:2 ~width:30. ~resize_column_widths_to_fit:false;
   Handle.show handle;
   [%expect
     {|
@@ -2528,10 +2528,7 @@ let%expect_test "removed columns still count toward the total table width" =
 
 let%expect_test "locking columns also disallows focus change due to clicks" =
   let test =
-    Test.create
-      (Test.Component.default ~theming:`Themed ())
-      ~visible_range:(0, 2)
-      ~should_set_bounds:false
+    Test.create (Test.Component.default ()) ~visible_range:(0, 2) ~should_set_bounds:false
   in
   Handle.store_view test.handle;
   Handle.click_on test.handle ~get_vdom:test.get_vdom ~selector:"div div div div div div";
