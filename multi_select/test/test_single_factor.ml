@@ -256,7 +256,7 @@ let%expect_test "search string vdom" =
     {|
     <div class="multi-select-container">
       <div class="multi-select-header"> header </div>
-      <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
       <div class="multi-select-select-all-none">
         Select:
         <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -289,8 +289,8 @@ let%expect_test "search string vdom" =
     {|
       <div class="multi-select-container">
         <div class="multi-select-header"> header </div>
-    -|  <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
-    +|  <input type="text" placeholder="" spellcheck="false" value:normalized=bar @on_input> </input>
+    -|  <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
+    +|  <input type="text" spellcheck="false" value:normalized=bar @on_input> </input>
         <div class="multi-select-select-all-none">
           Select:
           <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -510,7 +510,7 @@ let%expect_test "html" =
     Selected items: (bar baz foo)
     <div class="multi-select-container">
       <div class="multi-select-header"> header </div>
-      <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
       <div class="multi-select-select-all-none">
         Select:
         <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -540,7 +540,7 @@ let%expect_test "html" =
     Selected items: ()
     <div class="multi-select-container">
       <div class="multi-select-header"> header </div>
-      <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
       <div class="multi-select-select-all-none">
         Select:
         <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -570,7 +570,7 @@ let%expect_test "html" =
     Selected items: (bar baz foo)
     <div class="multi-select-container">
       <div class="multi-select-header"> header </div>
-      <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
       <div class="multi-select-select-all-none">
         Select:
         <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -601,7 +601,7 @@ let%expect_test "html" =
     Selected items: (bar baz foo)
     <div class="multi-select-container">
       <div class="multi-select-header"> header </div>
-      <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
       <div class="multi-select-select-all-none">
         Select:
         <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -660,7 +660,7 @@ let%expect_test "html-custom-selected-attr" =
       Selected items: (bar baz foo)
       <div class="multi-select-container">
         <div class="multi-select-header"> header </div>
-        <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input> </input>
+        <input type="text" spellcheck="false" value:normalized="" @on_input> </input>
         <div class="multi-select-select-all-none">
           Select:
           <a href="about:blank" class="multi-select-select-all" @on_click> all </a>

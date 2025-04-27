@@ -18,17 +18,22 @@ let create : Native_node.t -> Data.t -> Options.t -> t =
        [| Native_node.t_to_js x3; Data.t_to_js x4; Options.t_to_js x5 |])
 ;;
 
-let destroy : t -> unit = fun (x6 : t) -> ignore (Ojs.call (t_to_js x6) "destroy" [||])
-let resize : t -> unit = fun (x7 : t) -> ignore (Ojs.call (t_to_js x7) "resize" [||])
+let destroy : t -> unit =
+  fun (x6 : t) -> (ignore : _) (Ojs.call (t_to_js x6) "destroy" [||])
+;;
+
+let resize : t -> unit =
+  fun (x7 : t) -> (ignore : _) (Ojs.call (t_to_js x7) "resize" [||])
+;;
 
 let resize_explicit : t -> width:int -> height:int -> unit =
   fun (x10 : t) ~width:(x8 : int) ~height:(x9 : int) ->
-  ignore (Ojs.call (t_to_js x10) "resize" [| Ojs.int_to_js x8; Ojs.int_to_js x9 |])
+  (ignore : _) (Ojs.call (t_to_js x10) "resize" [| Ojs.int_to_js x8; Ojs.int_to_js x9 |])
 ;;
 
 let updateOptions : t -> Update_options.t -> unit =
   fun (x12 : t) (x11 : Update_options.t) ->
-  ignore (Ojs.call (t_to_js x12) "updateOptions" [| Update_options.t_to_js x11 |])
+  (ignore : _) (Ojs.call (t_to_js x12) "updateOptions" [| Update_options.t_to_js x11 |])
 ;;
 
 let getArea : t -> Area.t =
@@ -48,7 +53,7 @@ let isZoomed : t -> [ `x | `y ] -> bool =
 ;;
 
 let resetZoom : t -> unit =
-  fun (x16 : t) -> ignore (Ojs.call (t_to_js x16) "resetZoom" [||])
+  fun (x16 : t) -> (ignore : _) (Ojs.call (t_to_js x16) "resetZoom" [||])
 ;;
 
 let primary_context : t -> Canvas_rendering_context_2D.t =

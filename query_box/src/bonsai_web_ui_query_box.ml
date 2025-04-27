@@ -38,6 +38,7 @@ module Suggestion_list_kind = struct
   type t =
     | Transient_overlay
     | Permanent_fixture
+    | Expert
   [@@deriving sexp, compare, enumerate, equal]
 end
 
@@ -75,14 +76,15 @@ type 'k t =
   { focused_item : 'k option
   ; view : Vdom.Node.t
   ; query : string
-  ; set_query : string -> unit Effect.t
+  ; set_query : ?close_list:bool -> string -> unit Effect.t
   ; focus_input : unit Effect.t
+  ; activate_for_benchmarking : unit Effect.t
   }
 [@@deriving fields ~getters]
 
 let create
   (type k cmp)
-  (module Key : Bonsai.Comparator with type t = k and type comparator_witness = cmp)
+  (module Key : Comparator.S with type t = k and type comparator_witness = cmp)
   ?(initial_query = "")
   ?(max_visible_items = Bonsai.return 10)
   ?(suggestion_list_kind = Bonsai.return Suggestion_list_kind.Transient_overlay)
@@ -94,6 +96,7 @@ let create
   ?(extra_input_attr = Bonsai.return Attr.empty)
   ?(extra_attr = Bonsai.return Attr.empty)
   ?(on_blur = Bonsai.return (Effect.return ()))
+  ?(modify_input_on_blur = Bonsai.return None)
   ?(modify_input_on_select = Bonsai.return (fun _focused_key _query -> ""))
   ~f
   ~on_select
@@ -108,6 +111,12 @@ let create
     initialize_suggestion_list true
   in
   let%sub { Model.query; suggestion_list_state; offset }, inject, items, _ =
+    let module Key = struct
+      include Key
+
+      let sexp_of_t = comparator.sexp_of_t
+    end
+    in
     let module M = struct
       type t = Key.t Model.t [@@deriving sexp_of]
 
@@ -120,105 +129,109 @@ let create
       ~equal:[%equal: M.t]
       ~default_model:
         { Model.query = initial_query; suggestion_list_state = Closed; offset = 0 }
-      ~apply_action:
-        (fun
-          (_ : _ Bonsai.Apply_action_context.t)
-          (_, _, items, max_visible_items)
+      ~apply_action:(fun (_ : _ Bonsai.Apply_action_context.t) result model action ->
+        match result with
+        | Inactive ->
+          eprint_s
+            [%message
+              "An action sent to a [wrap] has been dropped because its input was not \
+               present. This happens when the [wrap] is inactive when it receives a \
+               message."
+                [%here]];
           model
-          action
-        ->
-        let suggestion_list_state =
-          (* We normalize which item is focused in case the list has changed
+        | Active (_, _, items, max_visible_items) ->
+          let suggestion_list_state =
+            (* We normalize which item is focused in case the list has changed
                  since the last action. Normalization just means setting the
                  focused key to the closest thing that actually exists. *)
-          match model.suggestion_list_state with
-          | Focused key ->
-            select_key
-              ~first_try:(Map.closest_key items `Less_or_equal_to key)
-              ~then_try:(lazy (Map.closest_key items `Greater_or_equal_to key))
-              ~else_use:First_item
-          | First_item -> First_item
-          | Closed -> Closed
-        in
-        let next_suggestion_list_state () =
-          match suggestion_list_state with
-          | Focused key ->
-            select_key
-              ~first_try:(Map.closest_key items `Greater_than key)
-              ~then_try:(lazy (Map.min_elt items))
-              ~else_use:(Focused key)
-          | First_item ->
-            (match Map.min_elt items with
-             | None -> First_item
-             | Some (first_key, _) ->
-               (match Map.closest_key items `Greater_than first_key with
-                | None -> Focused first_key
-                | Some (second_key, _) -> Focused second_key))
-          | Closed -> First_item
-        in
-        let prev_suggestion_list_state () =
-          match model.suggestion_list_state with
-          | Focused key ->
-            select_key
-              ~first_try:(Map.closest_key items `Less_than key)
-              ~then_try:(lazy (Map.max_elt items))
-              ~else_use:(Focused key)
-          | First_item | Closed ->
-            (match Map.max_elt items with
-             | None -> First_item
-             | Some (last_key, _) -> Focused last_key)
-        in
-        match action with
-        | Action.Set_query query ->
-          let suggestion_list_state =
+            match model.suggestion_list_state with
+            | Focused key ->
+              select_key
+                ~first_try:(Map.closest_key items `Less_or_equal_to key)
+                ~then_try:(lazy (Map.closest_key items `Greater_or_equal_to key))
+                ~else_use:First_item
+            | First_item -> First_item
+            | Closed -> Closed
+          in
+          let next_suggestion_list_state () =
             match suggestion_list_state with
-            | Focused key -> Model.Focused key
-            | First_item | Closed -> First_item
+            | Focused key ->
+              select_key
+                ~first_try:(Map.closest_key items `Greater_than key)
+                ~then_try:(lazy (Map.min_elt items))
+                ~else_use:(Focused key)
+            | First_item ->
+              (match Map.min_elt items with
+               | None -> First_item
+               | Some (first_key, _) ->
+                 (match Map.closest_key items `Greater_than first_key with
+                  | None -> Focused first_key
+                  | Some (second_key, _) -> Focused second_key))
+            | Closed -> First_item
           in
-          let offset = model.offset in
-          { Model.query; suggestion_list_state; offset }
-        | Open_suggestions -> { model with suggestion_list_state = First_item }
-        | Close_suggestions -> { model with suggestion_list_state = Closed }
-        | Move_next ->
-          let suggestion_list_state = next_suggestion_list_state () in
-          let offset =
-            let comparison =
-              Model.compare_suggestion_list_state
-                (Map.comparator items).compare
-                model.suggestion_list_state
-                suggestion_list_state
-            in
-            if comparison = 0
-            then model.offset
-            else if comparison < 0
-            then min (max_visible_items - 1) (model.offset + 1)
-            else 0
+          let prev_suggestion_list_state () =
+            match model.suggestion_list_state with
+            | Focused key ->
+              select_key
+                ~first_try:(Map.closest_key items `Less_than key)
+                ~then_try:(lazy (Map.max_elt items))
+                ~else_use:(Focused key)
+            | First_item | Closed ->
+              (match Map.max_elt items with
+               | None -> First_item
+               | Some (last_key, _) -> Focused last_key)
           in
-          { model with suggestion_list_state; offset }
-        | Move_prev ->
-          let suggestion_list_state = prev_suggestion_list_state () in
-          let offset =
-            let comparison =
-              Model.compare_suggestion_list_state
-                (Map.comparator items).compare
-                model.suggestion_list_state
-                suggestion_list_state
-            in
-            if comparison = 0
-            then model.offset
-            else if comparison < 0
-            then max_visible_items - 1
-            else max 0 (model.offset - 1)
-          in
-          { model with suggestion_list_state; offset }
-        | Move_to { key; offset } ->
-          if Map.mem items key
-          then { model with suggestion_list_state = Focused key; offset }
-          else model
-        | Move_next_with_fixed_offset ->
-          { model with suggestion_list_state = next_suggestion_list_state () }
-        | Move_prev_with_fixed_offset ->
-          { model with suggestion_list_state = prev_suggestion_list_state () })
+          (match action with
+           | Action.Set_query query ->
+             let suggestion_list_state =
+               match suggestion_list_state with
+               | Focused key -> Model.Focused key
+               | First_item | Closed -> First_item
+             in
+             let offset = model.offset in
+             { Model.query; suggestion_list_state; offset }
+           | Open_suggestions -> { model with suggestion_list_state = First_item }
+           | Close_suggestions -> { model with suggestion_list_state = Closed }
+           | Move_next ->
+             let suggestion_list_state = next_suggestion_list_state () in
+             let offset =
+               let comparison =
+                 Model.compare_suggestion_list_state
+                   (Map.comparator items).compare
+                   model.suggestion_list_state
+                   suggestion_list_state
+               in
+               if comparison = 0
+               then model.offset
+               else if comparison < 0
+               then min (max_visible_items - 1) (model.offset + 1)
+               else 0
+             in
+             { model with suggestion_list_state; offset }
+           | Move_prev ->
+             let suggestion_list_state = prev_suggestion_list_state () in
+             let offset =
+               let comparison =
+                 Model.compare_suggestion_list_state
+                   (Map.comparator items).compare
+                   model.suggestion_list_state
+                   suggestion_list_state
+               in
+               if comparison = 0
+               then model.offset
+               else if comparison < 0
+               then max_visible_items - 1
+               else max 0 (model.offset - 1)
+             in
+             { model with suggestion_list_state; offset }
+           | Move_to { key; offset } ->
+             if Map.mem items key
+             then { model with suggestion_list_state = Focused key; offset }
+             else model
+           | Move_next_with_fixed_offset ->
+             { model with suggestion_list_state = next_suggestion_list_state () }
+           | Move_prev_with_fixed_offset ->
+             { model with suggestion_list_state = prev_suggestion_list_state () }))
       ~f:(fun model inject (local_ graph) ->
         let%sub { Model.query; _ } = model in
         let items =
@@ -411,6 +424,22 @@ let create
            |> with_prevent_default)
       | _ -> Effect.Ignore
   in
+  let on_blur =
+    let modify_on_blur =
+      let peek_query = Bonsai.peek query graph in
+      match%sub modify_input_on_blur with
+      | None -> Bonsai.return Effect.Ignore
+      | Some f ->
+        let%arr peek_query and inject and f in
+        (match%bind.Effect peek_query with
+         | Bonsai.Computation_status.Inactive -> Effect.Ignore
+         | Active query ->
+           let%bind.Effect new_query = f query in
+           Effect.all_unit [ inject (Set_query new_query); inject Close_suggestions ])
+    in
+    let%arr modify_on_blur and on_blur in
+    Effect.all_unit [ modify_on_blur; on_blur ]
+  in
   let suggestion_container_id = Bonsai.path_id graph in
   let input_id = Bonsai.path_id graph in
   let%arr query
@@ -437,6 +466,9 @@ let create
       ( Attr.style (Css_gen.position `Relative)
       , Attr.style (Css_gen.position `Absolute)
       , is_open )
+    | Expert ->
+      let is_open = Option.is_some focused_key in
+      Attr.empty, Attr.empty, is_open
     | Permanent_fixture -> Attr.empty, Attr.empty, true
   in
   let on_blur =
@@ -448,9 +480,7 @@ let create
             list of items (or vice versa), we want to keep the list open. Thus,
             we check whether the relatedTarget of the event is one of those two
             elements, in which case we don't close the list. *)
-         match
-           Option.bind (Js.Optdef.to_option ev##.relatedTarget) ~f:Js.Opt.to_option
-         with
+         match Js.Opt.to_option ev##.relatedTarget with
          | Some related_target ->
            let id = Js.to_string related_target##.id in
            if String.equal id suggestion_container_id || String.equal id input_id
@@ -510,7 +540,7 @@ let create
         ; Attr.tabindex (-1)
         ; Attr.on_wheel
             (let open Js_of_ocaml in
-             fun (ev : Js_of_ocaml_patches.Dom_html.wheelEvent Js.t) ->
+             fun (ev : Dom_html.wheelEvent Js.t) ->
                let comparison =
                  match expand_direction with
                  | Down -> Float.( < ) (Js.to_float ev##.deltaY) 0.0
@@ -537,8 +567,14 @@ let create
   { focused_item = focused_key
   ; view
   ; query
-  ; set_query = (fun query -> inject (Set_query query))
+  ; set_query =
+      (fun ?(close_list = false) query ->
+        Effect.Many
+          [ inject (Set_query query)
+          ; (if close_list then inject Close_suggestions else Effect.Ignore)
+          ])
   ; focus_input
+  ; activate_for_benchmarking = inject_initialize_suggestion_list
   }
 ;;
 
@@ -652,7 +688,7 @@ end
 
 let stringable
   (type k cmp)
-  (module Key : Bonsai.Comparator with type t = k and type comparator_witness = cmp)
+  (module Key : Comparator.S with type t = k and type comparator_witness = cmp)
   ?initial_query
   ?max_visible_items
   ?suggestion_list_kind
@@ -664,10 +700,11 @@ let stringable
   ?extra_input_attr
   ?extra_attr
   ?(to_view = fun _ string -> Vdom.Node.text string)
+  ?modify_input_on_blur
   ?(modify_input_on_select = Bonsai.return `Reset)
   ~filter_strategy
   ~on_select
-  input
+  (input : (k, string, cmp) Map.t Bonsai.t)
   (* [filter_strategy] is not a [Value.t]; it would be easy to make it one by
      using [match%sub] here, but then the model would not be shared between the
      two branches, which is potentially confusing. If make both key modules be
@@ -701,6 +738,7 @@ let stringable
       ?extra_list_container_attr
       ?extra_input_attr
       ?extra_attr
+      ?modify_input_on_blur
       ~modify_input_on_select
       ~on_select
       ~f:(fun query ->
@@ -732,6 +770,7 @@ let stringable
         ?extra_list_container_attr
         ?extra_input_attr
         ?extra_attr
+        ?modify_input_on_blur
         ~modify_input_on_select
         ~on_select
         ~f:(fun query (local_ graph) ->

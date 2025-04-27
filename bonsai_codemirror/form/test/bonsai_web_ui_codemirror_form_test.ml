@@ -228,7 +228,7 @@ module _ = Run_tests (struct
 module _ = Run_tests (struct
     let string () =
       Codemirror_form.Dynamic_extensions.string
-        (module Unit)
+        ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         ~compute_extensions:(Bonsai.return (fun () -> []))
         (Bonsai.return ())
@@ -236,7 +236,7 @@ module _ = Run_tests (struct
 
     let stringable () =
       Codemirror_form.Dynamic_extensions.stringable
-        (module Unit)
+        ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         (module T)
         ~compute_extensions:(Bonsai.return (fun () -> []))
@@ -245,28 +245,10 @@ module _ = Run_tests (struct
 
     let sexpable () =
       Codemirror_form.Dynamic_extensions.sexpable
-        (module Unit)
+        ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         (module T)
         ~compute_extensions:(Bonsai.return (fun () -> []))
         (Bonsai.return ())
-    ;;
-  end)
-
-module _ = Run_tests (struct
-    let string () =
-      Codemirror_form.Sexp_grammar_autocomplete.string (Bonsai.return T.t_sexp_grammar)
-    ;;
-
-    let stringable () =
-      Codemirror_form.Sexp_grammar_autocomplete.stringable
-        (module T)
-        (Bonsai.return T.t_sexp_grammar)
-    ;;
-
-    let sexpable () =
-      Codemirror_form.Sexp_grammar_autocomplete.sexpable
-        (module T)
-        (Bonsai.return T.t_sexp_grammar)
     ;;
   end)

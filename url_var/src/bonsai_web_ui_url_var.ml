@@ -96,7 +96,6 @@ let listen_to_navigation_events_exn ~parse_exn ~f =
            Js.to_bool event##.canIntercept && not (Js.Opt.test event##.downloadRequest)
          in
          let try_intercept () =
-           print_endline (Js.to_string event##.destination##.url);
            let value =
              Js.to_string event##.destination##.url
              |> Uri.of_string
@@ -110,6 +109,7 @@ let listen_to_navigation_events_exn ~parse_exn ~f =
                        (Js.wrap_callback (fun () ->
                           f value;
                           Js.undefined)) )
+                 ; "focusReset", Js.Unsafe.inject (Js.string "manual")
                 |])
          in
          if can_intercept
@@ -129,11 +129,14 @@ let listen_to_navigation_events ~parse_exn ~f =
 ;;
 
 let set ?(how : [ `Push | `Replace ] option) { var; history } a =
+  (* We need to make sure the bonsai var is set _before_ we update the history. Otherwise
+     the [listen_to_navigation_events] callback will observe the new value before it's
+     updated in the var which causes an infinite loop of history updates. *)
+  Bonsai.Expert.Var.set var a;
   let how = Option.value how ~default:`Push in
-  (match how with
-   | `Push -> History.update history a
-   | `Replace -> History.replace history a);
-  Bonsai.Expert.Var.set var a
+  match how with
+  | `Push -> History.update history a
+  | `Replace -> History.replace history a
 ;;
 
 let create_exn'
@@ -199,7 +202,7 @@ let create_exn'
   in
   let value = History.current t in
   let var = Bonsai.Expert.Var.create value in
-  Bus.iter_exn (History.changes_bus t) [%here] ~f:(Bonsai.Expert.Var.set var);
+  Bus.subscribe_permanently_exn (History.changes_bus t) ~f:(Bonsai.Expert.Var.set var);
   let url_var = { var; history = t } in
   (match navigation with
    | `Ignore -> ()
@@ -211,7 +214,9 @@ let create_exn'
        generated based on the parsed new URL.
 
        See https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
-     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(set ~how:`Replace url_var));
+     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
+       let is_current_page = S.equal next_page (Bonsai.Expert.Var.get var) in
+       if not is_current_page then set ~how:`Replace url_var next_page));
   url_var
 ;;
 
@@ -265,7 +270,10 @@ module Typed = struct
              String.split ~on:'/' path |> List.map ~f:parse_unicode_slashes
            | Correct -> decode_path path)
       in
-      { Uri_parsing.Components.path = split_path; query = original.query }
+      { Uri_parsing.Components.path = split_path
+      ; query = original.query
+      ; fragment = original.fragment
+      }
     ;;
 
     let to_original_components
@@ -278,7 +286,7 @@ module Typed = struct
              String.concat ~sep:"/" (List.map typed_components.path ~f:sanitize_slashes)
            | Correct -> encode_path typed_components.path)
       ; query = typed_components.query
-      ; fragment = None
+      ; fragment = typed_components.fragment
       }
     ;;
   end

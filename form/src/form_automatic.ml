@@ -183,6 +183,43 @@ module Dynamic = struct
     { t with view }
   ;;
 
+  let validate_via_effect
+    ?sexp_of_model
+    ~equal
+    ?one_at_a_time
+    ?debounce_ui
+    t
+    ~f
+    (local_ graph)
+    =
+    validate_via_effect ?sexp_of_model ~equal ?one_at_a_time ?debounce_ui t ~f graph
+  ;;
+
+  let project_via_effect
+    ?sexp_of_input
+    ?sexp_of_result
+    ~equal_input
+    ~equal_result
+    ?one_at_a_time
+    ?debounce_ui
+    t
+    ~unparse
+    ~parse
+    (local_ graph)
+    =
+    project_via_effect
+      ?sexp_of_input
+      ?sexp_of_result
+      ~equal_input
+      ~equal_result
+      ?one_at_a_time
+      ?debounce_ui
+      t
+      ~unparse
+      ~parse
+      graph
+  ;;
+
   module Record_builder = struct
     include Profunctor.Record_builder (struct
         type ('read, 'write) t = ('read, 'write) For_profunctor.t Bonsai.t

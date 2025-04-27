@@ -17,8 +17,7 @@ module type S = sig
       provided, including:
       - Using the arrow keys and Enter to select / deselect items;
       - The ability to filter the set of items displayed by searching;
-      - "Select all" and "Select none" buttons
-  *)
+      - "Select all" and "Select none" buttons *)
 
   module View_config : sig
     type t =
@@ -32,8 +31,8 @@ module type S = sig
       ; extra_row_attrs : (is_focused:bool -> Vdom.Attr.t) option
       (** This attribute will be added to the selected row *)
       ; allow_updates_when_focused : [ `Always | `Never ]
-      (** Determines whether or not the state should update the value of input
-          elements, even if the input element is actively in focus *)
+      (** Determines whether or not the state should update the value of input elements,
+          even if the input element is actively in focus *)
       }
 
     val create
@@ -89,9 +88,9 @@ module type S = sig
     :  ?initial_model_settings:Initial_model_settings.t
     -> ?default_selection_status:Selection_status.t Bonsai.t
          (** [default_selection_status] controls whether items that have not been
-        explicitly toggled by the user should be considered selected or not.
-        For example, setting this to [Selected] has the effect of causing all
-        items to show initially selected. *)
+             explicitly toggled by the user should be considered selected or not. For
+             example, setting this to [Selected] has the effect of causing all items to
+             show initially selected. *)
     -> view_config:View_config.t Bonsai.t
     -> Item.Set.t Bonsai.t
     -> local_ Bonsai.graph

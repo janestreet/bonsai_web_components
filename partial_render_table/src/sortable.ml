@@ -19,12 +19,11 @@ let state
   (local_ graph)
   =
   let equal = Order.equal col_id_equal in
-  let%sub order, inject =
+  let order, inject =
     Bonsai_extra.state_machine0_dynamic_model
       ~equal
       ~model:(`Given initial_order)
       ~apply_action:(fun _ -> Order.apply_action ~equal:col_id_equal)
-      ()
       graph
   in
   let order = Bonsai.cutoff ~equal order in
@@ -56,10 +55,11 @@ module Header = struct
             | `Shift_click -> shift
             | `Ctrl_click -> ctrl
             | `Shift_or_ctrl_click -> shift || ctrl
+            | `Disabled -> false
           in
           if should_multisort
-          then inject (Add_sort column_id)
-          else inject (Set_sort column_id))
+          then inject (Add_sort (column_id, Asc_to_desc_to_none))
+          else inject (Set_sort (column_id, Asc_to_desc_to_none)))
       in
       let (sort_state : Sort_state.t) =
         if not sortable
@@ -106,4 +106,56 @@ module Header = struct
       | Single_sort dir | Multi_sort { dir; _ } -> render ~dir
     ;;
   end
+end
+
+module Wrap_header = struct
+  type 'column_id sortable = 'column_id t
+
+  type 'column_id basic =
+    'column_id sortable
+    -> is_sortable:('column_id -> bool)
+    -> column_id:'column_id
+    -> Vdom.Node.t
+    -> Vdom.Node.t
+
+  let clickable_with_icon ?sort_indicator_attrs ?multisort_columns_when () =
+    let basic_wrap_header_function sortable ~is_sortable ~column_id content =
+      let is_sortable = is_sortable column_id in
+      Header.Expert.default_click_handler
+        ?multisort_columns_when
+        sortable
+        ~column_id
+        ~sortable:is_sortable
+        (Header.with_icon ?sort_indicator_attrs content)
+    in
+    basic_wrap_header_function
+  ;;
+
+  let clickable_with_icon_deprecated ?multisort_columns_when () =
+    let wrap_header sortable ~is_sortable ~column_id content =
+      let is_sortable = is_sortable column_id in
+      Header.Expert.default_click_handler
+        ?multisort_columns_when
+        sortable
+        ~column_id
+        ~sortable:is_sortable
+        (Header.Legacy.wrap_with_icon content)
+    in
+    wrap_header
+  ;;
+
+  let clickable_no_icon ?multisort_columns_when () =
+    let wrap_header sortable ~is_sortable ~column_id node =
+      let is_sortable = is_sortable column_id in
+      Header.Expert.default_click_handler
+        ?multisort_columns_when
+        sortable
+        ~column_id
+        ~sortable:is_sortable
+        (fun _ -> node)
+    in
+    wrap_header
+  ;;
+
+  let none _sortable ~is_sortable:_ ~column_id:_ node = node
 end

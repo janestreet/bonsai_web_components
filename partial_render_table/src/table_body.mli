@@ -29,8 +29,8 @@ end
 val component
   :  themed_attrs:Table_view.Themed.t Bonsai.t
   -> resize_column_widths_to_fit:bool Bonsai.t
-  -> key_comparator:('key, 'cmp) Bonsai.comparator
-  -> column_id_comparator:('column_id, 'column_id_cmp) Bonsai.comparator
+  -> key_comparator:('key, 'cmp) Comparator.Module.t
+  -> column_id_comparator:('column_id, 'column_id_cmp) Comparator.Module.t
   -> row_height:[< `Px of int ] Bonsai.t
   -> headers:'column_id Header_tree.t Bonsai.t
   -> leaves:'column_id Header_tree.leaf list Bonsai.t

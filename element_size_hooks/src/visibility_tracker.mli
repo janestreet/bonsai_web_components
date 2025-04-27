@@ -15,15 +15,15 @@ module Bbox : sig
   val height : t -> float
 end
 
-(** This attribute tracks two computed properties of the size, position, and
-    layout of the element that it is attached to:
+(** This attribute tracks two computed properties of the size, position, and layout of the
+    element that it is attached to:
 
     - The client-rect of the element
       https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
 
-    - A bounding-rect for the portion of the element that is visible (by factoring in
-      the bounding-rects of parents), reprojected into the coordinate space of the
-      target element.
+    - A bounding-rect for the portion of the element that is visible (by factoring in the
+      bounding-rects of parents), reprojected into the coordinate space of the target
+      element.
 
     The bounds are precise, but won't factor in any absolutely, relatively, or stickily
     positioned elements that may still occlude the element. *)

@@ -7,16 +7,16 @@ open Gen_js_api
     Note: A few callbacks are not bound. Feel free to add them! *)
 
 module Line_pattern : sig
-  (** A custom pattern array where the even index is a draw and odd is a space in
-      pixels. If null then it draws a solid line. The array should have a even length as
-      any odd lengthed array could be expressed as a smaller even length array. This is
-      used to create dashed gridlines. *)
+  (** A custom pattern array where the even index is a draw and odd is a space in pixels.
+      If null then it draws a solid line. The array should have a even length as any odd
+      lengthed array could be expressed as a smaller even length array. This is used to
+      create dashed gridlines. *)
   type t = int array
 
-  (** This is the same value as Dygraph.DASHED_LINE.  For reasons that are not
-      fully understood (or even partially, let's be honest), the "Dygraph" value
-      isn't present in the global namespace when run in node-js, so [@@js.global
-      "Dygraph.DASHED_LINE"] will crash the program. *)
+  (** This is the same value as Dygraph.DASHED_LINE. For reasons that are not fully
+      understood (or even partially, let's be honest), the "Dygraph" value isn't present
+      in the global namespace when run in node-js, so [@@js.global "Dygraph.DASHED_LINE"]
+      will crash the program. *)
   val dashed : t
   [@@js.custom let dashed = [| 7; 2 |]]
 
@@ -46,32 +46,26 @@ module Series_options : sig
     :  ?axis:Which_y_axis.t
          (** axis http://dygraphs.com/options.html#axis
 
-        Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or
-        secondary). Must be set per-series.
+             Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or
+             secondary). Must be set per-series.
 
-        Type: string
-        Default: (none)
-    *)
+             Type: string Default: (none) *)
     -> ?color:Color.t
          (** color http://dygraphs.com/options.html#color
 
-        A per-series color definition. Used in conjunction with, and overrides, the colors
-        option.
+             A per-series color definition. Used in conjunction with, and overrides, the
+             colors option.
 
-        Type: string
-        Default: (see description)
-    *)
+             Type: string Default: (see description) *)
     -> ?drawPoints:bool
          (** drawPoints http://dygraphs.com/options.html#drawPoints
 
-        Draw a small dot at each point, in addition to a line going through the
-        point. This makes the individual data points easier to see, but can increase
-        visual clutter in the chart. The small dot can be replaced with a custom
-        rendering by supplying a drawPointCallback.
+             Draw a small dot at each point, in addition to a line going through the
+             point. This makes the individual data points easier to see, but can increase
+             visual clutter in the chart. The small dot can be replaced with a custom
+             rendering by supplying a drawPointCallback.
 
-        Type: boolean
-        Default: false
-    *)
+             Type: boolean Default: false *)
     -> ?drawHighlightPointCallback:
          (graph:Ojs.t
           -> seriesName:string option
@@ -82,7 +76,8 @@ module Series_options : sig
           -> pointSize:int
           -> idx:int
           -> unit)
-         (** drawHighlightPointCallback: https://dygraphs.com/options.html#drawHighlightPointCallback
+         (** {v
+ drawHighlightPointCallback: https://dygraphs.com/options.html#drawHighlightPointCallback
 
         Draw a custom item when a point is highlighted. Default is a small dot matching the
         series color. This method should constrain drawing to within pointSize pixels from
@@ -98,10 +93,10 @@ module Series_options : sig
         pointSize: the radius of the image.
         idx: the row-index of the point in the data.
         Default: null
-    *)
+             v} *)
     -> ?drawPointCallback:
          (graph:Ojs.t
-          -> seriesName:string option
+          -> seriesName:Ojs.t
           -> context:Canvas_rendering_context_2D.t
           -> cx:float
           -> cy:float
@@ -109,7 +104,8 @@ module Series_options : sig
           -> pointSize:int
           -> idx:int
           -> unit)
-         (** drawPointCallback: https://dygraphs.com/options.html#drawPointCallback
+         (** {v
+ drawPointCallback: https://dygraphs.com/options.html#drawPointCallback
 
         Draw a custom item when drawPoints is enabled. Default is a small dot matching the
         series color. This method should constrain drawing to within pointSize pixels from
@@ -125,74 +121,64 @@ module Series_options : sig
         pointSize: the radius of the image.
         idx: the row-index of the point in the data.
         Default: null
-    *)
+             v} *)
     -> ?plotter:Plotter.t
          (** plotter (undocumented)
 
-        The Dygraph documentation merely says:
+             The Dygraph documentation merely says:
 
-        TODO(danvk): more details! May be set per-series.
+             TODO(danvk): more details! May be set per-series.
 
-        Although the graph-wide default [plotter] can take an array of plotters, the
-        series-specific plotter must be a single value.
-    *)
+             Although the graph-wide default [plotter] can take an array of plotters, the
+             series-specific plotter must be a single value. *)
     -> ?plotterFinishedCallback:(context:Canvas_rendering_context_2D.t -> unit)
          (** (Jane Street extension)
 
-        [plotterFinishedCallback] is called every time a plotter finishes rendering this
-        series.
+             [plotterFinishedCallback] is called every time a plotter finishes rendering
+             this series.
 
-        If you specify a custom plotter for this series, this callback will be called
-        exactly once.
+             If you specify a custom plotter for this series, this callback will be called
+             exactly once.
 
-        If you don't specify a custom plotter for this series, it will be called once for
-        each of the graph's configured plotters. Note that some plotters may not actually
-        draw anything to the canvas depending on the configured attributes of this series
-        (e.g. the error bar plotter will only draw something if you request error bars),
-        but the callback will still fire after the plotter runs.
-    *)
+             If you don't specify a custom plotter for this series, it will be called once
+             for each of the graph's configured plotters. Note that some plotters may not
+             actually draw anything to the canvas depending on the configured attributes
+             of this series (e.g. the error bar plotter will only draw something if you
+             request error bars), but the callback will still fire after the plotter runs. *)
     -> ?showInRangeSelector:bool
          (** showInRangeSelector http://dygraphs.com/options.html#showInRangeSelector
 
-        Mark this series for inclusion in the range selector. The mini plot curve
-        will be an average of all such series. If this is not specified for any
-        series, the default behavior is to average all the visible series. Setting it
-        for one series will result in that series being charted alone in the range
-        selector. Once it's set for a single series, it needs to be set for all
-        series which should be included (regardless of visibility).
+             Mark this series for inclusion in the range selector. The mini plot curve
+             will be an average of all such series. If this is not specified for any
+             series, the default behavior is to average all the visible series. Setting it
+             for one series will result in that series being charted alone in the range
+             selector. Once it's set for a single series, it needs to be set for all
+             series which should be included (regardless of visibility).
 
-        Type: boolean
-        Default: null
-    *)
+             Type: boolean Default: null *)
     -> ?stepPlot:bool
          (** stepPlot https://dygraphs.com/options.html#stepPlot
 
-        When set, display the graph as a step plot instead of a line plot. This option may
-        either be set for the whole graph or for single series.
+             When set, display the graph as a step plot instead of a line plot. This
+             option may either be set for the whole graph or for single series.
 
-        Type: boolean
-        Default: false
-    *)
+             Type: boolean Default: false *)
     -> ?strokePattern:Line_pattern.t
          (** strokePattern http://dygraphs.com/options.html#strokePattern
 
-        A custom pattern array where the even index is a draw and odd is a space in
-        pixels. If null then it draws a solid line. The array should have a even
-        length as any odd lengthed array could be expressed as a smaller even length
-        array. This is used to create dashed lines.
+             A custom pattern array where the even index is a draw and odd is a space in
+             pixels. If null then it draws a solid line. The array should have a even
+             length as any odd lengthed array could be expressed as a smaller even length
+             array. This is used to create dashed lines.
 
-        Type: array
-        Default: null
-    *)
+             Type: array Default: null *)
     -> ?strokeWidth:float
          (** strokeWidth http://dygraphs.com/options.html#strokeWidth
 
-        The width of the lines connecting data points. This can be
-        used to increase the contrast or some graphs.
+             The width of the lines connecting data points. This can be used to increase
+             the contrast or some graphs.
 
-        Type: float
-        Default: 1.0
-    *)
+             Type: float Default: 1.0 *)
     -> unit
     -> t
   [@@js.builder]
@@ -212,8 +198,8 @@ module Series : sig
 end
 
 module Opts : sig
-  (** a function which provides access to various options on the dygraph,
-      e.g. opts('labelsKMB').
+  (** a function which provides access to various options on the dygraph, e.g.
+      opts('labelsKMB').
 
       See [axisLabelFormatter] in [Axis_options.create] for an example of how you might
       get your hands on one of these.
@@ -232,212 +218,181 @@ module Axis_options : sig
     :  ?axisLabelFormatter:(Number_or_js_date.t -> Granularity.t -> Opts.t -> string)
          (** axisLabelFormatter http://dygraphs.com/options.html#axisLabelFormatter
 
-        Function to call to format the tick values that appear along an axis. This is
-        usually set on a per-axis basis.
+             Function to call to format the tick values that appear along an axis. This is
+             usually set on a per-axis basis.
 
-        Type: function(number or Date, granularity, opts, dygraph)
+             Type: function(number or Date, granularity, opts, dygraph)
 
-        number or date: Either a number (for a numeric axis) or a Date object (for a date
-        axis)
+             number or date: Either a number (for a numeric axis) or a Date object (for a
+             date axis)
 
-        granularity: specifies how fine-grained the axis is. For date axes, this is a
-        reference to the time granularity enumeration, defined in dygraph-tickers.js,
-        e.g. Dygraph.WEEKLY.
+             granularity: specifies how fine-grained the axis is. For date axes, this is a
+             reference to the time granularity enumeration, defined in dygraph-tickers.js,
+             e.g. Dygraph.WEEKLY.
 
-        opts: a function which provides access to various options on the dygraph,
-        e.g. opts('labelsKMB').
+             opts: a function which provides access to various options on the dygraph,
+             e.g. opts('labelsKMB').
 
-        dygraph: the referenced graph
+             dygraph: the referenced graph
 
-        Default: Depends on the data type
-        Gallery Samples: NONE
-        Other Examples: value-axis-formatters x-axis-formatter
-    *)
+             Default: Depends on the data type Gallery Samples: NONE Other Examples:
+             value-axis-formatters x-axis-formatter *)
     -> ?valueFormatter:(float -> Opts.t -> string)
          (** valueFormatter http://dygraphs.com/options.html#valueFormatter
 
-        Function to provide a custom display format for the values displayed on
-        mouseover. This does not affect the values that appear on tick marks next to the
-        axes. To format those, see axisLabelFormatter. This is usually set on a per-axis
-        basis. .
+             Function to provide a custom display format for the values displayed on
+             mouseover. This does not affect the values that appear on tick marks next to
+             the axes. To format those, see axisLabelFormatter. This is usually set on a
+             per-axis basis. .
 
-        Type: function(num or millis, opts, seriesName, dygraph, row, col)
+             Type: function(num or millis, opts, seriesName, dygraph, row, col)
 
-        num_or_millis: The value to be formatted. This is always a number. For date axes,
-        it's millis since epoch. You can call new Date(millis) to get a Date object.
+             num_or_millis: The value to be formatted. This is always a number. For date
+             axes, it's millis since epoch. You can call new Date(millis) to get a Date
+             object.
 
-        opts: This is a function you can call to access various options
-        (e.g. opts('labelsKMB')). It returns per-axis values for the option when
-        available.
+             opts: This is a function you can call to access various options (e.g.
+             opts('labelsKMB')). It returns per-axis values for the option when available.
 
-        seriesName: The name of the series from which the point came, e.g. 'X', 'Y', 'A',
-        etc.
+             seriesName: The name of the series from which the point came, e.g. 'X', 'Y',
+             'A', etc.
 
-        dygraph: The dygraph object for which the formatting is being done
+             dygraph: The dygraph object for which the formatting is being done
 
-        row: The row of the data from which this point comes. g.getValue(row, 0) will
-        return the x-value for this point.
+             row: The row of the data from which this point comes. g.getValue(row, 0) will
+             return the x-value for this point.
 
-        col: The column of the data from which this point comes. g.getValue(row, col) will
-        return the original y-value for this point. This can be used to get the full
-        confidence interval for the point, or access un-rolled values for the point.
+             col: The column of the data from which this point comes. g.getValue(row, col)
+             will return the original y-value for this point. This can be used to get the
+             full confidence interval for the point, or access un-rolled values for the
+             point.
 
-        Default: Depends on the type of your data.
-        Gallery Samples: NONE
-        Other Examples: hairlines labelsKMB multi-scale value-axis-formatters
-    *)
+             Default: Depends on the type of your data. Gallery Samples: NONE Other
+             Examples: hairlines labelsKMB multi-scale value-axis-formatters *)
     -> ?axisLabelWidth:int
          (** axisLabelWidth http://dygraphs.com/options.html#axisLabelWidth
 
-        Width (in pixels) of the containing divs for x- and y-axis labels. For the
-        y-axis, this also controls the width of the y-axis. Note that for the x-axis,
-        this is independent from pixelsPerLabel, which controls the spacing between
-        labels.
+             Width (in pixels) of the containing divs for x- and y-axis labels. For the
+             y-axis, this also controls the width of the y-axis. Note that for the x-axis,
+             this is independent from pixelsPerLabel, which controls the spacing between
+             labels.
 
-        Type: integer
-        Default: 50 (y-axis), 60 (x-axis)
-    *)
+             Type: integer Default: 50 (y-axis), 60 (x-axis) *)
     -> ?axisLineColor:Color.t
          (** axisLineColor http://dygraphs.com/options.html#axisLineColor
 
-        Color of the x- and y-axis lines. Accepts any value which the HTML canvas
-        strokeStyle attribute understands, e.g. 'black' or 'rgb(0, 100, 255)'.
+             Color of the x- and y-axis lines. Accepts any value which the HTML canvas
+             strokeStyle attribute understands, e.g. 'black' or 'rgb(0, 100, 255)'.
 
-        Type: string
-        Default: black
-    *)
+             Type: string Default: black *)
     -> ?axisLineWidth:float
          (** axisLineWidth http://dygraphs.com/options.html#axisLineWidth
 
-        Thickness (in pixels) of the x- and y-axis lines.
+             Thickness (in pixels) of the x- and y-axis lines.
 
-        Type: float
-        Default: 0.3
-    *)
+             Type: float Default: 0.3 *)
     -> ?axisTickSize:float
          (** axisTickSize http://dygraphs.com/options.html#axisTickSize
 
-        The size of the line to display next to each tick mark on x- or y-axes.
+             The size of the line to display next to each tick mark on x- or y-axes.
 
-        Type: number
-        Default: 3.0
-    *)
+             Type: number Default: 3.0 *)
     -> ?drawAxis:bool
          (** drawAxis http://dygraphs.com/options.html#drawAxis
 
-        Whether to draw the specified axis. This may be set on a per-axis basis to
-        define the visibility of each axis separately. Setting this to false also
-        prevents axis ticks from being drawn and reclaims the space for the chart
-        grid/lines.
+             Whether to draw the specified axis. This may be set on a per-axis basis to
+             define the visibility of each axis separately. Setting this to false also
+             prevents axis ticks from being drawn and reclaims the space for the chart
+             grid/lines.
 
-        Type: boolean
-        Default: true for x and y, false for y2
-    *)
+             Type: boolean Default: true for x and y, false for y2 *)
     -> ?includeZero:bool
          (** includeZero http://dygraphs.com/options.html#includeZero
 
-        Usually, dygraphs will use the range of the data plus some padding to set the
-        range of the y-axis. If this option is set, the y-axis will always include zero,
-        typically as the lowest value. This can be used to avoid exaggerating the
-        variance in the data
+             Usually, dygraphs will use the range of the data plus some padding to set the
+             range of the y-axis. If this option is set, the y-axis will always include
+             zero, typically as the lowest value. This can be used to avoid exaggerating
+             the variance in the data
 
-        Type: boolean
-        Default: false
-    *)
+             Type: boolean Default: false *)
     -> ?independentTicks:bool
          (** independentTicks http://dygraphs.com/options.html#independentTicks
 
-        Only valid for y and y2, has no effect on x: This option defines whether the y
-        axes should align their ticks or if they should be independent. Possible
-        combinations: 1.) y=true, y2=false (default): y is the primary axis and the y2
-        ticks are aligned to the the ones of y. (only 1 grid) 2.) y=false, y2=true: y2
-        is the primary axis and the y ticks are aligned to the the ones of y2. (only 1
-        grid) 3.) y=true, y2=true: Both axis are independent and have their own
-        ticks. (2 grids) 4.) y=false, y2=false: Invalid configuration causes an error.
+             Only valid for y and y2, has no effect on x: This option defines whether the
+             y axes should align their ticks or if they should be independent. Possible
+             combinations: 1.) y=true, y2=false (default): y is the primary axis and the
+             y2 ticks are aligned to the the ones of y. (only 1 grid) 2.) y=false,
+             y2=true: y2 is the primary axis and the y ticks are aligned to the the ones
+             of y2. (only 1 grid) 3.) y=true, y2=true: Both axis are independent and have
+             their own ticks. (2 grids) 4.) y=false, y2=false: Invalid configuration
+             causes an error.
 
-        Type: boolean
-        Default: true for y, false for y2
-    *)
+             Type: boolean Default: true for y, false for y2 *)
     -> ?logscale:bool
          (** logscale http://dygraphs.com/options.html#logscale
 
-        When set for the y-axis or x-axis, the graph shows that axis in log scale. Any
-        values less than or equal to zero are not displayed. Showing log scale with
-        ranges that go below zero will result in an unviewable graph. Not compatible
-        with showZero. connectSeparatedPoints is ignored. This is ignored for date-based
-        x-axes.
+             When set for the y-axis or x-axis, the graph shows that axis in log scale.
+             Any values less than or equal to zero are not displayed. Showing log scale
+             with ranges that go below zero will result in an unviewable graph. Not
+             compatible with showZero. connectSeparatedPoints is ignored. This is ignored
+             for date-based x-axes.
 
-        Type: boolean
-        Default: false
-    *)
+             Type: boolean Default: false *)
     -> ?pixelsPerLabel:int
          (** pixelsPerLabel http://dygraphs.com/options.html#pixelsPerLabel
 
-        Number of pixels to require between each x- and y-label. Larger values will yield
-        a sparser axis with fewer ticks. This is set on a per-axis basis.
+             Number of pixels to require between each x- and y-label. Larger values will
+             yield a sparser axis with fewer ticks. This is set on a per-axis basis.
 
-        Type: integer
-        Default: 70 (x-axis) or 30 (y-axes) *)
+             Type: integer Default: 70 (x-axis) or 30 (y-axes) *)
     -> ?valueRange:Range.Spec.t
          (** valueRange http://dygraphs.com/options.html#valueRange
 
-        Explicitly set the vertical range of the graph to [low, high]. This may be set on
-        a per-axis basis to define each y-axis separately. If either limit is unspecified,
-        it will be calculated automatically (e.g. [null, 30] to automatically calculate
-        just the lower bound)
+             Explicitly set the vertical range of the graph to [low, high]. This may be
+             set on a per-axis basis to define each y-axis separately. If either limit is
+             unspecified, it will be calculated automatically (e.g. [null, 30] to
+             automatically calculate just the lower bound)
 
-        Type: Array of two numbers
-        Default: Full range of the input is shown
-    *)
+             Type: Array of two numbers Default: Full range of the input is shown *)
     -> ?drawGrid:bool
          (** drawGrid http://dygraphs.com/options.html#drawGrid
 
-        Whether to display gridlines in the chart. This may be set on a per-axis
-        basis to define the visibility of each axis' grid separately.
+             Whether to display gridlines in the chart. This may be set on a per-axis
+             basis to define the visibility of each axis' grid separately.
 
-        Type: boolean
-        Default: true for x and y, false for y2
-    *)
+             Type: boolean Default: true for x and y, false for y2 *)
     -> ?gridLineColor:Color.t
          (** gridLineColor http://dygraphs.com/options.html#gridLineColor
 
-        The color of the gridlines. This may be set on a per-axis basis to define
-        each axis' grid separately.
+             The color of the gridlines. This may be set on a per-axis basis to define
+             each axis' grid separately.
 
-        Type: red, blue
-        Default: rgb(128,128,128)
-    *)
+             Type: red, blue Default: rgb(128,128,128) *)
     -> ?gridLinePattern:Line_pattern.t
          (** gridLinePattern http://dygraphs.com/options.html#gridLinePattern
 
-        A custom pattern array where the even index is a draw and odd is a space in
-        pixels. If null then it draws a solid line. The array should have a even
-        length as any odd lengthed array could be expressed as a smaller even length
-        array. This is used to create dashed gridlines.
+             A custom pattern array where the even index is a draw and odd is a space in
+             pixels. If null then it draws a solid line. The array should have a even
+             length as any odd lengthed array could be expressed as a smaller even length
+             array. This is used to create dashed gridlines.
 
-        Type: array
-        Default: null
-    *)
+             Type: array Default: null *)
     -> ?gridLineWidth:float
          (** gridLineWidth http://dygraphs.com/options.html#gridLineWidth
 
-        Thickness (in pixels) of the gridlines drawn under the chart. The
-        vertical/horizontal gridlines can be turned off entirely by using the
-        drawGrid option. This may be set on a per-axis basis to define each axis'
-        grid separately.
+             Thickness (in pixels) of the gridlines drawn under the chart. The
+             vertical/horizontal gridlines can be turned off entirely by using the
+             drawGrid option. This may be set on a per-axis basis to define each axis'
+             grid separately.
 
-        Type: float
-        Default: 0.3
-    *)
+             Type: float Default: 0.3 *)
     -> ?pixelsPerLabel:int
          (** pixelsPerLabel http://dygraphs.com/options.html#pixelsPerLabel
 
-        Number of pixels to require between each x- and y-label. Larger values will
-        yield a sparser axis with fewer ticks. This is set on a per-axis basis.
+             Number of pixels to require between each x- and y-label. Larger values will
+             yield a sparser axis with fewer ticks. This is set on a per-axis basis.
 
-        Type: integer
-        Default: 70 (x-axis) or 30 (y-axes)
-    *)
+             Type: integer Default: 70 (x-axis) or 30 (y-axes) *)
     -> unit
     -> t
   [@@js.builder]
@@ -461,30 +416,24 @@ module Highlight_series_options : sig
 
   val create
     :  ?highlightCircleSize:int
-         (** highlightCircleSize http://dygraphs.com/options.html#highlightCircleSize
-        The size in pixels of the dot drawn over highlighted points.
+         (** highlightCircleSize http://dygraphs.com/options.html#highlightCircleSize The
+             size in pixels of the dot drawn over highlighted points.
 
-        Type: integer
-        Default: 3
-    *)
+             Type: integer Default: 3 *)
     -> ?strokeWidth:float
          (** strokeWidth http://dygraphs.com/options.html#strokeWidth
 
-        The width of the lines connecting data points. This can be used to increase the
-        contrast or some graphs.
+             The width of the lines connecting data points. This can be used to increase
+             the contrast or some graphs.
 
-        Type: float
-        Default: 1.0
-    *)
+             Type: float Default: 1.0 *)
     -> ?strokeBorderWidth:float
          (** strokeBorderWidth http://dygraphs.com/options.html#strokeBorderWidth
 
-        Draw a border around graph lines to make crossing lines more easily
-        distinguishable. Useful for graphs with many lines.
+             Draw a border around graph lines to make crossing lines more easily
+             distinguishable. Useful for graphs with many lines.
 
-        Type: float
-        Default: null
-    *)
+             Type: float Default: null *)
     -> unit
     -> t
   [@@js.builder]

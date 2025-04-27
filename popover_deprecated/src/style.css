@@ -12,14 +12,14 @@
 
 .tooltip {
   /* one day "top-layer" will save us https://fullscreen.spec.whatwg.org/#top-layer */
-  z-index: 9001
+  z-index: 9001;
 }
 
-.tooltip_container>.tooltip {
+.tooltip_container > .tooltip {
   display: none;
 }
 
-.tooltip_container.tooltip_open>.tooltip {
+.tooltip_container.tooltip_open > .tooltip {
   display: block;
   position: absolute;
 }
@@ -45,38 +45,38 @@
   flex-direction: column;
 }
 
-.tooltip_container.top>.tooltip {
+.tooltip_container.top > .tooltip {
   transform: translateY(calc(-100% - var(--dist)));
 }
 
-.tooltip_container.bottom>.tooltip {
+.tooltip_container.bottom > .tooltip {
   top: calc(100% + var(--dist));
 }
 
-.tooltip_container.top.align_start>.tooltip,
-.tooltip_container.bottom.align_start>.tooltip {
+.tooltip_container.top.align_start > .tooltip,
+.tooltip_container.bottom.align_start > .tooltip {
   left: 0;
 }
 
-.tooltip_container.top.align_end>.tooltip,
-.tooltip_container.bottom.align_end>.tooltip {
+.tooltip_container.top.align_end > .tooltip,
+.tooltip_container.bottom.align_end > .tooltip {
   right: 0;
 }
 
-.tooltip_container.left>.tooltip {
+.tooltip_container.left > .tooltip {
   transform: translateX(calc(-100% - var(--dist)));
 }
 
-.tooltip_container.right>.tooltip {
+.tooltip_container.right > .tooltip {
   left: calc(100% + var(--dist));
 }
 
-.tooltip_container.left.align_start>.tooltip,
-.tooltip_container.right.align_start>.tooltip {
+.tooltip_container.left.align_start > .tooltip,
+.tooltip_container.right.align_start > .tooltip {
   top: 0;
 }
 
-.tooltip_container.left.align_end>.tooltip,
-.tooltip_container.right.align_end>.tooltip {
+.tooltip_container.left.align_end > .tooltip,
+.tooltip_container.right.align_end > .tooltip {
   bottom: 0;
 }

@@ -24,8 +24,8 @@ module By_cell : sig
   (** [focus k] sets the focus to the `col_id cell in the row keyed by k. *)
   val focus : ('k, 'col_id, 'presence) t -> 'k -> 'col_id -> unit Effect.t
 
-  (** [focus_index n] sets the focus to the `col_id cell in the nth row from the top of the
-      entire table. The first row is 0, the second is 1, and so on. *)
+  (** [focus_index n] sets the focus to the `col_id cell in the nth row from the top of
+      the entire table. The first row is 0, the second is 1, and so on. *)
   val focus_index : ('k, 'col_id, 'presence) t -> int -> 'col_id -> unit Effect.t
 
   type ('k, 'col_id) optional = ('k, 'col_id, ('k * 'col_id) option) t
@@ -47,16 +47,15 @@ module By_row : sig
   (** [focus k] sets the focus to the row keyed by k. *)
   val focus : ('k, 'presence) t -> 'k -> unit -> unit Effect.t
 
-  (** [focus_index n] sets the focus to the nth row from the top of the
-      entire table. The first row is 0, the second is 1, and so on. *)
+  (** [focus_index n] sets the focus to the nth row from the top of the entire table. The
+      first row is 0, the second is 1, and so on. *)
   val focus_index : ('k, 'presence) t -> int -> unit -> unit Effect.t
 
   type 'k optional = ('k, 'k option) t
 
   module Expert : sig
-    (** [keyless] disables selecting a row by key, or returning the keyed row.
-        It can be useful for unifying controls for several tables with different keys.
-        It is cursed. *)
+    (** [keyless] disables selecting a row by key, or returning the keyed row. It can be
+        useful for unifying controls for several tables with different keys. It is cursed. *)
     val keyless : 'a optional -> Nothing.t optional
   end
 end
@@ -92,8 +91,8 @@ type ('kind, 'key, 'col_id) t =
 
 val component
   :  ('kind, 'presence, 'key, 'col_id) Kind.t
-  -> ('key, 'cmp) Bonsai.comparator
-  -> ('col_id, _) Bonsai.comparator
+  -> ('key, 'cmp) Comparator.Module.t
+  -> ('col_id, _) Comparator.Module.t
   -> collated:('key, 'data) Collated.t Bonsai.t
   -> leaves:'col_id Header_tree.leaf list Bonsai.t
   -> range:(int * int) Bonsai.t
@@ -106,3 +105,8 @@ val get_on_cell_click
   :  ('r, _, 'key, 'column) Kind.t
   -> 'r Bonsai.t
   -> ('key -> 'column -> unit Effect.t) Bonsai.t
+
+val get_focused_column
+  :  ('r, _, _, 'column) Kind.t
+  -> 'r Bonsai.t
+  -> 'column option Bonsai.t

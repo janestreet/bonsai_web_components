@@ -11,6 +11,7 @@ build: [
 ]
 depends: [
   "ocaml" {>= "5.1.0"}
+  "am_running_how_js"
   "async_kernel"
   "bin_prot"
   "bonsai"
@@ -42,10 +43,10 @@ depends: [
   "uri_parsing"
   "virtual_dom"
   "virtual_dom_toplayer"
-  "dune"                     {>= "3.11.0"}
+  "dune"                     {>= "3.17.0"}
   "gen_js_api"               {= "1.1.2+jst"}
-  "js_of_ocaml"              {>= "5.1.1" & < "5.7.0"}
-  "js_of_ocaml-ppx"          {>= "5.1.1" & < "5.7.0"}
+  "js_of_ocaml"              {= "6.0.1+jst"}
+  "js_of_ocaml-ppx"          {= "6.0.1+jst"}
   "re"                       {>= "1.8.0"}
   "uri"                      {>= "3.0.0"}
 ]

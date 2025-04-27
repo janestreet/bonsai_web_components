@@ -1,5 +1,4 @@
 open! Core
-module Bonsai_proc := Bonsai_web.Proc
 open Bonsai_web
 module Form := Bonsai_web_ui_form.With_manual_view
 
@@ -7,83 +6,62 @@ module Form := Bonsai_web_ui_form.With_manual_view
    below provides different behaviour corresponding to the different options in
    [Bonsai_web_ui_codemirror]. *)
 
-(* [Basic] forms use the most barebones Codemirror configuration. *)
+(* [Basic] forms accept a static list of extensions. *)
 module Basic : sig
   val string
     :  ?name:string
+    -> ?extensions:Codemirror.State.Extension.t list
     -> unit
     -> local_ Bonsai.graph
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
     :  ?name:string
+    -> ?extensions:Codemirror.State.Extension.t list
     -> (module Stringable with type t = 'a)
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
+  (** Consider using [Codemirror_sexp.extension] to enable sexp-specific editing features. *)
   val sexpable
     :  ?name:string
+    -> ?extensions:Codemirror.State.Extension.t list
     -> (module Sexpable with type t = 'a)
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end
 
 (* [Dynamic_extensions] forms have the ability to dynamically choose which extensions to
-   load, depending on the value of the ['model Value.t] that is supplied. *)
+   load, depending on the value of the ['model Bonsai.t] that is supplied. *)
 module Dynamic_extensions : sig
   val string
-    :  (module Bonsai_proc.Model with type t = 'model)
-    -> equal:('model -> 'model -> bool)
+    :  ?sexp_of_model:('model -> Sexp.t)
     -> ?name:string
+    -> equal:('model -> 'model -> bool)
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> local_ Bonsai.graph
-    -> (string, Vdom.Node.t) Form.t Bonsai.t
-
-  val stringable
-    :  (module Bonsai_proc.Model with type t = 'model)
-    -> (module Stringable with type t = 'a)
-    -> equal:('model -> 'model -> bool)
-    -> ?name:string
-    -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
-    -> 'model Bonsai.t
-    -> local_ Bonsai.graph
-    -> ('a, Vdom.Node.t) Form.t Bonsai.t
-
-  val sexpable
-    :  (module Bonsai_proc.Model with type t = 'model)
-    -> (module Sexpable with type t = 'a)
-    -> equal:('model -> 'model -> bool)
-    -> ?name:string
-    -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
-    -> 'model Bonsai.t
-    -> local_ Bonsai.graph
-    -> ('a, Vdom.Node.t) Form.t Bonsai.t
-end
-
-(* [Sexp_grammar_autocomplete] forms provide users with auto-complete results based on the
-   provided Sexp_grammar. *)
-module Sexp_grammar_autocomplete : sig
-  val string
-    :  ?name:string
-    -> ?extra_extension:Codemirror.State.Extension.t
-    -> _ Sexp_grammar.t Bonsai.t
     -> local_ Bonsai.graph
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
     :  (module Stringable with type t = 'a)
+    -> ?sexp_of_model:('model -> Sexp.t)
     -> ?name:string
-    -> ?extra_extension:Codemirror.State.Extension.t
-    -> 'a Sexp_grammar.t Bonsai.t
+    -> equal:('model -> 'model -> bool)
+    -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
+    -> 'model Bonsai.t
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
+  (** Consider using [Codemirror_sexp.extension] to enable sexp-specific editing features,
+      and [Codemirror_sexp.grammar_equal] for [equal]. *)
   val sexpable
     :  (module Sexpable with type t = 'a)
+    -> ?sexp_of_model:('model -> Sexp.t)
     -> ?name:string
-    -> ?extra_extension:Codemirror.State.Extension.t
-    -> 'a Sexp_grammar.t Bonsai.t
+    -> equal:('model -> 'model -> bool)
+    -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
+    -> 'model Bonsai.t
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end

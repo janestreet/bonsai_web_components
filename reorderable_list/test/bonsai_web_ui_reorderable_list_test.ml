@@ -65,6 +65,8 @@ let%expect_test "how is it printed" =
   Handle.show handle;
   [%expect
     {|
+    adding window event listener
+    adding window event listener
     <div>
       <div> 10 </div>
       <div>
@@ -73,8 +75,6 @@ let%expect_test "how is it printed" =
         <div data-drag-target="2" style={ transform: translateY(2px) translateX(0px); }> 2 </div>
       </div>
     </div>
-    adding window event listener
-    adding window event listener
     |}]
 ;;
 

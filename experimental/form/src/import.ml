@@ -1,1 +1,2 @@
 include Bonsai_web
+module Arrow_deprecated = Bonsai_arrow_deprecated

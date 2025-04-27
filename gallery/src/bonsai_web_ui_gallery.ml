@@ -1,6 +1,6 @@
 open! Core
 
-let lazy_deprecated = (Bonsai_web.Proc.Bonsai.lazy_ [@alert "-deprecated"])
+let lazy_deprecated = (Bonsai_web_proc.Bonsai.lazy_ [@alert "-deprecated"])
 
 open! Bonsai_web
 open! Bonsai.Let_syntax
@@ -88,9 +88,7 @@ let codemirror ~language ~content (local_ graph) =
       Bonsai_web.View.For_components.Codemirror.theme theme
     in
     Codemirror.with_dynamic_extensions
-      (module struct
-        type t = Codemirror_themes.t option [@@deriving equal, sexp]
-      end)
+      ~sexp_of:[%sexp_of: Codemirror_themes.t option]
       ~equal:[%equal: Codemirror_themes.t option]
       ~name:"codemirror for demo"
       codemirror_theme
@@ -148,7 +146,7 @@ let make_demo'
       ~content:code
       ~language:
         Underlying_codemirror.(
-          Mllike.ocaml
+          Codemirror_ocaml.ocaml_stream_parser
           |> Stream_parser.Stream_language.define
           |> Stream_parser.Stream_language.to_language
           |> Language.extension)

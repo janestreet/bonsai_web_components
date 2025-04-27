@@ -4,10 +4,22 @@ open! Import
 
 module Side : sig
   type t =
-    | Left
-    | Right
+    | First (* Left or top side *)
+    | Second
+end
+
+module Direction : sig
+  type t =
+    | Horizontal (* default *)
+    | Vertical
 end
 
 (** This attribute, when added to a Vdom node adds the ability for that dom-node to be
     clicked-and-dragged to change its parents width. *)
-val attr : side:Side.t -> Vdom.Attr.t
+val attr
+  :  ?on_drag_start:unit Effect.t
+  -> ?on_drag_stop:unit Effect.t
+  -> ?direction:Direction.t
+  -> side:Side.t
+  -> unit
+  -> Vdom.Attr.t

@@ -3,9 +3,7 @@ open! Import
 open Product
 
 let make component ~parse ~unparse =
-  let%map.Arrow_deprecated.Bonsai ({ value = { value; view }; set } : _ Same.t) =
-    component
-  in
+  let%map.Arrow_deprecated ({ value = { value; view }; set } : _ Same.t) = component in
   let value = parse value in
   let set v = set (unparse v) in
   { value = { With_view.value; view }; set }

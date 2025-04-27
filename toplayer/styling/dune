@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_ui_toplayer_styling)
+ (public_name bonsai_web_components.web_ui_toplayer_styling)
+ (libraries bonsai bonsai_web core virtual_dom.css_gen)
+ (preprocess
+  (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css)))

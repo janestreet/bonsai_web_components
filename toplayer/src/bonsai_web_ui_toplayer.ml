@@ -2,11 +2,76 @@ open! Core
 open! Bonsai_web
 open Bonsai.Let_syntax
 open Floating_positioning_new
+module Styling = Bonsai_web_ui_toplayer_styling
 module Position = Position
 module Alignment = Alignment
 module Offset = Offset
 module Anchor = Anchor
 module Match_anchor_side = Match_anchor_side
+
+(* In Chrome, adding children to the DOM root results in a whole-document style recalculation,
+   which is expensive. *)
+let resolve_toplayer_root_at_graph_construction (local_ (_graph : Bonsai.graph)) =
+  Byo_portal.ensure_global_toplayer_root_mounted ()
+;;
+
+let arrow_helper = Styling.arrow_helper
+
+module Tooltip = struct
+  module Config = struct
+    type t = Bonsai_web_ui_toplayer_styling.Tooltip.t =
+      { tooltip_attrs : Vdom.Attr.t list
+      ; anchor_attrs : Vdom.Attr.t list
+      ; main_axis_offset : float
+      ; cross_axis_offset : float
+      ; show_delay : Time_ns.Span.t option
+      ; hide_grace_period : Time_ns.Span.t option
+      ; hoverable_hide_grace_period : Time_ns.Span.t
+      ; arrow : Vdom.Node.t option
+      }
+
+    let create = Bonsai_web_ui_toplayer_styling.Tooltip.create
+  end
+
+  let default_tooltip_attrs =
+    {%css|
+      background-color: white;
+      color: black;
+      border: 1px solid black;
+      border-radius: 2px;
+      padding: 0.2em 0.3em;
+    |}
+  ;;
+
+  let create
+    ?(config = Config.create ~tooltip_attrs:[ default_tooltip_attrs ] ~arrow:None ())
+    ?(position = Position.Auto)
+    ?(alignment = Alignment.Center)
+    ?(hoverable_inside = false)
+    content
+    =
+    Vdom_toplayer.tooltip
+      ~tooltip_attrs:config.tooltip_attrs
+      ~position
+      ~alignment
+      ~offset:
+        { main_axis = config.main_axis_offset; cross_axis = config.cross_axis_offset }
+      ~hoverable_inside
+      ?show_delay:config.show_delay
+      ?hide_grace_period:
+        (match hoverable_inside with
+         | true -> Some config.hoverable_hide_grace_period
+         | false -> config.hide_grace_period)
+      ?arrow:config.arrow
+      content
+    :: config.anchor_attrs
+    |> Vdom.Attr.many
+  ;;
+
+  let text ?config ?position ?alignment ?hoverable_inside content =
+    create ?config ?position ?alignment ?hoverable_inside (Vdom.Node.text content)
+  ;;
+end
 
 type mouse_event = Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml.Js.t
 
@@ -46,13 +111,25 @@ module Controls = struct
     |> Option.is_some
   ;;
 
-  let on_evt_outside ~eff ~root_id (ev : mouse_event) =
+  let on_evt_outside ~eff ~root_id ~bonk (ev : mouse_event) =
     match Js_of_ocaml.Dom_html.getElementById_opt root_id with
     | None -> Effect.Ignore
     | Some root ->
       if element_contains root ev##.target || element_inert root
       then Effect.Ignore
-      else eff ~click_target_was_another_popover:(event_target_inside_a_popover ev)
+      else
+        (* The browser doesn't give you an API to detect "clicks outside", so we've
+        attached an event listener to the window. It needs to run on [Capture], because
+        otherwise, if [stop_propagation] is called on the trigger element, we will never
+        detect a click outside.
+
+        However, if you click on the trigger element, the [Capture] window listener will
+        schedule a "close" effect, and then the trigger element's [on_click] will schedule
+        an "open" effect, and the popover will stay open. This is not what people expect.
+
+        To counteract this, we [bonk] the close effect, so that it will necessarily run
+        after the open effect. *)
+        bonk (eff ~click_target_was_another_popover:(event_target_inside_a_popover ev))
   ;;
 
   let on_esc_attrs ~eff ~root_id =
@@ -112,6 +189,7 @@ module Controls = struct
 
   let listeners ~on_click_outside ~on_right_click_outside ~on_esc (local_ graph) =
     let root_id = Bonsai.path_id graph in
+    let bonk = Bonsai_extra.bonk graph in
     let monitor_mousedowns_attr, last_mousedown_was_inside =
       monitor_mousedown ~root_id graph
     in
@@ -119,6 +197,7 @@ module Controls = struct
       let%arr on_click_outside
       and on_right_click_outside
       and root_id
+      and bonk
       and peek_last_mousedown = Bonsai.peek last_mousedown_was_inside graph in
       let build_click_listener ~kind ~f =
         match f with
@@ -142,8 +221,8 @@ module Controls = struct
                | Active `Outside -> f ~click_target_was_another_popover)
           in
           listener_f
-            ~phase:Vdom.Attr.Global_listeners.Phase.Bubbling
-            ~f:(on_evt_outside ~eff:close_effect ~root_id)
+            ~phase:Vdom.Attr.Global_listeners.Phase.Capture
+            ~f:(on_evt_outside ~eff:close_effect ~root_id ~bonk)
       in
       ( build_click_listener ~kind:`Click ~f:on_click_outside
       , build_click_listener ~kind:`Right_click ~f:on_right_click_outside )
@@ -218,77 +297,101 @@ module Controls = struct
   end
 end
 
+let transpose_join_opt v = Bonsai.transpose_opt v |> Bonsai.map ~f:Option.join
+
 module Popover = struct
+  module Config = struct
+    type t = Bonsai_web_ui_toplayer_styling.Popover.t =
+      { popover_attrs : Vdom.Attr.t list
+      ; default_main_axis_offset : float
+      ; default_main_axis_offset_with_arrow : float
+      ; arrow : Vdom.Node.t
+      }
+
+    let create = Bonsai_web_ui_toplayer_styling.Popover.create
+  end
+
   module For_external_state = struct
-    let from_theme ?(has_arrow = false) ?offset theme =
-      let constants = View.constants theme in
-      let offset =
-        match offset, has_arrow with
-        | Some offset, _ -> offset
-        | None, false ->
-          { Offset.main_axis = constants.toplayer.popover_default_offset_px
-          ; cross_axis = 0.
-          }
-        | None, true ->
-          { Offset.main_axis = constants.toplayer.popover_with_arrow_default_offset_px
-          ; cross_axis = 0.
-          }
-      in
-      let arrow =
-        match has_arrow with
-        | false -> None
-        | true -> View.For_components.Toplayer.popover_arrow theme |> Some
-      in
-      View.For_components.Toplayer.popover_styles theme, offset, arrow
+    let resolve_config config theme =
+      match config with
+      | `From_theme ->
+        let%arr theme = View.Theme.current theme in
+        let constants = View.constants theme in
+        let arrow = View.For_components.Toplayer.popover_arrow theme in
+        let default_main_axis_offset = constants.toplayer.popover_default_offset_px in
+        let default_main_axis_offset_with_arrow =
+          constants.toplayer.popover_with_arrow_default_offset_px
+        in
+        let popover_attrs = [ View.For_components.Toplayer.popover_styles theme ] in
+        { Config.arrow
+        ; popover_attrs
+        ; default_main_axis_offset
+        ; default_main_axis_offset_with_arrow
+        }
+      | `This_one config -> config
     ;;
 
-    let transpose_join_opt v = Bonsai.transpose_opt v |> Bonsai.map ~f:Option.join
-
     let opt
+      ?(config = `From_theme)
       ?(extra_attrs = return [])
       ?(controls = return Vdom.Attr.empty)
       ?position
       ?alignment
       ?offset
       ?match_anchor_side_length
+      ~overflow_auto_wrapper
       ?(focus_on_open = Bonsai.return false)
-      ?has_arrow
+      ?(has_arrow = Bonsai.return false)
       ~is_open
       ~content
       (local_ graph)
       =
+      resolve_toplayer_root_at_graph_construction graph;
       match%sub is_open with
       | None -> return Vdom.Attr.empty
       | Some input ->
-        let%arr theme = View.Theme.current graph
+        let%arr config = resolve_config config graph
         and controls
         and position = Bonsai.transpose_opt position
         and alignment = Bonsai.transpose_opt alignment
         and offset = Bonsai.transpose_opt offset
         and match_anchor_side_length = transpose_join_opt match_anchor_side_length
+        and overflow_auto_wrapper
         and focus_on_open
-        and has_arrow = Bonsai.transpose_opt has_arrow
+        and has_arrow
         and extra_attrs
         and content = content input graph in
-        let popover_style, offset, arrow = from_theme ?has_arrow ?offset theme in
+        let default_offset =
+          { Offset.main_axis =
+              (if has_arrow
+               then config.default_main_axis_offset_with_arrow
+               else config.default_main_axis_offset)
+          ; cross_axis = 0.
+          }
+        in
+        let arrow = if has_arrow then Some config.arrow else None in
         Vdom_toplayer.popover
           ~popover_attrs:
-            (popover_style :: focus_on_open_attr focus_on_open :: controls :: extra_attrs)
+            (config.popover_attrs
+             @ (focus_on_open_attr focus_on_open :: controls :: extra_attrs))
           ?position
           ?alignment
-          ~offset
+          ~offset:(Option.value offset ~default:default_offset)
           ?match_anchor_side_length
+          ~overflow_auto_wrapper
           ?arrow
           content
     ;;
 
     let bool
+      ?config
       ?extra_attrs
       ?controls
       ?position
       ?alignment
       ?offset
       ?match_anchor_side_length
+      ~overflow_auto_wrapper
       ?focus_on_open
       ?has_arrow
       ~is_open
@@ -301,76 +404,161 @@ module Popover = struct
         | false -> None
       in
       opt
+        ?config
         ?extra_attrs
         ?controls
         ?position
         ?alignment
         ?offset
         ?match_anchor_side_length
+        ~overflow_auto_wrapper
         ?focus_on_open
         ?has_arrow
         ~is_open
         ~content
     ;;
 
-    let opt_virtual
-      ?(extra_attrs = return [])
+    let unpositioned
+      ~extra_attrs
       ?(controls = return Vdom.Attr.empty)
+      ~overflow_auto_wrapper
+      ?(focus_on_open = Bonsai.return false)
+      ~arrow
+      ~is_open
+      ~content
+      (local_ graph)
+      =
+      resolve_toplayer_root_at_graph_construction graph;
+      let (_ : unit Bonsai.t) =
+        match%sub is_open with
+        | None -> return ()
+        | Some input ->
+          Byo_portal.component
+            (fun graph ->
+              let%arr controls
+              and overflow_auto_wrapper
+              and focus_on_open
+              and extra_attrs
+              and arrow
+              and content = content input graph in
+              Vdom_toplayer.For_bonsai_web_ui_toplayer.popover_custom
+                ~popover_attrs:
+                  (focus_on_open_attr focus_on_open :: controls :: extra_attrs)
+                ~overflow_auto_wrapper
+                ?arrow
+                ~popover_content:content
+                ())
+            graph;
+          return ()
+      in
+      ()
+    ;;
+
+    let opt_css ~extra_attrs ?controls ?focus_on_open ~is_open ~content (local_ graph) =
+      let extra_attrs =
+        let%arr extra_attrs in
+        Vdom_toplayer.For_bonsai_web_ui_toplayer.show_on_mount :: extra_attrs
+      in
+      unpositioned
+        ~extra_attrs
+        ?controls
+        ~overflow_auto_wrapper:(return false)
+        ?focus_on_open
+        ~arrow:(return None)
+        ~is_open
+        ~content
+        graph
+    ;;
+
+    let bool_css ~extra_attrs ?controls ?focus_on_open ~is_open ~content (local_ graph) =
+      let content (_ : unit Bonsai.t) (local_ graph) = content graph in
+      let is_open =
+        match%arr is_open with
+        | true -> Some ()
+        | false -> None
+      in
+      opt_css ~extra_attrs ?controls ?focus_on_open ~is_open ~content graph
+    ;;
+
+    let opt_virtual
+      ?(config = `From_theme)
+      ?(extra_attrs = return [])
+      ?controls
       ?position
       ?alignment
       ?offset
       ?match_anchor_side_length
-      ?(focus_on_open = Bonsai.return false)
-      ?has_arrow
+      ~overflow_auto_wrapper
+      ?focus_on_open
+      ?(has_arrow = return false)
       ~is_open
       ~content
       anchor
       (local_ graph)
       =
-      let node =
-        match%sub is_open with
-        | None -> return (Vdom.Node.none_deprecated [@alert "-deprecated"])
-        | Some input ->
-          let%arr theme = View.Theme.current graph
-          and controls
-          and position = Bonsai.transpose_opt position
-          and alignment = Bonsai.transpose_opt alignment
-          and offset = Bonsai.transpose_opt offset
-          and match_anchor_side_length = transpose_join_opt match_anchor_side_length
-          and focus_on_open
-          and has_arrow = Bonsai.transpose_opt has_arrow
-          and extra_attrs
-          and content = content input graph
-          and anchor in
-          let popover_style, offset, arrow = from_theme ?has_arrow ?offset theme in
-          Vdom_toplayer.For_use_in_portals.popover_custom
-            ~popover_attrs:
-              (popover_style
-               :: focus_on_open_attr focus_on_open
-               :: controls
-               :: extra_attrs)
-            ?position
-            ?alignment
-            ~offset
-            ?match_anchor_side_length
-            ?arrow
-            ~popover_content:content
-            anchor
+      let config = resolve_config config graph in
+      let arrow =
+        let%arr has_arrow
+        and { arrow; _ } = config in
+        if has_arrow then Some arrow else None
       in
-      Portal.bonsai_driven node graph
+      let positioning_attr =
+        let%arr config
+        and position = Bonsai.transpose_opt position
+        and alignment = Bonsai.transpose_opt alignment
+        and offset = Bonsai.transpose_opt offset
+        and match_anchor_side_length = transpose_join_opt match_anchor_side_length
+        and has_arrow
+        and anchor in
+        let default_offset =
+          { Offset.main_axis =
+              (if has_arrow
+               then config.default_main_axis_offset_with_arrow
+               else config.default_main_axis_offset)
+          ; cross_axis = 0.
+          }
+        in
+        Floating_positioning_new.position_me
+          ~prepare:Vdom_toplayer.For_bonsai_web_ui_toplayer.show_popover
+          ~arrow_selector:Vdom_toplayer.For_bonsai_web_ui_toplayer.arrow_selector
+          ?position
+          ?alignment
+          ~offset:(Option.value offset ~default:default_offset)
+          ?match_anchor_side_length
+          anchor
+      in
+      let extra_attrs =
+        let%arr { popover_attrs; _ } = config
+        and extra_attrs
+        and positioning_attr in
+        (positioning_attr :: popover_attrs) @ extra_attrs
+      in
+      unpositioned
+        ~extra_attrs
+        ?controls
+        ~overflow_auto_wrapper
+        ?focus_on_open
+        ~arrow
+        ~is_open
+        ~content
+        graph
     ;;
 
     let bool_virtual
+      ?config
       ?extra_attrs
       ?controls
       ?position
       ?alignment
       ?offset
       ?match_anchor_side_length
+      ~overflow_auto_wrapper
       ?focus_on_open
       ?has_arrow
       ~is_open
       ~content
+      anchor
+      (local_ graph)
       =
       let content (_ : unit Bonsai.t) (local_ graph) = content graph in
       let is_open =
@@ -379,20 +567,25 @@ module Popover = struct
         | false -> None
       in
       opt_virtual
+        ?config
         ?extra_attrs
         ?controls
         ?position
         ?alignment
         ?offset
         ?match_anchor_side_length
+        ~overflow_auto_wrapper
         ?focus_on_open
         ?has_arrow
         ~is_open
         ~content
+        anchor
+        graph
     ;;
   end
 
   let create
+    ?config
     ?(extra_attrs = return [])
     ?close_on_click_outside
     ?close_on_right_click_outside
@@ -401,6 +594,7 @@ module Popover = struct
     ?alignment
     ?offset
     ?match_anchor_side_length
+    ~overflow_auto_wrapper
     ?focus_on_open
     ?has_arrow
     ~content
@@ -418,11 +612,13 @@ module Popover = struct
       control_attr :: extra_attrs
     in
     ( For_external_state.bool
+        ?config
         ~extra_attrs
         ?position
         ?alignment
         ?offset
         ?match_anchor_side_length
+        ~overflow_auto_wrapper
         ?focus_on_open
         ?has_arrow
         ~is_open:controls.is_open
@@ -431,7 +627,39 @@ module Popover = struct
     , controls )
   ;;
 
+  let create_css
+    ~extra_attrs
+    ?close_on_click_outside
+    ?close_on_right_click_outside
+    ?close_on_esc
+    ?focus_on_open
+    ~content
+    (local_ graph)
+    =
+    let control_attr, controls =
+      Controls.create
+        ?close_on_click_outside
+        ?close_on_right_click_outside
+        ?close_on_esc
+        graph
+    in
+    let extra_attrs =
+      let%arr extra_attrs and control_attr in
+      control_attr :: extra_attrs
+    in
+    let () =
+      For_external_state.bool_css
+        ~extra_attrs
+        ?focus_on_open
+        ~is_open:controls.is_open
+        ~content:(content ~close:controls.close)
+        graph
+    in
+    controls
+  ;;
+
   let create_virtual
+    ?config
     ?(extra_attrs = return [])
     ?close_on_click_outside
     ?close_on_right_click_outside
@@ -440,6 +668,7 @@ module Popover = struct
     ?alignment
     ?offset
     ?match_anchor_side_length
+    ~overflow_auto_wrapper
     ?focus_on_open
     ?has_arrow
     ~content
@@ -459,11 +688,13 @@ module Popover = struct
     in
     let () =
       For_external_state.bool_virtual
+        ?config
         ~extra_attrs
         ?position
         ?alignment
         ?offset
         ?match_anchor_side_length
+        ~overflow_auto_wrapper
         ?focus_on_open
         ?has_arrow
         ~is_open:controls.is_open
@@ -476,53 +707,95 @@ module Popover = struct
 end
 
 module Modal = struct
+  module Config = struct
+    type t = Bonsai_web_ui_toplayer_styling.Modal.t = { modal_attrs : Vdom.Attr.t list }
+  end
+
+  let resolve_config config (local_ graph) =
+    match config with
+    | `From_theme ->
+      let%arr theme = View.Theme.current graph in
+      [ View.For_components.Toplayer.modal_styles theme ]
+    | `This_one config ->
+      let%arr { Config.modal_attrs } = config in
+      modal_attrs
+  ;;
+
   module For_external_state = struct
     let opt
+      ?(config = `From_theme)
       ?(extra_attrs = return [])
       ?(controls = return Vdom.Attr.empty)
       ?lock_body_scroll
+      ~overflow_auto_wrapper
       ?(focus_on_open = Bonsai.return true)
       ~is_open
       ~content
       (local_ graph)
       =
-      let node =
+      resolve_toplayer_root_at_graph_construction graph;
+      let (_ : unit Bonsai.t) =
         match%sub is_open with
-        | None -> return (Vdom.Node.none_deprecated [@alert "-deprecated"])
+        | None -> return ()
         | Some input ->
-          let%arr theme = View.Theme.current graph
-          and lock_body_scroll = Bonsai.transpose_opt lock_body_scroll
-          and focus_on_open
-          and extra_attrs
-          and controls
-          and content = content input graph in
-          let modal_styles = View.For_components.Toplayer.modal_styles theme in
-          Vdom_toplayer.For_use_in_portals.modal
-            ~modal_attrs:
-              (modal_styles :: focus_on_open_attr focus_on_open :: controls :: extra_attrs)
-            ?lock_body_scroll
-            content
+          Byo_portal.component
+            (fun graph ->
+              let%arr modal_styles = resolve_config config graph
+              and lock_body_scroll = Bonsai.transpose_opt lock_body_scroll
+              and overflow_auto_wrapper
+              and focus_on_open
+              and extra_attrs
+              and controls
+              and content = content input graph in
+              Vdom_toplayer.For_bonsai_web_ui_toplayer.modal
+                ~modal_attrs:
+                  (modal_styles
+                   @ (focus_on_open_attr focus_on_open :: controls :: extra_attrs))
+                ?lock_body_scroll
+                ~overflow_auto_wrapper
+                content)
+            graph;
+          return ()
       in
-      Portal.bonsai_driven node graph
+      ()
     ;;
 
-    let bool ?extra_attrs ?controls ?lock_body_scroll ?focus_on_open ~is_open ~content =
+    let bool
+      ?config
+      ?extra_attrs
+      ?controls
+      ?lock_body_scroll
+      ~overflow_auto_wrapper
+      ?focus_on_open
+      ~is_open
+      ~content
+      =
       let content (_ : unit Bonsai.t) (local_ graph) = content graph in
       let is_open =
         match%arr is_open with
         | true -> Some ()
         | false -> None
       in
-      opt ?extra_attrs ?controls ?lock_body_scroll ?focus_on_open ~is_open ~content
+      opt
+        ?config
+        ?extra_attrs
+        ?controls
+        ?lock_body_scroll
+        ~overflow_auto_wrapper
+        ?focus_on_open
+        ~is_open
+        ~content
     ;;
   end
 
   let create
+    ?config
     ?(extra_attrs = return [])
     ?(close_on_click_outside = return Close_on_click_outside.Yes_unless_target_is_popover)
     ?close_on_right_click_outside
     ?close_on_esc
     ?lock_body_scroll
+    ~overflow_auto_wrapper
     ?focus_on_open
     ~content
     (local_ graph)
@@ -540,8 +813,10 @@ module Modal = struct
     in
     let () =
       For_external_state.bool
+        ?config
         ~extra_attrs
         ?lock_body_scroll
+        ~overflow_auto_wrapper
         ?focus_on_open
         ~is_open:controls.is_open
         ~content:(content ~close:controls.close)
@@ -551,4 +826,4 @@ module Modal = struct
   ;;
 end
 
-module For_testing = Portal.For_testing
+module For_testing = Byo_portal.For_testing

@@ -158,7 +158,7 @@ module Make (Name : Types.Name) = struct
           display: block;
           color: red;
         }
-        |}]
+      |}]
 
   let box t = function
     | [] -> Node.none_deprecated [@alert "-deprecated"]

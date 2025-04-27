@@ -1,0 +1,3 @@
+module Bonsai_web_ui_form_automatic_test = Bonsai_web_ui_form_automatic_test
+module Bonsai_web_ui_form_manual_test = Bonsai_web_ui_form_manual_test
+module Multiple_list_quickcheck_test = Multiple_list_quickcheck_test

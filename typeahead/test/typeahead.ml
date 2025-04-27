@@ -6,10 +6,10 @@ module Typeahead = Bonsai_web_ui_typeahead.Typeahead
 
 let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
   Typeahead.create
-    (module Data)
+    ~sexp_of:[%sexp_of: Data.t]
     ~equal:[%equal: Data.t]
     ~all_options:(Bonsai.return Data.all)
-    ~placeholder:"Select a value"
+    ~placeholder:(Bonsai.return "Select a value")
     ~to_string
     ~attr_merge_behavior:
       Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
@@ -60,10 +60,10 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
   let component (local_ graph) =
     let%sub { view; _ } =
       Typeahead.Private.For_testing.create_with_browser_behavior_in_test
-        (module Data)
+        ~sexp_of:[%sexp_of: Data.t]
         ~equal:[%equal: Data.t]
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~attr_merge_behavior:
           Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
@@ -139,12 +139,12 @@ let%expect_test "Attrs are NOT merged when \
   let component (local_ graph) =
     let%sub { view; _ } =
       Typeahead.Private.For_testing.create_with_browser_behavior_in_test
-        (module Data)
+        ~sexp_of:[%sexp_of: Data.t]
         ~equal:[%equal: Data.t]
         ~extra_attrs:
           (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~attr_merge_behavior:
           Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
@@ -157,8 +157,8 @@ let%expect_test "Attrs are NOT merged when \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead__inline_class_hash_70fd01205e))
-     (second (typeahead__inline_class_hash_a52278ae16)))
+     (first (typeahead__inline_class_hash_8af956ec84))
+     (second (typeahead__inline_class_hash_e2f39863be)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -179,12 +179,12 @@ let%expect_test "Attrs are merged when `Merge is applied " =
   let component (local_ graph) =
     let%sub { view; _ } =
       Typeahead.Private.For_testing.create_with_browser_behavior_in_test
-        (module Data)
+        ~sexp_of:[%sexp_of: Data.t]
         ~equal:[%equal: Data.t]
         ~extra_attrs:
           (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~attr_merge_behavior:Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Merge
         graph
@@ -340,10 +340,10 @@ let%expect_test "Select element using partial input" =
 let%expect_test "empty string clears the selection" =
   let component =
     Typeahead.create
-      (module Data)
+      ~sexp_of:[%sexp_of: Data.t]
       ~equal:[%equal: Data.t]
       ~all_options:(Bonsai.return [ Data.Option_A ])
-      ~placeholder:"Select a value"
+      ~placeholder:(Bonsai.return "Select a value")
       ~to_string:(Bonsai.return Data.to_string)
       ~attr_merge_behavior:
         Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
@@ -402,10 +402,10 @@ let%expect_test "setting a value that isn't present in [all_options] still sets 
         let incoming ({ set_selected; _ } : t) data = set_selected (Some data)
       end)
       (Typeahead.create
-         (module Data)
+         ~sexp_of:[%sexp_of: Data.t]
          ~equal:[%equal: Data.t]
          ~all_options:(Bonsai.return [ Data.Option_A ])
-         ~placeholder:"Select a value"
+         ~placeholder:(Bonsai.return "Select a value")
          ~to_string:(Bonsai.return Data.to_string)
          ~attr_merge_behavior:
            Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge)

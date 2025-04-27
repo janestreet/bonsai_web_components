@@ -62,3 +62,4 @@ let model_resetter_generation (local_ graph) =
 ;;
 
 let distinct a b = not (equal a b)
+let to_string { path_id; generation_id } = [%string "%{path_id}__%{generation_id#Int}"]

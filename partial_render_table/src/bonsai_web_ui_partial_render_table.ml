@@ -22,8 +22,8 @@ end
 
 let default_preload = 70
 
-module Column_structure = New_columns.Column_structure
-module Render_cell = New_columns.Render_cell
+module Column_structure = Columns.Column_structure
+module Render_cell = Columns.Render_cell
 
 module Expert = struct
   module Focus = struct
@@ -43,15 +43,10 @@ module Expert = struct
     [@@deriving fields ~getters]
   end
 
-  module New_columns = struct
+  module Columns = struct
     type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) Column_intf.t
 
-    include New_columns.Expert
-  end
-
-  module Columns = struct
-    type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
-
+    include Columns.Expert
     module Indexed_column_id = Indexed_column_id
     module Dynamic_cells = Old_columns.Dynamic_cells
     module Dynamic_columns = Old_columns.Dynamic_columns
@@ -72,7 +67,7 @@ module Expert = struct
 
   let column_width_tracker ~sexp_of_model ~equal ~default_model graph =
     let column_widths, set_column_width =
-      Bonsai.state_machine0
+      Bonsai.state_machine
         graph
         ~sexp_of_model
         ~equal
@@ -105,20 +100,23 @@ module Expert = struct
   ;;
 
   let implementation
-    (type column column_cmp key presence data cmp)
+    (type column_id key presence data cmp)
     ?extra_row_attrs
-    ~resize_column_widths_to_fit
     ~styling
+    ~resize_column_widths_to_fit
     ~preload_rows
-    (key_comparator : (key, cmp) Bonsai.comparator)
-    (column_id_comparator : (column, column_cmp) Bonsai.comparator)
-    ~(focus : (_, presence, key, column) Focus.Kind.t)
+    ~(wrap_header : (column_id:column_id -> Vdom.Node.t -> Vdom.Node.t) Bonsai.t)
+    (key_comparator : (key, cmp) Comparator.Module.t)
+    ~(focus : (_, presence, key, column_id) Focus.Kind.t)
     ~row_height
-    ~headers
-    ~assoc
+    ~(columns : (key, data, column_id) Column_intf.t)
     (collated : (key, data) Collated.t Bonsai.t)
     (local_ graph)
     =
+    let (T { value; vtable; column_id }) = columns in
+    let module T = (val vtable) in
+    let headers = T.headers ~wrap_header value graph in
+    let assoc cells = T.instantiate_cells value key_comparator cells in
     let extra_row_attrs =
       match extra_row_attrs with
       | None -> Bonsai.return (fun _ -> [])
@@ -162,7 +160,12 @@ module Expert = struct
     let table_body_client_rect =
       Bonsai.cutoff ~equal:[%equal: Bbox.t option] table_body_client_rect
     in
-    let module Column_cmp = (val column_id_comparator) in
+    let module Column_cmp = struct
+      include (val column_id)
+
+      let sexp_of_t = comparator.sexp_of_t
+    end
+    in
     let module Column_widths_model = struct
       type t = Column_size.t Map.M(Column_cmp).t [@@deriving sexp_of, equal]
     end
@@ -479,7 +482,7 @@ module Expert = struct
       Focus.component
         focus_kind
         key_comparator
-        column_id_comparator
+        column_id
         ~leaves
         ~collated
         ~range:range_without_preload
@@ -493,7 +496,7 @@ module Expert = struct
         ~themed_attrs
         ~resize_column_widths_to_fit
         ~key_comparator
-        ~column_id_comparator
+        ~column_id_comparator:column_id
         ~row_height
         ~headers
         ~leaves
@@ -509,6 +512,8 @@ module Expert = struct
     let head =
       Table_header.component
         headers
+        ~column_id_equal:(Comparable.equal Column_cmp.comparator.compare)
+        ~focused_column:(Focus.get_focused_column focus_kind focus)
         ~themed_attrs
         ~resize_column_widths_to_fit
         ~column_widths
@@ -586,33 +591,28 @@ module Expert = struct
   ;;
 
   let component
-    (type key focus presence data cmp column_id)
+    (type column_id key data cmp)
     ?(styling = Which_styling.From_theme)
     ?(resize_column_widths_to_fit = Bonsai.return false)
     ?(preload_rows = default_preload)
     ?extra_row_attrs
-    (key_comparator : (key, cmp) Bonsai.comparator)
-    ~(focus : (focus, presence, key, column_id) Focus.Kind.t)
+    (key_comparator : (key, cmp) Comparator.Module.t)
+    ~focus
     ~row_height
     ~(columns : (key, data, column_id) Column_intf.t)
     (collated : (key, data) Collated.t Bonsai.t)
     (local_ graph)
     =
-    let (T { value; vtable; column_id }) = columns in
-    let module T = (val vtable) in
-    let headers = T.headers value graph in
-    let assoc cells = T.instantiate_cells value key_comparator cells in
     implementation
       ?extra_row_attrs
+      ~styling
       ~resize_column_widths_to_fit
       ~preload_rows
-      ~styling
+      ~wrap_header:(return (fun ~column_id:_ view -> view))
       key_comparator
-      column_id
       ~focus
       ~row_height
-      ~headers
-      ~assoc
+      ~columns
       collated
       graph
   ;;
@@ -625,7 +625,7 @@ module Expert = struct
     ~(filter_to_predicate : filter -> _)
     ~(order_to_compare : order -> _)
     (data : (k, v, cmp) Map.t Bonsai.t)
-    (collate : (k, filter, order) Collate.t Bonsai.t)
+    (collate : (k, filter, order) Collate_params.t Bonsai.t)
     (local_ graph)
     =
     let data_and_collate = Bonsai.both data collate in
@@ -682,15 +682,10 @@ module Basic = struct
     [@@deriving fields ~getters]
   end
 
-  module New_columns = struct
+  module Columns = struct
     type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) Column_intf.with_sorter
 
-    include New_columns.Basic
-  end
-
-  module Columns = struct
-    type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
-
+    include Columns.Basic
     module Indexed_column_id = Indexed_column_id
     module Dynamic_cells = Old_columns.Dynamic_cells_with_sorter
     module Dynamic_columns = Old_columns.Dynamic_columns_with_sorter
@@ -698,71 +693,51 @@ module Basic = struct
   end
 
   module Rank_range = struct
-    type t = int Collate.Which_range.t [@@deriving sexp, equal]
+    type t = int Collate_params.Which_range.t [@@deriving sexp, equal]
   end
 
-  type 'a compare = 'a -> 'a -> int
-
   let component
-    : type key presence focus data cmp column_id.
-      ?styling:Which_styling.t
-      -> ?resize_column_widths_to_fit:bool Bonsai.t
-      -> ?filter:(key:key -> data:data -> bool) Bonsai.t
-      -> ?override_sort:
-           (key compare -> (key * data) compare -> (key * data) compare) Bonsai.t
-      -> ?default_sort:(key * data) compare Bonsai.t
-      -> ?multisort_columns_when:
-           [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click ] Bonsai.t
-      -> ?preload_rows:int
-      -> ?extra_row_attrs:(key -> Vdom.Attr.t list) Bonsai.t
-      -> (key, cmp) Bonsai.comparator
-      -> focus:(focus, presence, key, column_id) Focus.t
-      -> row_height:[ `Px of int ] Bonsai.t
-      -> columns:(key, data, column_id) Column_intf.with_sorter
-      -> (key, data, cmp) Map.t Bonsai.t
-      -> local_ Bonsai.graph
-      -> (focus, key, column_id) Result.t Bonsai.t
+    (type key presence focus data cmp column_id)
+    ?(styling = Which_styling.From_theme)
+    ?(resize_column_widths_to_fit = Bonsai.return false)
+    ?filter
+    ?override_sort
+    ?default_sort
+    ?(wrap_header = Bonsai.return (Sortable.Wrap_header.clickable_with_icon ()))
+    ?(preload_rows = default_preload)
+    ?extra_row_attrs
+    (key_comparator : (key, cmp) Comparator.Module.t)
+    ~(focus : (focus, presence, key, column_id) Focus.t)
+    ~row_height
+    ~(columns : (key, data, column_id) Column_intf.with_sorter)
+    map
+    (local_ graph)
     =
-    fun ?(styling = Which_styling.From_theme)
-      ?(resize_column_widths_to_fit = Bonsai.return false)
-      ?filter
-      ?override_sort
-      ?default_sort
-      ?multisort_columns_when
-      ?(preload_rows = default_preload)
-      ?extra_row_attrs
-      key_comparator
-      ~focus
-      ~row_height
-      ~columns
-      map
-      (local_ graph) ->
     let module Key_cmp = (val key_comparator) in
     let filter = Bonsai.transpose_opt filter in
     let rank_range, set_rank_range =
       Bonsai.state
-        (Collate.Which_range.To 0)
+        (Collate_params.Which_range.To 0)
         ~sexp_of_model:[%sexp_of: Rank_range.t]
         ~equal:[%equal: Rank_range.t]
         graph
     in
-    let (Y { value; vtable; column_id }) = columns in
+    let (Column_intf.Y { value; vtable; column_id }) = columns in
     let module Col_id = (val column_id) in
     let sortable_state =
       Sortable.state ~equal:(Comparable.equal Col_id.comparator.compare) () graph
     in
     let module Column = (val vtable) in
-    let assoc cells = Column.instantiate_cells value key_comparator cells in
     let default_sort =
       match default_sort with
       | None -> Bonsai.return None
       | Some v -> v >>| Option.some
     in
-    let multisort_columns_when =
-      Option.value multisort_columns_when ~default:(Bonsai.return `Shift_click)
-    in
-    let%sub sorters, headers =
-      Column.headers_and_sorters ~multisort_columns_when value sortable_state graph
+    let sorters = Column.sorters value graph in
+    let wrap_header =
+      let%arr wrap_header and sorters and sortable_state in
+      let is_sortable column_id = Map.mem sorters column_id in
+      wrap_header sortable_state ~is_sortable
     in
     let collate =
       let override_sort =
@@ -783,8 +758,8 @@ module Basic = struct
           ~default_sort
       in
       let%arr filter and order and rank_range in
-      let key_range = Collate.Which_range.All_rows in
-      { Collate.filter; order; key_range; rank_range }
+      let key_range = Collate_params.Which_range.All_rows in
+      { Collate_params.filter; order; key_range; rank_range }
     in
     let collated, key_rank =
       Expert.collate
@@ -821,20 +796,23 @@ module Basic = struct
       let%arr collated in
       Collated.num_filtered_rows collated
     in
+    let columns = Column_intf.T { value; vtable = (module Column); column_id } in
     let%sub ({ range = viewed_range; _ } as result) =
-      Expert.implementation
-        ?extra_row_attrs
-        ~preload_rows
-        ~styling
-        ~resize_column_widths_to_fit
-        key_comparator
-        column_id
-        ~focus
-        ~row_height
-        ~headers
-        ~assoc
-        collated
-        graph
+      let x =
+        Expert.implementation
+          ~styling
+          ~resize_column_widths_to_fit
+          ~preload_rows
+          ?extra_row_attrs
+          ~wrap_header
+          key_comparator
+          ~focus
+          ~row_height
+          ~columns
+          collated
+          graph
+      in
+      x
     in
     let () =
       Bonsai.Edge.on_change
@@ -843,7 +821,8 @@ module Basic = struct
         viewed_range
         ~callback:
           (let%map set_rank_range in
-           fun (low, high) -> set_rank_range (Collate.Which_range.Between (low, high)))
+           fun (low, high) ->
+             set_rank_range (Collate_params.Which_range.Between (low, high)))
         graph
     in
     let%arr { view; for_testing; range = _; focus; set_column_width; column_widths } =

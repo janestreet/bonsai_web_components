@@ -37,7 +37,7 @@ module Style =
         border: 2px solid red;
         border-radius: 2px;
       }
-      |}]
+    |}]
 
 module Basic_stateful = struct
   let make state ~view (local_ graph) =
@@ -357,17 +357,22 @@ module Checkbox = struct
     ?(extra_checkbox_attrs = Bonsai.return (fun ~checked:_ -> []))
     ?to_string
     ?(layout = `Vertical)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     values
     : local_ Bonsai.graph -> ((a, cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let to_string =
-      Option.value to_string ~default:(sexp_to_pretty_string [%sexp_of: M.t])
+      Option.value to_string ~default:(sexp_to_pretty_string M.comparator.sexp_of_t)
     in
     let module M = struct
       include M
-      include Comparable.Make_plain_using_comparator (M)
+
+      include Comparable.Make_plain_using_comparator (struct
+          include M
+
+          let sexp_of_t = comparator.sexp_of_t
+        end)
 
       let to_string = to_string
     end
@@ -456,7 +461,7 @@ module Toggle = struct
         .invisible:checked + .slider::before {
           transform: translateX(18px);
         }
-        |}]
+      |}]
 
   let bool ?(extra_attr = Bonsai.return Vdom.Attr.empty) ~default () (local_ graph) =
     let view =
@@ -487,16 +492,34 @@ module Dropdown = struct
       | Uninitialized
       | Explicitly_none
       | Set of 'a
+      | Illegal of 'a
     [@@deriving equal, sexp]
 
-    let to_option = function
+    let to_option t ~allow_illegal_values =
+      match t with
       | Uninitialized | Explicitly_none -> None
+      | Illegal element -> if allow_illegal_values then Some element else None
       | Set element -> Some element
     ;;
 
-    let value ~default = function
+    let value ~default ~allow_illegal_values = function
       | Uninitialized | Explicitly_none -> default
+      | Illegal element -> if allow_illegal_values then element else default
       | Set element -> element
+    ;;
+  end
+
+  module Default_value = struct
+    type 'a t =
+      | Not_provided
+      | Set of 'a
+      | Illegal of 'a
+    [@@deriving equal, sexp]
+
+    let to_option ~allow_illegal_values = function
+      | Not_provided -> None
+      | Illegal element -> if allow_illegal_values then Some element else None
+      | Set element -> Some element
     ;;
   end
 
@@ -508,7 +531,8 @@ module Dropdown = struct
     (module E : Model with type t = a)
     ~equal
     ~include_empty
-    ~default_value
+    ~(default_value : a Default_value.t)
+    ~value_not_in_options_behavior
     ~(state : a Opt.t)
     ~(set_state : a Opt.t -> unit Effect.t)
     ~extra_attrs
@@ -525,12 +549,34 @@ module Dropdown = struct
       let equal = equal
     end
     in
+    let allow_illegal_state_values =
+      match value_not_in_options_behavior with
+      | `Allow | `Error_out ->
+        true
+        (* In this case, the user either will get an error, or will get the illegal
+           value as the result of the form. In either case, we don't want to select an
+           item from the list if that's not what the component returns. *)
+      | `Use_default_value ->
+        (* In this scenario, we want to resort to the default value instead *)
+        false
+    in
     let maker ~extra_attrs options =
+      (* If the default value is illegal, and we resort to the default value, either the
+         component will error out if [value_not_in_options_behavior] is set to `Error_out
+         or `Use_default_value, or the component will return the illegal value if
+         [value_not_in_options_behavior] is set to `Allow. In either case, we don't want
+         to mark any option as selected, and by setting [allow_illegal_values] to [true],
+         an illegal value will be returned as the default value and nothing will get
+         selected. *)
+      let default_value =
+        Default_value.to_option ~allow_illegal_values:true default_value
+      in
       match include_empty, default_value with
       | true, _ | false, None ->
         let selected =
           match state with
           | Uninitialized -> default_value
+          | Illegal v -> if allow_illegal_state_values then Some v else default_value
           | Explicitly_none -> None
           | Set v -> Some v
         in
@@ -547,7 +593,8 @@ module Dropdown = struct
       | false, Some default ->
         Vdom_input_widgets.Dropdown.of_values
           ?key
-          ~selected:(Opt.value state ~default)
+          ~selected:
+            (Opt.value state ~allow_illegal_values:allow_illegal_state_values ~default)
           ~on_change:(fun a -> set_state (Set a))
           ~extra_attrs
           ~extra_option_attrs
@@ -562,6 +609,7 @@ module Dropdown = struct
     ?placeholder
     ?(extra_attrs = Bonsai.return [])
     ?(extra_option_attrs = Bonsai.return (Fn.const []))
+    ?(value_not_in_options_behavior = `Allow)
     (module E : Model with type t = t)
     ~equal
     all
@@ -575,23 +623,62 @@ module Dropdown = struct
       let equal = equal
     end
     in
-    let module E_opt = struct
-      type t = E.t Opt.t [@@deriving sexp_of, equal]
+    let module State = struct
+      type t =
+        | Uninitialized
+        | Explicitly_none
+        | Set of E.t
+      [@@deriving sexp_of, equal]
+
+      let to_opt t ~all : E.t Opt.t =
+        match t with
+        | Uninitialized -> Uninitialized
+        | Explicitly_none -> Explicitly_none
+        | Set element ->
+          if List.mem all ~equal:E.equal element then Set element else Illegal element
+      ;;
+
+      let of_opt opt =
+        match (opt : E.t Opt.t) with
+        | Uninitialized -> Uninitialized
+        | Explicitly_none -> Explicitly_none
+        | Set element | Illegal element -> Set element
+      ;;
     end
+    in
+    let validate_default_value all default_value : _ Default_value.t =
+      if List.mem all ~equal default_value
+      then Set default_value
+      else Illegal default_value
     in
     let default_value =
       match init with
-      | `Empty -> Bonsai.return None
-      | `First_item -> all >>| List.hd
-      | `This item -> item >>| Option.some
-      | `Const item -> Bonsai.return (Some item)
+      | `Empty -> Bonsai.return Default_value.Not_provided
+      | `First_item ->
+        (match%arr all with
+         | [] -> Default_value.Not_provided
+         | hd :: _ -> Default_value.Set hd)
+      | `This item ->
+        let%arr item and all in
+        validate_default_value all item
+      | `Const item ->
+        let%arr all in
+        validate_default_value all item
     in
     let state, set_state =
       Bonsai.state
         Uninitialized
-        ~sexp_of_model:[%sexp_of: E_opt.t]
-        ~equal:[%equal: E_opt.t]
+        ~sexp_of_model:[%sexp_of: State.t]
+        ~equal:[%equal: State.t]
         graph
+    in
+    let set_state =
+      let%map set_state in
+      fun t -> set_state (State.of_opt t)
+    in
+    let state =
+      let%map state and all in
+      State.to_opt state ~all
     in
     let path = Bonsai.path_id graph in
     let%arr state
@@ -615,13 +702,25 @@ module Dropdown = struct
         ~extra_option_attrs
         ~all
         ~key:path
+        ~value_not_in_options_behavior
+    in
+    let default_value =
+      match default_value, value_not_in_options_behavior with
+      | Set v, _ | Illegal v, `Allow -> Ok (Some v)
+      | Illegal v, (`Use_default_value | `Error_out) ->
+        error_s [%message "Default value not in list of options" (v : E.t)]
+      | Not_provided, _ -> Ok None
     in
     let value =
-      match state, default_value with
-      | Uninitialized, Some default_value -> Some default_value
-      | _ -> Opt.to_option state
+      match state, value_not_in_options_behavior with
+      | Uninitialized, _ | Illegal _, `Use_default_value -> default_value
+      | Illegal v, `Allow -> Ok (Some v)
+      | Illegal v, `Error_out ->
+        error_s [%message "Value not in list of options" (v : E.t)]
+      | Set v, _ -> Ok (Some v)
+      | Explicitly_none, _ -> Ok None
     in
-    form_expert_create ~value:(Ok value) ~view ~set:(function
+    form_expert_create ~value ~view ~set:(function
       | None -> set_state Explicitly_none
       | Some v -> set_state (Set v))
   ;;
@@ -633,6 +732,7 @@ module Dropdown = struct
     ?extra_option_attrs
     ?to_string
     ?placeholder
+    ?value_not_in_options_behavior
     (module E : Model with type t = t)
     ~equal
     all
@@ -642,6 +742,7 @@ module Dropdown = struct
       ?placeholder
       ?extra_attrs
       ?extra_option_attrs
+      ?value_not_in_options_behavior
       (module E)
       ~equal
       all
@@ -655,12 +756,16 @@ module Dropdown = struct
     ?extra_attrs
     ?extra_option_attrs
     ?to_string
+    ?value_not_in_options_behavior
+    ?placeholder
     (module E : Bonsai.Enum with type t = t)
     =
     impl
       ?extra_attrs
       ?extra_option_attrs
       ?to_string
+      ?value_not_in_options_behavior
+      ?placeholder
       (module E)
       ~equal:E.equal
       (Bonsai.return E.all)
@@ -678,6 +783,7 @@ module Dropdown = struct
     ?extra_attrs
     ?extra_option_attrs
     ?to_string
+    ?value_not_in_options_behavior
     m
     ~equal
     all
@@ -688,6 +794,7 @@ module Dropdown = struct
         ?to_string
         ?extra_attrs
         ?extra_option_attrs
+        ?value_not_in_options_behavior
         m
         ~equal
         all
@@ -704,6 +811,7 @@ module Dropdown = struct
     ?extra_attrs
     ?extra_option_attrs
     ?to_string
+    ?value_not_in_options_behavior
     (module E : Bonsai.Enum with type t = t)
     (local_ graph)
     =
@@ -712,6 +820,7 @@ module Dropdown = struct
         ?extra_attrs
         ?extra_option_attrs
         ?to_string
+        ?value_not_in_options_behavior
         (module E)
         ~equal:E.equal
         (Bonsai.return E.all)
@@ -724,6 +833,7 @@ module Dropdown = struct
 
   module Private = struct
     module Opt = Opt
+    module Default_value = Default_value
 
     let make_input = make_input
   end
@@ -731,13 +841,12 @@ end
 
 module Typeahead = struct
   let single_opt
-    (type a)
     ?(extra_attrs = Bonsai.return [])
     ?placeholder
     ?to_string
     ?to_option_description
     ?handle_unknown_option
-    (module M : Model with type t = a)
+    ~sexp_of
     ~equal
     ~all_options
     (local_ graph)
@@ -748,7 +857,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
-        (module M)
+        ~sexp_of
         ~equal
         ~all_options
         ~extra_attrs
@@ -766,7 +875,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
-    m
+    ~sexp_of
     ~equal
     ~all_options
     (local_ graph)
@@ -778,7 +887,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
-        m
+        ~sexp_of
         ~equal
         ~all_options
         graph
@@ -823,7 +932,7 @@ module Typeahead = struct
     ?to_option_description
     ?handle_unknown_option
     ?split
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     ~all_options
     (local_ graph)
     =
@@ -910,6 +1019,7 @@ module Date_time = struct
 
   let time_opt
     ?(extra_attrs = Bonsai.return [])
+    ?default
     ?(allow_updates_when_focused = `Always)
     ()
     (local_ graph)
@@ -926,14 +1036,18 @@ module Date_time = struct
     in
     Basic_stateful.make
       (Bonsai.state_opt
+         ?default_model:default
          ~sexp_of_model:[%sexp_of: Time_ns.Ofday.t]
          ~equal:[%equal: Time_ns.Ofday.t])
       ~view
       graph
   ;;
 
-  let time ?extra_attrs ?(allow_updates_when_focused = `Always) () (local_ graph) =
-    let%map.Bonsai form = time_opt ?extra_attrs ~allow_updates_when_focused () graph in
+  let time ?extra_attrs ?default ?(allow_updates_when_focused = `Always) () (local_ graph)
+    =
+    let%map.Bonsai form =
+      time_opt ?extra_attrs ?default ~allow_updates_when_focused () graph
+    in
     optional_to_required form
   ;;
 
@@ -960,12 +1074,14 @@ module Date_time = struct
         (module Span_unit)
         ~equal:[%equal: Span_unit.t]
         ~include_empty:false
-        ~default_value:(Some default_unit)
+        ~default_value:(Set default_unit)
+        ~value_not_in_options_behavior:
+          `Allow (* This does not matter, since all values are legal. *)
         ~state:(Set unit)
         ~set_state:(function
-          | Uninitialized | Explicitly_none ->
+          | Uninitialized | Explicitly_none | Illegal _ ->
             (* I think these cases can't happen, because both [include_empty:false] and
-               [state:(Set unit)] are passed. *)
+               [state:(Set unit)] are passed, and all enumerates all possible values. *)
             Effect.Ignore
           | Set unit -> set_unit unit)
         ~extra_attrs:extra_unit_attrs
@@ -1044,7 +1160,7 @@ module Date_time = struct
 
   let datetime_local_opt
     ?(extra_attrs = Bonsai.return [])
-    ?(allow_updates_when_focused = `Always)
+    ?(allow_updates_when_focused = `Never)
     ()
     (local_ graph)
     =
@@ -1070,11 +1186,7 @@ module Date_time = struct
       graph
   ;;
 
-  let datetime_local
-    ?extra_attrs
-    ?(allow_updates_when_focused = `Always)
-    ()
-    (local_ graph)
+  let datetime_local ?extra_attrs ?(allow_updates_when_focused = `Never) () (local_ graph)
     =
     let%map.Bonsai form =
       datetime_local_opt ?extra_attrs ~allow_updates_when_focused () graph
@@ -1094,6 +1206,7 @@ module Date_time = struct
     let make_opt_range
       (type a)
       ?(allow_equal = false)
+      ?(enforce_start_before_end = true)
       ?(extra_attr = Bonsai.return Vdom.Attr.empty)
       ~kind_name
       (module M : Model with type t = a)
@@ -1147,14 +1260,18 @@ module Date_time = struct
       and upper_id
       and extra_attr in
       let value =
-        match lower, upper with
-        | Some lower, Some upper ->
-          (match C.compare lower upper with
-           | 0 -> if allow_equal then Ok (Some lower, Some upper) else force bounds_error
-           | x when x < 0 -> Ok (Some lower, Some upper)
-           | x when x > 0 -> force bounds_error
-           | _ -> assert false)
-        | t -> Ok t
+        match enforce_start_before_end with
+        | true ->
+          (match lower, upper with
+           | Some lower, Some upper ->
+             (match C.compare lower upper with
+              | 0 ->
+                if allow_equal then Ok (Some lower, Some upper) else force bounds_error
+              | x when x < 0 -> Ok (Some lower, Some upper)
+              | x when x > 0 -> force bounds_error
+              | _ -> assert false)
+           | t -> Ok t)
+        | false -> Ok (lower, upper)
       in
       let view =
         let lower_view =
@@ -1173,14 +1290,17 @@ module Date_time = struct
       in
       let set (lower_val, upper_val) =
         let pairwise_set = Effect.Many [ set_lower lower_val; set_upper upper_val ] in
-        match lower_val, upper_val with
-        | None, _ | _, None -> pairwise_set
-        | Some lower_val, Some upper_val ->
-          (match C.compare lower_val upper_val with
-           | 0 -> if allow_equal then pairwise_set else Effect.Ignore
-           | x when x < 0 -> pairwise_set
-           | x when x > 0 -> Effect.Ignore
-           | _ -> Effect.Ignore)
+        match enforce_start_before_end with
+        | true ->
+          (match lower_val, upper_val with
+           | None, _ | _, None -> pairwise_set
+           | Some lower_val, Some upper_val ->
+             (match C.compare lower_val upper_val with
+              | 0 -> if allow_equal then pairwise_set else Effect.Ignore
+              | x when x < 0 -> pairwise_set
+              | x when x > 0 -> Effect.Ignore
+              | _ -> Effect.Ignore))
+        | false -> pairwise_set
       in
       form_expert_create ~view ~value ~set
     ;;
@@ -1224,11 +1344,18 @@ module Date_time = struct
       of_opt_range form
     ;;
 
-    let time_opt ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () =
+    let time_opt
+      ?extra_attr
+      ?allow_equal
+      ?enforce_start_before_end
+      ?(allow_updates_when_focused = `Always)
+      ()
+      =
       make_opt_range
         ~kind_name:"time"
         ?extra_attr
         ?allow_equal
+        ?enforce_start_before_end
         (module Time_ns.Ofday)
         ~equal:[%equal: Time_ns.Ofday.t]
         (module Time_ns.Ofday)
@@ -1239,12 +1366,19 @@ module Date_time = struct
     let time
       ?extra_attr
       ?allow_equal
+      ?enforce_start_before_end
       ?(allow_updates_when_focused = `Always)
       ()
       (local_ graph)
       =
       let%map.Bonsai form =
-        time_opt ?extra_attr ?allow_equal ~allow_updates_when_focused () graph
+        time_opt
+          ?extra_attr
+          ?allow_equal
+          ?enforce_start_before_end
+          ~allow_updates_when_focused
+          ()
+          graph
       in
       of_opt_range form
     ;;
@@ -1252,7 +1386,7 @@ module Date_time = struct
     let datetime_local_opt
       ?extra_attr
       ?allow_equal
-      ?(allow_updates_when_focused = `Always)
+      ?(allow_updates_when_focused = `Never)
       ()
       =
       make_opt_range
@@ -1272,7 +1406,7 @@ module Date_time = struct
     let datetime_local
       ?extra_attr
       ?allow_equal
-      ?(allow_updates_when_focused = `Always)
+      ?(allow_updates_when_focused = `Never)
       ()
       (local_ graph)
       =
@@ -1291,16 +1425,22 @@ module Multiselect = struct
     ?to_string
     ?default_selection_status
     ?(allow_updates_when_focused = `Always)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     input_list
     (local_ graph)
     =
     let module Item = struct
-      include M
-      include Comparable.Make_plain_using_comparator (M)
+      module T = struct
+        include M
+
+        let sexp_of_t = comparator.sexp_of_t
+      end
+
+      include T
+      include Comparable.Make_plain_using_comparator (T)
 
       let to_string =
-        Option.value to_string ~default:(sexp_to_pretty_string [%sexp_of: t])
+        Option.value to_string ~default:(sexp_to_pretty_string [%sexp_of: T.t])
       ;;
     end
     in
@@ -1354,7 +1494,7 @@ module Multiselect = struct
     ?to_string
     ?default_selection_status
     ?(allow_updates_when_focused = `Always)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     input_list
     (local_ graph)
     =
@@ -1389,6 +1529,7 @@ module Multiple = struct
     ?(extra_pill_container_attr = Bonsai.return Vdom.Attr.empty)
     ?(extra_pill_attr = Bonsai.return Vdom.Attr.empty)
     ?(placeholder = Bonsai.return "")
+    ?(clear_textbox_upon_set = Bonsai.return false)
     (module M : Stringable_model with type t = a)
     ~equal
     (local_ graph)
@@ -1429,7 +1570,8 @@ module Multiple = struct
     and set_state
     and pills
     and extra_input_attr
-    and placeholder_ = placeholder in
+    and placeholder_ = placeholder
+    and clear_textbox_upon_set in
     let handle_keydown event =
       match Js_of_ocaml.Dom_html.Keyboard_code.of_event event with
       | Enter ->
@@ -1456,7 +1598,13 @@ module Multiple = struct
         ()
     in
     let view = Vdom.Node.div [ input; pills ] in
-    form_expert_create ~value:(Ok selected_options) ~view ~set:inject_selected_options
+    let set value =
+      Ui_effect.Many
+        [ (if clear_textbox_upon_set then set_state "" else Effect.Ignore)
+        ; inject_selected_options value
+        ]
+    in
+    form_expert_create ~value:(Ok selected_options) ~view ~set
   ;;
 
   type ('a, 'view) item =
@@ -1487,44 +1635,48 @@ module Multiple = struct
         ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         ~default_model:()
-        ~apply_action:
-          (fun
-            context
-            (_, forms, set_length, bonk, get_next_seqnum, most_recent_seqnum)
+        ~apply_action:(fun context result () (list_of_values, my_seqnum) ->
+          match result with
+          | Inactive ->
+            eprint_s
+              [%message
+                "An action sent to a [wrap] has been dropped because its input was not \
+                 present. This happens when the [wrap] is inactive when it receives a \
+                 message."
+                  [%here]];
             ()
-            (list_of_values, my_seqnum)
-          ->
-          if not (Seqnum_for_list.equal my_seqnum most_recent_seqnum)
-          then
-            (* if the lists aren't the same length and the seqnums aren't the same, it's
+          | Active (_, forms, set_length, bonk, get_next_seqnum, most_recent_seqnum) ->
+            if not (Seqnum_for_list.equal my_seqnum most_recent_seqnum)
+            then
+              (* if the lists aren't the same length and the seqnums aren't the same, it's
                because another setter happened after this one, so we shouldn't do anything
                here, and let the next setter do its thing. *)
-            ()
-          else (
-            let setters_applied =
-              list_rev_map2 (Map.data forms) list_of_values ~f:(fun form value ->
-                Form.set form value)
-            in
-            match setters_applied with
-            | Ok setters_applied ->
-              Bonsai.Apply_action_context.schedule_event
-                context
-                (Ui_effect.Many setters_applied)
-            | Error `Unequal_lengths ->
-              (* If the lists aren't the same size, then another call to [set] modified the
+              ()
+            else (
+              let setters_applied =
+                list_rev_map2 (Map.data forms) list_of_values ~f:(fun form value ->
+                  Form.set form value)
+              in
+              match setters_applied with
+              | Ok setters_applied ->
+                Bonsai.Apply_action_context.schedule_event
+                  context
+                  (Ui_effect.Many setters_applied)
+              | Error `Unequal_lengths ->
+                (* If the lists aren't the same size, then another call to [set] modified the
                length.  Because the seqnum for the action matches the current seqnum, we
                know we're the last in the sequence, so we can update the length _again_
                and try the whole transaction again. *)
-              Bonsai.Apply_action_context.schedule_event
-                context
-                (let%bind.Effect new_seqnum = get_next_seqnum in
-                 Ui_effect.Many
-                   [ set_length (List.length list_of_values)
-                   ; bonk
-                       (Bonsai.Apply_action_context.inject
-                          context
-                          (list_of_values, new_seqnum))
-                   ])))
+                Bonsai.Apply_action_context.schedule_event
+                  context
+                  (let%bind.Effect new_seqnum = get_next_seqnum in
+                   Ui_effect.Many
+                     [ set_length (List.length list_of_values)
+                     ; bonk
+                         (Bonsai.Apply_action_context.inject
+                            context
+                            (list_of_values, new_seqnum))
+                     ])))
         ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
           let extendy = Extendy.component t graph in
           let bonk = Bonsai_extra.bonk graph in
@@ -1589,7 +1741,7 @@ module Multiple = struct
 
   let set
     (type a cmp view)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     (form : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
     : local_ Bonsai.graph -> ((a, cmp) Set.t, (a, view) t) Form.t Bonsai.t
     =
@@ -1600,7 +1752,7 @@ module Multiple = struct
 
   let map
     (type a cmp)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     ~key
     ~data
     (local_ graph)
@@ -1801,10 +1953,7 @@ module Range = struct
           | elements ->
             Vdom.Node.span ~attrs:[ Vdom.Attr.style (Css_gen.flex_container ()) ] elements
       in
-      let value_with_override graph =
-        let%sub state, set_state = Bonsai_extra.value_with_override default graph in
-        state, set_state
-      in
+      let value_with_override graph = Bonsai_extra.value_with_override default graph in
       Basic_stateful.make_themed value_with_override ~view graph
     in
     let%arr min and max and unvalidated in
@@ -1923,7 +2072,12 @@ module Radio_buttons = struct
 end
 
 module Color_picker = struct
-  let hex ?(extra_attr = Bonsai.return Vdom.Attr.empty) () (local_ graph) =
+  let hex
+    ?(default = `Hex "#000000")
+    ?(extra_attr = Bonsai.return Vdom.Attr.empty)
+    ()
+    (local_ graph)
+    =
     let view =
       let%map extra_attr in
       fun ~state ~set_state ->
@@ -1935,7 +2089,7 @@ module Color_picker = struct
     in
     Basic_stateful.make
       (Bonsai.state
-         (`Hex "#000000")
+         default
          ~sexp_of_model:[%sexp_of: [ `Hex of string ]]
          ~equal:[%equal: [ `Hex of string ]])
       ~view
@@ -2082,6 +2236,7 @@ module Rank = struct
     ?right
     ?empty_list_placeholder
     ?default_item_height
+    ?add_drop_target_for_appending
     render
     (local_ graph)
     =
@@ -2094,6 +2249,7 @@ module Rank = struct
         ?right
         ?empty_list_placeholder
         ?default_item_height
+        ?add_drop_target_for_appending
         (fun ~index:_ ~source key (local_ graph) ->
           let%map.Bonsai view = render ~source key graph in
           (), view)
@@ -2109,7 +2265,7 @@ end
 module Query_box = struct
   let create_opt
     (type k cmp)
-    (module Key : Bonsai.Comparator with type t = k and type comparator_witness = cmp)
+    (module Key : Comparator.S with type t = k and type comparator_witness = cmp)
     ?initial_query
     ?max_visible_items
     ?suggestion_list_kind
@@ -2126,6 +2282,12 @@ module Query_box = struct
     =
     let last_selected_value, set_last_selected_value =
       let module M = struct
+        module Key = struct
+          include Key
+
+          let sexp_of_t = comparator.sexp_of_t
+        end
+
         type t = Key.t [@@deriving sexp_of]
 
         let equal a b = Key.comparator.compare a b = 0
@@ -2248,7 +2410,7 @@ module Query_box = struct
         .matched-part {
           font-weight: bold;
         }
-        |}]
+      |}]
 
   let optional_computation opt (local_ _graph) =
     match opt with
@@ -2271,7 +2433,7 @@ module Query_box = struct
     ?on_focus
     ?on_hover_item
     ?(extra_input_attr = Bonsai.return Vdom.Attr.empty)
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     ~extra_attr
     ~(to_string : (a -> string) Bonsai.t)
     ~focused_item_attr
@@ -2366,7 +2528,7 @@ module Query_box = struct
     ?focused_item_attr
     ?extra_list_container_attr
     ?handle_unknown_option
-    (module M : Bonsai.Comparator with type t = a and type comparator_witness = cmp)
+    (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     ~all_options
     : local_ Bonsai.graph -> (a option, Vdom.Node.t) Form.t Bonsai.t
     =
@@ -2380,7 +2542,7 @@ module Query_box = struct
     in
     let to_string =
       optional_computation_value_map
-        ~default:(Fn.compose Sexp.to_string_hum M.sexp_of_t)
+        ~default:(Fn.compose Sexp.to_string_hum M.comparator.sexp_of_t)
         ~f:Fn.id
         to_string
         graph

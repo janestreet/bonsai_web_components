@@ -4,10 +4,10 @@ open Import
 (** How this works:
 
     The general idea here is that dygraphs does not have native support for putting
-    "breaks" or "gaps" in the x-axis.  It assumes the x-axis will be continuous in time
+    "breaks" or "gaps" in the x-axis. It assumes the x-axis will be continuous in time
     (for time series).
 
-    We don't want that.  We want to hide overnights and weekends.
+    We don't want that. We want to hide overnights and weekends.
 
     In order to achieve that, we generate a (piecewise-linear) mapping between "real time"
     and "graph time" where we squash the overnight and weekend portions of "real time"
@@ -32,23 +32,29 @@ open Import
     in which the author of dygraphs (danvk) agrees this is how you need to do it. *)
 
 let dygraphs_date_axis_label_formatter
-  : unit -> Js.date Js.t -> Granularity.t -> Options.Opts.t -> Js.js_string Js.t
+  : Js.date Js.t -> Granularity.t -> Options.Opts.t -> Js.js_string Js.t
   =
-  fun () -> Js.Unsafe.pure_js_expr {| Dygraph.dateAxisLabelFormatter |}
+  fun date granularity opts ->
+  Js.Unsafe.fun_call
+    (Js.Unsafe.pure_js_expr {| Dygraph.dateAxisLabelFormatter |})
+    [| Js.Unsafe.inject date; Js.Unsafe.inject granularity; Js.Unsafe.inject opts |]
 ;;
 
 let dygraphs_number_axis_label_formatter
-  : unit -> Js.number Js.t -> Granularity.t -> Options.Opts.t -> Js.js_string Js.t
+  : Js.number Js.t -> Granularity.t -> Options.Opts.t -> Js.js_string Js.t
   =
-  fun () -> Js.Unsafe.pure_js_expr {| Dygraph.numberAxisLabelFormatter |}
+  fun date granularity opts ->
+  Js.Unsafe.fun_call
+    (Js.Unsafe.pure_js_expr {| Dygraph.numberAxisLabelFormatter |})
+    [| Js.Unsafe.inject date; Js.Unsafe.inject granularity; Js.Unsafe.inject opts |]
 ;;
 
 let default_axis_label_formatter x gran opts =
   match x with
   | `number x ->
     let number = Js.number_of_float x in
-    dygraphs_number_axis_label_formatter () number gran opts |> Js.to_string
-  | `date d -> dygraphs_date_axis_label_formatter () d gran opts |> Js.to_string
+    dygraphs_number_axis_label_formatter number gran opts |> Js.to_string
+  | `date d -> dygraphs_date_axis_label_formatter d gran opts |> Js.to_string
 ;;
 
 (* due to the floatness of the piecewise_linear math, timestamps come can out weird.  I

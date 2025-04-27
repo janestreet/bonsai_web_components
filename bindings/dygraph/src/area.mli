@@ -2,8 +2,8 @@ open! Core
 open! Import
 open Gen_js_api
 
-(** An object with {x,y,w,h} properties describing the drawing area, for use in
-    [underlayCallback].  All units are in pixels (I think). *)
+(** An object with [{x,y,w,h}] properties describing the drawing area, for use in
+    [underlayCallback]. All units are in pixels (I think). *)
 
 type t =
   { x : int

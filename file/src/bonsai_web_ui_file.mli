@@ -2,15 +2,14 @@
 
     A value of [type t] can be created in two ways:
 
-    1. Using the companion library [Bonsai_web_ui_file_from_web_file], which uses the
-    Web File API to drive [t]. Note that the Web File API does not permit the reading of
-    arbitrary files on the client computer's disk. Instead, one typically uses a file
-    selector form to allow the user to specify a file to be read. See
-    [Bonsai_web_ui_form.Elements.File_picker] for a convenient wrapper.
+    1. Using the companion library [Bonsai_web_ui_file_from_web_file], which uses the Web
+       File API to drive [t]. Note that the Web File API does not permit the reading of
+       arbitrary files on the client computer's disk. Instead, one typically uses a file
+       selector form to allow the user to specify a file to be read. See
+       [Bonsai_web_ui_form.Elements.File_picker] for a convenient wrapper.
 
     2. For tests, one can also create a [t] which is driven manually using the
-    [For_testing] module.
-*)
+       [For_testing] module. *)
 
 open Core
 open Bonsai_web
@@ -62,29 +61,29 @@ module Read_on_change : sig
       {[
         let%sub file_picker = Bonsai_web_ui_form.Elements.File_select.single () in
         let%sub file_from_form =
-          let%arr file_picker = file_picker in
+          let%arr file_picker in
           Bonsai_web_ui_form.value file_picker |> Or_error.ok
         in
-        let%sub result = Bonsai_web_ui_file.Read_on_change.create_single_opt file_from_form in
+        let%sub result =
+          Bonsai_web_ui_file.Read_on_change.create_single_opt file_from_form
+        in
         match%sub result with
         | None -> Bonsai.const None
-        | Some (filename, (Bonsai_web_ui_file.Read_on_change.Status.Starting | In_progress _))
+        | Some
+            (filename, (Bonsai_web_ui_file.Read_on_change.Status.Starting | In_progress _))
           ->
-          let%arr filename = filename in
+          let%arr filename in
           Some (filename, "file still loading")
         | Some (filename, Complete (Error e)) ->
-          let%arr e = e
-          and filename = filename in
+          let%arr e and filename in
           Some (filename, Error.to_string_hum e)
         | Some (filename, Complete (Ok contents)) ->
-          let%arr filename = filename
-          and contents = contents in
+          let%arr filename and contents in
           Some (filename, contents)
       ]}
 
       NOTE: these computations are not safe for use in Tangle as internally they require a
-      model which cannot be [of_sexp]'d.
-  *)
+      model which cannot be [of_sexp]'d. *)
 
   module Status : sig
     type t =
@@ -134,8 +133,7 @@ module For_testing : sig
     val feed_exn : t -> string -> unit
 
     (** Mark [t] as closed so that any file reads based on [t] will be marked complete.
-        [close] is idempotent and does nothing if [t] was created using [create_static].
-    *)
+        [close] is idempotent and does nothing if [t] was created using [create_static]. *)
     val close : t -> unit
 
     (** Close [t] with an error to emulate an error when reading from the file. Does

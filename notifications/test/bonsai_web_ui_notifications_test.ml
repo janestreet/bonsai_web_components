@@ -240,7 +240,7 @@ module%test [@name "generic notification test"] _ = struct
     let computation (local_ graph) =
       let notifications =
         Notifications.component
-          (module Notification_type)
+          ~sexp_of:[%sexp_of: Notification_type.t]
           ~equal:[%equal: Notification_type.t]
           graph
       in
@@ -295,7 +295,7 @@ module%test [@name "generic notification test"] _ = struct
   let bare_bones_notification_ui (local_ graph) =
     let notifications =
       Notifications.component
-        (module Notification_type)
+        ~sexp_of:[%sexp_of: Notification_type.t]
         ~equal:[%equal: Notification_type.t]
         graph
     in
@@ -554,7 +554,7 @@ module%test [@name "generic notification test"] _ = struct
     let computation (local_ graph) =
       let notifications =
         Notifications.component
-          (module Notification_type)
+          ~sexp_of:[%sexp_of: Notification_type.t]
           ~equal:[%equal: Notification_type.t]
           graph
       in
@@ -665,7 +665,7 @@ module%test [@name "generic notification test"] _ = struct
     let computation (local_ graph) =
       let notifications =
         Notifications.component
-          (module Notification_type)
+          ~sexp_of:[%sexp_of: Notification_type.t]
           ~equal:[%equal: Notification_type.t]
           graph
       in
@@ -743,5 +743,69 @@ module%test [@name "generic notification test"] _ = struct
       -|</div>
       +|<div class="notification_container_hash_replaced_in_test"> </div>
       |}]
+  ;;
+end
+
+module%test Compare_send_notifications_and_send_notifications_deprecated = struct
+  open Bonsai_test
+  open Bonsai_web
+
+  module Spec = struct
+    type t = { send_notification : unit Effect.t }
+    type incoming = Send_notification
+
+    let view _ = ""
+    let incoming { send_notification } Send_notification = send_notification
+  end
+
+  let component ~send_notification (local_ graph) =
+    let notifications =
+      Bonsai_web_ui_notifications.component ~equal:[%equal: unit] graph
+    in
+    let send_notification = send_notification ~notifications in
+    let side_effect =
+      let%arr send_notification in
+      let _ = send_notification in
+      print_s [%message "Triggering effect!"]
+    in
+    let%arr side_effect and send_notification in
+    let _ = side_effect in
+    { Spec.send_notification }
+  ;;
+
+  let old_send_notification ~notifications =
+    let%arr notifications in
+    let%bind.Effect _id =
+      Bonsai_web_ui_notifications.send_notification notifications ()
+    in
+    Effect.return ()
+  ;;
+
+  let new_send_notification ~notifications =
+    let%arr send_notification =
+      Bonsai_web_ui_notifications.send_notification' notifications
+    in
+    let%bind.Effect _id = send_notification () in
+    Effect.return ()
+  ;;
+
+  let bisimulate ~f =
+    f old_send_notification ~expect_diff:(fun ~old ~new_:_ -> old ());
+    f new_send_notification ~expect_diff:(fun ~old:_ ~new_ -> new_ ())
+  ;;
+
+  let%expect_test "Sending a notification causes a re-trigger" =
+    bisimulate ~f:(fun send_notification ~expect_diff ->
+      let handle = Handle.create (module Spec) (component ~send_notification) in
+      Handle.show handle;
+      [%expect {| "Triggering effect!" |}];
+      Handle.do_actions handle [ Send_notification ];
+      [%expect {| |}];
+      Handle.show handle;
+      (* NOTE: The new send_notifications does not trigger recomputations after each
+         notification that is sent. *)
+      expect_diff
+        ~old:(fun () -> [%expect {| "Triggering effect!" |}])
+        ~new_:(fun () -> [%expect {| |}]))
   ;;
 end

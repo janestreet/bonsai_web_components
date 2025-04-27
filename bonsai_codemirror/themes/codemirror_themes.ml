@@ -1,6 +1,6 @@
 open! Core
 open Js_of_ocaml
-open Codemirror
+open Codemirror_bindings
 open Gen_js_api
 
 module Create_theme = struct
@@ -103,6 +103,14 @@ let vscode_light =
        ~highlight_name:"cm6_themes_vscodeLightHighlightStyle")
 ;;
 
+let vscode_default =
+  lazy
+    (Create_theme.f
+       ~dark:false
+       ~theme_name:"cm6_themes_vscodeDefaultTheme"
+       ~highlight_name:"cm6_themes_vscodeDefaultHighlightStyle")
+;;
+
 module Stable = struct
   module V1 = struct
     type t = Bonsai_web_ui_view.Expert.For_codemirror.Theme.t =
@@ -115,11 +123,12 @@ module Stable = struct
       | Material_dark
       | Vscode_dark
       | Vscode_light
+      | Vscode_default
     [@@deriving bin_io, compare, enumerate, equal, sexp, sexp_grammar, typed_variants]
 
     let%expect_test _ =
       print_endline [%bin_digest: t];
-      [%expect {| 0860df590b807beed95f9c1cef1b6a8f |}]
+      [%expect {| 475440148422c75aa3864f847ec908df |}]
     ;;
   end
 end
@@ -136,6 +145,7 @@ let get = function
   | Material_dark -> Lazy.force material_dark
   | Vscode_dark -> Lazy.force vscode_dark
   | Vscode_light -> Lazy.force vscode_light
+  | Vscode_default -> Lazy.force vscode_default
 ;;
 
 let to_string = function
@@ -148,4 +158,5 @@ let to_string = function
   | Material_dark -> "material dark"
   | Vscode_dark -> "vscode dark"
   | Vscode_light -> "vscode light"
+  | Vscode_default -> "vscode"
 ;;

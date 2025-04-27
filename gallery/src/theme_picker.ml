@@ -46,7 +46,7 @@ module Style =
         font-size: inherit;
         padding: 0.2em 0.3em;
       }
-      |}]
+    |}]
 
 let component ?(default = Theme_id.Default) ?(standalone = false) () (local_ graph) =
   let var = theme_var ~default in
@@ -62,9 +62,8 @@ let component ?(default = Theme_id.Default) ?(standalone = false) () (local_ gra
         | Kado_white_bg -> "Kado (light white background)")
       graph
   in
-  let%sub () =
+  let () =
     Bonsai_extra.mirror
-      ()
       ~sexp_of_model:[%sexp_of: Theme_id.t]
       ~equal:[%equal: Theme_id.t]
       ~store_value:var_value

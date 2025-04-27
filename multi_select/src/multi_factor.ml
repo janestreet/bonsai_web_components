@@ -1,5 +1,5 @@
 open! Core
-module Bonsai_proc = Bonsai_web.Proc.Bonsai
+module Bonsai_proc = Bonsai_web_proc.Bonsai
 open! Import
 open Multi_factor_intf
 
@@ -255,7 +255,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
       Bonsai.map (factors graph) ~f:(Map.filter_map ~f:Fn.id)
     in
     let%sub focus, inject_focus_action =
-      Bonsai_proc.of_module0
+      Bonsai_proc.of_module
         (module Ring_focus)
         ~sexp_of_model:[%sexp_of: Ring_focus.Model.t]
         ~equal:[%equal: Ring_focus.Model.t]

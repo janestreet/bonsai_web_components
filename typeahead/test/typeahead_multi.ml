@@ -8,7 +8,7 @@ let shared_computation =
   Typeahead.create_multi
     (module Data)
     ~all_options:(Bonsai.return Data.all)
-    ~placeholder:"Select a value"
+    ~placeholder:(Bonsai.return "Select a value")
     ~to_string:(Bonsai.return Data.to_string)
     ~split:(String.split ~on:',')
     ~attr_merge_behavior:
@@ -67,7 +67,7 @@ let%expect_test "Attrs are NOT merged when  \
       Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
         (module Data)
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~split:(String.split ~on:',')
         ~extra_attrs:
@@ -83,8 +83,8 @@ let%expect_test "Attrs are NOT merged when  \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead_multi__inline_class_hash_4e85d48206))
-     (second (typeahead_multi__inline_class_hash_f82722b415)))
+     (first (typeahead_multi__inline_class_hash_9d88fdcd18))
+     (second (typeahead_multi__inline_class_hash_00f98f620d)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -107,7 +107,7 @@ let%expect_test "Attrs are merged when `Merge is applied" =
       Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
         (module Data)
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~split:(String.split ~on:',')
         ~extra_attrs:
@@ -145,7 +145,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
       Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
         (module Data)
         ~all_options:(Bonsai.return Data.all)
-        ~placeholder:"Select a value"
+        ~placeholder:(Bonsai.return "Select a value")
         ~to_string:(Bonsai.return Data.to_string)
         ~split:(String.split ~on:',')
         ~attr_merge_behavior:

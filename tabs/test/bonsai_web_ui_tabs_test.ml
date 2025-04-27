@@ -27,13 +27,17 @@ let basic_tab_component ?additional_button_attributes ?decorate ?f () (local_ gr
           | C -> Bonsai.return (Vdom.Node.text "c")))
   in
   let state =
-    Tabs.tab_state (module My_tabs) ~initial:A ~equal:[%equal: My_tabs.t] graph
+    Tabs.tab_state
+      ~sexp_of:[%sexp_of: My_tabs.t]
+      ~initial:A
+      ~equal:[%equal: My_tabs.t]
+      graph
   in
   let tab_result =
     Tabs.tab_ui
       ?additional_button_attributes
       ?decorate
-      (module My_tabs)
+      ~sexp_of:[%sexp_of: My_tabs.t]
       ~equal:[%equal: My_tabs.t]
       ~all_tabs:(Bonsai.return My_tabs.all)
       state

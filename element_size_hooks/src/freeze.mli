@@ -1,7 +1,6 @@
-(** [Freeze.width/height] looks at the size of the node when it enters the dom,
-    discovers its calculated width/height, and then sets it explicitly (in px).
-    This prevents the browser layout from messing with a size that we want to be
-    controlled by the user. *)
+(** [Freeze.width/height] looks at the size of the node when it enters the dom, discovers
+    its calculated width/height, and then sets it explicitly (in px). This prevents the
+    browser layout from messing with a size that we want to be controlled by the user. *)
 
 open! Core
 open! Bonsai_web

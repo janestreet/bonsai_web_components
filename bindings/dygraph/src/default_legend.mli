@@ -6,8 +6,7 @@ open! Import
 
     This is nicer than the default dygraph legend in that it's in a fixed location (to the
     right of the graph), allows toggling visibility, and underlines/bolds the highlighted
-    series.  The look of this legend was largely copied from dwu's htmlplot dygraph
-    legend. *)
+    series. The look of this legend was largely copied from dwu's htmlplot dygraph legend. *)
 
 module Model : sig
   module Series : sig
@@ -31,13 +30,13 @@ module Model : sig
     ; series : Series.t list
     ; past_series_visibility : bool Map.M(String).t
     (** [past_series_visibility] remembers all the series (by [label_for_visibility]) that
-        we've ever seen.  This means that if someone makes a change to a particular series
+        we've ever seen. This means that if someone makes a change to a particular series
         (e.g. toggles visibility), moves to a graph without that series, and then moves
         back to the original graph, the information will not be lost.
 
         This may sound like a memory leak, and it kind of is, but the hope is that the
         total number of unique series labels that one sees over the lifetime of a graph is
-        very small.  *)
+        very small. *)
     }
   [@@deriving equal, sexp]
 end

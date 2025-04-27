@@ -134,8 +134,13 @@ module Hook = struct
   include Vdom.Attr.Hooks.Make (T)
 end
 
-let component (type key cmp) (key : (key, cmp) Bonsai.comparator) (local_ graph) =
-  let module Key = (val key) in
+let component (type key cmp) (key : (key, cmp) Comparator.Module.t) (local_ graph) =
+  let module Key = struct
+    include (val key)
+
+    let sexp_of_t = comparator.sexp_of_t
+  end
+  in
   let on_change ~group_key ~key =
     Vdom.Attr.many
       [ Vdom.Attr.create_hook
@@ -208,7 +213,7 @@ let component (type key cmp) (key : (key, cmp) Bonsai.comparator) (local_ graph)
   end
   in
   let mapping, apply_action =
-    Bonsai.state_machine0
+    Bonsai.state_machine
       graph
       ~sexp_of_model:[%sexp_of: Model.t]
       ~equal:[%equal: Model.t]

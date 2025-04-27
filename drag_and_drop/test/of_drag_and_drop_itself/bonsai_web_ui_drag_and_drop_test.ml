@@ -111,6 +111,10 @@ let%expect_test "remove the component with the dnd" =
     Handle.show handle;
     [%expect
       {|
+      adding window event listener
+      adding window event listener
+      adding window event listener
+      adding window event listener
       <div>
         <div data-dnd-name="1" dnd-test-hook=<fun>>
           <div id="s1" class="no_select_hash_replaced_in_test" @on_pointerdown> </div>
@@ -126,20 +130,16 @@ let%expect_test "remove the component with the dnd" =
           <div id="t4" data-drag-targetbonsai_path_replaced_in_test="4" @on_pointerup> </div>
         </div>
       </div>
-      adding window event listener
-      adding window event listener
-      adding window event listener
-      adding window event listener
       |}];
     Bonsai.Expert.Var.set input_var false;
     Handle.show handle;
     [%expect
       {|
+      removing window event listener
+      removing window event listener
+      removing window event listener
+      removing window event listener
       no
-      removing window event listener
-      removing window event listener
-      removing window event listener
-      removing window event listener
       |}])
 ;;
 
@@ -149,6 +149,10 @@ let%expect_test "how is it printed" =
     Handle.show handle;
     [%expect
       {|
+      adding window event listener
+      adding window event listener
+      adding window event listener
+      adding window event listener
       <div>
         <div data-dnd-name="1" dnd-test-hook=<fun>>
           <div id="s1" class="no_select_hash_replaced_in_test" @on_pointerdown> </div>
@@ -164,10 +168,6 @@ let%expect_test "how is it printed" =
           <div id="t4" data-drag-targetbonsai_path_replaced_in_test="4" @on_pointerup> </div>
         </div>
       </div>
-      adding window event listener
-      adding window event listener
-      adding window event listener
-      adding window event listener
       |}])
 ;;
 

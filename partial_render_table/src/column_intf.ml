@@ -8,39 +8,29 @@ module type S = sig
   type data
   type column_id
 
-  val headers : t -> local_ Bonsai.graph -> column_id Header_tree.t Bonsai.t
+  val headers
+    :  wrap_header:(column_id:column_id -> Vdom.Node.t -> Vdom.Node.t) Bonsai.t
+    -> t
+    -> local_ Bonsai.graph
+    -> column_id Header_tree.t Bonsai.t
 
   val instantiate_cells
     :  t
-    -> (key, 'cmp) Bonsai.comparator
+    -> (key, 'cmp) Comparator.Module.t
     -> (key * data) Opaque_map.t Bonsai.t
     -> local_ Bonsai.graph
     -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
 end
 
 module type S_with_sorter = sig
-  type t
-  type key
-  type data
-  type column_id
+  include S
+
   type column_id_cmp
 
-  val headers_and_sorters
-    :  multisort_columns_when:
-         [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click ] Bonsai.t
-    -> t
-    -> column_id Sortable.t Bonsai.t
-    -> local_ Bonsai.graph
-    -> ((column_id, (key, data) Sort_kind.t, column_id_cmp) Map.t
-       * column_id Header_tree.t)
-         Bonsai.t
-
-  val instantiate_cells
+  val sorters
     :  t
-    -> (key, 'cmp) Bonsai.comparator
-    -> (key * data) Opaque_map.t Bonsai.t
     -> local_ Bonsai.graph
-    -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
+    -> (column_id, (key, data) Sort_kind.t, column_id_cmp) Map.t Bonsai.t
 end
 
 type ('key, 'data, 'column_id) t =
@@ -52,7 +42,7 @@ type ('key, 'data, 'column_id) t =
               and type key = 'key
               and type data = 'data
               and type column_id = 'column_id)
-      ; column_id : ('column_id, 'column_id_cmp) Bonsai.comparator
+      ; column_id : ('column_id, 'column_id_cmp) Comparator.Module.t
       }
       -> ('key, 'data, 'column_id) t
 
@@ -66,6 +56,6 @@ type ('key, 'data, 'column_id) with_sorter =
               and type data = 'data
               and type column_id = 'column_id
               and type column_id_cmp = 'column_id_cmp)
-      ; column_id : ('column_id, 'column_id_cmp) Bonsai.comparator
+      ; column_id : ('column_id, 'column_id_cmp) Comparator.Module.t
       }
       -> ('key, 'data, 'column_id) with_sorter

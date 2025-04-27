@@ -1,7 +1,8 @@
 (executables
  (modes byte exe)
  (names bonsai_form_example)
- (libraries bonsai_form_experimental bonsai_web core virtual_dom.layout)
+ (libraries bonsai_form_experimental bonsai_web bonsai_web.arrow_deprecated
+   core virtual_dom.layout)
  (preprocess
   (pps ppx_jane)))
 

@@ -90,7 +90,15 @@ module T = struct
     }
   ;;
 
-  let on_mount _ state element = state.observer <- Some (observe ~state element)
+  let on_mount _ state element =
+    match Am_running_how_js.am_running_how with
+    | `Browser | `Browser_benchmark | `Browser_test ->
+      state.observer <- Some (observe ~state element)
+    | `Node | `Node_benchmark | `Node_jsdom_test | `Node_test ->
+      (* Resize observers aren't supported on Node, even in JSDom. *)
+      ()
+  ;;
+
   let on_mount = `Schedule_animation_frame on_mount
 
   let update ~old_input ~new_input state _ =

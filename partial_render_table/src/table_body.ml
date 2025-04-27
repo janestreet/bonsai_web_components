@@ -36,12 +36,19 @@ let return_none_1 _ = None
 *)
 let return_false_1 _ = false
 
+module Inner_focus_state = struct
+  type 'column_id t =
+    | Nothing_focused
+    | Row_is_focused
+    | Cell_in_row_is_focused of 'column_id
+end
+
 let rows
   (type key cmp column_id column_id_cmp kind)
   ~themed_attrs
   ~resize_column_widths_to_fit
-  ~(key_comparator : (key, cmp) Bonsai.comparator)
-  ~(column_id_comparator : (column_id, column_id_cmp) Bonsai.comparator)
+  ~(key_comparator : (key, cmp) Comparator.Module.t)
+  ~(column_id_comparator : (column_id, column_id_cmp) Comparator.Module.t)
   ~row_height
   ~(leaves : column_id Header_tree.leaf list Bonsai.t)
   ~(col_widths : (column_id, Column_size.t, column_id_cmp) Map.t Bonsai.t)
@@ -102,45 +109,65 @@ let rows
     (module Opaque_map.Key)
     cells
     ~f:(fun _ key_and_cells (local_ _graph) ->
+      let focus =
+        let%arr is_row_focused
+        and focused_column_in_row
+        and key, _ = key_and_cells in
+        match focused_column_in_row key with
+        | None when is_row_focused key -> Inner_focus_state.Row_is_focused
+        | None -> Nothing_focused
+        | Some focused_column_in_row -> Cell_in_row_is_focused focused_column_in_row
+      in
       let cells =
-        let is_focused =
-          let%arr focused_column_in_row
-          and key, _ = key_and_cells in
-          match focused_column_in_row key with
-          | None -> return_false_1
-          | Some focused_column ->
-            fun column_id ->
-              Comparable.equal Col_cmp.comparator.compare focused_column column_id
-        in
         let%arr on_cell_click
-        and is_focused
+        and focus
         and col_styles
         and key, cells = key_and_cells
         and themed_attrs
         and resize_column_widths_to_fit in
         let col_styles column_id = (Staged.unstage col_styles) column_id in
         List.map cells ~f:(fun (column_id, cell) ->
+          let cell_is_focused =
+            match focus with
+            | Cell_in_row_is_focused focused_column_id ->
+              Comparable.equal Col_cmp.comparator.compare column_id focused_column_id
+            | _ -> false
+          in
           Table_view.Cell.view
             themed_attrs
-            ~is_focused:(is_focused column_id)
+            ~is_focused:cell_is_focused
             ~col_styles:(col_styles column_id)
             ~on_cell_click:(Effect.lazy_ (lazy (on_cell_click key column_id)))
             ~resize_column_widths_to_fit
             cell)
       in
       let%arr themed_attrs
-      and key, _ = key_and_cells
+      and key_and_cells
       and cells
       and resize_column_widths_to_fit
-      and is_row_focused
+      and focus
       and row_styles
       and extra_row_attrs in
+      (* Any change to [cells] will always cause a recomputation. If we don't ignore it,
+         we save a cutoff node per row. *)
+      let key, _ = key_and_cells in
       let extra_attrs = extra_row_attrs key in
+      let is_focused =
+        match focus with
+        | Row_is_focused -> true
+        | _ -> false
+      in
+      let has_focused_cell =
+        match focus with
+        | Cell_in_row_is_focused _ -> true
+        | _ -> false
+      in
       Table_view.Row.view
         themed_attrs
         ~extra_attrs
         ~styles:row_styles
-        ~is_focused:(is_row_focused key)
+        ~is_focused
+        ~has_focused_cell
         ~resize_column_widths_to_fit
         cells)
     graph
@@ -150,8 +177,8 @@ let component
   (type key data cmp col col_cmp kind)
   ~themed_attrs
   ~resize_column_widths_to_fit
-  ~(key_comparator : (key, cmp) Bonsai.comparator)
-  ~(column_id_comparator : (col, col_cmp) Bonsai.comparator)
+  ~(key_comparator : (key, cmp) Comparator.Module.t)
+  ~(column_id_comparator : (col, col_cmp) Comparator.Module.t)
   ~row_height
   ~(headers : col Header_tree.t Bonsai.t)
   ~(leaves : col Header_tree.leaf list Bonsai.t)

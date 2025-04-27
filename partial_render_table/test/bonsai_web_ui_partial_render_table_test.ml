@@ -1,0 +1,6 @@
+module Ansi_table_tests = Ansi_table_tests
+module Different_config_vdom_comparison = Different_config_vdom_comparison
+module Shared = Shared
+module Vdom_based_tests = Vdom_based_tests
+module Vdom_based_tests_autosize_variant = Vdom_based_tests_autosize_variant
+module Vdom_based_tests_legacy_unthemed = Vdom_based_tests_legacy_unthemed

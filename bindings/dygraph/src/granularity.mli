@@ -4,7 +4,8 @@ open! Gen_js_api
 
 (** An enum to represent the time granularity of the current graph.
 
-    See https://github.com/danvk/dygraphs/blob/da2a028fc41e5573868358b3d9eda9826211d217/src/dygraph-tickers.js#L222 *)
+    See
+    https://github.com/danvk/dygraphs/blob/da2a028fc41e5573868358b3d9eda9826211d217/src/dygraph-tickers.js#L222 *)
 
 type t =
   | MILLISECONDLY [@js 0]

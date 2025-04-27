@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open! Bonsai_web_test.Experimental
+open! Bonsai_web_test
 open! Bonsai.Let_syntax
 module Form = Bonsai_web_ui_form.With_manual_view
 
@@ -27,7 +27,7 @@ let%expect_test "many setters over many frames" =
       let to_set = List.map frame ~f:(fun l -> `Set l) in
       Handle.do_actions handle to_set;
       Handle.recompute_view handle;
-      let result = Handle.result handle in
+      let result = Handle.last_result handle in
       Expect_test_helpers_base.require_equal
         (module struct
           type t = string list [@@deriving equal, sexp_of]

@@ -500,7 +500,7 @@ let with_inject
     | Overwrite sources -> Model.of_list sources
   in
   let ranked_input, inject =
-    Bonsai.state_machine0
+    Bonsai.state_machine
       graph
       ~sexp_of_model:[%sexp_of: Model.t]
       ~equal:[%equal: Model.t]
@@ -758,7 +758,7 @@ module Multi = struct
       | Overwrite sources -> Model.of_lists sources
     in
     let ranked_input, inject =
-      Bonsai.state_machine0
+      Bonsai.state_machine
         graph
         ~sexp_of_action:[%sexp_of: Action.t]
         ~equal:[%equal: Model.t]

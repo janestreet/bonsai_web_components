@@ -1,6 +1,6 @@
 open! Core
 
-let lazy_deprecated = (Bonsai_web.Proc.Bonsai.lazy_ [@alert "-deprecated"])
+let lazy_deprecated = (Bonsai_web_proc.Bonsai.lazy_ [@alert "-deprecated"])
 
 open! Bonsai_web
 open! Bonsai_web_test
@@ -110,7 +110,6 @@ let%expect_test "typing into a string textbox" =
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="text"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -126,7 +125,6 @@ let%expect_test "typing into a string textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
@@ -146,7 +144,6 @@ let%expect_test "typing into a string password textbox" =
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="password"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -162,7 +159,6 @@ let%expect_test "typing into a string password textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="password"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
@@ -431,7 +427,6 @@ let%expect_test "collapsible group" =
           <td>
             <input @key=bonsai_path_replaced_in_test
                    type="text"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
@@ -469,7 +464,6 @@ let%expect_test "collapsible group" =
     -|      <td>
     -|        <input @key=bonsai_path_replaced_in_test
     -|               type="text"
-    -|               placeholder=""
     -|               spellcheck="false"
     -|               id="bonsai_path_replaced_in_test"
     -|               value:normalized=""
@@ -492,7 +486,6 @@ let%expect_test "setting into a string textbox" =
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="text"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -508,7 +501,6 @@ let%expect_test "setting into a string textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
@@ -528,7 +520,6 @@ let%expect_test "typing into a int textbox" =
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="text"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -544,7 +535,6 @@ let%expect_test "typing into a int textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
@@ -561,7 +551,6 @@ let%expect_test "typing into a int textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=123
@@ -581,7 +570,6 @@ let%expect_test "setting into a int textbox" =
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="text"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -597,7 +585,6 @@ let%expect_test "setting into a int textbox" =
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
@@ -627,14 +614,12 @@ let%expect_test "typing into a paired string textbox * int textbox " =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -653,7 +638,6 @@ let%expect_test "typing into a paired string textbox * int textbox " =
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -661,7 +645,6 @@ let%expect_test "typing into a paired string textbox * int textbox " =
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -692,14 +675,12 @@ let%expect_test "setting into a paired string textbox * int textbox " =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -717,7 +698,6 @@ let%expect_test "setting into a paired string textbox * int textbox " =
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -725,7 +705,6 @@ let%expect_test "setting into a paired string textbox * int textbox " =
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -760,21 +739,18 @@ module%test [@name "Form.all"] _ = struct
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
@@ -793,7 +769,6 @@ module%test [@name "Form.all"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -801,7 +776,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -809,7 +783,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -829,21 +802,18 @@ module%test [@name "Form.all"] _ = struct
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
@@ -861,7 +831,6 @@ module%test [@name "Form.all"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -869,7 +838,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -877,7 +845,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -904,7 +871,6 @@ module%test [@name "Form.all"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -912,7 +878,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -920,7 +885,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -947,7 +911,6 @@ module%test [@name "Form.all"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -955,7 +918,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -963,7 +925,6 @@ module%test [@name "Form.all"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -1006,21 +967,18 @@ module%test [@name "Form.all_map"] _ = struct
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
@@ -1043,7 +1001,6 @@ module%test [@name "Form.all_map"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1051,7 +1008,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1059,7 +1015,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -1082,21 +1037,18 @@ module%test [@name "Form.all_map"] _ = struct
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
@@ -1120,7 +1072,6 @@ module%test [@name "Form.all_map"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1128,7 +1079,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1136,7 +1086,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -1168,7 +1117,6 @@ module%test [@name "Form.all_map"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1176,7 +1124,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1184,7 +1131,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -1214,7 +1160,6 @@ module%test [@name "Form.all_map"] _ = struct
         <div>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1222,7 +1167,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
@@ -1230,7 +1174,6 @@ module%test [@name "Form.all_map"] _ = struct
                  @on_input> </input>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
-                 placeholder=""
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
@@ -1254,7 +1197,6 @@ let%expect_test "typing into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1277,7 +1219,6 @@ let%expect_test "typing into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
@@ -1300,7 +1241,6 @@ let%expect_test "typing into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
@@ -1329,7 +1269,6 @@ let%expect_test "setting into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1352,7 +1291,6 @@ let%expect_test "setting into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
@@ -1375,7 +1313,6 @@ let%expect_test "setting into a time span textbox" =
     <div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
@@ -1407,14 +1344,12 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1430,14 +1365,12 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1453,14 +1386,12 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
@@ -1476,14 +1407,12 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
@@ -1499,14 +1428,12 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:12:00.000
@@ -1535,14 +1462,12 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1559,14 +1484,12 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
@@ -1582,14 +1505,12 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
@@ -1617,14 +1538,12 @@ let%expect_test "setting into a date range, with strict inequality required" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1641,14 +1560,12 @@ let%expect_test "setting into a date range, with strict inequality required" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1665,14 +1582,12 @@ let%expect_test "setting into a date range, with strict inequality required" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1689,14 +1604,12 @@ let%expect_test "setting into a date range, with strict inequality required" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
@@ -1727,14 +1640,12 @@ let%expect_test "setting into a date range, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1750,14 +1661,12 @@ let%expect_test "setting into a date range, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -1773,14 +1682,12 @@ let%expect_test "setting into a date range, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
@@ -1796,14 +1703,12 @@ let%expect_test "setting into a date range, with equality allowed" =
     ==============
     <div>
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
              @on_input> </input>
        -
       <input type="time"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
@@ -1875,7 +1780,6 @@ let%expect_test "adding more things to a string list (indented button)" =
     +|      <td>
     +|        <input @key=bonsai_path_replaced_in_test
     +|               type="text"
-    +|               placeholder=""
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=""
@@ -1916,7 +1820,7 @@ let%expect_test "adding more things to a string list (indented button)" =
                           color: blue;
                           background: none;
                         }> [ remove ] </button>
-
+              </div>
             </td>
           </tr>
           <tr @key=bonsai_path_replaced_in_test>
@@ -1930,7 +1834,6 @@ let%expect_test "adding more things to a string list (indented button)" =
             <td>
               <input @key=bonsai_path_replaced_in_test
                      type="text"
-                     placeholder=""
                      spellcheck="false"
                      id="bonsai_path_replaced_in_test"
     -|               value:normalized=""
@@ -1974,7 +1877,6 @@ let%expect_test "adding more things to a string list" =
     +|<div>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
-    +|         placeholder=""
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=""
@@ -1993,7 +1895,6 @@ let%expect_test "adding more things to a string list" =
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -2040,7 +1941,6 @@ let%expect_test "using the same component twice" =
           <td>
             <input @key=bonsai_path_y
                    type="text"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_x"
                    value:normalized=b
@@ -2058,7 +1958,6 @@ let%expect_test "using the same component twice" =
           <td>
             <input @key=bonsai_path_y
                    type="text"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_x"
                    value:normalized=b
@@ -2109,21 +2008,18 @@ let%expect_test "setting things to a string list" =
     +|<div>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
-    +|         placeholder=""
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=hello
     +|         @on_input> </input>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
-    +|         placeholder=""
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=there
     +|         @on_input> </input>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
-    +|         placeholder=""
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=world
@@ -2194,7 +2090,6 @@ let%expect_test "setting things to a string list (verbose)" =
     +|      <td>
     +|        <input @key=bonsai_path_replaced_in_test
     +|               type="text"
-    +|               placeholder=""
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=hello
@@ -2227,7 +2122,6 @@ let%expect_test "setting things to a string list (verbose)" =
     +|      <td>
     +|        <input @key=bonsai_path_replaced_in_test
     +|               type="text"
-    +|               placeholder=""
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=there
@@ -2260,7 +2154,6 @@ let%expect_test "setting things to a string list (verbose)" =
     +|      <td>
     +|        <input @key=bonsai_path_replaced_in_test
     +|               type="text"
-    +|               placeholder=""
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=world
@@ -2442,7 +2335,6 @@ let%expect_test "typing into an int number element (no default)" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2460,7 +2352,6 @@ let%expect_test "typing into an int number element (no default)" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2479,7 +2370,6 @@ let%expect_test "typing into an int number element (no default)" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2509,7 +2399,6 @@ let%expect_test "typing into an int number element" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2527,7 +2416,6 @@ let%expect_test "typing into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2546,7 +2434,6 @@ let%expect_test "typing into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2565,7 +2452,6 @@ let%expect_test "typing into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2584,7 +2470,6 @@ let%expect_test "typing into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2613,7 +2498,6 @@ let%expect_test "setting into an int number element (no default)" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2631,7 +2515,6 @@ let%expect_test "setting into an int number element (no default)" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2661,7 +2544,6 @@ let%expect_test "setting into an int number element" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2679,7 +2561,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2698,7 +2579,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2717,7 +2597,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2736,7 +2615,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2766,7 +2644,6 @@ let%expect_test "typing into a float number element" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2784,7 +2661,6 @@ let%expect_test "typing into a float number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2803,7 +2679,6 @@ let%expect_test "typing into a float number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2822,7 +2697,6 @@ let%expect_test "typing into a float number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2841,7 +2715,6 @@ let%expect_test "typing into a float number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2871,7 +2744,6 @@ let%expect_test "setting into an int number element" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="-1"
@@ -2889,7 +2761,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2908,7 +2779,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2927,7 +2797,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -2946,7 +2815,6 @@ let%expect_test "setting into an int number element" =
       ==============
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="-1"
@@ -3555,14 +3423,12 @@ let%expect_test "form of nested record of int and float" =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -3584,14 +3450,12 @@ let%expect_test "form of nested record of int and float" =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123.456
@@ -3668,14 +3532,12 @@ let%expect_test "form of nested record of int and float (typed fields)" =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -3697,14 +3559,12 @@ let%expect_test "form of nested record of int and float (typed fields)" =
     <div>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123
              @on_input> </input>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123.456
@@ -3729,7 +3589,6 @@ let%expect_test "form of nested record of int and float (typed fields)" =
       <div>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=123
@@ -3737,7 +3596,6 @@ let%expect_test "form of nested record of int and float (typed fields)" =
                @on_input> </input>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=123.456
@@ -4062,7 +3920,6 @@ let%expect_test "typed variants recursive" =
       </select>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -4098,7 +3955,6 @@ let%expect_test "typed variants recursive" =
         </select>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -4186,7 +4042,6 @@ let%expect_test "typed variants" =
       </select>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -4214,7 +4069,6 @@ let%expect_test "typed variants" =
         </select>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -4260,7 +4114,6 @@ let%expect_test "typed variants" =
       </select>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=abc
@@ -4328,7 +4181,6 @@ let%expect_test "typed variants: dynamic labelling" =
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
@@ -4354,7 +4206,6 @@ let%expect_test "typed variants: dynamic labelling" =
         </select>
         <input type="number"
                step="1"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=0
@@ -4438,7 +4289,6 @@ let%expect_test "typed optional variants" =
       </select>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -4467,7 +4317,6 @@ let%expect_test "typed optional variants" =
         </select>
         <input @key=bonsai_path_replaced_in_test
                type="text"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
@@ -4515,7 +4364,6 @@ let%expect_test "typed optional variants" =
       </select>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=abc
@@ -5035,7 +4883,7 @@ let%expect_test "on_change handler should fire when input is changed" =
     let input =
       Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
     in
-    let%sub () =
+    let () =
       Form.Dynamic.on_change
         ~sexp_of_model:[%sexp_of: String.t]
         ~equal:[%equal: String.t]
@@ -5052,36 +4900,34 @@ let%expect_test "on_change handler should fire when input is changed" =
   Handle.show handle;
   [%expect
     {|
+    ("the input changed to" (new_value ""))
     (Ok "")
 
     ==============
     <input @key=bonsai_path_replaced_in_test
            type="text"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
            @on_input> </input>
-
-    ("the input changed to" (new_value ""))
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
   [%expect
     {|
+    ("the input changed to" (new_value "hello world"))
+
     -|(Ok "")
     +|(Ok "hello world")
 
       ==============
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized="hello world"
              @on_input> </input>
-    ("the input changed to" (new_value "hello world"))
     |}]
 ;;
 
@@ -5887,7 +5733,6 @@ let%expect_test "add tooltip to form" =
           <td>
             <input @key=bonsai_path_replaced_in_test
                    type="text"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
@@ -6053,7 +5898,6 @@ let%expect_test "view_as_vdom editable:`Currently_yes" =
             <td>
               <input @key=bonsai_path_replaced_in_test
                      type="text"
-                     placeholder=""
                      spellcheck="false"
                      id="bonsai_path_replaced_in_test"
                      value:normalized=""
@@ -6093,7 +5937,6 @@ let%expect_test "view_as_vdom editable:`Currently_no" =
             <td>
               <input @key=bonsai_path_replaced_in_test
                      type="text"
-                     placeholder=""
                      spellcheck="false"
                      id="bonsai_path_replaced_in_test"
                      value:normalized=""
@@ -6132,7 +5975,6 @@ let%expect_test "view_as_vdom not editable, with on_submit" =
               <td>
                 <input @key=bonsai_path_replaced_in_test
                        type="text"
-                       placeholder=""
                        spellcheck="false"
                        id="bonsai_path_replaced_in_test"
                        value:normalized=""
@@ -6561,8 +6403,8 @@ let%expect_test "[Form.with_default_always] only sets the form once on first act
   Handle.show handle;
   [%expect
     {|
-    (Error "Expected an integer")
     "Form.set called"
+    (Error "Expected an integer")
     |}];
   Handle.show handle;
   [%expect {| (Ok 0) |}]
@@ -6845,7 +6687,6 @@ let%expect_test "typed variant forms with radio buttons can be initialized to th
       </ul>
       <input @key=bonsai_path_replaced_in_test
              type="text"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
@@ -6887,7 +6728,6 @@ let%expect_test "labelling a range form" =
     ==============
     <input type="range"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            min="0"
@@ -6903,7 +6743,6 @@ let%expect_test "labelling a range form" =
     <span style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
       <input type="range"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="0"
@@ -6922,7 +6761,6 @@ let%expect_test "labelling a range form" =
       left
       <input type="range"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="0"
@@ -6940,7 +6778,6 @@ let%expect_test "labelling a range form" =
       left
       <input type="range"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              min="0"
@@ -7758,7 +7595,6 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
                     <td>
                       <input @key=bonsai_path_replaced_in_test
                              type="text"
-                             placeholder=""
                              spellcheck="false"
                              id="bonsai_path_replaced_in_test"
                              value:normalized=""
@@ -7804,7 +7640,6 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
                     <td>
                       <input @key=bonsai_path_replaced_in_test
                              type="text"
-                             placeholder=""
                              spellcheck="false"
                              id="bonsai_path_replaced_in_test"
                              value:normalized=""
@@ -7859,7 +7694,7 @@ let%expect_test "Typed variant set form" =
     let form_for_variant
       : type a cmp.
         a Typed_variant.t
-        -> (a, cmp) Bonsai.comparator
+        -> (a, cmp) Comparator.Module.t
         -> local_ Bonsai.graph
         -> (a, cmp) Set.t Form.t Bonsai.t
       =

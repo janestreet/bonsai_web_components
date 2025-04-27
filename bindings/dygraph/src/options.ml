@@ -62,7 +62,7 @@ module Series_options = struct
           -> unit)
     -> ?drawPointCallback:
          (graph:Ojs.t
-          -> seriesName:string option
+          -> seriesName:Ojs.t
           -> context:Canvas_rendering_context_2D.t
           -> cx:float
           -> cy:float
@@ -93,7 +93,7 @@ module Series_options = struct
       ?drawPointCallback:
         (x14 :
            (graph:Ojs.t
-            -> seriesName:string option
+            -> seriesName:Ojs.t
             -> context:Canvas_rendering_context_2D.t
             -> cx:float
             -> cy:float
@@ -112,40 +112,40 @@ module Series_options = struct
       () ->
     let x21 = Ojs.empty_obj () in
     (match x10 with
-     | Some x51 -> Ojs.set_prop_ascii x21 "axis" (Which_y_axis.t_to_js x51)
+     | Some x50 -> Ojs.set_prop_ascii x21 "axis" (Which_y_axis.t_to_js x50)
      | None -> ());
     (match x11 with
-     | Some x50 -> Ojs.set_prop_ascii x21 "color" (Color.t_to_js x50)
+     | Some x49 -> Ojs.set_prop_ascii x21 "color" (Color.t_to_js x49)
      | None -> ());
     (match x12 with
-     | Some x49 -> Ojs.set_prop_ascii x21 "drawPoints" (Ojs.bool_to_js x49)
+     | Some x48 -> Ojs.set_prop_ascii x21 "drawPoints" (Ojs.bool_to_js x48)
      | None -> ());
     (match x13 with
-     | Some x39 ->
+     | Some x38 ->
        Ojs.set_prop_ascii
          x21
          "drawHighlightPointCallback"
          (Ojs.fun_to_js
             8
             (fun
+                (x39 : Ojs.t)
                 (x40 : Ojs.t)
-                (x41 : Ojs.t)
+                (x42 : Ojs.t)
                 (x43 : Ojs.t)
                 (x44 : Ojs.t)
                 (x45 : Ojs.t)
                 (x46 : Ojs.t)
                 (x47 : Ojs.t)
-                (x48 : Ojs.t)
               ->
-               x39
-                 ~graph:x40
-                 ~seriesName:(Ojs.option_of_js Ojs.string_of_js x41)
-                 ~context:(Canvas_rendering_context_2D.t_of_js x43)
-                 ~cx:(Ojs.float_of_js x44)
-                 ~cy:(Ojs.float_of_js x45)
-                 ~color:x46
-                 ~pointSize:(Ojs.int_of_js x47)
-                 ~idx:(Ojs.int_of_js x48)))
+               x38
+                 ~graph:x39
+                 ~seriesName:(Ojs.option_of_js Ojs.string_of_js x40)
+                 ~context:(Canvas_rendering_context_2D.t_of_js x42)
+                 ~cx:(Ojs.float_of_js x43)
+                 ~cy:(Ojs.float_of_js x44)
+                 ~color:x45
+                 ~pointSize:(Ojs.int_of_js x46)
+                 ~idx:(Ojs.int_of_js x47)))
      | None -> ());
     (match x14 with
      | Some x29 ->
@@ -157,22 +157,22 @@ module Series_options = struct
             (fun
                 (x30 : Ojs.t)
                 (x31 : Ojs.t)
+                (x32 : Ojs.t)
                 (x33 : Ojs.t)
                 (x34 : Ojs.t)
                 (x35 : Ojs.t)
                 (x36 : Ojs.t)
                 (x37 : Ojs.t)
-                (x38 : Ojs.t)
               ->
                x29
                  ~graph:x30
-                 ~seriesName:(Ojs.option_of_js Ojs.string_of_js x31)
-                 ~context:(Canvas_rendering_context_2D.t_of_js x33)
-                 ~cx:(Ojs.float_of_js x34)
-                 ~cy:(Ojs.float_of_js x35)
-                 ~color:x36
-                 ~pointSize:(Ojs.int_of_js x37)
-                 ~idx:(Ojs.int_of_js x38)))
+                 ~seriesName:x31
+                 ~context:(Canvas_rendering_context_2D.t_of_js x32)
+                 ~cx:(Ojs.float_of_js x33)
+                 ~cy:(Ojs.float_of_js x34)
+                 ~color:x35
+                 ~pointSize:(Ojs.int_of_js x36)
+                 ~idx:(Ojs.int_of_js x37)))
      | None -> ());
     (match x15 with
      | Some x28 -> Ojs.set_prop_ascii x21 "plotter" (Plotter.t_to_js x28)
@@ -204,8 +204,8 @@ end
 module Series = struct
   type t = Ojs.t
 
-  let rec t_of_js : Ojs.t -> t = fun (x53 : Ojs.t) -> x53
-  and t_to_js : t -> Ojs.t = fun (x52 : Ojs.t) -> x52
+  let rec t_of_js : Ojs.t -> t = fun (x52 : Ojs.t) -> x52
+  and t_to_js : t -> Ojs.t = fun (x51 : Ojs.t) -> x51
 
   let create data =
     data |> List.Assoc.map ~f:Series_options.t_to_js |> Array.of_list |> Ojs.obj
@@ -215,15 +215,15 @@ end
 module Opts = struct
   type t = Ojs.t
 
-  let rec t_of_js : Ojs.t -> t = fun (x55 : Ojs.t) -> x55
-  and t_to_js : t -> Ojs.t = fun (x54 : Ojs.t) -> x54
+  let rec t_of_js : Ojs.t -> t = fun (x54 : Ojs.t) -> x54
+  and t_to_js : t -> Ojs.t = fun (x53 : Ojs.t) -> x53
 end
 
 module Axis_options = struct
   type t = Ojs.t
 
-  let rec t_of_js : Ojs.t -> t = fun (x57 : Ojs.t) -> x57
-  and t_to_js : t -> Ojs.t = fun (x56 : Ojs.t) -> x56
+  let rec t_of_js : Ojs.t -> t = fun (x56 : Ojs.t) -> x56
+  and t_to_js : t -> Ojs.t = fun (x55 : Ojs.t) -> x55
 
   let create
     :  ?axisLabelFormatter:(Number_or_js_date.t -> Granularity.t -> Opts.t -> string)
@@ -235,151 +235,151 @@ module Axis_options = struct
     -> ?pixelsPerLabel:int -> unit -> t
     =
     fun ?axisLabelFormatter:
-          (x58 : (Number_or_js_date.t -> Granularity.t -> Opts.t -> string) option)
-      ?valueFormatter:(x59 : (float -> Opts.t -> string) option)
-      ?axisLabelWidth:(x60 : int option)
-      ?axisLineColor:(x61 : Color.t option)
-      ?axisLineWidth:(x62 : float option)
-      ?axisTickSize:(x63 : float option)
-      ?drawAxis:(x64 : bool option)
-      ?includeZero:(x65 : bool option)
-      ?independentTicks:(x66 : bool option)
-      ?logscale:(x67 : bool option)
-      ?pixelsPerLabel:(x68 : int option)
-      ?valueRange:(x69 : Range.Spec.t option)
-      ?drawGrid:(x70 : bool option)
-      ?gridLineColor:(x71 : Color.t option)
-      ?gridLinePattern:(x72 : Line_pattern.t option)
-      ?gridLineWidth:(x73 : float option)
-      ?pixelsPerLabel:(x74 : int option)
+          (x57 : (Number_or_js_date.t -> Granularity.t -> Opts.t -> string) option)
+      ?valueFormatter:(x58 : (float -> Opts.t -> string) option)
+      ?axisLabelWidth:(x59 : int option)
+      ?axisLineColor:(x60 : Color.t option)
+      ?axisLineWidth:(x61 : float option)
+      ?axisTickSize:(x62 : float option)
+      ?drawAxis:(x63 : bool option)
+      ?includeZero:(x64 : bool option)
+      ?independentTicks:(x65 : bool option)
+      ?logscale:(x66 : bool option)
+      ?pixelsPerLabel:(x67 : int option)
+      ?valueRange:(x68 : Range.Spec.t option)
+      ?drawGrid:(x69 : bool option)
+      ?gridLineColor:(x70 : Color.t option)
+      ?gridLinePattern:(x71 : Line_pattern.t option)
+      ?gridLineWidth:(x72 : float option)
+      ?pixelsPerLabel:(x73 : int option)
       () ->
-    let x75 = Ojs.empty_obj () in
-    (match x58 with
-     | Some x94 ->
+    let x74 = Ojs.empty_obj () in
+    (match x57 with
+     | Some x93 ->
        Ojs.set_prop_ascii
-         x75
+         x74
          "axisLabelFormatter"
-         (Ojs.fun_to_js 3 (fun (x95 : Ojs.t) (x96 : Ojs.t) (x97 : Ojs.t) ->
+         (Ojs.fun_to_js 3 (fun (x94 : Ojs.t) (x95 : Ojs.t) (x96 : Ojs.t) ->
             Ojs.string_to_js
-              (x94
-                 (Number_or_js_date.t_of_js x95)
-                 (Granularity.t_of_js x96)
-                 (Opts.t_of_js x97))))
+              (x93
+                 (Number_or_js_date.t_of_js x94)
+                 (Granularity.t_of_js x95)
+                 (Opts.t_of_js x96))))
+     | None -> ());
+    (match x58 with
+     | Some x90 ->
+       Ojs.set_prop_ascii
+         x74
+         "valueFormatter"
+         (Ojs.fun_to_js 2 (fun (x91 : Ojs.t) (x92 : Ojs.t) ->
+            Ojs.string_to_js (x90 (Ojs.float_of_js x91) (Opts.t_of_js x92))))
      | None -> ());
     (match x59 with
-     | Some x91 ->
-       Ojs.set_prop_ascii
-         x75
-         "valueFormatter"
-         (Ojs.fun_to_js 2 (fun (x92 : Ojs.t) (x93 : Ojs.t) ->
-            Ojs.string_to_js (x91 (Ojs.float_of_js x92) (Opts.t_of_js x93))))
+     | Some x89 -> Ojs.set_prop_ascii x74 "axisLabelWidth" (Ojs.int_to_js x89)
      | None -> ());
     (match x60 with
-     | Some x90 -> Ojs.set_prop_ascii x75 "axisLabelWidth" (Ojs.int_to_js x90)
+     | Some x88 -> Ojs.set_prop_ascii x74 "axisLineColor" (Color.t_to_js x88)
      | None -> ());
     (match x61 with
-     | Some x89 -> Ojs.set_prop_ascii x75 "axisLineColor" (Color.t_to_js x89)
+     | Some x87 -> Ojs.set_prop_ascii x74 "axisLineWidth" (Ojs.float_to_js x87)
      | None -> ());
     (match x62 with
-     | Some x88 -> Ojs.set_prop_ascii x75 "axisLineWidth" (Ojs.float_to_js x88)
+     | Some x86 -> Ojs.set_prop_ascii x74 "axisTickSize" (Ojs.float_to_js x86)
      | None -> ());
     (match x63 with
-     | Some x87 -> Ojs.set_prop_ascii x75 "axisTickSize" (Ojs.float_to_js x87)
+     | Some x85 -> Ojs.set_prop_ascii x74 "drawAxis" (Ojs.bool_to_js x85)
      | None -> ());
     (match x64 with
-     | Some x86 -> Ojs.set_prop_ascii x75 "drawAxis" (Ojs.bool_to_js x86)
+     | Some x84 -> Ojs.set_prop_ascii x74 "includeZero" (Ojs.bool_to_js x84)
      | None -> ());
     (match x65 with
-     | Some x85 -> Ojs.set_prop_ascii x75 "includeZero" (Ojs.bool_to_js x85)
+     | Some x83 -> Ojs.set_prop_ascii x74 "independentTicks" (Ojs.bool_to_js x83)
      | None -> ());
     (match x66 with
-     | Some x84 -> Ojs.set_prop_ascii x75 "independentTicks" (Ojs.bool_to_js x84)
+     | Some x82 -> Ojs.set_prop_ascii x74 "logscale" (Ojs.bool_to_js x82)
      | None -> ());
     (match x67 with
-     | Some x83 -> Ojs.set_prop_ascii x75 "logscale" (Ojs.bool_to_js x83)
+     | Some x81 -> Ojs.set_prop_ascii x74 "pixelsPerLabel" (Ojs.int_to_js x81)
      | None -> ());
     (match x68 with
-     | Some x82 -> Ojs.set_prop_ascii x75 "pixelsPerLabel" (Ojs.int_to_js x82)
+     | Some x80 -> Ojs.set_prop_ascii x74 "valueRange" (Range.Spec.t_to_js x80)
      | None -> ());
     (match x69 with
-     | Some x81 -> Ojs.set_prop_ascii x75 "valueRange" (Range.Spec.t_to_js x81)
+     | Some x79 -> Ojs.set_prop_ascii x74 "drawGrid" (Ojs.bool_to_js x79)
      | None -> ());
     (match x70 with
-     | Some x80 -> Ojs.set_prop_ascii x75 "drawGrid" (Ojs.bool_to_js x80)
+     | Some x78 -> Ojs.set_prop_ascii x74 "gridLineColor" (Color.t_to_js x78)
      | None -> ());
     (match x71 with
-     | Some x79 -> Ojs.set_prop_ascii x75 "gridLineColor" (Color.t_to_js x79)
+     | Some x77 -> Ojs.set_prop_ascii x74 "gridLinePattern" (Line_pattern.t_to_js x77)
      | None -> ());
     (match x72 with
-     | Some x78 -> Ojs.set_prop_ascii x75 "gridLinePattern" (Line_pattern.t_to_js x78)
+     | Some x76 -> Ojs.set_prop_ascii x74 "gridLineWidth" (Ojs.float_to_js x76)
      | None -> ());
     (match x73 with
-     | Some x77 -> Ojs.set_prop_ascii x75 "gridLineWidth" (Ojs.float_to_js x77)
+     | Some x75 -> Ojs.set_prop_ascii x74 "pixelsPerLabel" (Ojs.int_to_js x75)
      | None -> ());
-    (match x74 with
-     | Some x76 -> Ojs.set_prop_ascii x75 "pixelsPerLabel" (Ojs.int_to_js x76)
-     | None -> ());
-    t_of_js x75
+    t_of_js x74
   ;;
 end
 
 module Axes = struct
   type t = Ojs.t
 
-  let rec t_of_js : Ojs.t -> t = fun (x99 : Ojs.t) -> x99
-  and t_to_js : t -> Ojs.t = fun (x98 : Ojs.t) -> x98
+  let rec t_of_js : Ojs.t -> t = fun (x98 : Ojs.t) -> x98
+  and t_to_js : t -> Ojs.t = fun (x97 : Ojs.t) -> x97
 
   let create : ?x:Axis_options.t -> ?y:Axis_options.t -> ?y2:Axis_options.t -> unit -> t =
-    fun ?x:(x100 : Axis_options.t option)
-      ?y:(x101 : Axis_options.t option)
-      ?y2:(x102 : Axis_options.t option)
+    fun ?x:(x99 : Axis_options.t option)
+      ?y:(x100 : Axis_options.t option)
+      ?y2:(x101 : Axis_options.t option)
       () ->
-    let x103 = Ojs.empty_obj () in
+    let x102 = Ojs.empty_obj () in
+    (match x99 with
+     | Some x105 -> Ojs.set_prop_ascii x102 "x" (Axis_options.t_to_js x105)
+     | None -> ());
     (match x100 with
-     | Some x106 -> Ojs.set_prop_ascii x103 "x" (Axis_options.t_to_js x106)
+     | Some x104 -> Ojs.set_prop_ascii x102 "y" (Axis_options.t_to_js x104)
      | None -> ());
     (match x101 with
-     | Some x105 -> Ojs.set_prop_ascii x103 "y" (Axis_options.t_to_js x105)
+     | Some x103 -> Ojs.set_prop_ascii x102 "y2" (Axis_options.t_to_js x103)
      | None -> ());
-    (match x102 with
-     | Some x104 -> Ojs.set_prop_ascii x103 "y2" (Axis_options.t_to_js x104)
-     | None -> ());
-    t_of_js x103
+    t_of_js x102
   ;;
 end
 
 module Highlight_series_options = struct
   type t = Ojs.t
 
-  let rec t_of_js : Ojs.t -> t = fun (x108 : Ojs.t) -> x108
-  and t_to_js : t -> Ojs.t = fun (x107 : Ojs.t) -> x107
+  let rec t_of_js : Ojs.t -> t = fun (x107 : Ojs.t) -> x107
+  and t_to_js : t -> Ojs.t = fun (x106 : Ojs.t) -> x106
 
   let create
     :  ?highlightCircleSize:int -> ?strokeWidth:float -> ?strokeBorderWidth:float -> unit
     -> t
     =
-    fun ?highlightCircleSize:(x109 : int option)
-      ?strokeWidth:(x110 : float option)
-      ?strokeBorderWidth:(x111 : float option)
+    fun ?highlightCircleSize:(x108 : int option)
+      ?strokeWidth:(x109 : float option)
+      ?strokeBorderWidth:(x110 : float option)
       () ->
-    let x112 = Ojs.empty_obj () in
+    let x111 = Ojs.empty_obj () in
+    (match x108 with
+     | Some x114 -> Ojs.set_prop_ascii x111 "highlightCircleSize" (Ojs.int_to_js x114)
+     | None -> ());
     (match x109 with
-     | Some x115 -> Ojs.set_prop_ascii x112 "highlightCircleSize" (Ojs.int_to_js x115)
+     | Some x113 -> Ojs.set_prop_ascii x111 "strokeWidth" (Ojs.float_to_js x113)
      | None -> ());
     (match x110 with
-     | Some x114 -> Ojs.set_prop_ascii x112 "strokeWidth" (Ojs.float_to_js x114)
+     | Some x112 -> Ojs.set_prop_ascii x111 "strokeBorderWidth" (Ojs.float_to_js x112)
      | None -> ());
-    (match x111 with
-     | Some x113 -> Ojs.set_prop_ascii x112 "strokeBorderWidth" (Ojs.float_to_js x113)
-     | None -> ());
-    t_of_js x112
+    t_of_js x111
   ;;
 end
 
 type t = Ojs.t
 
-let rec t_of_js : Ojs.t -> t = fun (x117 : Ojs.t) -> x117
-and t_to_js : t -> Ojs.t = fun (x116 : Ojs.t) -> x116
+let rec t_of_js : Ojs.t -> t = fun (x116 : Ojs.t) -> x116
+and t_to_js : t -> Ojs.t = fun (x115 : Ojs.t) -> x115
 
 let create
   :  ?axisLabelFontSize:int -> ?axisLabelWidth:int -> ?axisLineColor:Color.t
@@ -429,77 +429,77 @@ let create
   -> ?labelsKMB:bool -> ?labelsKMG2:bool -> ?labelsUTC:bool -> ?maxNumberWidth:int
   -> ?sigFigs:int -> unit -> t
   =
-  fun ?axisLabelFontSize:(x118 : int option)
-    ?axisLabelWidth:(x119 : int option)
-    ?axisLineColor:(x120 : Color.t option)
-    ?axisLineWidth:(x121 : float option)
-    ?axisTickSize:(x122 : float option)
-    ?dateWindow:(x123 : Range.Spec.t option)
-    ?drawAxesAtZero:(x124 : bool option)
-    ?drawAxis:(x125 : bool option)
-    ?includeZero:(x126 : bool option)
-    ?logscale:(x127 : bool option)
-    ?panEdgeFraction:(x128 : float option)
-    ?valueRange:(x129 : Range.Spec.t option)
-    ?xAxisHeight:(x130 : int option)
-    ?xRangePad:(x131 : float option)
-    ?yRangePad:(x132 : float option)
-    ?customBars:(x133 : bool option)
-    ?errorBars:(x134 : bool option)
-    ?fractions:(x135 : bool option)
-    ?title:(x136 : string option)
-    ?titleHeight:(x137 : int option)
-    ?xLabelHeight:(x138 : int option)
-    ?xlabel:(x139 : string option)
-    ?y2label:(x140 : string option)
-    ?yLabelWidth:(x141 : int option)
-    ?ylabel:(x142 : string option)
-    ?axes:(x143 : Axes.t option)
-    ?connectSeparatedPoints:(x144 : bool option)
-    ?drawGapEdgePoints:(x145 : bool option)
-    ?drawPoints:(x146 : bool option)
-    ?fillGraph:(x147 : bool option)
-    ?pointSize:(x148 : int option)
-    ?stackedGraph:(x149 : bool option)
-    ?stackedGraphNaNFill:(x150 : string option)
-    ?stepPlot:(x151 : bool option)
-    ?strokeBorderColor:(x152 : Color.t option)
-    ?strokeBorderWidth:(x153 : float option)
-    ?strokePattern:(x154 : Line_pattern.t option)
-    ?strokeWidth:(x155 : float option)
-    ?visibility:(x156 : bool list option)
-    ?colorSaturation:(x157 : float option)
-    ?colorValue:(x158 : float option)
-    ?colors:(x159 : Color.t array option)
-    ?fillAlpha:(x160 : float option)
-    ?rollPeriod:(x161 : int option)
-    ?sigma:(x162 : float option)
-    ?wilsonInterval:(x163 : bool option)
-    ?drawGrid:(x164 : bool option)
-    ?gridLineColor:(x165 : Color.t option)
-    ?gridLinePattern:(x166 : Line_pattern.t option)
-    ?gridLineWidth:(x167 : float option)
-    ?animatedZooms:(x168 : bool option)
-    ?hideOverlayOnMouseOut:(x169 : bool option)
-    ?highlightCircleSize:(x170 : int option)
-    ?highlightSeriesBackgroundAlpha:(x171 : float option)
-    ?highlightSeriesBackgroundColor:(x172 : Color.t option)
-    ?highlightSeriesOpts:(x173 : Highlight_series_options.t option)
-    ?showLabelsOnHighlight:(x174 : bool option)
-    ?showRoller:(x175 : bool option)
-    ?hideOverlayOnMouseOut:(x176 : bool option)
-    ?labels:(x177 : string list option)
-    ?labelsDiv_string:(x178 : string option)
-    ?labelsDiv_el:(x179 : Native_node.t option)
-    ?labelsSeparateLines:(x180 : bool option)
-    ?labelsShowZeroValues:(x181 : bool option)
-    ?legend:(x182 : Legend.t option)
-    ?legendFormatter:(x183 : (Legend_data.t -> string) option)
-    ?showLabelsOnHighlight:(x184 : bool option)
-    ?height:(x185 : int option)
-    ?clickCallback:(x186 : (evt:Ojs.t -> x:float -> points:Point.t array -> unit) option)
+  fun ?axisLabelFontSize:(x117 : int option)
+    ?axisLabelWidth:(x118 : int option)
+    ?axisLineColor:(x119 : Color.t option)
+    ?axisLineWidth:(x120 : float option)
+    ?axisTickSize:(x121 : float option)
+    ?dateWindow:(x122 : Range.Spec.t option)
+    ?drawAxesAtZero:(x123 : bool option)
+    ?drawAxis:(x124 : bool option)
+    ?includeZero:(x125 : bool option)
+    ?logscale:(x126 : bool option)
+    ?panEdgeFraction:(x127 : float option)
+    ?valueRange:(x128 : Range.Spec.t option)
+    ?xAxisHeight:(x129 : int option)
+    ?xRangePad:(x130 : float option)
+    ?yRangePad:(x131 : float option)
+    ?customBars:(x132 : bool option)
+    ?errorBars:(x133 : bool option)
+    ?fractions:(x134 : bool option)
+    ?title:(x135 : string option)
+    ?titleHeight:(x136 : int option)
+    ?xLabelHeight:(x137 : int option)
+    ?xlabel:(x138 : string option)
+    ?y2label:(x139 : string option)
+    ?yLabelWidth:(x140 : int option)
+    ?ylabel:(x141 : string option)
+    ?axes:(x142 : Axes.t option)
+    ?connectSeparatedPoints:(x143 : bool option)
+    ?drawGapEdgePoints:(x144 : bool option)
+    ?drawPoints:(x145 : bool option)
+    ?fillGraph:(x146 : bool option)
+    ?pointSize:(x147 : int option)
+    ?stackedGraph:(x148 : bool option)
+    ?stackedGraphNaNFill:(x149 : string option)
+    ?stepPlot:(x150 : bool option)
+    ?strokeBorderColor:(x151 : Color.t option)
+    ?strokeBorderWidth:(x152 : float option)
+    ?strokePattern:(x153 : Line_pattern.t option)
+    ?strokeWidth:(x154 : float option)
+    ?visibility:(x155 : bool list option)
+    ?colorSaturation:(x156 : float option)
+    ?colorValue:(x157 : float option)
+    ?colors:(x158 : Color.t array option)
+    ?fillAlpha:(x159 : float option)
+    ?rollPeriod:(x160 : int option)
+    ?sigma:(x161 : float option)
+    ?wilsonInterval:(x162 : bool option)
+    ?drawGrid:(x163 : bool option)
+    ?gridLineColor:(x164 : Color.t option)
+    ?gridLinePattern:(x165 : Line_pattern.t option)
+    ?gridLineWidth:(x166 : float option)
+    ?animatedZooms:(x167 : bool option)
+    ?hideOverlayOnMouseOut:(x168 : bool option)
+    ?highlightCircleSize:(x169 : int option)
+    ?highlightSeriesBackgroundAlpha:(x170 : float option)
+    ?highlightSeriesBackgroundColor:(x171 : Color.t option)
+    ?highlightSeriesOpts:(x172 : Highlight_series_options.t option)
+    ?showLabelsOnHighlight:(x173 : bool option)
+    ?showRoller:(x174 : bool option)
+    ?hideOverlayOnMouseOut:(x175 : bool option)
+    ?labels:(x176 : string list option)
+    ?labelsDiv_string:(x177 : string option)
+    ?labelsDiv_el:(x178 : Native_node.t option)
+    ?labelsSeparateLines:(x179 : bool option)
+    ?labelsShowZeroValues:(x180 : bool option)
+    ?legend:(x181 : Legend.t option)
+    ?legendFormatter:(x182 : (Legend_data.t -> string) option)
+    ?showLabelsOnHighlight:(x183 : bool option)
+    ?height:(x184 : int option)
+    ?clickCallback:(x185 : (evt:Ojs.t -> x:float -> points:Point.t array -> unit) option)
     ?highlightCallback:
-      (x187 :
+      (x186 :
          (evt:Ojs.t
           -> x:float
           -> points:Point.t array
@@ -507,449 +507,449 @@ let create
           -> seriesName:string option
           -> unit)
            option)
-    ?unhighlightCallback:(x188 : (evt:Ojs.t -> unit) option)
-    ?pointClickCallback:(x189 : (evt:Ojs.t -> point:Point.t -> unit) option)
+    ?unhighlightCallback:(x187 : (evt:Ojs.t -> unit) option)
+    ?pointClickCallback:(x188 : (evt:Ojs.t -> point:Point.t -> unit) option)
     ?underlayCallback:
-      (x190 :
+      (x189 :
          (context:Canvas_rendering_context_2D.t -> area:Area.t -> dygraph:Ojs.t -> unit)
            option)
-    ?drawCallback:(x191 : (graph:Ojs.t -> isInitial:bool -> unit) option)
+    ?drawCallback:(x190 : (graph:Ojs.t -> isInitial:bool -> unit) option)
     ?zoomCallback:
-      (x192 : (xmin:float -> xmax:float -> yRanges:Range.t array -> unit) option)
-    ?pixelRatio:(x193 : float option)
-    ?plotter:(x194 : Plotter.t list option)
-    ?rightGap:(x195 : int option)
-    ?width:(x196 : int option)
-    ?rangeSelectorAlpha:(x197 : float option)
-    ?rangeSelectorBackgroundLineWidth:(x198 : float option)
-    ?rangeSelectorBackgroundStrokeColor:(x199 : Color.t option)
-    ?rangeSelectorForegroundLineWidth:(x200 : float option)
-    ?rangeSelectorForegroundStrokeColor:(x201 : Color.t option)
-    ?rangeSelectorHeight:(x202 : int option)
-    ?rangeSelectorPlotFillColor:(x203 : Color.t option)
-    ?rangeSelectorPlotFillGradientColor:(x204 : Color.t option)
-    ?rangeSelectorPlotLineWidth:(x205 : float option)
-    ?rangeSelectorPlotStrokeColor:(x206 : Color.t option)
-    ?showRangeSelector:(x207 : bool option)
-    ?series:(x208 : Series.t option)
-    ?digitsAfterDecimal:(x209 : int option)
-    ?labelsKMB:(x210 : bool option)
-    ?labelsKMG2:(x211 : bool option)
-    ?labelsUTC:(x212 : bool option)
-    ?maxNumberWidth:(x213 : int option)
-    ?sigFigs:(x214 : int option)
+      (x191 : (xmin:float -> xmax:float -> yRanges:Range.t array -> unit) option)
+    ?pixelRatio:(x192 : float option)
+    ?plotter:(x193 : Plotter.t list option)
+    ?rightGap:(x194 : int option)
+    ?width:(x195 : int option)
+    ?rangeSelectorAlpha:(x196 : float option)
+    ?rangeSelectorBackgroundLineWidth:(x197 : float option)
+    ?rangeSelectorBackgroundStrokeColor:(x198 : Color.t option)
+    ?rangeSelectorForegroundLineWidth:(x199 : float option)
+    ?rangeSelectorForegroundStrokeColor:(x200 : Color.t option)
+    ?rangeSelectorHeight:(x201 : int option)
+    ?rangeSelectorPlotFillColor:(x202 : Color.t option)
+    ?rangeSelectorPlotFillGradientColor:(x203 : Color.t option)
+    ?rangeSelectorPlotLineWidth:(x204 : float option)
+    ?rangeSelectorPlotStrokeColor:(x205 : Color.t option)
+    ?showRangeSelector:(x206 : bool option)
+    ?series:(x207 : Series.t option)
+    ?digitsAfterDecimal:(x208 : int option)
+    ?labelsKMB:(x209 : bool option)
+    ?labelsKMG2:(x210 : bool option)
+    ?labelsUTC:(x211 : bool option)
+    ?maxNumberWidth:(x212 : int option)
+    ?sigFigs:(x213 : int option)
     () ->
-  let x215 = Ojs.empty_obj () in
+  let x214 = Ojs.empty_obj () in
+  (match x117 with
+   | Some x339 -> Ojs.set_prop_ascii x214 "axisLabelFontSize" (Ojs.int_to_js x339)
+   | None -> ());
   (match x118 with
-   | Some x340 -> Ojs.set_prop_ascii x215 "axisLabelFontSize" (Ojs.int_to_js x340)
+   | Some x338 -> Ojs.set_prop_ascii x214 "axisLabelWidth" (Ojs.int_to_js x338)
    | None -> ());
   (match x119 with
-   | Some x339 -> Ojs.set_prop_ascii x215 "axisLabelWidth" (Ojs.int_to_js x339)
+   | Some x337 -> Ojs.set_prop_ascii x214 "axisLineColor" (Color.t_to_js x337)
    | None -> ());
   (match x120 with
-   | Some x338 -> Ojs.set_prop_ascii x215 "axisLineColor" (Color.t_to_js x338)
+   | Some x336 -> Ojs.set_prop_ascii x214 "axisLineWidth" (Ojs.float_to_js x336)
    | None -> ());
   (match x121 with
-   | Some x337 -> Ojs.set_prop_ascii x215 "axisLineWidth" (Ojs.float_to_js x337)
+   | Some x335 -> Ojs.set_prop_ascii x214 "axisTickSize" (Ojs.float_to_js x335)
    | None -> ());
   (match x122 with
-   | Some x336 -> Ojs.set_prop_ascii x215 "axisTickSize" (Ojs.float_to_js x336)
+   | Some x334 -> Ojs.set_prop_ascii x214 "dateWindow" (Range.Spec.t_to_js x334)
    | None -> ());
   (match x123 with
-   | Some x335 -> Ojs.set_prop_ascii x215 "dateWindow" (Range.Spec.t_to_js x335)
+   | Some x333 -> Ojs.set_prop_ascii x214 "drawAxesAtZero" (Ojs.bool_to_js x333)
    | None -> ());
   (match x124 with
-   | Some x334 -> Ojs.set_prop_ascii x215 "drawAxesAtZero" (Ojs.bool_to_js x334)
+   | Some x332 -> Ojs.set_prop_ascii x214 "drawAxis" (Ojs.bool_to_js x332)
    | None -> ());
   (match x125 with
-   | Some x333 -> Ojs.set_prop_ascii x215 "drawAxis" (Ojs.bool_to_js x333)
+   | Some x331 -> Ojs.set_prop_ascii x214 "includeZero" (Ojs.bool_to_js x331)
    | None -> ());
   (match x126 with
-   | Some x332 -> Ojs.set_prop_ascii x215 "includeZero" (Ojs.bool_to_js x332)
+   | Some x330 -> Ojs.set_prop_ascii x214 "logscale" (Ojs.bool_to_js x330)
    | None -> ());
   (match x127 with
-   | Some x331 -> Ojs.set_prop_ascii x215 "logscale" (Ojs.bool_to_js x331)
+   | Some x329 -> Ojs.set_prop_ascii x214 "panEdgeFraction" (Ojs.float_to_js x329)
    | None -> ());
   (match x128 with
-   | Some x330 -> Ojs.set_prop_ascii x215 "panEdgeFraction" (Ojs.float_to_js x330)
+   | Some x328 -> Ojs.set_prop_ascii x214 "valueRange" (Range.Spec.t_to_js x328)
    | None -> ());
   (match x129 with
-   | Some x329 -> Ojs.set_prop_ascii x215 "valueRange" (Range.Spec.t_to_js x329)
+   | Some x327 -> Ojs.set_prop_ascii x214 "xAxisHeight" (Ojs.int_to_js x327)
    | None -> ());
   (match x130 with
-   | Some x328 -> Ojs.set_prop_ascii x215 "xAxisHeight" (Ojs.int_to_js x328)
+   | Some x326 -> Ojs.set_prop_ascii x214 "xRangePad" (Ojs.float_to_js x326)
    | None -> ());
   (match x131 with
-   | Some x327 -> Ojs.set_prop_ascii x215 "xRangePad" (Ojs.float_to_js x327)
+   | Some x325 -> Ojs.set_prop_ascii x214 "yRangePad" (Ojs.float_to_js x325)
    | None -> ());
   (match x132 with
-   | Some x326 -> Ojs.set_prop_ascii x215 "yRangePad" (Ojs.float_to_js x326)
+   | Some x324 -> Ojs.set_prop_ascii x214 "customBars" (Ojs.bool_to_js x324)
    | None -> ());
   (match x133 with
-   | Some x325 -> Ojs.set_prop_ascii x215 "customBars" (Ojs.bool_to_js x325)
+   | Some x323 -> Ojs.set_prop_ascii x214 "errorBars" (Ojs.bool_to_js x323)
    | None -> ());
   (match x134 with
-   | Some x324 -> Ojs.set_prop_ascii x215 "errorBars" (Ojs.bool_to_js x324)
+   | Some x322 -> Ojs.set_prop_ascii x214 "fractions" (Ojs.bool_to_js x322)
    | None -> ());
   (match x135 with
-   | Some x323 -> Ojs.set_prop_ascii x215 "fractions" (Ojs.bool_to_js x323)
+   | Some x321 -> Ojs.set_prop_ascii x214 "title" (Ojs.string_to_js x321)
    | None -> ());
   (match x136 with
-   | Some x322 -> Ojs.set_prop_ascii x215 "title" (Ojs.string_to_js x322)
+   | Some x320 -> Ojs.set_prop_ascii x214 "titleHeight" (Ojs.int_to_js x320)
    | None -> ());
   (match x137 with
-   | Some x321 -> Ojs.set_prop_ascii x215 "titleHeight" (Ojs.int_to_js x321)
+   | Some x319 -> Ojs.set_prop_ascii x214 "xLabelHeight" (Ojs.int_to_js x319)
    | None -> ());
   (match x138 with
-   | Some x320 -> Ojs.set_prop_ascii x215 "xLabelHeight" (Ojs.int_to_js x320)
+   | Some x318 -> Ojs.set_prop_ascii x214 "xlabel" (Ojs.string_to_js x318)
    | None -> ());
   (match x139 with
-   | Some x319 -> Ojs.set_prop_ascii x215 "xlabel" (Ojs.string_to_js x319)
+   | Some x317 -> Ojs.set_prop_ascii x214 "y2label" (Ojs.string_to_js x317)
    | None -> ());
   (match x140 with
-   | Some x318 -> Ojs.set_prop_ascii x215 "y2label" (Ojs.string_to_js x318)
+   | Some x316 -> Ojs.set_prop_ascii x214 "yLabelWidth" (Ojs.int_to_js x316)
    | None -> ());
   (match x141 with
-   | Some x317 -> Ojs.set_prop_ascii x215 "yLabelWidth" (Ojs.int_to_js x317)
+   | Some x315 -> Ojs.set_prop_ascii x214 "ylabel" (Ojs.string_to_js x315)
    | None -> ());
   (match x142 with
-   | Some x316 -> Ojs.set_prop_ascii x215 "ylabel" (Ojs.string_to_js x316)
+   | Some x314 -> Ojs.set_prop_ascii x214 "axes" (Axes.t_to_js x314)
    | None -> ());
   (match x143 with
-   | Some x315 -> Ojs.set_prop_ascii x215 "axes" (Axes.t_to_js x315)
+   | Some x313 -> Ojs.set_prop_ascii x214 "connectSeparatedPoints" (Ojs.bool_to_js x313)
    | None -> ());
   (match x144 with
-   | Some x314 -> Ojs.set_prop_ascii x215 "connectSeparatedPoints" (Ojs.bool_to_js x314)
+   | Some x312 -> Ojs.set_prop_ascii x214 "drawGapEdgePoints" (Ojs.bool_to_js x312)
    | None -> ());
   (match x145 with
-   | Some x313 -> Ojs.set_prop_ascii x215 "drawGapEdgePoints" (Ojs.bool_to_js x313)
+   | Some x311 -> Ojs.set_prop_ascii x214 "drawPoints" (Ojs.bool_to_js x311)
    | None -> ());
   (match x146 with
-   | Some x312 -> Ojs.set_prop_ascii x215 "drawPoints" (Ojs.bool_to_js x312)
+   | Some x310 -> Ojs.set_prop_ascii x214 "fillGraph" (Ojs.bool_to_js x310)
    | None -> ());
   (match x147 with
-   | Some x311 -> Ojs.set_prop_ascii x215 "fillGraph" (Ojs.bool_to_js x311)
+   | Some x309 -> Ojs.set_prop_ascii x214 "pointSize" (Ojs.int_to_js x309)
    | None -> ());
   (match x148 with
-   | Some x310 -> Ojs.set_prop_ascii x215 "pointSize" (Ojs.int_to_js x310)
+   | Some x308 -> Ojs.set_prop_ascii x214 "stackedGraph" (Ojs.bool_to_js x308)
    | None -> ());
   (match x149 with
-   | Some x309 -> Ojs.set_prop_ascii x215 "stackedGraph" (Ojs.bool_to_js x309)
+   | Some x307 -> Ojs.set_prop_ascii x214 "stackedGraphNaNFill" (Ojs.string_to_js x307)
    | None -> ());
   (match x150 with
-   | Some x308 -> Ojs.set_prop_ascii x215 "stackedGraphNaNFill" (Ojs.string_to_js x308)
+   | Some x306 -> Ojs.set_prop_ascii x214 "stepPlot" (Ojs.bool_to_js x306)
    | None -> ());
   (match x151 with
-   | Some x307 -> Ojs.set_prop_ascii x215 "stepPlot" (Ojs.bool_to_js x307)
+   | Some x305 -> Ojs.set_prop_ascii x214 "strokeBorderColor" (Color.t_to_js x305)
    | None -> ());
   (match x152 with
-   | Some x306 -> Ojs.set_prop_ascii x215 "strokeBorderColor" (Color.t_to_js x306)
+   | Some x304 -> Ojs.set_prop_ascii x214 "strokeBorderWidth" (Ojs.float_to_js x304)
    | None -> ());
   (match x153 with
-   | Some x305 -> Ojs.set_prop_ascii x215 "strokeBorderWidth" (Ojs.float_to_js x305)
+   | Some x303 -> Ojs.set_prop_ascii x214 "strokePattern" (Line_pattern.t_to_js x303)
    | None -> ());
   (match x154 with
-   | Some x304 -> Ojs.set_prop_ascii x215 "strokePattern" (Line_pattern.t_to_js x304)
+   | Some x302 -> Ojs.set_prop_ascii x214 "strokeWidth" (Ojs.float_to_js x302)
    | None -> ());
   (match x155 with
-   | Some x303 -> Ojs.set_prop_ascii x215 "strokeWidth" (Ojs.float_to_js x303)
+   | Some x300 ->
+     Ojs.set_prop_ascii x214 "visibility" (Ojs.list_to_js Ojs.bool_to_js x300)
    | None -> ());
   (match x156 with
-   | Some x301 ->
-     Ojs.set_prop_ascii x215 "visibility" (Ojs.list_to_js Ojs.bool_to_js x301)
+   | Some x299 -> Ojs.set_prop_ascii x214 "colorSaturation" (Ojs.float_to_js x299)
    | None -> ());
   (match x157 with
-   | Some x300 -> Ojs.set_prop_ascii x215 "colorSaturation" (Ojs.float_to_js x300)
+   | Some x298 -> Ojs.set_prop_ascii x214 "colorValue" (Ojs.float_to_js x298)
    | None -> ());
   (match x158 with
-   | Some x299 -> Ojs.set_prop_ascii x215 "colorValue" (Ojs.float_to_js x299)
+   | Some x296 -> Ojs.set_prop_ascii x214 "colors" (Ojs.array_to_js Color.t_to_js x296)
    | None -> ());
   (match x159 with
-   | Some x297 -> Ojs.set_prop_ascii x215 "colors" (Ojs.array_to_js Color.t_to_js x297)
+   | Some x295 -> Ojs.set_prop_ascii x214 "fillAlpha" (Ojs.float_to_js x295)
    | None -> ());
   (match x160 with
-   | Some x296 -> Ojs.set_prop_ascii x215 "fillAlpha" (Ojs.float_to_js x296)
+   | Some x294 -> Ojs.set_prop_ascii x214 "rollPeriod" (Ojs.int_to_js x294)
    | None -> ());
   (match x161 with
-   | Some x295 -> Ojs.set_prop_ascii x215 "rollPeriod" (Ojs.int_to_js x295)
+   | Some x293 -> Ojs.set_prop_ascii x214 "sigma" (Ojs.float_to_js x293)
    | None -> ());
   (match x162 with
-   | Some x294 -> Ojs.set_prop_ascii x215 "sigma" (Ojs.float_to_js x294)
+   | Some x292 -> Ojs.set_prop_ascii x214 "wilsonInterval" (Ojs.bool_to_js x292)
    | None -> ());
   (match x163 with
-   | Some x293 -> Ojs.set_prop_ascii x215 "wilsonInterval" (Ojs.bool_to_js x293)
+   | Some x291 -> Ojs.set_prop_ascii x214 "drawGrid" (Ojs.bool_to_js x291)
    | None -> ());
   (match x164 with
-   | Some x292 -> Ojs.set_prop_ascii x215 "drawGrid" (Ojs.bool_to_js x292)
+   | Some x290 -> Ojs.set_prop_ascii x214 "gridLineColor" (Color.t_to_js x290)
    | None -> ());
   (match x165 with
-   | Some x291 -> Ojs.set_prop_ascii x215 "gridLineColor" (Color.t_to_js x291)
+   | Some x289 -> Ojs.set_prop_ascii x214 "gridLinePattern" (Line_pattern.t_to_js x289)
    | None -> ());
   (match x166 with
-   | Some x290 -> Ojs.set_prop_ascii x215 "gridLinePattern" (Line_pattern.t_to_js x290)
+   | Some x288 -> Ojs.set_prop_ascii x214 "gridLineWidth" (Ojs.float_to_js x288)
    | None -> ());
   (match x167 with
-   | Some x289 -> Ojs.set_prop_ascii x215 "gridLineWidth" (Ojs.float_to_js x289)
+   | Some x287 -> Ojs.set_prop_ascii x214 "animatedZooms" (Ojs.bool_to_js x287)
    | None -> ());
   (match x168 with
-   | Some x288 -> Ojs.set_prop_ascii x215 "animatedZooms" (Ojs.bool_to_js x288)
+   | Some x286 -> Ojs.set_prop_ascii x214 "hideOverlayOnMouseOut" (Ojs.bool_to_js x286)
    | None -> ());
   (match x169 with
-   | Some x287 -> Ojs.set_prop_ascii x215 "hideOverlayOnMouseOut" (Ojs.bool_to_js x287)
+   | Some x285 -> Ojs.set_prop_ascii x214 "highlightCircleSize" (Ojs.int_to_js x285)
    | None -> ());
   (match x170 with
-   | Some x286 -> Ojs.set_prop_ascii x215 "highlightCircleSize" (Ojs.int_to_js x286)
+   | Some x284 ->
+     Ojs.set_prop_ascii x214 "highlightSeriesBackgroundAlpha" (Ojs.float_to_js x284)
    | None -> ());
   (match x171 with
-   | Some x285 ->
-     Ojs.set_prop_ascii x215 "highlightSeriesBackgroundAlpha" (Ojs.float_to_js x285)
+   | Some x283 ->
+     Ojs.set_prop_ascii x214 "highlightSeriesBackgroundColor" (Color.t_to_js x283)
    | None -> ());
   (match x172 with
-   | Some x284 ->
-     Ojs.set_prop_ascii x215 "highlightSeriesBackgroundColor" (Color.t_to_js x284)
+   | Some x282 ->
+     Ojs.set_prop_ascii x214 "highlightSeriesOpts" (Highlight_series_options.t_to_js x282)
    | None -> ());
   (match x173 with
-   | Some x283 ->
-     Ojs.set_prop_ascii x215 "highlightSeriesOpts" (Highlight_series_options.t_to_js x283)
+   | Some x281 -> Ojs.set_prop_ascii x214 "showLabelsOnHighlight" (Ojs.bool_to_js x281)
    | None -> ());
   (match x174 with
-   | Some x282 -> Ojs.set_prop_ascii x215 "showLabelsOnHighlight" (Ojs.bool_to_js x282)
+   | Some x280 -> Ojs.set_prop_ascii x214 "showRoller" (Ojs.bool_to_js x280)
    | None -> ());
   (match x175 with
-   | Some x281 -> Ojs.set_prop_ascii x215 "showRoller" (Ojs.bool_to_js x281)
+   | Some x279 -> Ojs.set_prop_ascii x214 "hideOverlayOnMouseOut" (Ojs.bool_to_js x279)
    | None -> ());
   (match x176 with
-   | Some x280 -> Ojs.set_prop_ascii x215 "hideOverlayOnMouseOut" (Ojs.bool_to_js x280)
+   | Some x277 -> Ojs.set_prop_ascii x214 "labels" (Ojs.list_to_js Ojs.string_to_js x277)
    | None -> ());
   (match x177 with
-   | Some x278 -> Ojs.set_prop_ascii x215 "labels" (Ojs.list_to_js Ojs.string_to_js x278)
+   | Some x276 -> Ojs.set_prop_ascii x214 "labelsDiv" (Ojs.string_to_js x276)
    | None -> ());
   (match x178 with
-   | Some x277 -> Ojs.set_prop_ascii x215 "labelsDiv" (Ojs.string_to_js x277)
+   | Some x275 -> Ojs.set_prop_ascii x214 "labelsDiv" (Native_node.t_to_js x275)
    | None -> ());
   (match x179 with
-   | Some x276 -> Ojs.set_prop_ascii x215 "labelsDiv" (Native_node.t_to_js x276)
+   | Some x274 -> Ojs.set_prop_ascii x214 "labelsSeparateLines" (Ojs.bool_to_js x274)
    | None -> ());
   (match x180 with
-   | Some x275 -> Ojs.set_prop_ascii x215 "labelsSeparateLines" (Ojs.bool_to_js x275)
+   | Some x273 -> Ojs.set_prop_ascii x214 "labelsShowZeroValues" (Ojs.bool_to_js x273)
    | None -> ());
   (match x181 with
-   | Some x274 -> Ojs.set_prop_ascii x215 "labelsShowZeroValues" (Ojs.bool_to_js x274)
+   | Some x272 -> Ojs.set_prop_ascii x214 "legend" (Legend.t_to_js x272)
    | None -> ());
   (match x182 with
-   | Some x273 -> Ojs.set_prop_ascii x215 "legend" (Legend.t_to_js x273)
+   | Some x270 ->
+     Ojs.set_prop_ascii
+       x214
+       "legendFormatter"
+       (Ojs.fun_to_js 1 (fun (x271 : Ojs.t) ->
+          Ojs.string_to_js (x270 (Legend_data.t_of_js x271))))
    | None -> ());
   (match x183 with
-   | Some x271 ->
-     Ojs.set_prop_ascii
-       x215
-       "legendFormatter"
-       (Ojs.fun_to_js 1 (fun (x272 : Ojs.t) ->
-          Ojs.string_to_js (x271 (Legend_data.t_of_js x272))))
+   | Some x269 -> Ojs.set_prop_ascii x214 "showLabelsOnHighlight" (Ojs.bool_to_js x269)
    | None -> ());
   (match x184 with
-   | Some x270 -> Ojs.set_prop_ascii x215 "showLabelsOnHighlight" (Ojs.bool_to_js x270)
+   | Some x268 -> Ojs.set_prop_ascii x214 "height" (Ojs.int_to_js x268)
    | None -> ());
   (match x185 with
-   | Some x269 -> Ojs.set_prop_ascii x215 "height" (Ojs.int_to_js x269)
+   | Some x263 ->
+     Ojs.set_prop_ascii
+       x214
+       "clickCallback"
+       (Ojs.fun_to_js 3 (fun (x264 : Ojs.t) (x265 : Ojs.t) (x266 : Ojs.t) ->
+          x263
+            ~evt:x264
+            ~x:(Ojs.float_of_js x265)
+            ~points:(Ojs.array_of_js Point.t_of_js x266)))
    | None -> ());
   (match x186 with
-   | Some x264 ->
+   | Some x255 ->
      Ojs.set_prop_ascii
-       x215
-       "clickCallback"
-       (Ojs.fun_to_js 3 (fun (x265 : Ojs.t) (x266 : Ojs.t) (x267 : Ojs.t) ->
-          x264
-            ~evt:x265
-            ~x:(Ojs.float_of_js x266)
-            ~points:(Ojs.array_of_js Point.t_of_js x267)))
-   | None -> ());
-  (match x187 with
-   | Some x256 ->
-     Ojs.set_prop_ascii
-       x215
+       x214
        "highlightCallback"
        (Ojs.fun_to_js
           5
           (fun
+              (x256 : Ojs.t)
               (x257 : Ojs.t)
               (x258 : Ojs.t)
-              (x259 : Ojs.t)
+              (x260 : Ojs.t)
               (x261 : Ojs.t)
-              (x262 : Ojs.t)
             ->
-             x256
-               ~evt:x257
-               ~x:(Ojs.float_of_js x258)
-               ~points:(Ojs.array_of_js Point.t_of_js x259)
-               ~row:(Ojs.int_of_js x261)
-               ~seriesName:(Ojs.option_of_js Ojs.string_of_js x262)))
+             x255
+               ~evt:x256
+               ~x:(Ojs.float_of_js x257)
+               ~points:(Ojs.array_of_js Point.t_of_js x258)
+               ~row:(Ojs.int_of_js x260)
+               ~seriesName:(Ojs.option_of_js Ojs.string_of_js x261)))
+   | None -> ());
+  (match x187 with
+   | Some x253 ->
+     Ojs.set_prop_ascii
+       x214
+       "unhighlightCallback"
+       (Ojs.fun_to_js 1 (fun (x254 : Ojs.t) -> x253 ~evt:x254))
    | None -> ());
   (match x188 with
-   | Some x254 ->
+   | Some x250 ->
      Ojs.set_prop_ascii
-       x215
-       "unhighlightCallback"
-       (Ojs.fun_to_js 1 (fun (x255 : Ojs.t) -> x254 ~evt:x255))
+       x214
+       "pointClickCallback"
+       (Ojs.fun_to_js 2 (fun (x251 : Ojs.t) (x252 : Ojs.t) ->
+          x250 ~evt:x251 ~point:(Point.t_of_js x252)))
    | None -> ());
   (match x189 with
-   | Some x251 ->
+   | Some x246 ->
      Ojs.set_prop_ascii
-       x215
-       "pointClickCallback"
-       (Ojs.fun_to_js 2 (fun (x252 : Ojs.t) (x253 : Ojs.t) ->
-          x251 ~evt:x252 ~point:(Point.t_of_js x253)))
+       x214
+       "underlayCallback"
+       (Ojs.fun_to_js 3 (fun (x247 : Ojs.t) (x248 : Ojs.t) (x249 : Ojs.t) ->
+          x246
+            ~context:(Canvas_rendering_context_2D.t_of_js x247)
+            ~area:(Area.t_of_js x248)
+            ~dygraph:x249))
    | None -> ());
   (match x190 with
-   | Some x247 ->
+   | Some x243 ->
      Ojs.set_prop_ascii
-       x215
-       "underlayCallback"
-       (Ojs.fun_to_js 3 (fun (x248 : Ojs.t) (x249 : Ojs.t) (x250 : Ojs.t) ->
-          x247
-            ~context:(Canvas_rendering_context_2D.t_of_js x248)
-            ~area:(Area.t_of_js x249)
-            ~dygraph:x250))
+       x214
+       "drawCallback"
+       (Ojs.fun_to_js 2 (fun (x244 : Ojs.t) (x245 : Ojs.t) ->
+          x243 ~graph:x244 ~isInitial:(Ojs.bool_of_js x245)))
    | None -> ());
   (match x191 with
-   | Some x244 ->
+   | Some x238 ->
      Ojs.set_prop_ascii
-       x215
-       "drawCallback"
-       (Ojs.fun_to_js 2 (fun (x245 : Ojs.t) (x246 : Ojs.t) ->
-          x244 ~graph:x245 ~isInitial:(Ojs.bool_of_js x246)))
+       x214
+       "zoomCallback"
+       (Ojs.fun_to_js 3 (fun (x239 : Ojs.t) (x240 : Ojs.t) (x241 : Ojs.t) ->
+          x238
+            ~xmin:(Ojs.float_of_js x239)
+            ~xmax:(Ojs.float_of_js x240)
+            ~yRanges:(Ojs.array_of_js Range.t_of_js x241)))
    | None -> ());
   (match x192 with
-   | Some x239 ->
-     Ojs.set_prop_ascii
-       x215
-       "zoomCallback"
-       (Ojs.fun_to_js 3 (fun (x240 : Ojs.t) (x241 : Ojs.t) (x242 : Ojs.t) ->
-          x239
-            ~xmin:(Ojs.float_of_js x240)
-            ~xmax:(Ojs.float_of_js x241)
-            ~yRanges:(Ojs.array_of_js Range.t_of_js x242)))
+   | Some x237 -> Ojs.set_prop_ascii x214 "pixelRatio" (Ojs.float_to_js x237)
    | None -> ());
   (match x193 with
-   | Some x238 -> Ojs.set_prop_ascii x215 "pixelRatio" (Ojs.float_to_js x238)
+   | Some x235 -> Ojs.set_prop_ascii x214 "plotter" (Ojs.list_to_js Plotter.t_to_js x235)
    | None -> ());
   (match x194 with
-   | Some x236 -> Ojs.set_prop_ascii x215 "plotter" (Ojs.list_to_js Plotter.t_to_js x236)
+   | Some x234 -> Ojs.set_prop_ascii x214 "rightGap" (Ojs.int_to_js x234)
    | None -> ());
   (match x195 with
-   | Some x235 -> Ojs.set_prop_ascii x215 "rightGap" (Ojs.int_to_js x235)
+   | Some x233 -> Ojs.set_prop_ascii x214 "width" (Ojs.int_to_js x233)
    | None -> ());
   (match x196 with
-   | Some x234 -> Ojs.set_prop_ascii x215 "width" (Ojs.int_to_js x234)
+   | Some x232 -> Ojs.set_prop_ascii x214 "rangeSelectorAlpha" (Ojs.float_to_js x232)
    | None -> ());
   (match x197 with
-   | Some x233 -> Ojs.set_prop_ascii x215 "rangeSelectorAlpha" (Ojs.float_to_js x233)
+   | Some x231 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorBackgroundLineWidth" (Ojs.float_to_js x231)
    | None -> ());
   (match x198 with
-   | Some x232 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorBackgroundLineWidth" (Ojs.float_to_js x232)
+   | Some x230 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorBackgroundStrokeColor" (Color.t_to_js x230)
    | None -> ());
   (match x199 with
-   | Some x231 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorBackgroundStrokeColor" (Color.t_to_js x231)
+   | Some x229 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorForegroundLineWidth" (Ojs.float_to_js x229)
    | None -> ());
   (match x200 with
-   | Some x230 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorForegroundLineWidth" (Ojs.float_to_js x230)
+   | Some x228 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorForegroundStrokeColor" (Color.t_to_js x228)
    | None -> ());
   (match x201 with
-   | Some x229 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorForegroundStrokeColor" (Color.t_to_js x229)
+   | Some x227 -> Ojs.set_prop_ascii x214 "rangeSelectorHeight" (Ojs.int_to_js x227)
    | None -> ());
   (match x202 with
-   | Some x228 -> Ojs.set_prop_ascii x215 "rangeSelectorHeight" (Ojs.int_to_js x228)
+   | Some x226 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorPlotFillColor" (Color.t_to_js x226)
    | None -> ());
   (match x203 with
-   | Some x227 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorPlotFillColor" (Color.t_to_js x227)
+   | Some x225 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorPlotFillGradientColor" (Color.t_to_js x225)
    | None -> ());
   (match x204 with
-   | Some x226 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorPlotFillGradientColor" (Color.t_to_js x226)
+   | Some x224 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorPlotLineWidth" (Ojs.float_to_js x224)
    | None -> ());
   (match x205 with
-   | Some x225 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorPlotLineWidth" (Ojs.float_to_js x225)
+   | Some x223 ->
+     Ojs.set_prop_ascii x214 "rangeSelectorPlotStrokeColor" (Color.t_to_js x223)
    | None -> ());
   (match x206 with
-   | Some x224 ->
-     Ojs.set_prop_ascii x215 "rangeSelectorPlotStrokeColor" (Color.t_to_js x224)
+   | Some x222 -> Ojs.set_prop_ascii x214 "showRangeSelector" (Ojs.bool_to_js x222)
    | None -> ());
   (match x207 with
-   | Some x223 -> Ojs.set_prop_ascii x215 "showRangeSelector" (Ojs.bool_to_js x223)
+   | Some x221 -> Ojs.set_prop_ascii x214 "series" (Series.t_to_js x221)
    | None -> ());
   (match x208 with
-   | Some x222 -> Ojs.set_prop_ascii x215 "series" (Series.t_to_js x222)
+   | Some x220 -> Ojs.set_prop_ascii x214 "digitsAfterDecimal" (Ojs.int_to_js x220)
    | None -> ());
   (match x209 with
-   | Some x221 -> Ojs.set_prop_ascii x215 "digitsAfterDecimal" (Ojs.int_to_js x221)
+   | Some x219 -> Ojs.set_prop_ascii x214 "labelsKMB" (Ojs.bool_to_js x219)
    | None -> ());
   (match x210 with
-   | Some x220 -> Ojs.set_prop_ascii x215 "labelsKMB" (Ojs.bool_to_js x220)
+   | Some x218 -> Ojs.set_prop_ascii x214 "labelsKMG2" (Ojs.bool_to_js x218)
    | None -> ());
   (match x211 with
-   | Some x219 -> Ojs.set_prop_ascii x215 "labelsKMG2" (Ojs.bool_to_js x219)
+   | Some x217 -> Ojs.set_prop_ascii x214 "labelsUTC" (Ojs.bool_to_js x217)
    | None -> ());
   (match x212 with
-   | Some x218 -> Ojs.set_prop_ascii x215 "labelsUTC" (Ojs.bool_to_js x218)
+   | Some x216 -> Ojs.set_prop_ascii x214 "maxNumberWidth" (Ojs.int_to_js x216)
    | None -> ());
   (match x213 with
-   | Some x217 -> Ojs.set_prop_ascii x215 "maxNumberWidth" (Ojs.int_to_js x217)
+   | Some x215 -> Ojs.set_prop_ascii x214 "sigFigs" (Ojs.int_to_js x215)
    | None -> ());
-  (match x214 with
-   | Some x216 -> Ojs.set_prop_ascii x215 "sigFigs" (Ojs.int_to_js x216)
-   | None -> ());
-  t_of_js x215
+  t_of_js x214
 ;;
 
 let legendFormatter : t -> (Legend_data.t -> string) option =
-  fun (x341 : t) ->
+  fun (x340 : t) ->
   Ojs.option_of_js
-    (fun (x342 : Ojs.t) (x343 : Legend_data.t) ->
-      Ojs.string_of_js (Ojs.apply x342 [| Legend_data.t_to_js x343 |]))
-    (Ojs.get_prop_ascii (t_to_js x341) "legendFormatter")
+    (fun (x341 : Ojs.t) (x342 : Legend_data.t) ->
+      Ojs.string_of_js (Ojs.apply x341 [| Legend_data.t_to_js x342 |]))
+    (Ojs.get_prop_ascii (t_to_js x340) "legendFormatter")
 ;;
 
 let zoomCallback : t -> (xmin:float -> xmax:float -> yRanges:Range.t array -> unit) option
   =
-  fun (x344 : t) ->
+  fun (x343 : t) ->
   Ojs.option_of_js
-    (fun (x345 : Ojs.t)
-      ~xmin:(x346 : float)
-      ~xmax:(x347 : float)
-      ~yRanges:(x348 : Range.t array) ->
-      ignore
+    (fun (x344 : Ojs.t)
+      ~xmin:(x345 : float)
+      ~xmax:(x346 : float)
+      ~yRanges:(x347 : Range.t array) ->
+      (ignore : _)
         (Ojs.apply
-           x345
-           [| Ojs.float_to_js x346
-            ; Ojs.float_to_js x347
-            ; Ojs.array_to_js Range.t_to_js x348
+           x344
+           [| Ojs.float_to_js x345
+            ; Ojs.float_to_js x346
+            ; Ojs.array_to_js Range.t_to_js x347
            |]))
-    (Ojs.get_prop_ascii (t_to_js x344) "zoomCallback")
+    (Ojs.get_prop_ascii (t_to_js x343) "zoomCallback")
 ;;
 
 let height : t -> int option =
-  fun (x350 : t) ->
-  Ojs.option_of_js Ojs.int_of_js (Ojs.get_prop_ascii (t_to_js x350) "height")
+  fun (x349 : t) ->
+  Ojs.option_of_js Ojs.int_of_js (Ojs.get_prop_ascii (t_to_js x349) "height")
 ;;
 
 let width : t -> int option =
-  fun (x352 : t) ->
-  Ojs.option_of_js Ojs.int_of_js (Ojs.get_prop_ascii (t_to_js x352) "width")
+  fun (x351 : t) ->
+  Ojs.option_of_js Ojs.int_of_js (Ojs.get_prop_ascii (t_to_js x351) "width")
 ;;
 
 let merge_internal : t -> prefer:t -> t =
-  fun (x354 : t) ~prefer:(x355 : t) ->
+  fun (x353 : t) ~prefer:(x354 : t) ->
   t_of_js
     (Ojs.call
        (Ojs.get_prop_ascii Ojs.global "_")
        "merge"
-       [| t_to_js x354; t_to_js x355 |])
+       [| t_to_js x353; t_to_js x354 |])
 ;;
 
 let merge t ~prefer = create () |> merge_internal ~prefer:t |> merge_internal ~prefer

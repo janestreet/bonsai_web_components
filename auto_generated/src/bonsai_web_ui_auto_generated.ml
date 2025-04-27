@@ -23,6 +23,18 @@ let error_hint form (local_ graph) =
   Form.Dynamic.error_hint form graph
 ;;
 
+let no_duplicate_clause_names clauses =
+  let rec loop acc = function
+    | [] -> true
+    | hd :: tl ->
+      let { Sexp_grammar.name; _ } = Grammar_helper.Tags.strip_tags hd in
+      (match Set.mem acc name with
+       | false -> loop (Set.add acc name) tl
+       | true -> false)
+  in
+  loop String.Set.empty clauses
+;;
+
 module Customization = struct
   type 'a t =
     { apply_to_tag : key:string -> value:Sexp.t -> bool
@@ -213,7 +225,7 @@ module Customization = struct
 
       let all ?(allow_updates_when_focused = `Always) () =
         [ assoc_key_value_labels
-        ; nice_time_ns ~allow_updates_when_focused
+        ; nice_time_ns ~allow_updates_when_focused:`Never
         ; nice_time_of_day ~allow_updates_when_focused
         ; nice_date ~allow_updates_when_focused
         ; transform_multiple_button_name
@@ -271,7 +283,7 @@ module Style =
         /* arbitrary value from eyeballing */
         max-height: 14rem;
       }
-      |}]
+    |}]
 
 let project_to_sexp
   (type a)
@@ -409,8 +421,18 @@ let form
         ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         ~default_model:()
-        ~apply_action:(fun context (_, inner) () sexp ->
-          Bonsai.Apply_action_context.schedule_event context (Form.set inner sexp))
+        ~apply_action:(fun context result () sexp ->
+          match result with
+          | Inactive ->
+            eprint_s
+              [%message
+                "An action sent to a [wrap] has been dropped because its input was not \
+                 present. This happens when the [wrap] is inactive when it receives a \
+                 message."
+                  [%here]];
+            ()
+          | Active (_, inner) ->
+            Bonsai.Apply_action_context.schedule_event context (Form.set inner sexp))
         ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
           let outer, set_outer =
             Bonsai.state
@@ -532,7 +554,7 @@ let form
               Form.project
                 form
                 ~parse_exn:(fun s -> Some s)
-                ~unparse:(fun s -> Option.value_exn ~here:[%here] s)
+                ~unparse:(fun s -> Option.value_exn s)
             | false -> optional_field_grammar_form args graph
           in
           let%arr args_form and required and doc in
@@ -622,8 +644,20 @@ let form
         ~sexp_of_model:[%sexp_of: Unit.t]
         ~equal:[%equal: Unit.t]
         ~default_model:()
-        ~apply_action:(fun context (_, inner) () inner_value ->
-          Bonsai.Apply_action_context.schedule_event context (Form.set inner inner_value))
+        ~apply_action:(fun context result () inner_value ->
+          match result with
+          | Inactive ->
+            eprint_s
+              [%message
+                "An action sent to a [wrap] has been dropped because its input was not \
+                 present. This happens when the [wrap] is inactive when it receives a \
+                 message."
+                  [%here]];
+            ()
+          | Active (_, inner) ->
+            Bonsai.Apply_action_context.schedule_event
+              context
+              (Form.set inner inner_value))
         ~f:
           (fun
             (_ : unit Bonsai.t)
@@ -997,8 +1031,18 @@ let form
           ~sexp_of_model:[%sexp_of: Unit.t]
           ~equal:[%equal: Unit.t]
           ~default_model:()
-          ~apply_action:(fun context (_, inner) () sexp ->
-            Bonsai.Apply_action_context.schedule_event context (Form.set inner sexp))
+          ~apply_action:(fun context result () sexp ->
+            match result with
+            | Inactive ->
+              eprint_s
+                [%message
+                  "An action sent to a [wrap] has been dropped because its input was not \
+                   present. This happens when the [wrap] is inactive when it receives a \
+                   message."
+                    [%here]];
+              ()
+            | Active (_, inner) ->
+              Bonsai.Apply_action_context.schedule_event context (Form.set inner sexp))
           ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
             let%sub clauses_names, clauses_as_map, clauses_and_docs =
               let%arr clauses in
@@ -1053,7 +1097,8 @@ let form
                   ~equal:[%equal: String.t]
                   ~id:(Vdom.Attr.id path)
                   ~include_empty:true
-                  ~default_value:None
+                  ~default_value:Not_provided
+                  ~value_not_in_options_behavior:`Allow
                   ~state:outer
                   ~set_state:set_outer
                   ~all:clause_names
@@ -1093,7 +1138,7 @@ let form
                         (Vdom.Node.text "?")
                     ]
               in
-              ( Opt.to_option outer
+              ( Opt.to_option outer ~allow_illegal_values:true
               , (function
                   | None -> set_outer Explicitly_none
                   | Some outer -> set_outer (Set outer))
@@ -1255,7 +1300,7 @@ let form
           (* Fearlessly force the lazy; it's not used for recursion *)
           let g =
             let%arr g in
-            Lazy.force g
+            Portable_lazy.force g
           in
           grammar_form g graph
         | Tagged with_tag, _ -> with_tag_form with_tag graph
@@ -1276,7 +1321,8 @@ let form
               [ Variant { case_sensitivity = sens_a; clauses = clauses_a }
               ; Variant { case_sensitivity = sens_b; clauses = clauses_b }
               ]
-          , _ ) ->
+          , _ )
+          when no_duplicate_clause_names (clauses_a @ clauses_b) ->
           let open Sexp_grammar in
           let merged_variant =
             let%arr sens_a and sens_b and clauses_a and clauses_b in

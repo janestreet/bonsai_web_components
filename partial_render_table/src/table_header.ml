@@ -28,17 +28,21 @@ module Acc = struct
 end
 
 let rec render_header
-  header
+  ~column_id_equal
+  ~focused_column
   ~themed_attrs
   ~level
-  ~acc
   ~column_widths
   ~set_column_width
   ~set_column_width_for_reporting
   ~resize_column_widths_to_fit
+  ~acc
+  header
   =
   let recurse =
     render_header
+      ~column_id_equal
+      ~focused_column
       ~themed_attrs
       ~level:(level + 1)
       ~column_widths
@@ -48,6 +52,8 @@ let rec render_header
   in
   let recurse_no_level_change =
     render_header
+      ~column_id_equal
+      ~focused_column
       ~themed_attrs
       ~level
       ~column_widths
@@ -64,12 +70,16 @@ let rec render_header
         | Some (Hidden { prev_width_px = Some width }) -> `Px_float width
         | None | Some (Hidden { prev_width_px = None }) -> initial_width
       in
+      let focused =
+        Option.value_map focused_column ~default:false ~f:(column_id_equal column_id)
+      in
       Table_view.Header.Header_cell.leaf_view
         themed_attrs
         ~column_width
         ~resize_column_widths_to_fit
         ~set_column_width:(set_column_width ~column_id)
         ~set_column_width_for_reporting:(set_column_width_for_reporting ~column_id)
+        ~focused
         ~visible
         ~resizable
         ~label:leaf_header
@@ -85,7 +95,7 @@ let rec render_header
         ()
     in
     let acc = Acc.visit_non_leaf acc ~level ~node in
-    recurse inside ~acc
+    recurse ~acc inside
   | Group { children; group_header } ->
     let node =
       Table_view.Header.Header_cell.group_view
@@ -102,6 +112,8 @@ let rec render_header
 ;;
 
 let render_header
+  ~column_id_equal
+  ~focused_column
   ~themed_attrs
   headers
   ~column_widths
@@ -111,20 +123,24 @@ let render_header
   =
   headers
   |> render_header
+       ~column_id_equal
+       ~focused_column
        ~themed_attrs
-       ~acc:Acc.empty
        ~level:0
        ~column_widths
        ~set_column_width
        ~set_column_width_for_reporting
        ~resize_column_widths_to_fit
+       ~acc:Acc.empty
   |> Acc.finalize ~themed_attrs
 ;;
 
 let component
   (type column_id column_id_cmp)
+  ~column_id_equal
   ~themed_attrs
   ~resize_column_widths_to_fit
+  ~focused_column
   (headers : column_id Header_tree.t Bonsai.t)
   ~(column_widths : (column_id, Column_size.t, column_id_cmp) Map.t Bonsai.t)
   ~(set_column_width :
@@ -136,6 +152,7 @@ let component
   =
   let%arr set_column_width
   and set_column_width_for_reporting
+  and focused_column
   and set_header_client_rect
   and headers
   and column_widths
@@ -144,6 +161,8 @@ let component
   let header_rows =
     render_header
       headers
+      ~column_id_equal
+      ~focused_column
       ~themed_attrs
       ~set_column_width
       ~set_column_width_for_reporting

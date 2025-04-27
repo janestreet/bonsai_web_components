@@ -1,7 +1,4 @@
 open! Core
-
-module type Bonsai_model = Bonsai_web.Proc.Model
-
 open Bonsai.Let_syntax
 module Codemirror_ui = Bonsai_web_ui_codemirror
 module Form = Bonsai_web_ui_form.With_manual_view
@@ -45,28 +42,29 @@ end
 
 module Basic = struct
   module Forms = Make_forms (struct
-      type t = unit
+      type t = Codemirror.State.Extension.t list
 
-      let create_codemirror ~name () =
-        Codemirror_ui.of_initial_state ~name Codemirror_initial_state.empty
+      let create_codemirror ~name extensions =
+        Codemirror_ui.of_initial_state ~name (Codemirror_initial_state.create extensions)
       ;;
     end)
 
-  let string = Forms.string
+  let string ?name ?(extensions = []) () = Forms.string ?name extensions
 
-  let stringable (type a) ?name (module M : Stringable with type t = a) =
-    Forms.stringable (module M) ?name ()
+  let stringable (type a) ?name ?(extensions = []) (module M : Stringable with type t = a)
+    =
+    Forms.stringable (module M) ?name extensions
   ;;
 
-  let sexpable (type a) ?name (module M : Sexpable with type t = a) =
-    Forms.sexpable (module M) ?name ()
+  let sexpable (type a) ?name ?(extensions = []) (module M : Sexpable with type t = a) =
+    Forms.sexpable (module M) ?name extensions
   ;;
 end
 
 module Dynamic_extensions = struct
   type t =
     | T :
-        { model : (module Bonsai_model with type t = 'a)
+        { sexp_of_model : ('a -> Sexp.t) option
         ; equal : 'a -> 'a -> bool
         ; value : 'a Bonsai.t
         ; compute_extensions : ('a -> Codemirror.State.Extension.t list) Bonsai.t
@@ -76,9 +74,9 @@ module Dynamic_extensions = struct
   module Forms = Make_forms (struct
       type nonrec t = t
 
-      let create_codemirror ~name (T { model; value; compute_extensions; equal }) =
+      let create_codemirror ~name (T { sexp_of_model; value; compute_extensions; equal }) =
         Codemirror_ui.with_dynamic_extensions
-          model
+          ?sexp_of:sexp_of_model
           ~equal
           ~name
           ~initial_state:Codemirror_initial_state.empty
@@ -87,85 +85,37 @@ module Dynamic_extensions = struct
       ;;
     end)
 
-  let string
-    (type a)
-    (module M : Bonsai_model with type t = a)
-    ~equal
-    ?name
-    ~compute_extensions
-    value
-    =
-    Forms.string ?name (T { model = (module M); equal; value; compute_extensions })
+  let string ?sexp_of_model ?name ~equal ~compute_extensions value =
+    Forms.string ?name (T { sexp_of_model; equal; value; compute_extensions })
   ;;
 
   let stringable
-    (type model a)
-    (module M : Bonsai_model with type t = model)
+    (type a)
     (module S : Stringable with type t = a)
-    ~equal
+    ?sexp_of_model
     ?name
+    ~equal
     ~compute_extensions
     value
     =
     Forms.stringable
       (module S)
       ?name
-      (T { model = (module M); equal; value; compute_extensions })
+      (T { sexp_of_model; equal; value; compute_extensions })
   ;;
 
   let sexpable
-    (type model a)
-    (module M : Bonsai_model with type t = model)
+    (type a)
     (module S : Sexpable with type t = a)
-    ~equal
+    ?sexp_of_model
     ?name
+    ~equal
     ~compute_extensions
     value
     =
     Forms.sexpable
       (module S)
       ?name
-      (T { model = (module M); equal; value; compute_extensions })
-  ;;
-end
-
-module Sexp_grammar_autocomplete = struct
-  type t =
-    | T :
-        { extra_extension : Codemirror.State.Extension.t option
-        ; sexp_grammar : 'a Sexp_grammar.t Bonsai.t
-        }
-        -> t
-
-  module Forms = Make_forms (struct
-      type nonrec t = t
-
-      let create_codemirror ~name (T { extra_extension; sexp_grammar }) =
-        Codemirror_sexp.Autocomplete.with_extension ?extra_extension ~name sexp_grammar
-      ;;
-    end)
-
-  let string ?name ?extra_extension sexp_grammar =
-    Forms.string ?name (T { extra_extension; sexp_grammar })
-  ;;
-
-  let stringable
-    (type a)
-    (module M : Stringable with type t = a)
-    ?name
-    ?extra_extension
-    sexp_grammar
-    =
-    Forms.stringable (module M) ?name (T { extra_extension; sexp_grammar })
-  ;;
-
-  let sexpable
-    (type a)
-    (module M : Sexpable with type t = a)
-    ?name
-    ?extra_extension
-    sexp_grammar
-    =
-    Forms.sexpable (module M) ?name (T { extra_extension; sexp_grammar })
+      (T { sexp_of_model; equal; value; compute_extensions })
   ;;
 end

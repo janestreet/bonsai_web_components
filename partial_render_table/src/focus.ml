@@ -57,6 +57,7 @@ module By_cell = struct
 
   type ('k, 'column_id, 'presence) t =
     { focused : 'presence
+    ; raw_focused : ('k * 'column_id) option
     ; focus_is_locked : bool
     ; unfocus : unit Effect.t
     ; lock_focus : unit Effect.t
@@ -92,6 +93,7 @@ module By_cell = struct
 
     val finalize
       :  ('k, 'column_id) unfinalized
+      -> raw_focused:('k * 'column_id) option
       -> presence:'presence
       -> focus_is_locked:bool
       -> ('k, 'column_id, 'presence) t
@@ -100,6 +102,7 @@ module By_cell = struct
 
     let create inject =
       { focused = None
+      ; raw_focused = None
       ; focus_is_locked = false
       ; unfocus = inject Action.Unfocus
       ; lock_focus = inject Lock
@@ -119,8 +122,8 @@ module By_cell = struct
       }
     ;;
 
-    let finalize without_focus ~presence ~focus_is_locked =
-      { without_focus with focused = presence; focus_is_locked }
+    let finalize without_focus ~raw_focused ~presence ~focus_is_locked =
+      { without_focus with focused = presence; raw_focused; focus_is_locked }
     ;;
   end
 end
@@ -146,7 +149,7 @@ module By_row = struct
 
   module Expert = struct
     let keyless (t : ('k, 'presence) t) =
-      { t with focused = None; focus = (fun _ _ -> Effect.Ignore) }
+      { t with focused = None; raw_focused = None; focus = (fun _ _ -> Effect.Ignore) }
     ;;
   end
 end
@@ -182,9 +185,9 @@ type ('kind, 'key, 'column_id) t =
 
 module Cell_machine = struct
   module Triple = struct
-    (** This type is pretty integral to the row selection state-machine.  A
-        value of this type is stored as the "currently selected row" and also
-        as the result for "next row down" queries.  *)
+    (** This type is pretty integral to the row selection state-machine. A value of this
+        type is stored as the "currently selected row" and also as the result for "next
+        row down" queries. *)
     type 'k t =
       { key : 'k
       ; index : int
@@ -231,8 +234,8 @@ module Cell_machine = struct
 
   let component
     (type key column_id data cmp column_id_cmp presence)
-    (key : (key, cmp) Bonsai.comparator)
-    (column_id : (column_id, column_id_cmp) Bonsai.comparator)
+    (key : (key, cmp) Comparator.Module.t)
+    (column_id : (column_id, column_id_cmp) Comparator.Module.t)
     ~(compute_presence :
         (key * column_id) option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
     ~(on_change : ((key * column_id) option -> unit Effect.t) Bonsai.t)
@@ -249,12 +252,14 @@ module Cell_machine = struct
     let module Key = struct
       include (val key)
 
+      let sexp_of_t = comparator.sexp_of_t
       let equal = Comparable.equal comparator.compare
     end
     in
     let module Column_id = struct
       include (val column_id)
 
+      let sexp_of_t = comparator.sexp_of_t
       let equal = Comparable.equal comparator.compare
     end
     in
@@ -265,12 +270,11 @@ module Cell_machine = struct
     end
     in
     let module Model = struct
-      (** [current] is the currently selected cell.
-          [shadow] is the previously selected cell.
+      (** [current] is the currently selected cell. [shadow] is the previously selected
+          cell.
 
           Shadow is useful for computing "next cell down" if the user previously
-          unfocused, or if the element that was previously selected has been
-          removed. *)
+          unfocused, or if the element that was previously selected has been removed. *)
 
       type current_focus =
         | No_focused_cell
@@ -586,7 +590,7 @@ module Cell_machine = struct
            })
     in
     let current, inject =
-      Bonsai.state_machine1
+      Bonsai.state_machine_with_input
         ~sexp_of_model:[%sexp_of: Model.t]
         ~equal:[%equal: Model.t]
         ~sexp_of_action:[%sexp_of: Action.t]
@@ -648,23 +652,31 @@ module Cell_machine = struct
         graph
     in
     let presence = compute_presence visually_focused graph in
-    let visually_focused =
+    let visually_focused_cell =
       match%arr visually_focused with
       | None -> Nothing_focused
       | Some (key, column_id) -> Cell_focused (key, column_id)
     in
-    let%arr presence and visually_focused and statically_computed and focus_is_locked in
+    let%arr presence
+    and visually_focused
+    and visually_focused_cell
+    and statically_computed
+    and focus_is_locked in
     let focus =
-      By_cell.Statically_computed.finalize statically_computed ~presence ~focus_is_locked
+      By_cell.Statically_computed.finalize
+        statically_computed
+        ~raw_focused:visually_focused
+        ~presence
+        ~focus_is_locked
     in
-    { focus; visually_focused }
+    { focus; visually_focused = visually_focused_cell }
   ;;
 end
 
 module Row_machine = struct
   let component
     (type key data cmp presence)
-    (key : (key, cmp) Bonsai.comparator)
+    (key : (key, cmp) Comparator.Module.t)
     ~(compute_presence : key option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
     ~(on_change : (key option -> unit Effect.t) Bonsai.t)
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
@@ -716,8 +728,8 @@ end
 let component
   : type kind presence key column_id column_id_cmp.
     (kind, presence, key, column_id) Kind.t
-    -> (key, _) Bonsai.comparator
-    -> (column_id, column_id_cmp) Bonsai.comparator
+    -> (key, _) Comparator.Module.t
+    -> (column_id, column_id_cmp) Comparator.Module.t
     -> collated:(key, _) Collated.t Bonsai.t
     -> leaves:column_id Header_tree.leaf list Bonsai.t
     -> range:_
@@ -808,4 +820,18 @@ let get_on_cell_click
     in
     let%map focus in
     fun key column -> focus key column
+;;
+
+let get_focused_column
+  (type r presence k column_id)
+  (kind : (r, presence, k, column_id) Kind.t)
+  (value : r Bonsai.t)
+  : column_id option Bonsai.t
+  =
+  match kind with
+  | None -> Bonsai.return None
+  | By_row _ -> Bonsai.return None
+  | By_cell _ ->
+    let%map control = value in
+    By_cell.raw_focused control |> Option.map ~f:snd
 ;;

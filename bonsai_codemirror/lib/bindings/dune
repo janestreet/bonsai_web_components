@@ -1,0 +1,22 @@
+(library
+ (name codemirror_bindings)
+ (public_name bonsai_web_components.codemirror_bindings)
+ (js_of_ocaml
+  (javascript_files ./fake_codemirror_for_tests.js))
+ (libraries core gen_js_api js_of_ocaml ppx_bench.runtime-lib
+   ppx_expect.runtime ppx_module_timer.runtime)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx gen_js_api.ppx))
+ (wasm_of_ocaml
+  (javascript_files ./fake_codemirror_for_tests.js)))
+
+(rule
+ (targets for_ppx.ml-for-review)
+ (deps ./for_ppx.ml)
+ (action
+  (bash
+    "cat ./for_ppx.ml  | sed -E 's/x[0-9]+/<ELIDED>/g' > ./for_ppx.ml-for-review")))
+
+(alias
+ (name DEFAULT)
+ (deps ./for_ppx.ml-for-review))

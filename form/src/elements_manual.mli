@@ -1,5 +1,4 @@
 open! Core
-module Bonsai_proc := Bonsai_web.Proc
 open! Bonsai_web
 module Form = Form_manual
 
@@ -20,8 +19,8 @@ end
 module Selectable_style = Vdom_input_widgets.Selectable_style
 
 module Non_interactive : sig
-  (** This form always contains the specified value. Setting the form has no
-      effect. In addition, one must specify how the form should look to the user. *)
+  (** This form always contains the specified value. Setting the form has no effect. In
+      addition, one must specify how the form should look to the user. *)
   val constant
     :  Vdom.Node.t Bonsai.t
     -> 'a Or_error.t Bonsai.t
@@ -171,7 +170,7 @@ module Checkbox : sig
     -> ?extra_checkbox_attrs:(checked:bool -> Vdom.Attr.t list) Bonsai.t
     -> ?to_string:('a -> string)
     -> ?layout:[ `Vertical | `Horizontal ]
-    -> ('a, 'cmp) Bonsai.comparator
+    -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
     -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
@@ -188,7 +187,7 @@ module Checkbox : sig
 end
 
 module Toggle : sig
-  (** Very similar to [Checkbox.bool], but with a different stylization.  Looks similar to
+  (** Very similar to [Checkbox.bool], but with a different stylization. Looks similar to
       the rounded variant here: https://www.w3schools.com/howto/howto_css_switch.asp *)
   val bool
     :  ?extra_attr:Vdom.Attr.t Bonsai.t
@@ -204,6 +203,21 @@ module Dropdown : sig
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_option_attrs:('a -> Vdom.Attr.t list) Bonsai.t
     -> ?to_string:('a -> string)
+    -> ?value_not_in_options_behavior:[ `Allow | `Use_default_value | `Error_out ]
+         (** [value_not_in_options_behavior] defaults to [`Allow].
+
+             The value of the form may not be in the provided input list for many reasons:
+             1. [init] is set to [`This v] and [v] is not in the list.
+             2. [Form.set] is called with a value that is not in the list.
+             3. A value is set (either through user selection or [Form.set]) that is in
+                the list, but then the list changes to no longer have that value.
+
+             If the value is not in the list, and [value_not_in_options_behavior] is set
+             to
+             - `Allow: the form's value will be returned as is.
+             - `Use_default_value: the form's value will be the default value. If the
+               default value is not in the list, an error will be returned.
+             - If this is set to `Error_out, an error will be returned. *)
     -> (module Model with type t = 'a)
     -> equal:('a -> 'a -> bool)
     -> 'a list Bonsai.t
@@ -216,6 +230,21 @@ module Dropdown : sig
     -> ?extra_option_attrs:('a -> Vdom.Attr.t list) Bonsai.t
     -> ?to_string:('a -> string)
     -> ?placeholder:string
+    -> ?value_not_in_options_behavior:[ `Allow | `Use_default_value | `Error_out ]
+         (** [value_not_in_options_behavior] defaults to [`Allow].
+
+             The value of the form may not be in the provided input list for many reasons:
+             1. [init] is set to [`This v] and [v] is not in the list.
+             2. [Form.set] is called with a value that is not in the list.
+             3. A value is set (either through user selection or [Form.set]) that is in
+                the list, but then the list changes to no longer have that value.
+
+             If the value is not in the list, and [value_not_in_options_behavior] is set
+             to
+             - `Allow: the form's value will be returned as is.
+             - `Use_default_value: the form's value will be the default value. If the
+               default value is not in the list, an error will be returned.
+             - If this is set to `Error_out, an error will be returned. *)
     -> (module Model with type t = 'a)
     -> equal:('a -> 'a -> bool)
     -> 'a list Bonsai.t
@@ -227,6 +256,21 @@ module Dropdown : sig
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_option_attrs:('a -> Vdom.Attr.t list) Bonsai.t
     -> ?to_string:('a -> string)
+    -> ?value_not_in_options_behavior:[ `Allow | `Use_default_value | `Error_out ]
+         (** [value_not_in_options_behavior] defaults to [`Allow].
+
+             The value of the form may not be in the provided input list for many reasons:
+             1. [init] is set to [`This v] and [v] is not in the list.
+             2. [Form.set] is called with a value that is not in the list.
+             3. A value is set (either through user selection or [Form.set]) that is in
+                the list, but then the list changes to no longer have that value.
+
+             If the value is not in the list, and [value_not_in_options_behavior] is set
+             to
+             - `Allow: the form's value will be returned as is.
+             - `Use_default_value: the form's value will be the default value. If the
+               default value is not in the list, an error will be returned.
+             - If this is set to `Error_out, an error will be returned. *)
     -> (module Bonsai.Enum with type t = 'a)
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
@@ -236,6 +280,22 @@ module Dropdown : sig
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_option_attrs:('a -> Vdom.Attr.t list) Bonsai.t
     -> ?to_string:('a -> string)
+    -> ?value_not_in_options_behavior:[ `Allow | `Use_default_value | `Error_out ]
+         (** [value_not_in_options_behavior] defaults to [`Allow].
+
+             The value of the form may not be in the provided input list for many reasons:
+             1. [init] is set to [`This v] and [v] is not in the list.
+             2. [Form.set] is called with a value that is not in the list.
+             3. A value is set (either through user selection or [Form.set]) that is in
+                the list, but then the list changes to no longer have that value.
+
+             If the value is not in the list, and [value_not_in_options_behavior] is set
+             to
+             - `Allow: the form's value will be returned as is.
+             - `Use_default_value: the form's value will be the default value. If the
+               default value is not in the list, an error will be returned.
+             - If this is set to `Error_out, an error will be returned. *)
+    -> ?placeholder:string
     -> (module Bonsai.Enum with type t = 'a)
     -> local_ Bonsai.graph
     -> ('a option, Vdom.Node.t) Form.t Bonsai.t
@@ -246,9 +306,18 @@ module Dropdown : sig
         | Uninitialized
         | Explicitly_none
         | Set of 'a
+        | Illegal of 'a
       [@@deriving sexp, equal]
 
-      val to_option : 'a t -> 'a option
+      val to_option : 'a t -> allow_illegal_values:bool -> 'a option
+    end
+
+    module Default_value : sig
+      type 'a t =
+        | Not_provided
+        | Set of 'a
+        | Illegal of 'a
+      [@@deriving sexp, equal]
     end
 
     val make_input
@@ -258,7 +327,8 @@ module Dropdown : sig
       -> (module Model with type t = 'a)
       -> equal:('a -> 'a -> bool)
       -> include_empty:bool
-      -> default_value:'a option
+      -> default_value:'a Default_value.t
+      -> value_not_in_options_behavior:[ `Allow | `Error_out | `Use_default_value ]
       -> state:'a Opt.t
       -> set_state:('a Opt.t -> unit Ui_effect.t)
       -> extra_attrs:Vdom.Attr.t list
@@ -271,11 +341,11 @@ end
 module Typeahead : sig
   val single
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?placeholder:string
+    -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
-    -> (module Bonsai_proc.Model with type t = 'a)
+    -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
@@ -283,11 +353,11 @@ module Typeahead : sig
 
   val single_opt
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?placeholder:string
+    -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
-    -> (module Bonsai_proc.Model with type t = 'a)
+    -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
@@ -295,24 +365,24 @@ module Typeahead : sig
 
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?placeholder:string
+    -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> ?split:(string -> string list)
-    -> ('a, 'cmp) Bonsai.comparator
+    -> ('a, 'cmp) Comparator.Module.t
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
 
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?placeholder:string
+    -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> ?split:(string -> string list)
-    -> ('a, _) Bonsai.comparator
+    -> ('a, _) Comparator.Module.t
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
     -> ('a list, Vdom.Node.t) Form.t Bonsai.t
@@ -345,6 +415,7 @@ module Date_time : sig
 
   val time
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?default:Time_ns.Ofday.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -352,6 +423,7 @@ module Date_time : sig
 
   val time_opt
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?default:Time_ns.Ofday.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
@@ -379,14 +451,14 @@ module Date_time : sig
 
   val datetime_local
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?allow_updates_when_focused:[ `Always | `Never ]
+    -> ?allow_updates_when_focused:[ `Never ]
     -> unit
     -> local_ Bonsai.graph
     -> (Time_ns.t, Vdom.Node.t) Form.t Bonsai.t
 
   val datetime_local_opt
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-    -> ?allow_updates_when_focused:[ `Always | `Never ]
+    -> ?allow_updates_when_focused:[ `Never ]
     -> unit
     -> local_ Bonsai.graph
     -> (Time_ns.t option, Vdom.Node.t) Form.t Bonsai.t
@@ -408,17 +480,25 @@ module Date_time : sig
       -> local_ Bonsai.graph
       -> (Date.t option * Date.t option, Vdom.Node.t) Form.t Bonsai.t
 
+    (** If [enforce_start_before_end] (default: [true]), the form will validate that the
+        start time is before the end time. Disabling this is only permitted for
+        [Time_ns.Ofday.t] forms, to enable inputs that cross midnight into the next day. *)
     val time
       :  ?extra_attr:Vdom.Attr.t Bonsai.t
       -> ?allow_equal:bool
+      -> ?enforce_start_before_end:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
       -> local_ Bonsai.graph
       -> (Time_ns.Ofday.t * Time_ns.Ofday.t, Vdom.Node.t) Form.t Bonsai.t
 
+    (** If [enforce_start_before_end] (default: [true]), the form will validate that the
+        start time is before the end time. Disabling this is only permitted for
+        [Time_ns.Ofday.t] forms, to enable inputs that cross midnight into the next day. *)
     val time_opt
       :  ?extra_attr:Vdom.Attr.t Bonsai.t
       -> ?allow_equal:bool
+      -> ?enforce_start_before_end:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
       -> local_ Bonsai.graph
@@ -427,7 +507,7 @@ module Date_time : sig
     val datetime_local
       :  ?extra_attr:Vdom.Attr.t Bonsai.t
       -> ?allow_equal:bool
-      -> ?allow_updates_when_focused:[ `Always | `Never ]
+      -> ?allow_updates_when_focused:[ `Never ]
       -> unit
       -> local_ Bonsai.graph
       -> (Time_ns.t * Time_ns.t, Vdom.Node.t) Form.t Bonsai.t
@@ -435,7 +515,7 @@ module Date_time : sig
     val datetime_local_opt
       :  ?extra_attr:Vdom.Attr.t Bonsai.t
       -> ?allow_equal:bool
-      -> ?allow_updates_when_focused:[ `Always | `Never ]
+      -> ?allow_updates_when_focused:[ `Never ]
       -> unit
       -> local_ Bonsai.graph
       -> (Time_ns.t option * Time_ns.t option, Vdom.Node.t) Form.t Bonsai.t
@@ -448,7 +528,7 @@ module Multiselect : sig
     -> ?to_string:('a -> string)
     -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
-    -> ('a, 'cmp) Bonsai.comparator
+    -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
     -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, Vdom.Node.t) Form.t Bonsai.t
@@ -458,7 +538,7 @@ module Multiselect : sig
     -> ?to_string:('a -> string)
     -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
-    -> ('a, _) Bonsai.comparator
+    -> ('a, _) Comparator.Module.t
     -> 'a list Bonsai.t
     -> local_ Bonsai.graph
     -> ('a list, Vdom.Node.t) Form.t Bonsai.t
@@ -555,7 +635,8 @@ end
 
 module Color_picker : sig
   val hex
-    :  ?extra_attr:Vdom.Attr.t Bonsai.t
+    :  ?default:[ `Hex of string ]
+    -> ?extra_attr:Vdom.Attr.t Bonsai.t
     -> unit
     -> local_ Bonsai.graph
     -> ([ `Hex of string ], Vdom.Node.t) Form.t Bonsai.t
@@ -570,6 +651,7 @@ module Multiple : sig
     -> ?extra_pill_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
     -> ?placeholder:string Bonsai.t
+    -> ?clear_textbox_upon_set:bool Bonsai.t
     -> (module Stringable_model with type t = 'a)
     -> equal:('a -> 'a -> bool)
     -> local_ Bonsai.graph
@@ -602,13 +684,13 @@ module Multiple : sig
     -> ('a Nonempty_list.t, ('a, 'view) nonempty_t) Form.t Bonsai.t
 
   val set
-    :  ('a, 'cmp) Bonsai.comparator
+    :  ('a, 'cmp) Comparator.Module.t
     -> (local_ Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
     -> local_ Bonsai.graph
     -> (('a, 'cmp) Set.t, ('a, 'view) t) Form.t Bonsai.t
 
   val map
-    :  ('k, 'cmp) Bonsai.comparator
+    :  ('k, 'cmp) Comparator.Module.t
     -> key:(local_ Bonsai.graph -> ('k, 'key_view) Form.t Bonsai.t)
     -> data:(local_ Bonsai.graph -> ('v, 'data_view) Form.t Bonsai.t)
     -> local_ Bonsai.graph
@@ -680,6 +762,7 @@ module Rank : sig
     -> ?empty_list_placeholder:
          (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
+    -> ?add_drop_target_for_appending:bool
     -> (source:Vdom.Attr.t Bonsai.t
         -> 'a Bonsai.t
         -> local_ Bonsai.graph
@@ -690,7 +773,7 @@ end
 
 module Query_box : sig
   val create_opt
-    :  (module Bonsai.Comparator with type comparator_witness = 'cmp and type t = 'k)
+    :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
@@ -710,7 +793,7 @@ module Query_box : sig
     -> ('k option, Vdom.Node.t) Form.t Bonsai.t
 
   val create
-    :  (module Bonsai.Comparator with type comparator_witness = 'cmp and type t = 'k)
+    :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
     -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
@@ -739,7 +822,7 @@ module Query_box : sig
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
-    -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
+    -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
        (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)
@@ -757,7 +840,7 @@ module Query_box : sig
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
-    -> (module Bonsai.Comparator with type t = 'a and type comparator_witness = 'cmp)
+    -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
        (* If there are duplicate items in [all_options] (according to the comparator),
        the last of the duplicates will be the only one that show up in the list
        of suggestions. *)

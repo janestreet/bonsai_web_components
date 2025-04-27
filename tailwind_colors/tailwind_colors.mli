@@ -1,35 +1,34 @@
 (** The color palettes included in the Tailwind CSS library, taken from
-    [https://tailwindcss.com/docs/customizing-colors] on 2022-11-21. The larger
-    the number on a color, the darker it is.
+    [https://tailwindcss.com/docs/customizing-colors] on 2022-11-21. The larger the number
+    on a color, the darker it is.
 
-    This library takes the approach of *not* ascribing semantic value to
-    certain colors; instead, it selects several "palettes" of colors which work
-    well together, and offloads the semantics of each color to the library or
-    application that depends on this one. Thus, this library does not aim to
-    provide any consistent design pattern or color conventions. However, a set
-    of conventions could easily be created using this set of colors. *)
+    This library takes the approach of *not* ascribing semantic value to certain colors;
+    instead, it selects several "palettes" of colors which work well together, and
+    offloads the semantics of each color to the library or application that depends on
+    this one. Thus, this library does not aim to provide any consistent design pattern or
+    color conventions. However, a set of conventions could easily be created using this
+    set of colors. *)
 
 (** MIT License
 
-Copyright (c) Tailwind Labs, Inc.
+    Copyright (c) Tailwind Labs, Inc.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this
+    software and associated documentation files (the "Software"), to deal in the Software
+    without restriction, including without limitation the rights to use, copy, modify,
+    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following
+    conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all copies
+    or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*)
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. *)
 
 type t := [ `Hex of string ]
 

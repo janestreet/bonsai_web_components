@@ -5,7 +5,7 @@ module Form = Bonsai_web_ui_form.With_automatic_view
 module Table = Bonsai_web_ui_partial_render_table.Basic
 module C = Table.Columns.Dynamic_columns
 
-let header text = C.Sortable.Header.Legacy.wrap_with_icon (Vdom.Node.text text)
+let header text = Vdom.Node.text text
 
 module type S = sig
   type t [@@deriving sexp, equal, compare]
@@ -38,7 +38,7 @@ module Style =
       .key_input_textbox {
         flex: 1;
       }
-      |}]
+    |}]
 
 module Column = struct
   type t =
