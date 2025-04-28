@@ -1,5 +1,4 @@
 open! Core
-module Bonsai_proc := Bonsai_web.Proc
 open! Bonsai_web
 
 module State : sig
@@ -15,47 +14,45 @@ module State : sig
 end
 
 module Result : sig
-  (** The result of a tabs UI component is the list of tabs, and the result
-      from evaluating the current tab. *)
+  (** The result of a tabs UI component is the list of tabs, and the result from
+      evaluating the current tab. *)
   type 'a t =
     { tabs : Vdom.Node.t list
     ; current : 'a
     }
 
-  (** When the result from the tabs component is just a [Vdom.Node.t],
-      there's an easy way to combine them.  This will make a Vdom node that
-      looks like this:
+  (** When the result from the tabs component is just a [Vdom.Node.t], there's an easy way
+      to combine them. This will make a Vdom node that looks like this:
 
       {v
         <div class="bonsai_ui_tab_container">
             <div class="bonsai_ui_tab_tabs"> ... tabs here ... </div>
             <div class="bonsai_ui_tab_body"> ... current tab here ... </div>
         </div>
-      v}
-  *)
+      v} *)
   val combine_trivially : Vdom.Node.t t -> Vdom.Node.t
 end
 
-(** [tab_state] is used to build a basic state that can be used to store the
-    state for a current tab. *)
+(** [tab_state] is used to build a basic state that can be used to store the state for a
+    current tab. *)
 val tab_state
-  :  ?equal:('a -> 'a -> bool)
-  -> (module Bonsai_proc.Model with type t = 'a)
+  :  ?sexp_of:('a -> Sexp.t)
+  -> ?equal:('a -> 'a -> bool)
   -> initial:'a
   -> Bonsai.graph
   -> 'a State.t Bonsai.t
 
-(** [tab_ui] takes a state and evaluates a computation-returning
-    function that can match on the tab and produce a computation for that tab.
+(** [tab_ui] takes a state and evaluates a computation-returning function that can match
+    on the tab and produce a computation for that tab.
 
     [decorate] can be used to produce the contents for the button for each tab.
 
-    [additional_button_attributes] can be used to add more [Vdom.Attr.t]s to the
-    button nodes for each tab. *)
+    [additional_button_attributes] can be used to add more [Vdom.Attr.t]s to the button
+    nodes for each tab. *)
 val tab_ui
   :  ?decorate:('a -> Vdom.Node.t) Bonsai.t
   -> ?additional_button_attributes:(is_selected:bool -> 'a -> Vdom.Attr.t) Bonsai.t
-  -> (module Bonsai_proc.Model with type t = 'a)
+  -> sexp_of:('a -> Sexp.t)
   -> all_tabs:'a list Bonsai.t
   -> equal:('a -> 'a -> bool)
   -> 'a State.t Bonsai.t

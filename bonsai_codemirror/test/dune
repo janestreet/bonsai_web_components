@@ -1,6 +1,9 @@
 (library
  (name bonsai_web_ui_codemirror_test)
- (libraries bonsai_web bonsai_web_test bonsai_web_ui_codemirror codemirror
-   core)
+ (libraries async_js async_js.async_test async_kernel bonsai_web
+   bonsai_web_test bonsai_web_ui_codemirror
+   bonsai_web_ui_codemirror_read_only codemirror codemirror_sexp
+   codemirror_themes core expect_test_helpers_core.expect_test_helpers_base
+   js_of_ocaml jsdom skyline_functional_test testable_timeout with)
  (preprocess
-  (pps ppx_jane bonsai.ppx_bonsai)))
+  (pps ppx_jane bonsai.ppx_bonsai js_of_ocaml-ppx)))

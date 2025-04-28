@@ -1,5 +1,5 @@
 open! Core
-open Bonsai.Proc.For_open
+open Bonsai_proc.For_open
 
 module Interpolator : sig
   type t =

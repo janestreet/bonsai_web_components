@@ -1,7 +1,4 @@
 open! Core
-
-module type Model = Bonsai_web.Proc.Model
-
 open! Bonsai_web
 open Bonsai.Let_syntax
 
@@ -30,17 +27,16 @@ module Result = struct
   ;;
 end
 
-let tab_state (type t) ?equal (module M : Model with type t = t) ~initial graph =
-  let current, set = Bonsai.state initial ~sexp_of_model:[%sexp_of: M.t] ?equal graph in
+let tab_state ?sexp_of ?equal ~initial graph =
+  let current, set = Bonsai.state initial ?sexp_of_model:sexp_of ?equal graph in
   let%arr current and set in
   State.create ~current ~set
 ;;
 
 let tab_ui
-  (type t)
   ?decorate
   ?additional_button_attributes
-  (module M : Model with type t = t)
+  ~sexp_of
   ~all_tabs
   ~equal
   state
@@ -53,7 +49,7 @@ let tab_ui
   let default_decorate sexp_of_t =
     Bonsai.return (fun t -> t |> sexp_of_t |> Sexp.to_string_hum |> Vdom.Node.text)
   in
-  let decorate = Option.value decorate ~default:(default_decorate M.sexp_of_t) in
+  let decorate = Option.value decorate ~default:(default_decorate sexp_of) in
   let additional_button_attributes =
     Option.value
       additional_button_attributes
@@ -71,7 +67,7 @@ let tab_ui
           on_click (fun _ -> State.set state kind)
           @ selected_attr
           @ class_ "bonsai_ui_tab"
-          @ name (kind |> M.sexp_of_t |> Sexp.to_string_mach)
+          @ name (kind |> sexp_of |> Sexp.to_string_mach)
           @ additional_button_attributes ~is_selected kind)
       in
       Vdom.Node.button ~attrs:[ attr ] [ decorate kind ]

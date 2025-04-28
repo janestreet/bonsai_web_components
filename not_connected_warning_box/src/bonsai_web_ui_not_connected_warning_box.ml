@@ -14,7 +14,7 @@ module Style =
         font-size: 1.5rem;
         font-weight: bold;
       }
-      |}]
+    |}]
 
 let message_for_async_durable time_span =
   sprintf

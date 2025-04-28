@@ -4,7 +4,7 @@ open! Js_of_ocaml
 open Bonsai.Let_syntax
 open Virtual_dom
 
-module Mutable_state_tracker = struct
+module Mutable_state_tracker0 = struct
   module Id = Unique_id.Int ()
 
   let zero = Id.create ()
@@ -41,7 +41,7 @@ module Mutable_state_tracker = struct
     end
     in
     let model, inject =
-      Bonsai.state_machine0
+      Bonsai.state_machine
         graph
         ~sexp_of_model:[%sexp_of: Model.t]
         ~equal:[%equal: Model.t]
@@ -56,22 +56,25 @@ module Mutable_state_tracker = struct
             model)
     in
     let get_model = Bonsai.peek model graph in
-    let%arr inject and get_model in
-    let unsafe_init state =
-      let id = Id.create () in
-      Effect.Expert.handle_non_dom_event_exn (inject (Register { id; state }));
-      id
+    let mutate =
+      let%arr inject and get_model in
+      let unsafe_init state =
+        let id = Id.create () in
+        Effect.Expert.handle_non_dom_event_exn (inject (Register { id; state }));
+        id
+      in
+      let unsafe_destroy id =
+        Effect.Expert.handle_non_dom_event_exn (inject (Destroy id))
+      in
+      let modify f = inject (Modify f) in
+      let read r =
+        match%map.Effect get_model with
+        | Inactive -> []
+        | Active m -> List.map (Map.data m) ~f:r
+      in
+      { unsafe_init; unsafe_destroy; modify; read }
     in
-    let unsafe_destroy id =
-      Effect.Expert.handle_non_dom_event_exn (inject (Destroy id))
-    in
-    let modify f = inject (Modify f) in
-    let read r =
-      match%map.Effect get_model with
-      | Inactive -> []
-      | Active m -> List.map (Map.data m) ~f:r
-    in
-    { unsafe_init; unsafe_destroy; modify; read }
+    model, mutate
   ;;
 end
 
@@ -79,8 +82,10 @@ module State = struct
   type ('input, 'state) t =
     { mutable input : 'input
     ; mutable state : 'state
-    ; mutable id : Mutable_state_tracker.Id.t
+    ; mutable id : Mutable_state_tracker0.Id.t
+    ; all_states : ('input, 'state) t Mutable_state_tracker0.Id.Map.t ref
     ; get_input : unit -> 'input
+    ; other_instances : unit -> 'state list
     }
 end
 
@@ -92,9 +97,26 @@ module Widget = struct
     type input
     type state
 
-    val init : get_input:(unit -> input) -> input -> state * element Js.t
-    val update : prev_input:input -> input -> state -> element Js.t -> element Js.t
-    val destroy : input -> state -> element Js.t -> unit
+    val init
+      :  get_input:(unit -> input)
+      -> other_instances:(unit -> state list)
+      -> input
+      -> state * element Js.t
+
+    val update
+      :  other_instances:(unit -> state list)
+      -> prev_input:input
+      -> input
+      -> state
+      -> element Js.t
+      -> element Js.t
+
+    val destroy
+      :  other_instances:(unit -> state list)
+      -> input
+      -> state
+      -> element Js.t
+      -> unit
   end
 
   type ('input, 'state) t =
@@ -115,39 +137,67 @@ module Widget = struct
         ~f:(fun () -> Type_equal.Id.create ~name:"widget" sexp_of_opaque)
         graph
     in
-    let state_tracker = Mutable_state_tracker.component () graph in
+    let all_states, state_tracker = Mutable_state_tracker0.component () graph in
     let view =
       let%arr input
       and id
+      and all_states
       and { unsafe_init; unsafe_destroy; _ } = state_tracker in
       Vdom.Node.widget
         ~vdom_for_testing:(lazy (vdom_for_testing input))
         ~id
         ~init:(fun () ->
-          let the_state = ref None in
+          let the_state : (input, state) State.t option ref = ref None in
+          let all_states = ref all_states in
           let get_input () =
             match !the_state with
             | None -> input
             | Some s -> s.State.input
           in
-          let state, element = M.init ~get_input input in
-          let s = { State.input; state; id = Mutable_state_tracker.zero; get_input } in
+          let other_instances () =
+            List.filter_map (Map.data !all_states) ~f:(fun { State.state; _ } ->
+              match !the_state with
+              | Some my_state when phys_equal my_state.state state -> None
+              | _ -> Some state)
+          in
+          let state, element = M.init ~get_input ~other_instances input in
+          let s =
+            { State.input
+            ; state
+            ; id = Mutable_state_tracker0.zero
+            ; get_input
+            ; all_states
+            ; other_instances
+            }
+          in
           the_state := Some s;
           let id = unsafe_init s in
           s.id <- id;
           s, element)
         ~update:(fun s element ->
-          let { State.input = prev_input; state; get_input = _; id = _ } = s in
+          let { State.input = prev_input
+              ; state
+              ; all_states = _
+              ; get_input = _
+              ; id = _
+              ; other_instances
+              }
+            =
+            s
+          in
+          s.all_states := all_states;
           if phys_equal input prev_input
           then s, element
           else (
             s.input <- input;
-            let element = M.update ~prev_input input state element in
+            let element = M.update ~other_instances ~prev_input input state element in
             s, element))
         ~destroy:(fun s element ->
-          let { State.input; state; id; get_input = _ } = s in
+          let { State.input; state; id; get_input = _; all_states = _; other_instances } =
+            s
+          in
           unsafe_destroy id;
-          M.destroy input state element)
+          M.destroy ~other_instances input state element)
         ()
     in
     let funs =
@@ -167,9 +217,27 @@ module Hook = struct
     type input
     type state
 
-    val init : get_input:(unit -> input) -> input -> Dom_html.element Js.t -> state
-    val update : prev_input:input -> input -> state -> Dom_html.element Js.t -> unit
-    val destroy : input -> state -> Dom_html.element Js.t -> unit
+    val init
+      :  get_input:(unit -> input)
+      -> other_instances:(unit -> state list)
+      -> input
+      -> Dom_html.element Js.t
+      -> state
+
+    val update
+      :  other_instances:(unit -> state list)
+      -> prev_input:input
+      -> input
+      -> state
+      -> Dom_html.element Js.t
+      -> unit
+
+    val destroy
+      :  other_instances:(unit -> state list)
+      -> input
+      -> state
+      -> Dom_html.element Js.t
+      -> unit
   end
 
   type ('input, 'state) t =
@@ -195,11 +263,12 @@ module Hook = struct
         ~f:(fun () -> Type_equal.Id.create ~name:"input-id" sexp_of_opaque)
         graph
     in
-    let state_tracker = Mutable_state_tracker.component () graph in
+    let all_states, state_tracker = Mutable_state_tracker0.component () graph in
     let attr =
       let%arr input
       and id
       and input_id
+      and all_states
       and { unsafe_init; unsafe_destroy; _ } = state_tracker in
       Vdom.Attr.create_hook
         hook_name
@@ -211,29 +280,63 @@ module Hook = struct
            ~extra:(input, input_id)
            ~init:(fun input element ->
              let the_state = ref None in
+             let all_states = ref all_states in
              let get_input () =
                match !the_state with
                | None -> input
                | Some s -> s.State.input
              in
-             let state = M.init ~get_input input element in
-             let s = { State.input; state; id = Mutable_state_tracker.zero; get_input } in
+             let other_instances () =
+               List.filter_map (Map.data !all_states) ~f:(fun { State.state; _ } ->
+                 match !the_state with
+                 | Some my_state when phys_equal my_state.state state -> None
+                 | _ -> Some state)
+             in
+             let state = M.init ~get_input ~other_instances input element in
+             let s =
+               { State.input
+               ; state
+               ; id = Mutable_state_tracker0.zero
+               ; get_input
+               ; all_states
+               ; other_instances
+               }
+             in
              the_state := Some s;
              let id = unsafe_init s in
              s.id <- id;
              input, (), s)
            ~update:(fun input (_, (), s) element ->
-             let { State.input = prev_input; state; get_input = _; id = _ } = s in
+             let { State.input = prev_input
+                 ; state
+                 ; all_states = _
+                 ; get_input = _
+                 ; id = _
+                 ; other_instances
+                 }
+               =
+               s
+             in
+             s.all_states := all_states;
              if phys_equal input prev_input
              then input, (), s
              else (
                s.input <- input;
-               M.update ~prev_input input state element;
+               M.update ~other_instances ~prev_input input state element;
                input, (), s))
            ~destroy:(fun (_, (), s) element ->
-             let { State.input; state; id; get_input = _ } = s in
+             let { State.input
+                 ; state
+                 ; id
+                 ; get_input = _
+                 ; all_states = _
+                 ; other_instances
+                 }
+               =
+               s
+             in
              unsafe_destroy id;
-             M.destroy input state element))
+             M.destroy ~other_instances input state element))
     in
     let funs =
       let%arr state_tracker in
@@ -257,9 +360,9 @@ module Dom_ref = struct
     type input = unit
     type state = Dom_html.element Js.t
 
-    let init ~get_input:_ () element = element
-    let update ~prev_input:() () _element _element = ()
-    let destroy () _element _element = ()
+    let init ~get_input:_ ~other_instances:_ () element = element
+    let update ~other_instances:_ ~prev_input:() () _element _element = ()
+    let destroy ~other_instances:_ () _element _element = ()
   end
 
   let tracker graph =
@@ -268,4 +371,10 @@ module Dom_ref = struct
     let nodes = read (fun () state -> state) in
     { attr; nodes }
   ;;
+end
+
+module Mutable_state_tracker = struct
+  include Mutable_state_tracker0
+
+  let component () graph = component () graph |> Tuple2.get2
 end

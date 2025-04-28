@@ -64,14 +64,14 @@ include Vdom.Attr.Hooks.Make (struct
       in
       (* Unset the elements inline opacity value set before; we don't set it to
          [100%] since we want it to respect values set e.g. via a CSS stylesheet. *)
-      element##.style##.opacity := Js.Optdef.return (Js.string "");
+      element##.style##.opacity := Js.string "";
       loop ()
     ;;
 
     let init () element =
       (* Hide the element before we fully re-flow it, to prevent it from jumping around
          on the first paint. *)
-      element##.style##.opacity := Js.Optdef.return (Js.string "0");
+      element##.style##.opacity := Js.string "0";
       { State.anim_frame_id = None; current_transform = 0 }
     ;;
 

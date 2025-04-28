@@ -348,7 +348,7 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
   let columns =
     let int_column name get_data =
       Table.Basic.Columns.Dynamic_columns.column
-        ~header:(fun _ -> Vdom.Node.text name)
+        ~header:(Vdom.Node.text name)
         ~sort:(fun (_, a) (_, b) -> Int.ascending (get_data a) (get_data b))
         ~cell:(fun ~key:_ ~data -> Vdom.Node.text (Int.to_string (get_data data)))
         ()
@@ -384,7 +384,7 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
           Table.Basic.Columns.Dynamic_columns.Sortable.inject
             sortable_state
             (* Sort ascending on the first column *)
-            (Set_sort (Indexed_column_id.of_int 0))
+            (Set_sort (Indexed_column_id.of_int 0, Asc_to_desc_to_none))
         ;;
       end)
       component
@@ -406,13 +406,13 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
   Handle.show handle;
   [%expect
     {|
-    ┌───┬─────┬───┬───┐
-    │ > │ #   │ b │ a │
-    ├───┼─────┼───┼───┤
-    │   │ 0   │ 0 │ 2 │
-    │   │ 100 │ 1 │ 0 │
-    │   │ 200 │ 2 │ 1 │
-    └───┴─────┴───┴───┘
+    ┌───┬─────┬─────┬───┐
+    │ > │ #   │ b ▲ │ a │
+    ├───┼─────┼─────┼───┤
+    │   │ 0   │ 0   │ 2 │
+    │   │ 100 │ 1   │ 0 │
+    │   │ 200 │ 2   │ 1 │
+    └───┴─────┴─────┴───┘
     |}];
   Bonsai.Expert.Var.set a_before_b true;
   Handle.recompute_view_until_stable handle;
@@ -421,13 +421,13 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
      is now sorted ascending, and column b is no longer. This is a bug. *)
   [%expect
     {|
-    ┌───┬─────┬───┬───┐
-    │ > │ #   │ a │ b │
-    ├───┼─────┼───┼───┤
-    │   │ 0   │ 0 │ 1 │
-    │   │ 100 │ 1 │ 2 │
-    │   │ 200 │ 2 │ 0 │
-    └───┴─────┴───┴───┘
+    ┌───┬─────┬─────┬───┐
+    │ > │ #   │ a ▲ │ b │
+    ├───┼─────┼─────┼───┤
+    │   │ 0   │ 0   │ 1 │
+    │   │ 100 │ 1   │ 2 │
+    │   │ 200 │ 2   │ 0 │
+    └───┴─────┴─────┴───┘
     |}]
 ;;
 
@@ -2888,7 +2888,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     type t = Focus_down
   end
   in
-  let rank_range = Bonsai.Expert.Var.create (Collate.Which_range.To 2) in
+  let rank_range = Bonsai.Expert.Var.create (Collate_params.Which_range.To 2) in
   let map =
     [ 1; 2; 3; 4; 5; 6; 7 ]
     |> List.map ~f:(fun i ->
@@ -2900,9 +2900,9 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     let collate, key_rank =
       let collate =
         let%map rank_range = Bonsai.Expert.Var.value rank_range in
-        { Collate.filter = None
+        { Collate_params.filter = None
         ; order = Compare.Unchanged
-        ; key_range = Collate.Which_range.All_rows
+        ; key_range = Collate_params.Which_range.All_rows
         ; rank_range
         }
       in
@@ -3004,7 +3004,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     │   │ 200 │ hi │ 3. │
     └───┴─────┴────┴────┘
     |}];
-  Bonsai.Expert.Var.set rank_range (Collate.Which_range.Between (3, 5));
+  Bonsai.Expert.Var.set rank_range (Collate_params.Which_range.Between (3, 5));
   Handle.recompute_view_until_stable handle;
   Handle.show handle;
   [%expect
@@ -3062,7 +3062,7 @@ let%expect_test "focus down when presence says that all responses are None" =
   let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
   let collate =
     Bonsai.return
-      { Incr_map_collate.Collate.filter = ()
+      { Incr_map_collate.Collate_params.filter = ()
       ; order = ()
       ; key_range = All_rows
       ; rank_range = All_rows
@@ -3126,7 +3126,7 @@ module%test [@name "focus by key `key_rank` fallback"] _ = struct
     let presence ~focus:_ ~collation:_ _graph = Bonsai.return None in
     let collate =
       Bonsai.return
-        { Incr_map_collate.Collate.filter = ()
+        { Incr_map_collate.Collate_params.filter = ()
         ; order = ()
         ; key_range = To 4
         ; rank_range = All_rows
@@ -3529,7 +3529,7 @@ let%expect_test "show that scrolling out of a basic table will keep the focus" =
 let%expect_test "show that scrolling out of a custom table will execute the presence \
                  component"
   =
-  let open Incr_map_collate.Collate.Which_range in
+  let open Incr_map_collate.Collate_params.Which_range in
   let presence ~focus ~collation _graph =
     let%arr focus and collation in
     match focus with
@@ -3543,7 +3543,11 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
   let rank = Bonsai.Expert.Var.create (Between (0, 10)) in
   let collate =
     let%map rank_range = Bonsai.Expert.Var.value rank in
-    { Incr_map_collate.Collate.filter = (); order = (); key_range = All_rows; rank_range }
+    { Incr_map_collate.Collate_params.filter = ()
+    ; order = ()
+    ; key_range = All_rows
+    ; rank_range
+    }
   in
   let test =
     Test.create
@@ -3720,6 +3724,7 @@ let%expect_test "dynamic row height" =
   Handle.show test.handle;
   [%expect
     {|
+    scrolling position 14.px into view
     ((focused ()) (num_filtered_rows (99)))
     ┌───┬─────┬─────┬────┬──────────┬─────┐
     │ > │ #   │ key │ a  │ b        │ d   │
@@ -3733,8 +3738,6 @@ let%expect_test "dynamic row height" =
     │   │ 600 │ 11  │ hi │ 5.000000 │ 100 │
     │   │ 700 │ 12  │ hi │ 6.000000 │ 100 │
     └───┴─────┴─────┴────┴──────────┴─────┘
-
-    scrolling position 14.px into view
     |}];
   Handle.show test.handle;
   [%expect
@@ -3757,6 +3760,7 @@ let%expect_test "dynamic row height" =
   Handle.show test.handle;
   [%expect
     {|
+    scrolling position 3.px into view
     ((focused ()) (num_filtered_rows (99)))
     ┌───┬──────┬─────┬────┬──────────┬─────┐
     │ > │ #    │ key │ a  │ b        │ d   │
@@ -3766,8 +3770,6 @@ let%expect_test "dynamic row height" =
     │   │ 0    │ 5   │ hi │ 2.000000 │ 100 │
     │   │ 100  │ 6   │ hi │ 3.000000 │ 100 │
     └───┴──────┴─────┴────┴──────────┴─────┘
-
-    scrolling position 3.px into view
     |}];
   Handle.show test.handle;
   [%expect
@@ -3786,6 +3788,7 @@ let%expect_test "dynamic row height" =
   Handle.show test.handle;
   [%expect
     {|
+    scrolling position 50004.px into view
     ((focused ()) (num_filtered_rows (99)))
     ┌───┬─────┬─────┬────┬──────────┬─────┐
     │ > │ #   │ key │ a  │ b        │ d   │
@@ -3799,8 +3802,6 @@ let%expect_test "dynamic row height" =
     │   │ 600 │ 11  │ hi │ 5.000000 │ 100 │
     │   │ 700 │ 12  │ hi │ 6.000000 │ 100 │
     └───┴─────┴─────┴────┴──────────┴─────┘
-
-    scrolling position 50004.px into view
     |}];
   Handle.show test.handle;
   [%expect
@@ -3823,14 +3824,13 @@ let%expect_test "dynamic row height" =
   Handle.show test.handle;
   [%expect
     {|
+    scrolling position 4.px into view
     ((focused ()) (num_filtered_rows (99)))
     ┌───┬───┬─────┬────┬──────────┬─────┐
     │ > │ # │ key │ a  │ b        │ d   │
     ├───┼───┼─────┼────┼──────────┼─────┤
     │   │ 0 │ 1   │ hi │ 0.000000 │ 100 │
     └───┴───┴─────┴────┴──────────┴─────┘
-
-    scrolling position 4.px into view
     |}];
   Handle.show test.handle;
   [%expect
@@ -3856,10 +3856,10 @@ module%test [@name "dynamic columns with visibility"] _ = struct
     let component graph =
       let collate, _ =
         let collate =
-          { Collate.filter = None
+          { Collate_params.filter = None
           ; order = Compare.Unchanged
-          ; key_range = Collate.Which_range.All_rows
-          ; rank_range = Collate.Which_range.All_rows
+          ; key_range = Collate_params.Which_range.All_rows
+          ; rank_range = Collate_params.Which_range.All_rows
           }
         in
         Table_expert.collate

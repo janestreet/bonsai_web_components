@@ -14,12 +14,12 @@ type 'a t =
   ; remove : Id.t -> unit Effect.t
   }
 
-(** Given a computation, builds a new computation that can hold
-    a dynamic number of the wrapped computation. *)
+(** Given a computation, builds a new computation that can hold a dynamic number of the
+    wrapped computation. *)
 val component : (Bonsai.graph -> 'a Bonsai.t) -> Bonsai.graph -> 'a t Bonsai.t
 
-(** Like [component], but with the power to extend the result of the
-    input component with an event that removes itself. *)
+(** Like [component], but with the power to extend the result of the input component with
+    an event that removes itself. *)
 val component'
   :  (Bonsai.graph -> 'a Bonsai.t)
   -> wrap_remove:('a -> unit Effect.t -> 'b)

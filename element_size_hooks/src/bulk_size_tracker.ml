@@ -222,11 +222,16 @@ let component'
 
 let component
   (type key cmp contained)
-  (key : (key, cmp) Bonsai.comparator)
+  (key : (key, cmp) Comparator.Module.t)
   (options : contained Options.t)
   graph
   =
-  let module Key = (val key) in
+  let module Key = struct
+    include (val key)
+
+    let sexp_of_t = comparator.sexp_of_t
+  end
+  in
   let module Model = struct
     let sexp_of_contained : contained -> Sexp.t =
       match options with
@@ -246,7 +251,7 @@ let component
   end
   in
   let sizes, inject =
-    Bonsai.state_machine0
+    Bonsai.state_machine
       graph
       ~sexp_of_model:[%sexp_of: Model.t]
       ~equal:[%equal: Model.t]

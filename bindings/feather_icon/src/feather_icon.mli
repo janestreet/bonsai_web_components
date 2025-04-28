@@ -6,8 +6,7 @@ open! Import
     A few helpful resources:
     - The external feather icons website: https://feathericons.com/
     - Our bonsai demo equivalent: https://bonsai:8548/
-    - The code for the bonsai demo: ../../bonsai/examples/feather_icons
-*)
+    - The code for the bonsai demo: ../../bonsai/examples/feather_icons *)
 
 type t =
   | Activity

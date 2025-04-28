@@ -21,7 +21,7 @@ module Themed = struct
           text-align: center;
           font-weight: bold;
         }
-        |}]
+      |}]
 
   module Prt_view = Bonsai_web_ui_view.For_components.Prt
 
@@ -31,16 +31,19 @@ module Themed = struct
     | Which_styling.Legacy_unsafe_raw_classnames ->
       return
         { Styling.Expert.header_cell = Legacy_style.header_cell
+        ; header_cell_focused = Vdom.Attr.empty
         ; header_row = Vdom.Attr.empty
         ; header = Vdom.Attr.class_ "prt-table-header"
         ; autosize_table_cell_wrapper = Vdom.Attr.empty
-        ; autosize_table_bottom_border_element = Vdom.Attr.empty
+        ; autosize_table_cell_wrapper_focused = Vdom.Attr.empty
         ; cell = Vdom.Attr.class_ "prt-table-cell"
         ; cell_focused = Vdom.Attr.class_ "prt-table-cell-selected"
         ; row = Vdom.Attr.class_ "prt-table-row"
         ; row_focused = Vdom.Attr.class_ "prt-table-row-selected"
+        ; row_of_focused_cell = Vdom.Attr.empty
         ; body = Vdom.Attr.empty
         ; table = Vdom.Attr.empty
+        ; table_vars = Vdom.Attr.empty
         }
     | From_theme ->
       let%arr theme and resize_column_widths_to_fit in
@@ -102,10 +105,6 @@ module Functional_style =
         z-index: 99;
       }
 
-      .row {
-        contain: strict;
-      }
-
       .cell {
         overflow: hidden;
         display: inline-block;
@@ -115,7 +114,7 @@ module Functional_style =
       .autosize_wrapped_cell {
         display: block;
       }
-      |}]
+    |}]
 
 (* This function takes a vdom node and if it's an element, it adds extra attrs, classes, key,
    and style info to it, but if it's not an element, it wraps that node in a div that has those
@@ -197,6 +196,7 @@ module Header = struct
       ~column_width
       ~set_column_width
       ~set_column_width_for_reporting
+      ~focused
       ~visible
       ~resizable
       ~label
@@ -220,6 +220,7 @@ module Header = struct
       node
         ~attrs:
           [ themed_attrs.header_cell
+          ; (if focused then themed_attrs.header_cell_focused else Vdom.Attr.empty)
           ; on_change_tracker
           ; Vdom.Attr.colspan 1
           ; Functional_style.header_label
@@ -313,7 +314,7 @@ module Cell = struct
        slow. *)
     let create
       (type column_id cmp)
-      (module Col_cmp : Bonsai.Comparator
+      (module Col_cmp : Comparator.S
         with type t = column_id
          and type comparator_witness = cmp)
       ~(themed_attrs : Themed.t)
@@ -398,11 +399,10 @@ module Cell = struct
     ~resize_column_widths_to_fit
     content
     =
-    let focused_attr =
-      if is_focused then themed_attrs.cell_focused else Vdom.Attr.empty
-    in
     let shared_attrs =
-      Vdom.Attr.on_click (fun _ -> on_cell_click) :: focused_attr :: col_styles
+      Vdom.Attr.on_click (fun _ -> on_cell_click)
+      :: (if is_focused then themed_attrs.cell_focused else Vdom.Attr.empty)
+      :: col_styles
     in
     match resize_column_widths_to_fit with
     | false -> set_or_wrap content ~attrs:(Functional_style.cell :: shared_attrs)
@@ -427,7 +427,13 @@ module Cell = struct
          surprising that that costs so much more time
       *)
       Vdom.Node.div
-        ~attrs:[ themed_attrs.autosize_table_cell_wrapper; {%css|contain: strict;|} ]
+        ~attrs:
+          [ themed_attrs.autosize_table_cell_wrapper
+          ; (if is_focused
+             then themed_attrs.autosize_table_cell_wrapper_focused
+             else Vdom.Attr.empty)
+          ; {%css|contain: strict;|}
+          ]
         [ Vdom.Node.div
             ~attrs:wrapper_styles
             [ set_or_wrap
@@ -460,11 +466,11 @@ module Row = struct
     (themed_attrs : Themed.t)
     ~styles
     ~is_focused
+    ~has_focused_cell
     ~extra_attrs
     ~resize_column_widths_to_fit
     cells
     =
-    let focused_attr = if is_focused then themed_attrs.row_focused else Vdom.Attr.empty in
     let display_style =
       if resize_column_widths_to_fit
       then Vdom.Attr.style (Css_gen.create ~field:"display" ~value:"table-row")
@@ -476,8 +482,10 @@ module Row = struct
            ~attrs:
              (themed_attrs.row
               :: Vdom.Attr.style styles
-              :: focused_attr
-              :: Functional_style.row
+              :: (if is_focused then themed_attrs.row_focused else Vdom.Attr.empty)
+              :: (if has_focused_cell
+                  then themed_attrs.row_of_focused_cell
+                  else Vdom.Attr.empty)
               :: display_style
               :: extra_attrs)
            cells))
@@ -492,7 +500,6 @@ module Body = struct
       type t =
         | Top_padding
         | Row of Opaque_map.Key.t
-        | Bottom_border
         | Bottom_padding
       [@@deriving compare, sexp, equal]
     end
@@ -524,37 +531,37 @@ module Body = struct
            ; Css_gen.create ~field:"position" ~value:"relative"
            ])
     in
-    (* A bit of a silly hack required due to slow CSS selectors. Using an absolutely
-       positioned element in order to display the bottom border as we cannot use
-       :last-child to select the last row anymore due to the padding elements technically
-       being the first and last chlidren.
+    (* Because borders don't get collapsed, we only set the top[1] and right borders of
+       each row. This makes it difficult to highlight borders of focused rows.
 
-       We could use :last-of-type by changing the padding elements to <tr> elements, but
-       that selector is extremely slow (adds ~8-10ms of recalculate styles per frame).
+       For every row except for the last, we can use the "next sibling" selector to set the
+       top border (which acts as the current row's bottom border). The last row has no
+       next sibling, but we can quickly access it using the ":last-child" selector.
 
-       We are also using the same nested structure of row and cell so that we can take
-       advantage of the CSS selectors that are already used for the row/cell to draw
-       the proper border color for the element after the focused row.
+       Auto-resizing tables have spacing divs at the top / bottom [3], so the last row isn't
+       the `:last-child`. But the last row is visible iff we are at the table, in which
+       case, the bottom spacer isn't needed, so we don't insert it, and `:last-child`
 
-       Seems like there is no real performance hit using this method vs using CSS
-       selectors.
-    *)
-    let bottom_border_element =
-      Vdom.Node.div
-        ~key:"bottom_border"
-        ~attrs:[ themed_attrs.row ]
-        [ Vdom.Node.div
-            ~attrs:
-              [ themed_attrs.autosize_table_bottom_border_element; themed_attrs.cell ]
-            []
-        ]
-    in
-    (* Initially this was done with ppx_css and css pseudoelements, but something about
+      -------
+      [1] We need to set top, not bottom, because there's a `+` "next sibling" selector
+       that we can use to highlight the top border of the next row. There's no "previous
+       sibling" selector[2], so we can't highlight the bottom border of the previous row.
+      [2] we could simulate one with `:has(+ ...)`, but that's terribly slow.
+      [3] Initially this was done with ppx_css and css pseudoelements, but something about
        adding the attr to the top-level div and changing the cssvars made things a lot
        slower. Could possibly be due to how the diffing is done for the top-level element,
        or may be something to do with the browser implementation of updating that var, but
        using child elements is significantly faster as of now.
     *)
+    let bottom_padding =
+      if padding_bottom = 0
+      then Vdom.Node.none
+      else
+        Vdom.Node.div
+          ~key:"bottom_padding"
+          ~attrs:[ Vdom.Attr.style (Css_gen.height (`Px padding_bottom)) ]
+          []
+    in
     let rows =
       Map.set
         rows
@@ -564,14 +571,7 @@ module Body = struct
              ~key:"top_padding"
              ~attrs:[ Vdom.Attr.style (Css_gen.height (`Px padding_top)) ]
              [])
-      |> Map.set
-           ~key:Body_row_key.Bottom_padding
-           ~data:
-             (Vdom.Node.div
-                ~key:"bottom_padding"
-                ~attrs:[ Vdom.Attr.style (Css_gen.height (`Px padding_bottom)) ]
-                [])
-      |> Map.set ~key:Body_row_key.Bottom_border ~data:bottom_border_element
+      |> Map.set ~key:Body_row_key.Bottom_padding ~data:bottom_padding
     in
     Vdom.Node.Map_children.make
       ~tag:"div"
@@ -631,7 +631,11 @@ module Table = struct
       | true -> [ Vdom.Node.div ~attrs:inner_container_attrs [ head; body ] ]
     in
     Vdom.Node.div
-      ~attrs:[ themed_attrs.table; Functional_style.partial_render_table_container ]
+      ~attrs:
+        [ themed_attrs.table_vars
+        ; themed_attrs.table
+        ; Functional_style.partial_render_table_container
+        ]
       children
   ;;
 end

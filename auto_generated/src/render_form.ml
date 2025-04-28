@@ -31,7 +31,7 @@ module Tooltip = struct
         .container:hover .content {
           visibility: visible;
         }
-        |}]
+      |}]
 
   let wrap ?tooltip_element ~attr children =
     Node.div
@@ -170,7 +170,7 @@ module Style =
         border-width: 0 0 0 2px;
         margin-left: -1px;
       }
-      |}]
+    |}]
 
 (* These CSS rules are used to clear user-agent styles. We use :where
    to decrease specificity (otherwise child elements would not be able to

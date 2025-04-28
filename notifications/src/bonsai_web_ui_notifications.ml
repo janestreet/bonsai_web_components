@@ -1,7 +1,4 @@
 open! Core
-
-module type Model = Bonsai_web.Proc.Model
-
 open! Bonsai_web
 open! Bonsai.Let_syntax
 
@@ -44,7 +41,7 @@ module Style =
           opacity: 0;
         }
       }
-      |}]
+    |}]
 
 module Notification_id = Bonsai_extra.Id_gen (Int) ()
 
@@ -82,23 +79,21 @@ type 'a t =
       ?close_after:Time_ns.Span.t -> 'a Id.t -> 'a -> Notification_id.t Effect.t
   }
 
-let component (type a) (module M : Model with type t = a) ~equal graph =
+let component (type a) ?(sexp_of = sexp_of_opaque) ~equal graph =
   let id_generator = Notification_id.component graph in
   let notifications, inject =
     let module Model = struct
-      type a = M.t
-
       let equal_a = equal
-      let sexp_of_a = M.sexp_of_t
+      let sexp_of_a = sexp_of
 
       type t = a Notification.t Map.M(Notification_id).t [@@deriving equal, sexp_of]
     end
     in
-    Bonsai.state_machine0
+    Bonsai.state_machine
       graph
       ~sexp_of_model:[%sexp_of: Model.t]
       ~equal:[%equal: Model.t]
-      ~sexp_of_action:(Action.sexp_of_t M.sexp_of_t)
+      ~sexp_of_action:(Action.sexp_of_t sexp_of)
       ~default_model:(Map.empty (module Notification_id))
       ~apply_action:(fun (_ : _ Bonsai.Apply_action_context.t) notifications action ->
         match action with
@@ -224,11 +219,25 @@ let send_notification
   send_notification ?close_after
 ;;
 
+let send_notification' t =
+  let%arr { send_notification; notifications = _; inject = _; modify_notification = _ } =
+    t
+  in
+  fun ?close_after n -> send_notification ?close_after n
+;;
+
 let close_notification
   { inject; notifications = _; send_notification = _; modify_notification = _ }
   id
   =
   inject (Remove id)
+;;
+
+let close_notification' t =
+  let%arr { inject; notifications = _; send_notification = _; modify_notification = _ } =
+    t
+  in
+  fun id -> inject (Remove id)
 ;;
 
 let close_all_notifications
@@ -294,7 +303,7 @@ module Basic = struct
         .error {
           background-color: #c70039;
         }
-        |}]
+      |}]
 
   let create
     ?(dismiss_notifications_after : Time_ns.Span.t Bonsai.t =
@@ -304,7 +313,10 @@ module Basic = struct
     graph
     =
     let notifications =
-      component (module Basic_notification) ~equal:[%equal: Basic_notification.t] graph
+      component
+        ~sexp_of:Basic_notification.sexp_of_t
+        ~equal:[%equal: Basic_notification.t]
+        graph
     in
     let%arr notifications
     and dismiss_notifications_after

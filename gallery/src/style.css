@@ -15,7 +15,7 @@
     align-items: flex-start;
   }
 
-  fieldset.gallery_fieldset>legend {
+  fieldset.gallery_fieldset > legend {
     color: var(--fg, rgb(60, 60, 60));
     padding: 0 0.5em;
     font-size: 0.7em;
@@ -31,8 +31,11 @@
   }
 
   fieldset.output {
-    background: repeating-conic-gradient(var(--extreme-bg, rgb(240, 240, 240)) 0% 25%,
-        var(--bg, white) 0% 50%) 50% / 20px 20px;
+    background: repeating-conic-gradient(
+        var(--extreme-bg, rgb(240, 240, 240)) 0% 25%,
+        var(--bg, white) 0% 50%
+      )
+      50% / 20px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,7 +58,6 @@
   h2 {
     margin-bottom: 0;
   }
-
 
   html,
   body {
@@ -96,7 +98,7 @@
     max-width: min-content;
   }
 
-  .code_and_output>* {
+  .code_and_output > * {
     min-width: 600px;
   }
 

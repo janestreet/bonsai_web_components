@@ -22,7 +22,7 @@
 }
 
 .icon {
-  transition: transform 0.10s ease-in;
+  transition: transform 0.1s ease-in;
   width: 1ex;
   height: 1ex;
   /* This border is really the arrow for the dropdown, so we should treat it like text */
@@ -40,4 +40,3 @@
 .accordion-closed {
   transform: translate(-25%, 0) rotateZ(-45deg);
 }
-

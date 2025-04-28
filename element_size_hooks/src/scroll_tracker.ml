@@ -29,14 +29,14 @@ module Scroll_tracker = struct
     (* We take the whole state here so that we can mutate the callback in it and
        witness the change in the observer *)
     let on_resize_observed _entries _observer =
-      (* You might be wondering why size-changes would trigger when a scrollbar 
-         is added; after all, aren't scrollbars added to an element in order to 
+      (* You might be wondering why size-changes would trigger when a scrollbar
+         is added; after all, aren't scrollbars added to an element in order to
          keep its size the same?
 
-         However, the demo of this hook shows that the size does in fact change, 
-         and if you add a log statement here 
+         However, the demo of this hook shows that the size does in fact change,
+         and if you add a log statement here
          {[
-           Js_of_ocaml.Firebug.console##log entries;
+           Js_of_ocaml.Console.console##log entries;
          ]} *)
       let open Option.Let_syntax in
       let (_ : unit option) =

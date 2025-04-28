@@ -26,8 +26,7 @@ val of_manual_form
 
 (** [return] produces a bonsai form that will always produce the same value. [set] and
     [normalize] will do nothing to the form provided by this. [sexp_of_t] can be provided
-    to provide better warning messages when actions are ignored by setting into the form.
-*)
+    to provide better warning messages when actions are ignored by setting into the form. *)
 val return
   :  ?here:Stdlib.Lexing.position
   -> ?sexp_of_t:('a -> Sexp.t)
@@ -35,8 +34,8 @@ val return
   -> 'a
   -> 'a t
 
-(** [return_settable] is identical to [return], but [set] and [normalize] will update
-    the value of the form. *)
+(** [return_settable] is identical to [return], but [set] and [normalize] will update the
+    value of the form. *)
 val return_settable
   :  ?sexp_of_model:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
@@ -66,18 +65,19 @@ module Submit : sig
     ; button_location : Form_view.button_location
     }
 
-  (** Creates a "submit" handler, which is intended to be used by the [view_as_vdom] function.
+  (** Creates a "submit" handler, which is intended to be used by the [view_as_vdom]
+      function.
 
-      - [handle_enter]: when true, will render the form
-        inside of a <form> element, which gives us the ability to add an
-        "on_submit" handler which detecs people hitting "enter" when a form element
-        is focused.  The default is [true].  Set it to [false] to disable this behavior.
-      - [button]: When Some, will append a button with the label given by its
-        contents.  will be added to the end of the form.  If the form is
-        currently invalid, the button will be disabled.  The default is [Some
-        "Submit"].  Explicitly set it to [None] to remove the button entirely.
+      - [handle_enter]: when true, will render the form inside of a <form> element, which
+        gives us the ability to add an "on_submit" handler which detecs people hitting
+        "enter" when a form element is focused. The default is [true]. Set it to [false]
+        to disable this behavior.
+      - [button]: When Some, will append a button with the label given by its contents.
+        will be added to the end of the form. If the form is currently invalid, the button
+        will be disabled. The default is [Some "Submit"]. Explicitly set it to [None] to
+        remove the button entirely.
       - [button_attr]: A [Vdom.Attr.t] to attach to the submit button.
-      - [f]: the function which is run when the form is submitted.  *)
+      - [f]: the function which is run when the form is submitted. *)
 
   val create
     :  ?handle_enter:bool
@@ -96,15 +96,13 @@ end
     [`Currently_no]. When [editable] is [`Currently_no], the view is wrapped in a fieldset
     that disables all of the inputs in the form.
 
-    Regardless of the value of [editable], scheduling the [Form.set] effect
-    will still change the values in the form.
+    Regardless of the value of [editable], scheduling the [Form.set] effect will still
+    change the values in the form.
 
-    Known bugs:
-    While setting editable to `Currently_no prevents modification of most
-    browser-builtin input elements, some custom form elements like the
-    drag-and-drop, multiselect, and removing items using the pills in
-    typeahead-multi for don't currently respect this and can be modified anyway.
-    Work is underway to fix these. *)
+    Known bugs: While setting editable to `Currently_no prevents modification of most
+    browser-builtin input elements, some custom form elements like the drag-and-drop,
+    multiselect, and removing items using the pills in typeahead-multi for don't currently
+    respect this and can be modified anyway. Work is underway to fix these. *)
 val view_as_vdom
   :  ?theme:View.Theme.t
   -> ?on_submit:'a Submit.t
@@ -112,53 +110,48 @@ val view_as_vdom
   -> 'a t
   -> Vdom.Node.t
 
-(** [set] fills the form with the provided value, setting the contents of
-    form-elements if possible *)
+(** [set] fills the form with the provided value, setting the contents of form-elements if
+    possible *)
 val set : 'a t -> 'a -> unit Ui_effect.t
 
-(** [normalize] sets the contents of a form to its current value.  This only
-    impacts values that have a "normalized" form.  For example, a
-    float-producing textbox being normalized might go from displaying "1.000"
-    to "1." *)
+(** [normalize] sets the contents of a form to its current value. This only impacts values
+    that have a "normalized" form. For example, a float-producing textbox being normalized
+    might go from displaying "1.000" to "1." *)
 val normalize : _ t -> unit Ui_effect.t
 
-(** Combines two forms into another one that produces both values from the
-    inputs in tupled form. *)
+(** Combines two forms into another one that produces both values from the inputs in
+    tupled form. *)
 val both : 'a t -> 'b t -> ('a * 'b) t
 
-(** Combines a list of forms into another that produces all values from the inputs in
-    list form. *)
+(** Combines a list of forms into another that produces all values from the inputs in list
+    form. *)
 val all : 'a t list -> 'a list t
 
-(** Combines a map of forms into another that produces all values from the inputs in
-    map form. *)
+(** Combines a map of forms into another that produces all values from the inputs in map
+    form. *)
 val all_map : ('k, 'a t, 'cmp) Map.t -> ('k, 'a, 'cmp) Map.t t
 
-(** [project] is the powerhouse of the library; Using this function, you
-    can change the type produced. Think of it like [map].
+(** [project] is the powerhouse of the library; Using this function, you can change the
+    type produced. Think of it like [map].
 
-    - [parse_exn] is a function that converts "forwards".  As its name implies,
-      you're free (and encouraged to) throw exceptions when the type conversion
-      would fail.
-    - [unparse] goes in the opposite direction.  This one must not throw.
+    - [parse_exn] is a function that converts "forwards". As its name implies, you're free
+      (and encouraged to) throw exceptions when the type conversion would fail.
+    - [unparse] goes in the opposite direction. This one must not throw.
 
     Example:
 
     {[
       let _ : int Form.t =
-        project
-          (a: string Form.t)
-          ~parse_exn:Int.of_string
-          ~unparse:Int.to_string
+        project (a : string Form.t) ~parse_exn:Int.of_string ~unparse:Int.to_string
+      ;;
     ]} *)
 val project : 'a t -> parse_exn:('a -> 'b) -> unparse:('b -> 'a) -> 'b t
 
 (** The same as [project] except that the [parse] function is [Or_error] returning. *)
 val project' : 'a t -> parse:('a -> 'b Or_error.t) -> unparse:('b -> 'a) -> 'b t
 
-(** [validate] can provide additional validation of a value, but unlike
-    [project] or [project'], it doesn't
-    change the type of the resulting form *)
+(** [validate] can provide additional validation of a value, but unlike [project] or
+    [project'], it doesn't change the type of the resulting form *)
 val validate : 'a t -> f:('a -> unit Or_error.t) -> 'a t
 
 (** Adds a label to the form. *)
@@ -170,7 +163,8 @@ val label' : Vdom.Node.t -> 'a t -> 'a t
 (** Adds a tooltip to the form. *)
 val tooltip : string -> 'a t -> 'a t
 
-(** Same as [tooltip], but it lets you use an arbitrary vdom node instead of just a string. *)
+(** Same as [tooltip], but it lets you use an arbitrary vdom node instead of just a
+    string. *)
 val tooltip' : Vdom.Node.t -> 'a t -> 'a t
 
 (** [optional] takes a ['a t] and produces a ['a option t] when given a "some detector"
@@ -179,19 +173,19 @@ val tooltip' : Vdom.Node.t -> 'a t -> 'a t
     Example:
     {[
       let _ : string option t =
-        optional
-          (a: string t)
-          ~is_some:(Fn.non String.is_empty)
-          ~none:""
+        optional (a : string t) ~is_some:(Fn.non String.is_empty) ~none:""
+      ;;
     ]} *)
 val optional : 'a t -> is_some:('a -> bool) -> none:'a -> 'a option t
 
-(** An alternative "optional form" construction function; [optional']
+(** {v
+ An alternative "optional form" construction function; [optional']
     gives you the ability to produce the full set of parse options:
     - Ok (Some b)
     - Ok None
     - Error error]
-      while also converting to another type (['a -> 'b option]) at the same time. *)
+      while also converting to another type (['a -> 'b option]) at the same time.
+    v} *)
 val optional'
   :  'a t
   -> parse:('a -> 'b option Or_error.t)
@@ -199,30 +193,27 @@ val optional'
   -> none:'a
   -> 'b option t
 
-(** [fallback_to] modifies the given form so that [Ok default] is used as the form's
-    value when it is in an [Error] state. *)
+(** [fallback_to] modifies the given form so that [Ok default] is used as the form's value
+    when it is in an [Error] state. *)
 val fallback_to : 'a t -> value:'a -> 'a t
 
 (** [Record_builder] is the primary way to compose form values using this library.
 
     Example:
     {[
-
       type my_type =
         { x : string
         ; y : int
-        } [@@deriving fields]
-
+        }
+      [@@deriving fields]
 
       val a : string t
       val b : int t
 
-      let c: my_type t =
+      let c : my_type t =
         let open Form.Record_builder in
-        build_for_record
-          (Fields.make_creator
-             ~x:(field a)
-             ~y:(field b))
+        build_for_record (Fields.make_creator ~x:(field a) ~y:(field b))
+      ;;
     ]} *)
 module Record_builder :
   Record_builder_intf.Record_builder with type 'a profunctor_term := 'a t
@@ -254,11 +245,11 @@ module Dynamic : sig
   (* Sets a ['a t] to an initial value every time it is (re)displayed on a page. *)
   val with_default_always : 'a Bonsai.t -> 'a t Bonsai.t -> Bonsai.graph -> 'a t Bonsai.t
 
-  (** Adds a clickable error hint for this form  *)
+  (** Adds a clickable error hint for this form *)
   val error_hint : 'a t Bonsai.t -> Bonsai.graph -> 'a t Bonsai.t
 
-  (** Adds a group that is clickable.  Visibility for sub-forms is initially
-      determined by [starts_open] but is toggled by clicking on the label. *)
+  (** Adds a group that is clickable. Visibility for sub-forms is initially determined by
+      [starts_open] but is toggled by clicking on the label. *)
   val collapsible_group
     :  ?starts_open:bool
     -> string Bonsai.t
@@ -284,14 +275,36 @@ module Dynamic : sig
     -> f:('a -> unit Ui_effect.t) Bonsai.t
     -> 'a t Bonsai.t
     -> Bonsai.graph
+    -> unit
+
+  (** [on_change_proc] is a legacy Bonsai_proc API compliant version of [on_change]. It it
+      intended to be used for legacy bonsai proc API users. *)
+  val on_change_proc
+    :  ?on_error:(Error.t -> unit Ui_effect.t) Bonsai.t
+    -> ?sexp_of_model:('a -> Sexp.t)
+    -> equal:('a -> 'a -> bool)
+    -> f:('a -> unit Ui_effect.t) Bonsai.t
+    -> 'a t Bonsai.t
+    -> Bonsai.graph
     -> unit Bonsai.t
 
   (** Synchronizes a form with some external storage. The value from the store is used to
       initially populate the form, and if the form changes, then the store is updated to
-      match.  If the contents of the store changes, the form is also updated to match.
-      If both the form and the store update at the same time, the form wins, and the store
-      is overridden. *)
+      match. If the contents of the store changes, the form is also updated to match. If
+      both the form and the store update at the same time, the form wins, and the store is
+      overridden. *)
   val sync_with
+    :  ?sexp_of_model:('a -> Sexp.t)
+    -> equal:('a -> 'a -> bool)
+    -> store_value:'a option Bonsai.t
+    -> store_set:('a -> unit Effect.t) Bonsai.t
+    -> 'a t Bonsai.t
+    -> Bonsai.graph
+    -> unit
+
+  (** [sync_with_proc] is a legacy Bonsai_proc API compliant version of [sync_with]. It it
+      intended to be used for legacy bonsai proc API users. *)
+  val sync_with_proc
     :  ?sexp_of_model:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> store_value:'a option Bonsai.t
@@ -300,18 +313,18 @@ module Dynamic : sig
     -> Bonsai.graph
     -> unit Bonsai.t
 
-  (** Unlike [validate] which requires the validation function to be available
-      locally (and synchronous), [validate_via_effect] runs an effectful computation.
-      The asynchrony makes this function interesting:
+  (** Unlike [validate] which requires the validation function to be available locally
+      (and synchronous), [validate_via_effect] runs an effectful computation. The
+      asynchrony makes this function interesting:
 
-      When a value is in the midst of validated, the resultant form is resolved
-      to an Error.
+      When a value is in the midst of validated, the resultant form is resolved to an
+      Error.
 
       [one_at_a_time] (defaults to false) when set to true, will use
       Bonsai.Effect_throttling.poll to make sure that only one instance of the effect
 
-      [debounce_ui] can be set to a timespan.  When set, the validation status won't
-      update until the input form value has been stable for the given span of time *)
+      [debounce_ui] can be set to a timespan. When set, the validation status won't update
+      until the input form value has been stable for the given span of time *)
   val validate_via_effect
     :  ?sexp_of_model:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
@@ -322,8 +335,8 @@ module Dynamic : sig
     -> Bonsai.graph
     -> 'a t Bonsai.t
 
-  (** This works the same as [validate_via_effect], but keeps track of the result and
-      uses that as the value for the form. *)
+  (** This works the same as [validate_via_effect], but keeps track of the result and uses
+      that as the value for the form. *)
   val project_via_effect
     :  ?sexp_of_input:('a -> Sexp.t)
     -> ?sexp_of_result:('b -> Sexp.t)

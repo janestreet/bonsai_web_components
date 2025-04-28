@@ -58,6 +58,8 @@ let%expect_test "simple usage" =
   Handle.show handle;
   [%expect
     {|
+    adding window event listener
+    adding window event listener
     <div>
       <div>
         <div>
@@ -75,8 +77,6 @@ let%expect_test "simple usage" =
       </div>
       <div> </div>
     </div>
-    adding window event listener
-    adding window event listener
     |}];
   Handle.show handle;
   [%expect
@@ -171,6 +171,8 @@ let%expect_test "stateful items" =
   Handle.show handle;
   [%expect
     {|
+    adding window event listener
+    adding window event listener
     <div>
       <div>
         <div>
@@ -188,8 +190,6 @@ let%expect_test "stateful items" =
       </div>
       <div> </div>
     </div>
-    adding window event listener
-    adding window event listener
     |}];
   Handle.show handle;
   [%expect

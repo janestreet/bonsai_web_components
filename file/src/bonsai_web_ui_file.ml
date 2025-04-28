@@ -272,7 +272,7 @@ module Read_on_change = struct
 
   let create_helper file graph =
     let state, inject =
-      Bonsai.state_machine0
+      Bonsai.state_machine
         ~sexp_of_model:[%sexp_of: File_state.t]
         ~equal:[%equal: File_state.t]
         ~sexp_of_action:[%sexp_of: File_state.Action.t]

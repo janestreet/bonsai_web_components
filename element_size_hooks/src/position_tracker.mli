@@ -21,16 +21,14 @@ end
 
 (** Tracks a [Position.t] for many dom nodes in "bulk".
 
-    [get_attr id] can be attached to a dom node to track its position which
-    will appear as an entry inside of the [positions] map.
+    [get_attr id] can be attached to a dom node to track its position which will appear as
+    an entry inside of the [positions] map.
 
-    Sadly, there is not a JavaScript Browser API for listening to position
-    changes, so the [update] effect needs to be scheduled for the
-    [positions] map to be recomputed.
-*)
+    Sadly, there is not a JavaScript Browser API for listening to position changes, so the
+    [update] effect needs to be scheduled for the [positions] map to be recomputed. *)
 
 val component
-  :  ('key, 'cmp) Bonsai.comparator
+  :  ('key, 'cmp) Comparator.Module.t
   -> Bonsai.graph
   -> ('key, 'cmp) Position_tracker.t Bonsai.t
 

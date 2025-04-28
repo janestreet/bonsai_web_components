@@ -9,8 +9,8 @@
     instead of this module directly.
 
     [?mode] defaults to [`Raw_contents] which will give you the content of the file
-    directly, but [`As_data_url] is also available if you would prefer to have the 
-    file read in a form that can be immediately used as a URL in e.g. <img> tags. *)
+    directly, but [`As_data_url] is also available if you would prefer to have the file
+    read in a form that can be immediately used as a URL in e.g. <img> tags. *)
 
 open! Core
 open Js_of_ocaml

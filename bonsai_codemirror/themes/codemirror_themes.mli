@@ -10,9 +10,10 @@ type t = Bonsai_web_ui_view.Expert.For_codemirror.Theme.t =
   | Material_dark
   | Vscode_dark
   | Vscode_light
+  | Vscode_default
 [@@deriving compare, enumerate, equal, sexp, typed_variants]
 
-val get : t -> Codemirror.State.Extension.t
+val get : t -> Codemirror_bindings.State.Extension.t
 val to_string : t -> string
 
 module Stable : sig

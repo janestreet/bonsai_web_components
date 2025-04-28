@@ -1,5 +1,5 @@
 open! Core
-open! Bonsai.Proc
+open! Bonsai_proc
 open! Bonsai_test
 module Mst = Bonsai_web_ui_low_level_vdom.Mutable_state_tracker
 

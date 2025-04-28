@@ -42,6 +42,7 @@ module Header : sig
       -> column_width:Css_gen.Length.t
       -> set_column_width:([> `Px_float of float ] -> unit Ui_effect.t)
       -> set_column_width_for_reporting:([> `Px_float of float ] -> unit Ui_effect.t)
+      -> focused:bool
       -> visible:bool
       -> resizable:bool
       -> label:Vdom.Node.t
@@ -87,9 +88,7 @@ module Cell : sig
     type t
 
     val create
-      :  (module Bonsai.Comparator
-            with type t = 'column_id
-             and type comparator_witness = 'cmp)
+      :  (module Comparator.S with type t = 'column_id and type comparator_witness = 'cmp)
       -> themed_attrs:Themed.t
       -> resize_column_widths_to_fit:bool
       -> row_height:int
@@ -127,6 +126,7 @@ module Row : sig
     :  Themed.t
     -> styles:Styles.t
     -> is_focused:bool
+    -> has_focused_cell:bool
     -> extra_attrs:Vdom.Attr.t list
     -> resize_column_widths_to_fit:bool
     -> Cell.t list
@@ -140,7 +140,6 @@ module Body : sig
     type t =
       | Top_padding
       | Row of Opaque_map.Key.t
-      | Bottom_border
       | Bottom_padding
     [@@deriving compare, sexp, equal]
 

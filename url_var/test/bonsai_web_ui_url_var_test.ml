@@ -288,7 +288,8 @@ let%expect_test "typed -> typed -> typed" =
     |}];
   let projection = Versioned_parser.eval ~encoding_behavior:Correct third_parser in
   Expect_test_helpers_core.require_does_raise (fun () ->
-    projection.parse_exn { query = String.Map.empty; path = [ "unknown" ] });
+    projection.parse_exn
+      { query = String.Map.empty; path = [ "unknown" ]; fragment = None });
   [%expect
     {|
     ("URL unrecognized, maybe this is an old URL? Attempting to parse with a previous URL parser. Here's the error of the current parser:"

@@ -1,0 +1,6 @@
+(library
+ (name byo_table_protocol)
+ (public_name bonsai_web_components.byo_table_protocol)
+ (libraries core incr_map.collate)
+ (preprocess
+  (pps ppx_jane)))

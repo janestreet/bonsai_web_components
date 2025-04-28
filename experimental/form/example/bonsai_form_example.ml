@@ -1,6 +1,7 @@
 open! Core
 open Bonsai_web
 module Bonsai_form = Bonsai_form_experimental
+module Arrow_deprecated = Bonsai_web_arrow_deprecated
 
 module A_B_or_C = struct
   type t =
@@ -140,8 +141,8 @@ let component =
   Vdom_layout.vbox [ view; result_readback ]
 ;;
 
-let (_ : _ Bonsai_web.Arrow_deprecated.Start.Handle.t) =
-  Bonsai_web.Arrow_deprecated.Start.start_standalone
+let (_ : _ Bonsai_web_arrow_deprecated.Start.Handle.t) =
+  Bonsai_web_arrow_deprecated.Start.start_standalone
     ~initial_input:()
     ~bind_to_element_with_id:"app"
     component

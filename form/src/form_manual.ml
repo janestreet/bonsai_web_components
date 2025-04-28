@@ -216,7 +216,6 @@ module Dynamic = struct
       Or_error.ok (value form), set form
     in
     Bonsai_extra.mirror'
-      ()
       ?sexp_of_model
       ~equal
       ~store_value
@@ -224,6 +223,11 @@ module Dynamic = struct
       ~interactive_value
       ~interactive_set
       graph
+  ;;
+
+  let sync_with_proc ?sexp_of_model ~equal ~store_value ~store_set form graph =
+    sync_with ?sexp_of_model ~equal ~store_value ~store_set form graph;
+    Bonsai.return ()
   ;;
 
   let with_default default form graph =
@@ -296,7 +300,11 @@ module Dynamic = struct
       ~equal:[%equal: M_or_error.t]
       (value_to_watch >>| value)
       ~callback
-      graph;
+      graph
+  ;;
+
+  let on_change_proc ?on_error ?sexp_of_model ~equal ~f value_to_watch graph =
+    on_change ?on_error ?sexp_of_model ~equal ~f value_to_watch graph;
     Bonsai.return ()
   ;;
 

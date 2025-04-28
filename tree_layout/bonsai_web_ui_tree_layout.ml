@@ -92,7 +92,7 @@ module Style =
       .tree > li > span:before {
         outline: none;
       }
-      |}]
+    |}]
 
 type t = Vdom.Node.t
 

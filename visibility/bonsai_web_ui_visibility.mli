@@ -1,14 +1,13 @@
 open! Core
 open! Bonsai_web
 
-(** [only_when_visible] runs the provided computation for at least one frame
-    initially, and then if the node is visible, will keep that computation active,
-    but if it ever becomes hidden, the computation is deactivated and the most
-    recent computed vdom node is returned instead.  Upon becoming visible again,
-    the computation is reactivated.
+(** [only_when_visible] runs the provided computation for at least one frame initially,
+    and then if the node is visible, will keep that computation active, but if it ever
+    becomes hidden, the computation is deactivated and the most recent computed vdom node
+    is returned instead. Upon becoming visible again, the computation is reactivated.
 
-    [visible_attr] and [hidden_attr] are optional attributes that will be attached
-    to the dom nodes based on their visibility status. *)
+    [visible_attr] and [hidden_attr] are optional attributes that will be attached to the
+    dom nodes based on their visibility status. *)
 val only_when_visible
   :  ?visible_attr:Vdom.Attr.t Bonsai.t
   -> ?hidden_attr:Vdom.Attr.t Bonsai.t
@@ -16,9 +15,9 @@ val only_when_visible
   -> Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
-(** Like [only_when_visible], but if the component returns more than just a vdom node,
-    you can propagate the value to the outside.  This value is [Some] when the computation
-    is active, and otherwise [None]. *)
+(** Like [only_when_visible], but if the component returns more than just a vdom node, you
+    can propagate the value to the outside. This value is [Some] when the computation is
+    active, and otherwise [None]. *)
 val only_when_visible'
   :  ?visible_attr:Vdom.Attr.t Bonsai.t
   -> ?hidden_attr:Vdom.Attr.t Bonsai.t

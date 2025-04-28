@@ -77,7 +77,7 @@ let%expect_test "autosizing table initial HTML" =
   [%expect
     {|
     +|<div class="partial_render_table_container table"
-    +|     custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+    +|     custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
     +|  <div class="partial-render-table-body-" bounds-change=<opaque>>
     +|    <thead class="header partial_render_table_header" bounds-change=<opaque>>
     +|      <tr class="header_row">
@@ -121,7 +121,7 @@ let%expect_test "autosizing table initial HTML" =
     +|    </thead>
     +|    <div class="body">
     +|      <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -145,9 +145,6 @@ let%expect_test "autosizing table initial HTML" =
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|      </div>
-    +|      <div @key=bottom_border class="body_row">
-    +|        <div class="autosize_table_bottom_border_element body_cell"> </div>
     +|      </div>
     +|      <div @key=bottom_padding> </div>
     +|    </div>
@@ -361,7 +358,7 @@ let%expect_test "stabilization of view range" =
   [%expect
     {|
     <div class="partial_render_table_container table"
-         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
       <div class="partial-render-table-body-" bounds-change=<opaque>>
         <thead class="header partial_render_table_header" bounds-change=<opaque>>
           <tr class="header_row">
@@ -405,7 +402,7 @@ let%expect_test "stabilization of view range" =
         </thead>
         <div class="body">
           <div @key=top_padding> </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -430,7 +427,7 @@ let%expect_test "stabilization of view range" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -454,9 +451,6 @@ let%expect_test "stabilization of view range" =
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
               </div>
             </div>
-          </div>
-          <div @key=bottom_border class="body_row">
-            <div class="autosize_table_bottom_border_element body_cell"> </div>
           </div>
           <div @key=bottom_padding> </div>
         </div>
@@ -491,7 +485,8 @@ let%expect_test "stabilization of view range" =
                 </div>
               </div>
             </div>
-    +|      <div class="body_row row">
+    -|      <div @key=bottom_padding> </div>
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -516,10 +511,7 @@ let%expect_test "stabilization of view range" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding> </div>
+    +|      <Vdom.Node.none-widget> </Vdom.Node.none-widget>
           </div>
         </div>
       </div>
@@ -575,7 +567,7 @@ let%expect_test "resize-column" =
       {|
       === DIFF HUNK ===
         <div class="partial_render_table_container table"
-             custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+             custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
           <div class="partial-render-table-body-" bounds-change=<opaque> style={ height: 3.00px; }>
             <thead class="header partial_render_table_header" bounds-change=<opaque>>
               <tr class="header_row">
@@ -618,7 +610,7 @@ let%expect_test "big table" =
   [%expect
     {|
     <div class="partial_render_table_container table"
-         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
       <div class="partial-render-table-body-" bounds-change=<opaque>>
         <thead class="header partial_render_table_header" bounds-change=<opaque>>
           <tr class="header_row">
@@ -662,7 +654,7 @@ let%expect_test "big table" =
         </thead>
         <div class="body">
           <div @key=top_padding> </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
@@ -687,7 +679,7 @@ let%expect_test "big table" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
@@ -711,9 +703,6 @@ let%expect_test "big table" =
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
             </div>
-          </div>
-          <div @key=bottom_border class="body_row">
-            <div class="autosize_table_bottom_border_element body_cell"> </div>
           </div>
           <div @key=bottom_padding> </div>
         </div>
@@ -740,7 +729,7 @@ let%expect_test "big table" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
@@ -767,7 +756,7 @@ let%expect_test "big table" =
                 </div>
               </div>
             </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
@@ -794,7 +783,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 57 </div>
@@ -819,7 +808,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 58 </div>
@@ -844,7 +833,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 59 </div>
@@ -869,7 +858,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 60 </div>
@@ -894,7 +883,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 61 </div>
@@ -919,7 +908,7 @@ let%expect_test "big table" =
     +|          </div>
     +|        </div>
     +|      </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 62 </div>
@@ -943,9 +932,6 @@ let%expect_test "big table" =
                   <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
                 </div>
               </div>
-            </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
             </div>
             <div @key=bottom_padding> </div>
           </div>
@@ -979,7 +965,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
@@ -1005,7 +991,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                 </div>
               </div>
             </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
     |}];
   (* move out of bounds (really 99-25 through 100) *)
@@ -1019,7 +1005,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
   [%expect
     {|
     <div class="partial_render_table_container table"
-         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
       <div class="partial-render-table-body-" bounds-change=<opaque>>
         <thead class="header partial_render_table_header" bounds-change=<opaque>>
           <tr class="header_row">
@@ -1063,7 +1049,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         </thead>
         <div class="body">
           <div @key=top_padding> </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
@@ -1088,7 +1074,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
@@ -1112,9 +1098,6 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
             </div>
-          </div>
-          <div @key=bottom_border class="body_row">
-            <div class="autosize_table_bottom_border_element body_cell"> </div>
           </div>
           <div @key=bottom_padding> </div>
         </div>
@@ -1168,7 +1151,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
             ~order_to_compare:(fun () -> Unchanged)
             input
             (Bonsai.return
-               { Incr_map_collate.Collate.filter = ()
+               { Incr_map_collate.Collate_params.filter = ()
                ; order = ()
                ; key_range = All_rows
                ; rank_range = All_rows
@@ -1243,7 +1226,7 @@ let%expect_test "sorting legacy renderer" =
   [%expect
     {|
     <div class="partial_render_table_container table"
-         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
       <div class="partial-render-table-body-" bounds-change=<opaque>>
         <thead class="header partial_render_table_header" bounds-change=<opaque>>
           <tr class="header_row">
@@ -1277,7 +1260,7 @@ let%expect_test "sorting legacy renderer" =
         </thead>
         <div class="body">
           <div @key=top_padding> </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1302,7 +1285,7 @@ let%expect_test "sorting legacy renderer" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1327,7 +1310,7 @@ let%expect_test "sorting legacy renderer" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -1352,10 +1335,7 @@ let%expect_test "sorting legacy renderer" =
               </div>
             </div>
           </div>
-          <div @key=bottom_border class="body_row">
-            <div class="autosize_table_bottom_border_element body_cell"> </div>
-          </div>
-          <div @key=bottom_padding> </div>
+          <Vdom.Node.none-widget> </Vdom.Node.none-widget>
         </div>
       </div>
     </div>
@@ -1367,7 +1347,7 @@ let%expect_test "sorting legacy renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -1402,7 +1382,7 @@ let%expect_test "sorting legacy renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -1438,7 +1418,7 @@ let%expect_test "sorting legacy renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1463,7 +1443,7 @@ let%expect_test "sorting legacy renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1496,7 +1476,7 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1521,10 +1501,7 @@ let%expect_test "sorting legacy renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding> </div>
+            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
           </div>
         </div>
       </div>
@@ -1565,7 +1542,7 @@ let%expect_test "sorting legacy renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1590,7 +1567,7 @@ let%expect_test "sorting legacy renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1623,7 +1600,7 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1648,10 +1625,7 @@ let%expect_test "sorting legacy renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding> </div>
+            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
           </div>
         </div>
       </div>
@@ -1686,7 +1660,7 @@ let%expect_test "sorting legacy renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1726,7 +1700,7 @@ let%expect_test "sorting legacy renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1751,7 +1725,7 @@ let%expect_test "sorting legacy renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1776,7 +1750,7 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1801,7 +1775,7 @@ let%expect_test "sorting legacy renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -1834,7 +1808,7 @@ let%expect_test "sorting default renderer" =
   [%expect
     {|
     <div class="partial_render_table_container table"
-         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+         custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
       <div class="partial-render-table-body-" bounds-change=<opaque>>
         <thead class="header partial_render_table_header" bounds-change=<opaque>>
           <tr class="header_row">
@@ -1878,7 +1852,7 @@ let%expect_test "sorting default renderer" =
         </thead>
         <div class="body">
           <div @key=top_padding> </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -1903,7 +1877,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -1928,7 +1902,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </div>
           </div>
-          <div class="body_row row">
+          <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -1953,10 +1927,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </div>
           </div>
-          <div @key=bottom_border class="body_row">
-            <div class="autosize_table_bottom_border_element body_cell"> </div>
-          </div>
-          <div @key=bottom_padding> </div>
+          <Vdom.Node.none-widget> </Vdom.Node.none-widget>
         </div>
       </div>
     </div>
@@ -1968,7 +1939,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2004,7 +1975,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2050,7 +2021,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2075,7 +2046,7 @@ let%expect_test "sorting default renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2108,7 +2079,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2133,10 +2104,7 @@ let%expect_test "sorting default renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding> </div>
+            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
           </div>
         </div>
       </div>
@@ -2185,7 +2153,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2210,7 +2178,7 @@ let%expect_test "sorting default renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2243,7 +2211,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2268,10 +2236,7 @@ let%expect_test "sorting default renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
-            <div @key=bottom_padding> </div>
+            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
           </div>
         </div>
       </div>
@@ -2323,7 +2288,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2346,7 +2311,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2387,7 +2352,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2435,7 +2400,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2460,7 +2425,7 @@ let%expect_test "sorting default renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2485,7 +2450,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2510,7 +2475,7 @@ let%expect_test "sorting default renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -2563,7 +2528,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2588,7 +2553,7 @@ let%expect_test "sorting default renderer" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2613,7 +2578,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-    -|      <div class="body_row row">
+    -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2638,7 +2603,7 @@ let%expect_test "sorting default renderer" =
     -|          </div>
     -|        </div>
     -|      </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
@@ -2714,7 +2679,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2775,7 +2740,7 @@ let%expect_test "sorting default renderer" =
     {|
     === DIFF HUNK ===
       <div class="partial_render_table_container table"
-           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-body-border grey)(--bg white))>
+           custom-css-vars=((--row-odd-fg black)(--row-odd-bg white)(--row-focused-fg black)(--row-focused-border #0a90bf)(--row-focused-bg #e0f7ff)(--row-even-fg black)(--row-even-bg #e6e6e6)(--header-header-border grey)(--header-fg white)(--header-cell-padding-y 0.30rem)(--header-cell-padding-x 0.50rem)(--header-cell-font-size 0.80rem)(--header-cell-focused-fg white)(--header-cell-focused-bg black)(--header-body-border grey)(--header-bg black)(--fg black)(--cell-focused-fg black)(--cell-focused-bg #e0f7ff)(--body-cell-padding-y 0.30rem)(--body-cell-padding-x 0.50rem)(--body-cell-font-size 0.80rem)(--body-border-width-y 1px)(--body-border-width-x 1px)(--body-body-border grey)(--bg white))>
         <div class="partial-render-table-body-" bounds-change=<opaque>>
           <thead class="header partial_render_table_header" bounds-change=<opaque>>
             <tr class="header_row">
@@ -2822,7 +2787,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2863,7 +2828,7 @@ let%expect_test "sorting default renderer" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-            <div class="body_row row">
+            <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2909,8 +2874,8 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
           </thead>
           <div class="body">
             <div @key=top_padding> </div>
-    -|      <div class="body_row row">
-    +|      <div class="body_row_focused body_row row">
+    -|      <div class="body_row">
+    +|      <div class="body_row_focused body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
@@ -2935,7 +2900,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
                 </div>
               </div>
             </div>
-    +|      <div class="body_row row">
+    +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
@@ -2960,9 +2925,6 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
     +|          </div>
     +|        </div>
     +|      </div>
-            <div @key=bottom_border class="body_row">
-              <div class="autosize_table_bottom_border_element body_cell"> </div>
-            </div>
             <div @key=bottom_padding> </div>
           </div>
         </div>

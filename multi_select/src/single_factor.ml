@@ -1,6 +1,6 @@
 open! Core
 open! Import
-module Bonsai_proc = Bonsai_web.Proc.Bonsai
+module Bonsai_proc = Bonsai_web_proc.Bonsai
 open Bonsai_web
 open Single_factor_intf
 
@@ -43,7 +43,7 @@ module Make (Item : Item) = struct
     include T
 
     let bonsai ~initial input =
-      Bonsai_proc.of_module1
+      Bonsai_proc.of_module_with_input
         (module T)
         ~sexp_of_model:[%sexp_of: T.Model.t]
         ~equal:[%equal: T.Model.t]
@@ -315,7 +315,7 @@ module Make (Item : Item) = struct
                 let status =
                   match Js_of_ocaml.Js.Opt.to_option ev##.target with
                   | None ->
-                    Js_of_ocaml.Firebug.console##error "Target missing";
+                    Js_of_ocaml.Console.console##error "Target missing";
                     assert false
                   | Some t ->
                     let value = (Js_of_ocaml.Js.Unsafe.coerce t)##.checked in
@@ -438,7 +438,11 @@ module Make (Item : Item) = struct
   include T
 
   let bonsai' ?equal input =
-    Bonsai_proc.of_module1 ?equal (module T) ~sexp_of_model:[%sexp_of: T.Model.t] input
+    Bonsai_proc.of_module_with_input
+      ?equal
+      (module T)
+      ~sexp_of_model:[%sexp_of: T.Model.t]
+      input
   ;;
 
   module _ = struct

@@ -13,7 +13,7 @@ module Styles =
         justify-content: center;
         align-items: center;
       }
-      |}]
+    |}]
 
 let gauge ~radius ~(percent : Percent.t) ~percent_to_color =
   let percent_as_float = Percent.to_percentage percent in

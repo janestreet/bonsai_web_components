@@ -34,11 +34,11 @@ end
     You'll need a ['column_id] type, which is typically a hand-written variant, or a GADT
     derived through the [typed_fields] ppx. *)
 module Column_structure : sig
-  (** A [Columns.Structure.t] defines which columns your table should have,
-      which order they should appear in, and if/how they should be grouped.
+  (** A [Columns.Structure.t] defines which columns your table should have, which order
+      they should appear in, and if/how they should be grouped.
 
-      A dynamic set of columns allows your columns to change arbitrarily at
-      runtime, but will be less performant than a static set. *)
+      A dynamic set of columns allows your columns to change arbitrarily at runtime, but
+      will be less performant than a static set. *)
   type 'column_id t
 
   val flat : 'column_id list -> 'column_id t
@@ -62,10 +62,10 @@ module Column_structure : sig
     val lift : 'column_id t list Bonsai.t -> 'column_id structure
   end
 
-  (** Allows you to configure initial widths for each column.
-      Changes to the function argument won't do anything after the initial render.
+  (** Allows you to configure initial widths for each column. Changes to the function
+      argument won't do anything after the initial render.
 
-      If you don't care for some fields, consider using [default_initial_width]*)
+      If you don't care for some fields, consider using [default_initial_width] *)
   val with_initial_widths
     :  'column_id t
     -> f:('column_id -> Css_gen.Length.t) Bonsai.t
@@ -74,17 +74,17 @@ module Column_structure : sig
   (** [with_is_resizable] allows you to disable users from manually resizing some columns. *)
   val with_is_resizable : 'column_id t -> f:('column_id -> bool) Bonsai.t -> 'column_id t
 
-  (** By default, columns have a width of 50px.
-      If using auto-resizing columns, this will serve as a min width. *)
+  (** By default, columns have a width of 50px. If using auto-resizing columns, this will
+      serve as a min width. *)
   val default_initial_width : Css_gen.Length.t
 end
 
 module Render_cell : sig
-  (** A [Render_cell.t] specifies how the cells in your table should be rendered,
-      as a function of the column id, row key, and data.
+  (** A [Render_cell.t] specifies how the cells in your table should be rendered, as a
+      function of the column id, row key, and data.
 
-      [Pure] is 1.5-4x faster than [Stateful_rows], which is 1.5-3x faster than [Stateful_cells].
-      See: [../bench/bin/main.ml].
+      [Pure] is 1.5-4x faster than [Stateful_rows], which is 1.5-3x faster than
+      [Stateful_cells]. See: [../bench/bin/main.ml].
 
       Table that don't need stateful components in cells should use [Pure]. Most other
       tables should try to use [Stateful_rows] over [Stateful_cells]. *)
@@ -129,17 +129,19 @@ module Basic : sig
       (** [set_column_width] cannot set the width of the column smaller than the minimum
           width of the header. *)
       ; column_widths : ('column_id * [ `Px_float of float ]) list Lazy.t
-      (** [column_widths] returns the widths of the columns.  For hidden columns, it will
-         use the last-known width.  The list may be empty on the first frame after the
-         table has been included in the page. *)
+      (** [column_widths] returns the widths of the columns. For hidden columns, it will
+          use the last-known width. The list may be empty on the first frame after the
+          table has been included in the page. *)
       ; key_rank : 'key -> int option Effect.t
-      (** [key_rank] resolves to the index of a key after sorting + filtering,
-          if present in the table. *)
+      (** [key_rank] resolves to the index of a key after sorting + filtering, if present
+          in the table. *)
       }
     [@@deriving fields ~getters]
   end
 
-  module New_columns : sig
+  (** New PRTs should use [Columns.build] instead of [Columns.Dynamic_cells],
+      [Dynamic_columns], or [Dynamic_experimental]. *)
+  module Columns : sig
     type ('key, 'data, 'column_id) t
 
     val build
@@ -147,16 +149,20 @@ module Basic : sig
            ('column_id Bonsai.t
             -> Bonsai.graph
             -> ('key, 'data) Sort_kind.t option Bonsai.t)
-      -> ('column_id, _) Bonsai.comparator
+      -> ('column_id, _) Comparator.Module.t
       -> columns:'column_id Column_structure.t
-      -> render_header:
-           ('column_id Bonsai.t -> Bonsai.graph -> (Sort_state.t -> Vdom.Node.t) Bonsai.t)
+      -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
       -> render_cell:('key, 'data, 'column_id) Render_cell.t
       -> ('key, 'data, 'column_id) t
 
-    (** [Sortable] provides types, state, and ui helper functions to sort your table
-      data by one or more columns. *)
+    (** [Sortable] provides types, state, and ui helper functions to sort your table data
+        by one or more columns. *)
     module Sortable = Sortable
+
+    include
+      Old_columns_intf.Basic
+      with type ('key, 'data, 'column_id) t := ('key, 'data, 'column_id) t
+       and type Indexed_column_id.t = Indexed_column_id.t
   end
 
   type 'a compare := 'a -> 'a -> int
@@ -167,49 +173,42 @@ module Basic : sig
          (** [styling] defaults to [From_theme]. You can use [This of Styling.t] to style
              a PRT without having to go through the theme. *)
     -> ?resize_column_widths_to_fit:bool Bonsai.t
-         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit content. The
-        [set_column_width] effect, and draggable resize UI, will only set min-width.
+         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit
+             content. The [set_column_width] effect, and draggable resize UI, will only
+             set min-width.
 
-        If [false], columns can be set to any size, but will not autoresize. *)
+             If [false], columns can be set to any size, but will not autoresize. *)
     -> ?filter:(key:'key -> data:'data -> bool) Bonsai.t
          (** An optional function may be provided, which filters the rows in the table. *)
     -> ?override_sort:
          ('key compare -> ('key * 'data) compare -> ('key * 'data) compare) Bonsai.t
-         (** override_sort is an optional function that transforms the tables current sort,
-        taking into account the default-sort and any user-provided sorts that they've
-        added by clicking on column headers.
+         (** override_sort is an optional function that transforms the tables current
+             sort, taking into account the default-sort and any user-provided sorts that
+             they've added by clicking on column headers.
 
-        [override_sort] is also given the comparison function for the key of the table,
-        which the overrider can use as a fall-back for when the the ('key * 'data)
-        comparison function returns 0. *)
+             [override_sort] is also given the comparison function for the key of the
+             table, which the overrider can use as a fall-back for when the the ('key *
+             'data) comparison function returns 0. *)
     -> ?default_sort:('key * 'data) compare Bonsai.t
          (** An optional function may be provided to sort the table. *)
-    -> ?multisort_columns_when:
-         [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click ] Bonsai.t
-         (** When the combination in [multisort_columns_when] is used, new columns are added to
-        the sort order instead of replacing the existing sort. Defaults to
-        [`Shift_click]. *)
+    -> ?wrap_header:'column_id Sortable.Wrap_header.basic Bonsai.t
+         (** [wrap_header] is typically used to add sorting controls to the header of each
+             column. It defaults to [Sortable.Wrap_header.clickable_with_icon ()]. *)
     -> ?preload_rows:int
     -> ?extra_row_attrs:('key -> Vdom.Attr.t list) Bonsai.t
-         (** [extra_row_attrs] will be added to the themed/functional attrs attached by the PRT
-        on each row. In general, styling of the PRT should be done through [~styling].
-        However, this parameter can be used to attach attributes for testing. *)
-    -> ('key, 'cmp) Bonsai.comparator
+         (** [extra_row_attrs] will be added to the themed/functional attrs attached by
+             the PRT on each row. In general, styling of the PRT should be done through
+             [~styling]. However, this parameter can be used to attach attributes for
+             testing. *)
+    -> ('key, 'cmp) Comparator.Module.t
     -> focus:('focus, 'presence, 'key, 'column_id) Focus.t
     -> row_height:[ `Px of int ] Bonsai.t
-         (** [row_height] is the height of every row in the table. If the row height
-        is specified to be 0px or less, we instead use 1px. *)
-    -> columns:('key, 'data, 'column_id) New_columns.t
+         (** [row_height] is the height of every row in the table. If the row height is
+             specified to be 0px or less, we instead use 1px. *)
+    -> columns:('key, 'data, 'column_id) Columns.t
     -> ('key, 'data, 'cmp) Map.t Bonsai.t (** The input data for the table *)
     -> Bonsai.graph
     -> ('focus, 'key, 'column_id) Result.t Bonsai.t
-
-  (** Deprecated except for [Dynamic_cols], which may be more performant.
-      Use [New_columns] instead. *)
-  module Columns :
-    Old_columns_intf.Basic
-    with type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
-     and type Indexed_column_id.t = Indexed_column_id.t
 end
 
 module Expert : sig
@@ -230,14 +229,15 @@ module Expert : sig
       | By_row :
           { on_change : ('k option -> unit Effect.t) Bonsai.t
           (** Row-selection is not required to be inside the viewport, so the selected row
-              can be offscreen such that it isn't given to the table component. [compute_presence]
-              forces the user to consider if a row is considered 'focused' or not. *)
+              can be offscreen such that it isn't given to the table component.
+              [compute_presence] forces the user to consider if a row is considered
+              'focused' or not. *)
           ; compute_presence : 'k option Bonsai.t -> Bonsai.graph -> 'p Bonsai.t
-          (** A user might try to focus-by-key a row that has not been filtered out,
-              but is not inside the viewport. In that case, [key_rank] will be used as
-              a fallback to compute the desired index.
-              If the effect returns `None`, the key does not correspond to a row under the
-              current filter conditions, and the focus will be a no-op. *)
+          (** A user might try to focus-by-key a row that has not been filtered out, but
+              is not inside the viewport. In that case, [key_rank] will be used as a
+              fallback to compute the desired index. If the effect returns `None`, the key
+              does not correspond to a row under the current filter conditions, and the
+              focus will be a no-op. *)
           ; key_rank : ('k -> int option Effect.t) Bonsai.t
           }
           -> (('k, 'p) Focus_by_row.t, 'p, 'k, 'c) t
@@ -264,19 +264,26 @@ module Expert : sig
     [@@deriving fields ~getters]
   end
 
-  module New_columns : sig
+  (** New PRTs should use [Columns.build] instead of [Columns.Dynamic_cells],
+      [Dynamic_columns], or [Dynamic_experimental]. *)
+  module Columns : sig
     type ('key, 'data, 'column_id) t
 
     val build
-      :  ('column_id, _) Bonsai.comparator
+      :  ('column_id, _) Comparator.Module.t
       -> columns:'column_id Column_structure.t
       -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
       -> render_cell:('key, 'data, 'column_id) Render_cell.t
       -> ('key, 'data, 'column_id) t
 
-    (** [Sortable] provides types, state, and ui helper functions to sort your table
-    data by one or more columns. *)
+    (** [Sortable] provides types, state, and ui helper functions to sort your table data
+        by one or more columns. *)
     module Sortable = Sortable
+
+    include
+      Old_columns_intf.Expert
+      with type ('key, 'data, 'column_id) t := ('key, 'data, 'column_id) t
+       and type Indexed_column_id.t = Indexed_column_id.t
   end
 
   (** [collate] is useful for tests, and other situations where you want to use a
@@ -284,61 +291,55 @@ module Expert : sig
   val collate
     :  ?operation_order:[ `Filter_first | `Sort_first ]
     -> filter_equal:('filter -> 'filter -> bool)
-         (** [filter_equal] is used to decide when the filters have actually changed, requiring
-        a recomputation of the collation. *)
+         (** [filter_equal] is used to decide when the filters have actually changed,
+             requiring a recomputation of the collation. *)
     -> order_equal:('order -> 'order -> bool)
-         (** [order_equal] is used to decide when the sorting params have actually changed,
-        requiring a recomputation of the collation. *)
+         (** [order_equal] is used to decide when the sorting params have actually
+             changed, requiring a recomputation of the collation. *)
     -> filter_to_predicate:('filter -> (key:'k -> data:'v -> bool) option)
-         (** [filter_to_predicate] takes the current set of filters ['filter] and optionally
-        returns a function that can apply those filters to each row. When
-        [filter_to_predicate] returns [None], no filtering is done. *)
+         (** [filter_to_predicate] takes the current set of filters ['filter] and
+             optionally returns a function that can apply those filters to each row. When
+             [filter_to_predicate] returns [None], no filtering is done. *)
     -> order_to_compare:('order -> ('k, 'v, 'cmp) Compare.t)
          (** [order_to_compare] takes the current set of sort params ['order] and uses the
-        [Compare] specification to decide how to apply them. Return [Unchanged] to perform
-        no sorting. *)
+             [Compare] specification to decide how to apply them. Return [Unchanged] to
+             perform no sorting. *)
     -> ('k, 'v, 'cmp) Map.t Bonsai.t
        (** A [Map.t] containing the source for all the table data, pre-collation. *)
-    -> ('k, 'filter, 'order) Collate.t Bonsai.t
-       (** A [Collate.t] is a specification for how to perform collation: it's where the
-        ['filter], ['order], and rank range are defined. *)
+    -> ('k, 'filter, 'order) Collate_params.t Bonsai.t
+       (** A [Collate_params.t] is a specification for how to perform collation: it's
+           where the ['filter], ['order], and rank range are defined. *)
     -> Bonsai.graph
     -> ('k, 'v) Collated.t Bonsai.t * ('k -> int option Effect.t) Bonsai.t
 
   val component
     :  ?styling:Which_styling.t
     -> ?resize_column_widths_to_fit:bool Bonsai.t
-         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit content. The
-        [set_column_width] effect, and draggable resize UI, will only set min-width.
+         (** If [resize_column_widths_to_fit] is [true], columns will autoresize to fit
+             content. The [set_column_width] effect, and draggable resize UI, will only
+             set min-width.
 
-        If [false], columns can be set to any size, but will not autoresize. *)
+             If [false], columns can be set to any size, but will not autoresize. *)
     -> ?preload_rows:int
          (** [preload_rows] is the number of rows that are maintained before and after the
-        viewport range. This number can have a significant effect on performance: too
-        small and scrolling might be choppy; too large and you start to lose some of the
-        benefits of partial rendering. *)
+             viewport range. This number can have a significant effect on performance: too
+             small and scrolling might be choppy; too large and you start to lose some of
+             the benefits of partial rendering. *)
     -> ?extra_row_attrs:('key -> Vdom.Attr.t list) Bonsai.t
-         (** [extra_row_attrs] will be added to the themed/functional attrs attached by the PRT
-        on each row. In general, styling of the PRT should be done through [~styling].
-        However, this parameter can be used to attach attributes for testing. *)
-    -> ('key, 'cmp) Bonsai.comparator
+         (** [extra_row_attrs] will be added to the themed/functional attrs attached by
+             the PRT on each row. In general, styling of the PRT should be done through
+             [~styling]. However, this parameter can be used to attach attributes for
+             testing. *)
+    -> ('key, 'cmp) Comparator.Module.t
     -> focus:('focus, 'presence, 'key, 'column_id) Focus.t
     -> row_height:[ `Px of int ] Bonsai.t
-         (** [row_height] is the height of every row in the table. If the row height
-        is specified to be 0px or less, we instead use 1px. *)
-    -> columns:('key, 'row, 'column_id) New_columns.t
+         (** [row_height] is the height of every row in the table. If the row height is
+             specified to be 0px or less, we instead use 1px. *)
+    -> columns:('key, 'row, 'column_id) Columns.t
     -> ('key, 'row) Collated.t Bonsai.t
-       (** The collated value is the proper input to the component.
-        You can use [Expert.collate] to get a Collated.t value, or do
-        the collation manually on the server by using the Incr_map_collate
-        library manually. *)
+       (** The collated value is the proper input to the component. You can use
+           [Expert.collate] to get a Collated.t value, or do the collation manually on the
+           server by using the Incr_map_collate library manually. *)
     -> Bonsai.graph
     -> ('focus, 'column_id) Result.t Bonsai.t
-
-  (** Deprecated except for [Dynamic_cols], which may be more performant.
-      Use [New_columns] instead. *)
-  module Columns :
-    Old_columns_intf.Expert
-    with type ('key, 'data, 'column_id) t = ('key, 'data, 'column_id) New_columns.t
-     and type Indexed_column_id.t = Indexed_column_id.t
 end

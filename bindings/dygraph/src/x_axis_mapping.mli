@@ -1,7 +1,8 @@
 open Core
 open! Import
 
-(** This module is a helper function designed to make it easy (easier) to make the spacing
+(** {v
+ This module is a helper function designed to make it easy (easier) to make the spacing
     of the x-axis of a dygraphs graph differ from the x-values themselves.  Currently,
     this module deals only with time x-values, but may be extended to deal with numeric
     x-values in the future.
@@ -29,7 +30,7 @@ open! Import
       back to "real time" before displaying x-axis tick labels.
 
     For an example usage, see [../examples/ocaml/hide_overnights.ml}
-*)
+    v} *)
 
 type t =
   { time_to_x_value : Time_ns.t -> Time_ns.t
@@ -45,15 +46,13 @@ module For_dygraph_libraries : sig
   val round_time_nearest_ms : Time_ns.t -> zone:Core_private.Time_zone.t -> Time_ns.t
 
   val dygraphs_date_axis_label_formatter
-    :  unit
-    -> Js.date Js.t
+    :  Js.date Js.t
     -> Granularity.t
     -> Options.Opts.t
     -> Js.js_string Js.t
 
   val dygraphs_number_axis_label_formatter
-    :  unit
-    -> Js.number Js.t
+    :  Js.number Js.t
     -> Granularity.t
     -> Options.Opts.t
     -> Js.js_string Js.t

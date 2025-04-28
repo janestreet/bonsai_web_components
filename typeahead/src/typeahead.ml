@@ -1,7 +1,4 @@
 open! Core
-
-module type Model = Bonsai_web.Proc.Model
-
 open! Bonsai_web
 open! Bonsai_web_ui_common_components
 
@@ -16,7 +13,8 @@ end
     See the full spec here:
 
     [datalist]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist
-    [list attr]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdeflist
+    [list attr]:
+    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdeflist
 
     As to why this alternate typeahead implementation exists:
 
@@ -72,9 +70,9 @@ type 'a t =
   }
 
 let input
-  ?(placeholder = "")
   ?(value = "")
   ?(attr_merge_behavior = Attr_merge_behavior.Merge)
+  ~placeholder
   ~set_focused
   ~extra_attrs
   ~to_string
@@ -157,13 +155,13 @@ let show_datalist ~focused ~show_datalist_in_test =
 let create_internal
   (type t)
   ?(extra_attrs = Bonsai.return [])
-  ?placeholder
+  ?(placeholder = Bonsai.return "")
   ?on_select_change
   ?to_string
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
   ?(attr_merge_behavior = Attr_merge_behavior.Merge)
-  (module M : Model with type t = t)
+  ~sexp_of
   ~equal
   ~all_options
   ~show_datalist_in_test
@@ -173,13 +171,13 @@ let create_internal
   let to_string =
     Option.value
       to_string
-      ~default:(Bonsai.return (fun a -> a |> M.sexp_of_t |> Sexp.to_string_hum))
+      ~default:(Bonsai.return (fun a -> a |> sexp_of |> Sexp.to_string_hum))
   in
   let to_option_description = Option.value to_option_description ~default:to_string in
   let on_select_change =
     Option.value
       on_select_change
-      ~default:(Bonsai.return (fun (_ : M.t option) -> Ui_effect.Ignore))
+      ~default:(Bonsai.return (fun (_ : t option) -> Ui_effect.Ignore))
   in
   let focused, set_focused =
     Bonsai.state false ~sexp_of_model:[%sexp_of: Bool.t] ~equal:[%equal: Bool.t] graph
@@ -187,9 +185,7 @@ let create_internal
   let current_input, set_current_input =
     Bonsai.state "" ~sexp_of_model:[%sexp_of: String.t] ~equal:[%equal: String.t] graph
   in
-  let selected, set_selected =
-    Bonsai.state_opt graph ~sexp_of_model:[%sexp_of: M.t] ~equal
-  in
+  let selected, set_selected = Bonsai.state_opt graph ~sexp_of_model:sexp_of ~equal in
   let id = Bonsai.path_id graph in
   let input =
     let%arr set_focused
@@ -201,11 +197,12 @@ let create_internal
     and on_select_change
     and current_input
     and set_current_input
-    and to_string in
+    and to_string
+    and placeholder in
     let on_input input = set_current_input input in
     let on_change t _ = Ui_effect.Many [ set_selected t; on_select_change t ] in
     input
-      ?placeholder
+      ~placeholder
       ~set_focused
       ~extra_attrs
       ~id
@@ -246,7 +243,7 @@ let create_internal
 ;;
 
 let input
-  ?(placeholder = "")
+  ~placeholder
   ~current_input
   ~inject_current_input
   ~extra_attrs
@@ -274,7 +271,8 @@ let input
   and id
   and on_set_change
   and to_string
-  and set_focused in
+  and set_focused
+  and placeholder in
   let on_input input = inject_current_input input in
   let on_change maybe_t user_input =
     match maybe_t with
@@ -320,14 +318,14 @@ let input
 let create_multi_internal
   (type comparator_witness t)
   ?(extra_attrs = Bonsai.return [])
-  ?placeholder
+  ?(placeholder = Bonsai.return "")
   ?(on_set_change = Bonsai.return (const Ui_effect.Ignore))
   ?to_string
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
   ?(split = List.return)
   ?(attr_merge_behavior = Attr_merge_behavior.Merge)
-  (module M : Bonsai.Comparator
+  (module M : Comparator.S
     with type comparator_witness = comparator_witness
      and type t = t)
   ~all_options
@@ -336,8 +334,14 @@ let create_multi_internal
   =
   let open Bonsai.Let_syntax in
   let module M = struct
-    include M
-    include Comparable.Make_plain_using_comparator (M)
+    module T = struct
+      include M
+
+      let sexp_of_t = comparator.sexp_of_t
+    end
+
+    include T
+    include Comparable.Make_plain_using_comparator (T)
   end
   in
   let to_string =
@@ -373,7 +377,7 @@ let create_multi_internal
   let id = Bonsai.path_id graph in
   let input =
     input
-      ?placeholder
+      ~placeholder
       ~extra_attrs
       ~current_input
       ~inject_current_input

@@ -270,7 +270,7 @@ let create ~x_label ~per_series_info
         { model with x_label; series; past_series_visibility })
   in
   let%sub state =
-    Bonsai_extra.state_machine0_dynamic_model
+    Bonsai_extra_proc.state_machine0_dynamic_model
       ~sexp_of_action:[%sexp_of: Action.t]
       ~sexp_of_model:[%sexp_of: Model.t]
       ~equal:[%equal: Model.t]

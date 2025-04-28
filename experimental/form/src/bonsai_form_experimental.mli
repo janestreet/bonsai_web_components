@@ -3,32 +3,30 @@ module Product = Product
 module Validated = Validated
 open! Core
 open Bonsai_web
+module Arrow_deprecated := Bonsai_arrow_deprecated
 
 type ('input, 'result, 'parsed) t =
   default:'parsed
   -> ( 'input
        , ('result Or_error.t Product.With_view.t, 'parsed) Product.t )
-       Arrow_deprecated.Bonsai.t
+       Arrow_deprecated.t
 
-val text_input : default:string -> (_, string Product.Same.t) Arrow_deprecated.Bonsai.t
-
-val textarea_input
-  :  default:string
-  -> (_, string Product.Same.t) Arrow_deprecated.Bonsai.t
+val text_input : default:string -> (_, string Product.Same.t) Arrow_deprecated.t
+val textarea_input : default:string -> (_, string Product.Same.t) Arrow_deprecated.t
 
 val checkbox_input
   :  ?label:string
   -> default:bool
   -> unit
-  -> (_, bool Product.Same.t) Arrow_deprecated.Bonsai.t
+  -> (_, bool Product.Same.t) Arrow_deprecated.t
 
 val date_picker_with_bad_user_experience
   :  default:Date.t
-  -> (_, Date.t Product.Same.t) Arrow_deprecated.Bonsai.t
+  -> (_, Date.t Product.Same.t) Arrow_deprecated.t
 
 val date_picker
   :  default:Date.t option
-  -> (_, Date.t option Product.Same.t) Arrow_deprecated.Bonsai.t
+  -> (_, Date.t option Product.Same.t) Arrow_deprecated.t
 
 module Dropdown : sig
   module type Equal = sig
@@ -42,13 +40,13 @@ module Dropdown : sig
   val of_input
     :  (module Equal with type t = 'a)
     -> default:'a
-    -> ('a list, 'a Product.Same.t) Arrow_deprecated.Bonsai.t
+    -> ('a list, 'a Product.Same.t) Arrow_deprecated.t
 
   (** Same as [of_input], but includes a blank first entry to represent [None]. *)
   val of_input_opt
     :  (module Equal with type t = 'a)
     -> default:'a option
-    -> ('a list, 'a option Product.Same.t) Arrow_deprecated.Bonsai.t
+    -> ('a list, 'a option Product.Same.t) Arrow_deprecated.t
 
   module type Enum = sig
     type t [@@deriving enumerate, equal, sexp]
@@ -60,7 +58,7 @@ module Dropdown : sig
   val of_enum
     :  (module Enum with type t = 'a)
     -> default:'a
-    -> (_, 'a Product.Same.t) Arrow_deprecated.Bonsai.t
+    -> (_, 'a Product.Same.t) Arrow_deprecated.t
 
   (** Same as [of_enum] but takes a dynamically computed [default]. *)
   val of_enum_dynamic_model
@@ -73,5 +71,5 @@ module Dropdown : sig
   val of_enum_opt
     :  (module Enum with type t = 'a)
     -> default:'a option
-    -> (_, 'a option Product.Same.t) Arrow_deprecated.Bonsai.t
+    -> (_, 'a option Product.Same.t) Arrow_deprecated.t
 end

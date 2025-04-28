@@ -1,6 +1,5 @@
 open! Core
 open! Bonsai_web
-module Sort_state := Bonsai_web_ui_partial_render_table_protocol.Sort_state
 module Sort_kind := Bonsai_web_ui_partial_render_table_protocol.Sort_kind
 
 module Indexed_column_id : sig
@@ -57,7 +56,7 @@ end
 
 module Dynamic_experimental : sig
   val build
-    :  ('column_id, _) Bonsai.comparator
+    :  ('column_id, _) Comparator.Module.t
     -> columns:'column_id list Bonsai.t
     -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> render_cell:
@@ -80,7 +79,7 @@ module Dynamic_cells_with_sorter : sig
     -> ?initial_width:Css_gen.Length.t
     -> ?visible:bool Bonsai.t
     -> ?resizable:bool Bonsai.t
-    -> header:(Sort_state.t -> Vdom.Node.t) Bonsai.t
+    -> header:Vdom.Node.t Bonsai.t
     -> cell:
          (key:'key Bonsai.t
           -> data:'data Bonsai.t
@@ -108,7 +107,7 @@ module Dynamic_columns_with_sorter : sig
     -> ?initial_width:Css_gen.Length.t
     -> ?visible:bool
     -> ?resizable:bool
-    -> header:(Sort_state.t -> Vdom.Node.t)
+    -> header:Vdom.Node.t
     -> cell:(key:'key -> data:'data -> Vdom.Node.t)
     -> unit
     -> ('key, 'data) t
@@ -129,10 +128,9 @@ module Dynamic_experimental_with_sorter : sig
          ('column_id Bonsai.t
           -> Bonsai.graph
           -> ('key, 'data) Sort_kind.t option Bonsai.t)
-    -> ('column_id, _) Bonsai.comparator
+    -> ('column_id, _) Comparator.Module.t
     -> columns:'column_id list Bonsai.t
-    -> render_header:
-         ('column_id Bonsai.t -> Bonsai.graph -> (Sort_state.t -> Vdom.Node.t) Bonsai.t)
+    -> render_header:('column_id Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> render_cell:
          ('column_id Bonsai.t
           -> 'key Bonsai.t

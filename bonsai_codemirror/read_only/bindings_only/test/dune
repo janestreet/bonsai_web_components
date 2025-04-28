@@ -1,0 +1,5 @@
+(library
+ (name bonsai_web_ui_codemirror_read_only_bindings_only_test)
+ (libraries bonsai_web_ui_codemirror_read_only_bindings_only core js_of_ocaml)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx)))

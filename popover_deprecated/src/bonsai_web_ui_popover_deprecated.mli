@@ -8,7 +8,8 @@ module Result : sig
     ; open_ : unit Effect.t (** effect that when scheduled, will open the popover. *)
     ; close : unit Effect.t (** effect that when scheduled, will close the popover. *)
     ; toggle : unit Effect.t
-    (** effect that when scheduled, will close or open the popover depending on the current state.*)
+    (** effect that when scheduled, will close or open the popover depending on the
+        current state. *)
     ; is_open : bool
     }
 end
@@ -30,19 +31,19 @@ end
 
 (** Popover's are similar to tooltips, but they can contain arbitrary state of their own,
     you can also control when they open rather than opening by default when hovering. The
-    "base" of the component is the element that is always there. The "popover" itself is the
-    element that pops out when then [open_] effect is scheduled. You have full control over the
-    creation of the "base" element by the function that is given to the popover. The popover element
-    that you create through the popover function is later wrapped around another div to
-    handle the "hovering" styles for you. You can attach extra attrs to this element through
-    [popover_extra_attr]. The popover element itself also has some default styling of its own
-    which you can override using [popover_style_attr].
+    "base" of the component is the element that is always there. The "popover" itself is
+    the element that pops out when then [open_] effect is scheduled. You have full control
+    over the creation of the "base" element by the function that is given to the popover.
+    The popover element that you create through the popover function is later wrapped
+    around another div to handle the "hovering" styles for you. You can attach extra attrs
+    to this element through [popover_extra_attr]. The popover element itself also has some
+    default styling of its own which you can override using [popover_style_attr].
 
     [component] will "wrap" your "base" around a [Vdom.Node.span]. If you want to attach
     attributes to the wrapping span, you can use [?base_extra_attr].
 
-    [close_when_clicked_outside], when set to true, will close the popover if
-    a click occurs outside of the popover. *)
+    [close_when_clicked_outside], when set to true, will close the popover if a click
+    occurs outside of the popover. *)
 val component
   :  ?popover_extra_attr:Vdom.Attr.t Bonsai.t
   -> ?popover_style_attr:Vdom.Attr.t Bonsai.t

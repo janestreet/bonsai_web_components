@@ -5,10 +5,16 @@ open Bonsai.Let_syntax
 open Bonsai_web_ui_partial_render_table_configs_for_testing
 
 let get_view ~resize_column_widths_to_fit ~num_rows config =
-  let input = Prt_input.create ~resize_column_widths_to_fit (Row.init_rows num_rows) in
-  let component = Config.computation config (return input) in
+  let input =
+    Sharable.Input.create
+      ~resize_column_widths_to_fit
+      (Symbol_table.Row.init_rows num_rows)
+  in
+  let component = All_apis_configs.computation config (return input) in
   let handle =
-    Handle.create (Result_spec.vdom (fun { Prt_output.view; _ } -> view)) component
+    Handle.create
+      (Result_spec.vdom (fun { All_apis_configs.Prt_output.view; _ } -> view))
+      component
   in
   Handle.show_into_string handle
 ;;
@@ -26,8 +32,8 @@ let assert_all_same ~num_rows ~resize_column_widths_to_fit configs =
         ok := false;
         print_endline
           [%string
-            "Config %{Config.name config} doesn't match first run (%{Config.name \
-             first_config})!:"];
+            "Config %{All_apis_configs.name config} doesn't match first run \
+             (%{All_apis_configs.name first_config})!:"];
         Expect_test_patdiff.print_patdiff ~context:4 first_view view));
   if !ok then print_endline "Ok!"
 ;;
@@ -41,7 +47,7 @@ let test ~num_rows configs =
 
 let duplicate_col_partition =
   List.partition_tf ~f:(function
-    | Config.New_api { duplicate_col; _ } -> duplicate_col
+    | All_apis_configs.New_api { duplicate_col; _ } -> duplicate_col
     | Dynamic_experimental _ -> false
     | Dynamic_cols { duplicate_col; _ } -> duplicate_col
     | Dynamic_cells { duplicate_col; _ } -> duplicate_col)
@@ -49,7 +55,7 @@ let duplicate_col_partition =
 
 let group_vs_flat_partition =
   List.partition_tf ~f:(function
-    | Config.New_api { col_groups; _ } -> col_groups
+    | All_apis_configs.New_api { col_groups; _ } -> col_groups
     | Dynamic_experimental _ -> false
     | Dynamic_cols { col_groups; _ } -> col_groups
     | Dynamic_cells { col_groups; _ } -> col_groups)
@@ -57,7 +63,7 @@ let group_vs_flat_partition =
 
 let counters_partition =
   List.partition_tf ~f:(function
-    | Config.New_api { counters_in_cells; _ } -> counters_in_cells
+    | All_apis_configs.New_api { counters_in_cells; _ } -> counters_in_cells
     | Dynamic_experimental { counters_in_cells; _ } -> counters_in_cells
     | Dynamic_cells { counters_in_cells; _ } -> counters_in_cells
     | Dynamic_cols { which_dynamic_cols = Counters; _ } -> true
@@ -67,7 +73,7 @@ let counters_partition =
 
 let is_dyn_cells_partition =
   List.partition_tf ~f:(function
-    | Config.Dynamic_cells _ -> true
+    | All_apis_configs.Dynamic_cells _ -> true
     | Dynamic_cols _ | Dynamic_experimental _ -> false
     | New_api { cols = Static; _ } -> false
     | New_api { cols = Dynamic | Dynamic_constant_foldable; _ } -> false)
@@ -104,7 +110,7 @@ let%expect_test "Same Structure" =
           Ok!
           |}])
   in
-  let duplicate_cols, not_duplicate_cols = duplicate_col_partition Config.all in
+  let duplicate_cols, not_duplicate_cols = duplicate_col_partition All_apis_configs.all in
   f duplicate_cols;
   f not_duplicate_cols
 ;;
@@ -181,7 +187,7 @@ let%expect_test "dyn cells with `visible`" =
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
                   size_tracker=<fun>
                   style={
-    -100,8 +107,25
+    -96,8 +103,25
                     <button @on_click> 0 </button>
                   </div>
                 </div>
@@ -308,7 +314,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
           </thead>
           <div class="body_hash_replaced_in_test"
                style={
-    -176,8 +183,27
+    -172,8 +179,27
                     <button @on_click> 0 </button>
                   </div>
                 </div>
@@ -333,8 +339,49 @@ let%expect_test "duplicate col adds the another col, with the same view" =
     +|          </div>
     +|        </div>
             </div>
-            <div @key=bottom_border class="body_row_hash_replaced_in_test">
-              <div class="autosize_table_bottom_border_element_hash_replaced_in_test body_cell_hash_replaced_in_test"> </div>
-            </div>
+            <Vdom.Node.none-widget> </Vdom.Node.none-widget>
+          </div>
+        </div>
     |}]
+;;
+
+let%expect_test "col dependency configs" =
+  let input =
+    { Col_dependency_configs.Input.col_dependency = 0
+    ; data = Symbol_table.Row.init_rows 1
+    }
+  in
+  let get_view config =
+    let component = (Col_dependency_configs.computation config) (return input) in
+    let handle = Handle.create (Result_spec.vdom Fn.id) component in
+    Handle.show_into_string handle
+  in
+  let assert_all_same ~which_column =
+    let first = ref None in
+    let ok = ref true in
+    List.iter
+      [ { Col_dependency_configs.which_column; which_api = Dynamic_cells }
+      ; { Col_dependency_configs.which_column; which_api = Dynamic_cols }
+      ]
+      ~f:(fun config ->
+        let view = get_view config in
+        match !first with
+        | None -> first := Some (config, view)
+        | Some (first_config, first_view) ->
+          if not (String.equal first_view view)
+          then (
+            ok := false;
+            print_endline
+              [%string
+                "Config %{Col_dependency_configs.name config} doesn't match first run \
+                 (%{Col_dependency_configs.name first_config})!:"];
+            Expect_test_patdiff.print_patdiff ~context:4 first_view view));
+    if !ok then print_endline "Ok!"
+  in
+  assert_all_same ~which_column:First;
+  [%expect {| Ok! |}];
+  assert_all_same ~which_column:Middle;
+  [%expect {| Ok! |}];
+  assert_all_same ~which_column:Last;
+  [%expect {| Ok! |}]
 ;;

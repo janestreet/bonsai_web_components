@@ -1,2 +1,2 @@
-module Bonsai = Bonsai_web.Proc.Bonsai
+module Bonsai = Bonsai_web_proc.Bonsai
 include Virtual_dom

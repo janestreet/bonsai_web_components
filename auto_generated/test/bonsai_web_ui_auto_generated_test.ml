@@ -96,7 +96,6 @@ let%expect_test "setting option form" =
              }> </input>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
@@ -160,7 +159,6 @@ let%expect_test "interacting with option form" =
              }> </input>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
@@ -185,7 +183,6 @@ let%expect_test "interacting with option form" =
              }> </input>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
@@ -228,7 +225,6 @@ let%expect_test "record's field order is preserved" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -248,7 +244,6 @@ let%expect_test "record's field order is preserved" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -291,7 +286,6 @@ let%expect_test "record's field order is preserved" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -311,7 +305,6 @@ let%expect_test "record's field order is preserved" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -350,7 +343,6 @@ let%expect_test "a tuple form gets labels on the elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -407,7 +399,6 @@ let%expect_test "a list field within a record form gets a label" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -470,7 +461,6 @@ let%expect_test "a nested record gets a label" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -509,7 +499,6 @@ let%expect_test "a nested record gets a label" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
@@ -747,7 +736,6 @@ let%expect_test "setting variant forms" =
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
@@ -850,7 +838,6 @@ let%expect_test "interacting with variant forms" =
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
@@ -877,7 +864,6 @@ let%expect_test "interacting with variant forms" =
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
@@ -1215,7 +1201,6 @@ let%expect_test "setting custom time form" =
 
     ==============
     <input type="datetime-local"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -1229,7 +1214,6 @@ let%expect_test "setting custom time form" =
 
     ==============
     <input type="datetime-local"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2022-04-05T13:31:55
@@ -1256,7 +1240,6 @@ let%expect_test "interacting with custom time form" =
 
     ==============
     <input type="datetime-local"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
@@ -1270,7 +1253,6 @@ let%expect_test "interacting with custom time form" =
 
     ==============
     <input type="datetime-local"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2022-04-05T09:31:00
@@ -1313,7 +1295,6 @@ let%expect_test "duplicating list elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -1340,7 +1321,6 @@ let%expect_test "duplicating list elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1385,7 +1365,6 @@ let%expect_test "duplicating list elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -1412,7 +1391,6 @@ let%expect_test "duplicating list elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -1439,7 +1417,6 @@ let%expect_test "duplicating list elements" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1504,7 +1481,6 @@ let%expect_test "opting out of duplication in lists" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -1537,7 +1513,6 @@ let%expect_test "opting out of duplication in lists" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1634,7 +1609,6 @@ let%expect_test "customizing a tuple within a list" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -1654,7 +1628,6 @@ let%expect_test "customizing a tuple within a list" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1728,7 +1701,6 @@ let%expect_test "customizing an alist" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1802,7 +1774,6 @@ let%expect_test "customizing a map" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
@@ -1878,7 +1849,6 @@ let%expect_test "interacting with an optional field" =
            @on_click> [override] </div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=1
@@ -1964,7 +1934,6 @@ let%expect_test "setting into an optional field with the value" =
            @on_click> [override] </div>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=1
@@ -2179,7 +2148,6 @@ let%expect_test "dynamic sexp_grammar form is rendered" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
@@ -2218,7 +2186,6 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
@@ -2233,7 +2200,6 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2
@@ -2281,7 +2247,6 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2
@@ -2305,7 +2270,6 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
@@ -2320,7 +2284,6 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=5
@@ -2400,7 +2363,6 @@ let%expect_test "customizations are applied dynamically" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
@@ -2427,7 +2389,6 @@ let%expect_test "customizations are applied dynamically" =
     ==============
     <input type="number"
            step="1"
-           placeholder=""
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
@@ -2488,7 +2449,6 @@ let%expect_test "customizing a list to have better button text" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -2568,7 +2528,6 @@ let%expect_test "customizing a list in a record to have better button text" =
           <td>
             <input type="number"
                    step="1"
-                   placeholder=""
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
@@ -2635,7 +2594,6 @@ let%expect_test "model state is not shared between variants even when they have 
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
@@ -2662,7 +2620,6 @@ let%expect_test "model state is not shared between variants even when they have 
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
@@ -2689,7 +2646,6 @@ let%expect_test "model state is not shared between variants even when they have 
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
@@ -2716,7 +2672,6 @@ let%expect_test "model state is not shared between variants even when they have 
       </select>
       <input type="number"
              step="1"
-             placeholder=""
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
@@ -3329,7 +3284,6 @@ module%test [@name "regressions"] _ = struct
         </select>
         <input type="number"
                step="1"
-               placeholder=""
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=1

@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open! Bonsai_web_test.Experimental
+open! Bonsai_web_test
 module Form = Bonsai_web_ui_form.With_manual_view
 
 val list_form_result_spec

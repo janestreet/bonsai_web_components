@@ -3,8 +3,7 @@ open! Import
 
 (** A [Multi_factor.t] is a collection of [Single_factor.t]s (referred to as a "subwidget"
     in this module), indexed by the [Arg.Key] type. This widget provides focus tracking
-    among the different subwidgets.
-*)
+    among the different subwidgets. *)
 
 module type Key = sig
   type t [@@deriving equal, sexp]
@@ -51,8 +50,7 @@ module type S = sig
         with keyboard events. We provide both this and [view] / [key_handler] separately,
         as the latter is required when embedding this component into an incr_dom app --
         since incr_dom likes to always have the root node be in focus, it is required that
-        one constructs one big overall Keyboard_event_handler.t for the entire page.
-    *)
+        one constructs one big overall Keyboard_event_handler.t for the entire page. *)
     val view_with_keydown_handler : t -> Vdom.Node.t
   end
 

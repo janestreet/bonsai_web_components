@@ -1,22 +1,22 @@
 open! Core
 open! Import
 
-let lift ~f component = Arrow_deprecated.Bonsai.map component ~f:(Product.lift ~f)
+let lift ~f component = Arrow_deprecated.map component ~f:(Product.lift ~f)
 
 module T = struct
   type ('result, 'input, 'parsed) t =
-    ('input, ('result, 'parsed) Product.t) Arrow_deprecated.Bonsai.t
+    ('input, ('result, 'parsed) Product.t) Arrow_deprecated.t
 
   include Applicative.Make3_using_map2 (struct
       type nonrec ('result, 'input, 'parsed) t = ('result, 'input, 'parsed) t
 
       let return value =
         Product.Fields.create ~value ~set:(const Ui_effect.Ignore)
-        |> Arrow_deprecated.Bonsai.const
+        |> Arrow_deprecated.const
       ;;
 
       let map2 a b ~f =
-        let open Arrow_deprecated.Bonsai.Let_syntax in
+        let open Arrow_deprecated.Let_syntax in
         let%map_open a and b in
         let value = f (Product.value a) (Product.value b) in
         let set parsed =
@@ -35,8 +35,8 @@ module Open_on_rhs_intf = struct
   module type S = sig
     val lift
       :  f:('parsed2 -> 'parsed1)
-      -> ('input, ('result, 'parsed1) Product.t) Arrow_deprecated.Bonsai.t
-      -> ('input, ('result, 'parsed2) Product.t) Arrow_deprecated.Bonsai.t
+      -> ('input, ('result, 'parsed1) Product.t) Arrow_deprecated.t
+      -> ('input, ('result, 'parsed2) Product.t) Arrow_deprecated.t
   end
 end
 

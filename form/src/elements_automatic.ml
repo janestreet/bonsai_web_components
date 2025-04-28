@@ -228,38 +228,110 @@ module Dropdown = struct
     width_100_percent :: extra_attrs
   ;;
 
-  let list_opt ?init ?extra_attrs ?extra_option_attrs ?to_string m ~equal all graph =
+  let list_opt
+    ?init
+    ?extra_attrs
+    ?extra_option_attrs
+    ?to_string
+    ?value_not_in_options_behavior
+    ?placeholder
+    m
+    ~equal
+    all
+    graph
+    =
     Conversion.with_extra_attrs
       (fun ~extra_attrs graph ->
         let extra_attrs = add_width_100_percent extra_attrs graph in
-        list_opt ?init ~extra_attrs ?extra_option_attrs ?to_string m ~equal all graph)
+        list_opt
+          ?init
+          ~extra_attrs
+          ?extra_option_attrs
+          ?to_string
+          ?value_not_in_options_behavior
+          ?placeholder
+          m
+          ~equal
+          all
+          graph)
       extra_attrs
       graph
   ;;
 
-  let enumerable_opt ?init ?extra_attrs ?extra_option_attrs ?to_string m graph =
+  let enumerable_opt
+    ?init
+    ?extra_attrs
+    ?extra_option_attrs
+    ?to_string
+    ?value_not_in_options_behavior
+    ?placeholder
+    m
+    graph
+    =
     Conversion.with_extra_attrs
       (fun ~extra_attrs graph ->
         let extra_attrs = add_width_100_percent extra_attrs graph in
-        enumerable_opt ?init ~extra_attrs ?extra_option_attrs ?to_string m graph)
+        enumerable_opt
+          ?init
+          ~extra_attrs
+          ?extra_option_attrs
+          ?to_string
+          ?value_not_in_options_behavior
+          ?placeholder
+          m
+          graph)
       extra_attrs
       graph
   ;;
 
-  let list ?init ?extra_attrs ?extra_option_attrs ?to_string m ~equal all graph =
+  let list
+    ?init
+    ?extra_attrs
+    ?extra_option_attrs
+    ?to_string
+    ?value_not_in_options_behavior
+    m
+    ~equal
+    all
+    graph
+    =
     Conversion.with_extra_attrs
       (fun ~extra_attrs graph ->
         let extra_attrs = add_width_100_percent extra_attrs graph in
-        list ?init ~extra_attrs ?extra_option_attrs ?to_string m ~equal all graph)
+        list
+          ?init
+          ~extra_attrs
+          ?extra_option_attrs
+          ?to_string
+          ?value_not_in_options_behavior
+          m
+          ~equal
+          all
+          graph)
       extra_attrs
       graph
   ;;
 
-  let enumerable ?init ?extra_attrs ?extra_option_attrs ?to_string m graph =
+  let enumerable
+    ?init
+    ?extra_attrs
+    ?extra_option_attrs
+    ?to_string
+    ?value_not_in_options_behavior
+    m
+    graph
+    =
     Conversion.with_extra_attrs
       (fun ~extra_attrs graph ->
         let extra_attrs = add_width_100_percent extra_attrs graph in
-        enumerable ?init ~extra_attrs ?extra_option_attrs ?to_string m graph)
+        enumerable
+          ?init
+          ~extra_attrs
+          ?extra_option_attrs
+          ?to_string
+          ?value_not_in_options_behavior
+          m
+          graph)
       extra_attrs
       graph
   ;;
@@ -267,6 +339,7 @@ module Dropdown = struct
   module Private = struct
     open Dropdown.Private
     module Opt = Opt
+    module Default_value = Default_value
 
     let make_input
       ?to_string
@@ -275,6 +348,7 @@ module Dropdown = struct
       ~id
       ~include_empty
       ~default_value
+      ~value_not_in_options_behavior
       ~state
       ~set_state
       ~extra_attrs
@@ -287,6 +361,7 @@ module Dropdown = struct
         ~equal
         ~include_empty
         ~default_value
+        ~value_not_in_options_behavior
         ~state
         ~set_state
         ~extra_attrs:(width_100_percent :: id :: extra_attrs)
@@ -305,7 +380,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
-    model
+    ~sexp_of
     ~equal
     ~all_options
     =
@@ -317,7 +392,7 @@ module Typeahead = struct
           ?to_string
           ?to_option_description
           ?handle_unknown_option
-          model
+          ~sexp_of
           ~equal
           ~all_options)
       extra_attrs
@@ -329,7 +404,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
-    m
+    ~sexp_of
     ~equal
     ~all_options
     =
@@ -341,7 +416,7 @@ module Typeahead = struct
           ?to_string
           ?to_option_description
           ?handle_unknown_option
-          m
+          ~sexp_of
           ~equal
           ~all_options)
       extra_attrs
@@ -412,15 +487,15 @@ module Date_time = struct
       extra_attrs
   ;;
 
-  let time_opt ?extra_attrs ?(allow_updates_when_focused = `Always) () =
+  let time_opt ?extra_attrs ?default ?(allow_updates_when_focused = `Always) () =
     Conversion.with_extra_attrs
-      (fun ~extra_attrs -> time_opt ~extra_attrs ~allow_updates_when_focused ())
+      (fun ~extra_attrs -> time_opt ~extra_attrs ?default ~allow_updates_when_focused ())
       extra_attrs
   ;;
 
-  let time ?extra_attrs ?(allow_updates_when_focused = `Always) () =
+  let time ?extra_attrs ?default ?(allow_updates_when_focused = `Always) () =
     Conversion.with_extra_attrs
-      (fun ~extra_attrs -> time ~extra_attrs ~allow_updates_when_focused ())
+      (fun ~extra_attrs -> time ~extra_attrs ?default ~allow_updates_when_focused ())
       extra_attrs
   ;;
 
@@ -464,13 +539,13 @@ module Date_time = struct
       extra_amount_attrs
   ;;
 
-  let datetime_local_opt ?extra_attrs ?(allow_updates_when_focused = `Always) () =
+  let datetime_local_opt ?extra_attrs ?(allow_updates_when_focused = `Never) () =
     Conversion.with_extra_attrs
       (fun ~extra_attrs -> datetime_local_opt ~extra_attrs ~allow_updates_when_focused ())
       extra_attrs
   ;;
 
-  let datetime_local ?extra_attrs ?(allow_updates_when_focused = `Always) () =
+  let datetime_local ?extra_attrs ?(allow_updates_when_focused = `Never) () =
     Conversion.with_extra_attrs
       (fun ~extra_attrs -> datetime_local ~extra_attrs ~allow_updates_when_focused ())
       extra_attrs
@@ -491,28 +566,49 @@ module Date_time = struct
         (date ?extra_attr ?allow_equal ~allow_updates_when_focused ())
     ;;
 
-    let time_opt ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () =
+    let time_opt
+      ?extra_attr
+      ?allow_equal
+      ?enforce_start_before_end
+      ?(allow_updates_when_focused = `Always)
+      ()
+      =
       Conversion.don't_attach_id
-        (time_opt ?extra_attr ?allow_equal ~allow_updates_when_focused ())
+        (time_opt
+           ?extra_attr
+           ?allow_equal
+           ?enforce_start_before_end
+           ~allow_updates_when_focused
+           ())
     ;;
 
-    let time ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () =
+    let time
+      ?extra_attr
+      ?allow_equal
+      ?enforce_start_before_end
+      ?(allow_updates_when_focused = `Always)
+      ()
+      =
       Conversion.don't_attach_id
-        (time ?extra_attr ?allow_equal ~allow_updates_when_focused ())
+        (time
+           ?extra_attr
+           ?allow_equal
+           ?enforce_start_before_end
+           ~allow_updates_when_focused
+           ())
     ;;
 
     let datetime_local_opt
       ?extra_attr
       ?allow_equal
-      ?(allow_updates_when_focused = `Always)
+      ?(allow_updates_when_focused = `Never)
       ()
       =
       Conversion.don't_attach_id
         (datetime_local_opt ?extra_attr ?allow_equal ~allow_updates_when_focused ())
     ;;
 
-    let datetime_local ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) ()
-      =
+    let datetime_local ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Never) () =
       Conversion.don't_attach_id
         (datetime_local ?extra_attr ?allow_equal ~allow_updates_when_focused ())
     ;;
@@ -849,8 +945,8 @@ end
 module Color_picker = struct
   open Color_picker
 
-  let hex ?extra_attr () =
-    Conversion.with_extra_attr (fun ~extra_attr -> hex ~extra_attr ()) extra_attr
+  let hex ?default ?extra_attr () =
+    Conversion.with_extra_attr (fun ~extra_attr -> hex ?default ~extra_attr ()) extra_attr
   ;;
 end
 
@@ -903,6 +999,7 @@ module Rank = struct
     ?right
     ?empty_list_placeholder
     ?default_item_height
+    ?add_drop_target_for_appending
     render
     =
     Conversion.don't_attach_id
@@ -914,6 +1011,7 @@ module Rank = struct
          ?right
          ?empty_list_placeholder
          ?default_item_height
+         ?add_drop_target_for_appending
          render)
   ;;
 end

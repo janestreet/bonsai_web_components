@@ -1,5 +1,4 @@
 open! Core
-module Bonsai_proc := Bonsai_web.Proc
 open! Bonsai_web
 
 (** This is a notifications component that provides pretty and user-friendly(ish)
@@ -13,10 +12,10 @@ end
 
 type 'a t
 
-(** Creates a component that acts as a store for notifications.  The type of a
-    notification is ['a], allowing it to be determinable by the user. *)
+(** Creates a component that acts as a store for notifications. The type of a notification
+    is ['a], allowing it to be determinable by the user. *)
 val component
-  :  (module Bonsai_proc.Model with type t = 'a)
+  :  ?sexp_of:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> Bonsai.graph
   -> 'a t Bonsai.t
@@ -34,15 +33,26 @@ val render
   -> Bonsai.graph
   -> Vdom.Node.t Bonsai.t
 
-(** Scheduling [send_notification] will register a new notification with the the notification
-    store. It returns the id of the computation which can be used to manipulate the notification
-    with functions like [close_notification] and [modify_notification] *)
+(** Scheduling [send_notification] will register a new notification with the the
+    notification store. It returns the id of the computation which can be used to
+    manipulate the notification with functions like [close_notification] and
+    [modify_notification] *)
 val send_notification : ?close_after:Time_ns.Span.t -> 'a t -> 'a -> 'a Id.t Effect.t
 
-(** [close_notification] provides another way of closing notificiations outside of
-    waiting a specified amount of time or letting each notification close itself with a button.
-    It closes a specific notification determined by an id. *)
+(** [send_notification'] is like [send_notification], but it makes it less likely to
+    accidentally make large parts of you app recompute upon sending a notification.
+    [send_notification] will soon be renamed to [send_notification_deprecated] and
+    [send_notification'] will be renamed to [send_notification]. *)
+val send_notification'
+  :  'a t Bonsai.t
+  -> (?close_after:Time_ns.Span.t -> 'a -> 'a Id.t Effect.t) Bonsai.t
+
+(** [close_notification] provides another way of closing notificiations outside of waiting
+    a specified amount of time or letting each notification close itself with a button. It
+    closes a specific notification determined by an id. *)
 val close_notification : 'a t -> 'a Id.t -> unit Effect.t
+
+val close_notification' : 'a t Bonsai.t -> ('a Id.t -> unit Effect.t) Bonsai.t
 
 (** [close_all_notifications] closes all currently open notifications *)
 val close_all_notifications : 'a t -> unit Effect.t
@@ -53,9 +63,8 @@ val close_oldest_notification : 'a t -> unit Effect.t
 (** [close_newest_notification] closes the newest currently open notification *)
 val close_newest_notification : 'a t -> unit Effect.t
 
-(** [modify_notification] updates the content of a previously sent notification
-    identified by its [Id.t].  When modified, the timeout for the notification is also
-    reset. *)
+(** [modify_notification] updates the content of a previously sent notification identified
+    by its [Id.t]. When modified, the timeout for the notification is also reset. *)
 val modify_notification
   :  ?close_after:Time_ns.Span.t
   -> 'a t
@@ -64,8 +73,8 @@ val modify_notification
   -> unit Effect.t
 
 module Basic : sig
-  (** This module contains a API that is backwards compatible with the first version
-      of the notifications library. *)
+  (** This module contains a API that is backwards compatible with the first version of
+      the notifications library. *)
   type t
 
   module Notification_style : sig
@@ -93,8 +102,8 @@ module Basic : sig
     -> Bonsai.graph
     -> t Bonsai.t
 
-  (** [add_error] will create a notification with [text] in primary focus and [error] pretty
-      printed in small font (if provided). *)
+  (** [add_error] will create a notification with [text] in primary focus and [error]
+      pretty printed in small font (if provided). *)
   val add_error : ?error:Error.t -> t -> text:string -> unit Ui_effect.t
 
   (** [add_success] creates a notification with only [text] in primary focus. *)

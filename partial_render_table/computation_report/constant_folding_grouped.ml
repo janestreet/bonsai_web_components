@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web_ui_partial_render_table_configs_for_testing
+module Config = All_apis_configs
 module Report = Bonsai_web_test.Computation_report
 
 let title = "grouped - flat"
@@ -8,16 +9,11 @@ let title = "grouped - flat"
    We would expect the results to be slightly lower, but not by a ton.
    So the numbers should be positive, but not too huge.  *)
 
-let test_startup configs =
-  let startup_inputs =
-    List.map [ 100; 100_000 ] ~f:(fun size ->
-      Int.to_string size, Prt_input.create (Row.init_rows size))
-  in
+let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only
     ~title
-    (module Config)
-    startup_inputs
-    configs
+    ~computation_pairs:(List.map pairs ~f:Config.pair_for_diff)
+    (Symbol_table.startup_inputs [ 100; 100_000 ])
 ;;
 
 let%expect_test "Not Grouped vs Grouped" =

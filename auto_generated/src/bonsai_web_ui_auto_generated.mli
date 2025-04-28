@@ -31,9 +31,9 @@ module Customization : sig
     end
   end
 
-  (** [constant] allows you to specify a form for the ['a] that you're providing
-      custom logic for. This form will be projected to [Sexp.t], so that it can be used in
-      the logic for form generation. *)
+  (** [constant] allows you to specify a form for the ['a] that you're providing custom
+      logic for. This form will be projected to [Sexp.t], so that it can be used in the
+      logic for form generation. *)
   val constant_form
     :  (module Sexpable with type t = 'a)
     -> apply_to_tag:(key:string -> value:Sexp.t -> bool)

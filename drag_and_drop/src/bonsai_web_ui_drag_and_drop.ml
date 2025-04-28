@@ -18,7 +18,7 @@ module Style =
         left: 0px;
         pointer-events: none;
       }
-      |}]
+    |}]
 
 module Position = struct
   type t =
@@ -200,7 +200,7 @@ let create_with_drop_position
   graph
   =
   let model, inject =
-    Bonsai.state_machine1
+    Bonsai.state_machine_with_input
       ~sexp_of_model:[%sexp_of: (Source.t, Target.t) State_machine_model.t]
       ~equal:[%equal: (Source.t, Target.t) State_machine_model.t]
       ~sexp_of_action:[%sexp_of: (Source.t, Target.t) Action.t list]
@@ -256,8 +256,7 @@ let create_with_drop_position
       Vdom.Attr.many
         [ Vdom.Attr.on_pointerdown (fun event ->
             let (event
-                  : < composedPath : 'a Js.js_array Js.t Js.meth
-                    ; Js_of_ocaml_patches.Dom_html.pointerEvent >
+                  : < composedPath : 'a Js.js_array Js.t Js.meth ; Dom_html.pointerEvent >
                       Js.t)
               =
               Js.Unsafe.coerce event
@@ -270,11 +269,9 @@ let create_with_drop_position
             let bounding_rect =
               (Js.Opt.to_option event##.currentTarget |> Option.value_exn)##getBoundingClientRect
             in
-            let optdef_float x =
-              x |> Js.Optdef.to_option |> Option.value_exn |> Js.to_float |> Int.of_float
-            in
-            let width = optdef_float bounding_rect##.width in
-            let height = optdef_float bounding_rect##.height in
+            let number_to_int x = x |> Js.to_float |> Int.of_float in
+            let width = number_to_int bounding_rect##.width in
+            let height = number_to_int bounding_rect##.height in
             let top = Int.of_float (Js.to_float bounding_rect##.top) in
             let left = Int.of_float (Js.to_float bounding_rect##.left) in
             let size = { Size.width; height } in
@@ -314,8 +311,7 @@ let create_with_drop_position
         path_for_pointermove
         (fun (event : Dom_html.pointerEvent Js.t) ->
            let (event
-                 : < composedPath : 'a Js.js_array Js.t Js.meth
-                   ; Js_of_ocaml_patches.Dom_html.pointerEvent >
+                 : < composedPath : 'a Js.js_array Js.t Js.meth ; Dom_html.pointerEvent >
                      Js.t)
              =
              Js.Unsafe.coerce event

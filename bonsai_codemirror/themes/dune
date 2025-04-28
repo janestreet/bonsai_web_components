@@ -9,7 +9,15 @@
     ../../codemirror_themes/src/nord.js
     ../../codemirror_themes/src/solarized-dark.js
     ../../codemirror_themes/src/solarized-light.js ./vscode.js))
- (libraries bonsai_web.ui_view codemirror core gen_js_api js_of_ocaml
-   ppx_typed_fields.typed_variants_lib)
+ (libraries bonsai_web.ui_view codemirror_bindings core gen_js_api
+   js_of_ocaml ppx_typed_fields.typed_variants_lib)
  (preprocess
-  (pps ppx_jane bonsai.ppx_bonsai)))
+  (pps ppx_jane bonsai.ppx_bonsai))
+ (wasm_of_ocaml
+  (javascript_files ../../codemirror_themes/src/basic-dark.js
+    ../../codemirror_themes/src/basic-light.js
+    ../../codemirror_themes/src/gruvbox-dark.js
+    ../../codemirror_themes/src/material-dark.js
+    ../../codemirror_themes/src/nord.js
+    ../../codemirror_themes/src/solarized-dark.js
+    ../../codemirror_themes/src/solarized-light.js ./vscode.js)))

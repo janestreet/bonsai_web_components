@@ -1,5 +1,4 @@
 open! Core
-module Bonsai_proc := Bonsai_web.Proc
 open! Bonsai_web
 
 (** These controls come unstyled by default. jane-web-style provides css that will make
@@ -7,8 +6,7 @@ open! Bonsai_web
 
 (** A ['a t] represents a typeahead whose value has type ['a].
 
-    [current_input] gives access to the current contents of the form's [<input>] element
-*)
+    [current_input] gives access to the current contents of the form's [<input>] element *)
 type 'a t =
   { selected : 'a
   ; set_selected : 'a -> unit Ui_effect.t
@@ -18,8 +16,8 @@ type 'a t =
 
 module Attr_merge_behavior : sig
   (** This module defines how the attrs in the typeahead should be merged
-      [Legacy_do_not_merge] is the original behavior, and calls [Vdom.Attr.many_without_merge]
-      [Merge] calls [Vdom.Attr.many] *)
+      [Legacy_do_not_merge] is the original behavior, and calls
+      [Vdom.Attr.many_without_merge] [Merge] calls [Vdom.Attr.many] *)
   type t =
     | Legacy_do_not_merge
     | Merge
@@ -32,18 +30,17 @@ end
 
     Note that [set_selected] does not enforce that the given value is present in
     [all_options]. Setting a value not in [all_options] will successfully set the
-    typeahead to that value.
-*)
+    typeahead to that value. *)
 
 val create
   :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-  -> ?placeholder:string
+  -> ?placeholder:string Bonsai.t
   -> ?on_select_change:('a option -> unit Ui_effect.t) Bonsai.t
   -> ?to_string:('a -> string) Bonsai.t
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
   -> ?attr_merge_behavior:Attr_merge_behavior.t
-  -> (module Bonsai_proc.Model with type t = 'a)
+  -> sexp_of:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> all_options:'a list Bonsai.t
   -> Bonsai.graph
@@ -51,14 +48,14 @@ val create
 
 val create_multi
   :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-  -> ?placeholder:string
+  -> ?placeholder:string Bonsai.t
   -> ?on_set_change:(('a, 'cmp) Set.t -> unit Ui_effect.t) Bonsai.t
   -> ?to_string:('a -> string) Bonsai.t
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
   -> ?split:(string -> string list)
   -> ?attr_merge_behavior:Attr_merge_behavior.t
-  -> ('a, 'cmp) Bonsai.comparator
+  -> ('a, 'cmp) Comparator.Module.t
   -> all_options:'a list Bonsai.t
   -> Bonsai.graph
   -> ('a, 'cmp) Set.t t Bonsai.t
@@ -67,13 +64,13 @@ module Private : sig
   module For_testing : sig
     val create_with_browser_behavior_in_test
       :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?placeholder:string
+      -> ?placeholder:string Bonsai.t
       -> ?on_select_change:('a option -> unit Ui_effect.t) Bonsai.t
       -> ?to_string:('a -> string) Bonsai.t
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
       -> ?attr_merge_behavior:Attr_merge_behavior.t
-      -> (module Bonsai_proc.Model with type t = 'a)
+      -> sexp_of:('a -> Sexp.t)
       -> equal:('a -> 'a -> bool)
       -> all_options:'a list Bonsai.t
       -> Bonsai.graph
@@ -81,14 +78,14 @@ module Private : sig
 
     val create_multi_with_browser_behavior_in_test
       :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?placeholder:string
+      -> ?placeholder:string Bonsai.t
       -> ?on_set_change:(('a, 'cmp) Set.t -> unit Ui_effect.t) Bonsai.t
       -> ?to_string:('a -> string) Bonsai.t
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
       -> ?split:(string -> string list)
       -> ?attr_merge_behavior:Attr_merge_behavior.t
-      -> ('a, 'cmp) Bonsai.comparator
+      -> ('a, 'cmp) Comparator.Module.t
       -> all_options:'a list Bonsai.t
       -> Bonsai.graph
       -> ('a, 'cmp) Set.t t Bonsai.t

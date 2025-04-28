@@ -52,14 +52,9 @@ let special_compare_option how compare_inner a b =
      | `Descending -> -compare_inner a b)
 ;;
 
-let columns ?(use_legacy_header = false) ~is_column_b_visible () =
+let columns ~is_column_b_visible () =
   let module Columns = Table.Columns.Dynamic_cells in
-  let render_header str =
-    if use_legacy_header
-    then
-      Bonsai.return (Columns.Sortable.Header.Legacy.wrap_with_icon (Vdom.Node.text str))
-    else Bonsai.return (Columns.Sortable.Header.with_icon (Vdom.Node.text str))
-  in
+  let render_header str = return (Vdom.Node.text str) in
   [ Columns.column
       ~header:(render_header "key")
       ~sort:
@@ -124,7 +119,7 @@ let columns ?(use_legacy_header = false) ~is_column_b_visible () =
 
 let columns_dynamic ~is_column_b_visible =
   let module Columns = Table.Columns.Dynamic_columns in
-  let render_header text = Columns.Sortable.Header.with_icon (Vdom.Node.text text) in
+  let render_header text = Vdom.Node.text text in
   [ Columns.column
       ~header:(render_header "key")
       ~sort:(fun a b -> Comparable.lift [%compare: int] ~f:(fun (key, _) -> key) a b)
@@ -148,7 +143,7 @@ let columns_dynamic ~is_column_b_visible =
 
 let columns_dynamic_with_groups ~is_column_b_visible =
   let module Columns = Table.Columns.Dynamic_columns in
-  let render_header str = Columns.Sortable.Header.with_icon (Vdom.Node.text str) in
+  let render_header str = Vdom.Node.text str in
   let cols =
     [ Columns.column
         ~header:(render_header "key")
@@ -356,6 +351,23 @@ module Test = struct
       |> fun s -> s ^ "\n"
     ;;
 
+    let wrap_header ~multisort_columns_when ~use_legacy_header sortable_state ~is_sortable
+      =
+      if use_legacy_header
+      then
+        Table.Columns.Sortable.Wrap_header.clickable_with_icon_deprecated
+          ?multisort_columns_when
+          ()
+          sortable_state
+          ~is_sortable
+      else
+        Table.Columns.Sortable.Wrap_header.clickable_with_icon
+          ?multisort_columns_when
+          ()
+          sortable_state
+          ~is_sortable
+    ;;
+
     let default
       ?styling
       ?resize_column_widths_to_fit
@@ -380,10 +392,14 @@ module Test = struct
             ~filter
             ?override_sort
             ?default_sort
-            ?multisort_columns_when
+            ~wrap_header:
+              (let%arr multisort_columns_when =
+                 Bonsai.transpose_opt multisort_columns_when
+               in
+               wrap_header ~multisort_columns_when ~use_legacy_header)
             ~row_height
             ~preload_rows
-            ~columns:(columns ~use_legacy_header ~is_column_b_visible () |> Column.lift)
+            ~columns:(columns ~is_column_b_visible () |> Column.lift)
             input
       ; get_vdom = Table.Result.view
       ; get_inject
@@ -417,9 +433,11 @@ module Test = struct
             ~filter
             ?override_sort
             ?default_sort
+            ~wrap_header:
+              (return (wrap_header ~multisort_columns_when:None ~use_legacy_header))
             ~row_height
             ~preload_rows
-            ~columns:(columns ~use_legacy_header ~is_column_b_visible () |> Column.lift)
+            ~columns:(columns ~is_column_b_visible () |> Column.lift)
             input
       ; get_vdom = Table.Result.view
       ; get_inject = get_inject_cell_focus
@@ -452,6 +470,8 @@ module Test = struct
             ?resize_column_widths_to_fit
             ~focus:(By_row { on_change = focus_changed })
             ~filter
+            ~wrap_header:
+              (return (wrap_header ~multisort_columns_when:None ~use_legacy_header:false))
             ~row_height:(Bonsai.return (`Px 1))
             ~preload_rows
             ~columns:(Bonsai.return columns |> Table.Columns.Dynamic_columns.lift)

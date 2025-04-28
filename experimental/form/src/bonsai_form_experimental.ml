@@ -2,21 +2,18 @@ module Combine = Combine
 module Product = Product
 module Validated = Validated
 open! Core
-
-module type Model = Bonsai_web.Proc.Model
-
 open! Import
 
 type ('input, 'result, 'parsed) t =
   default:'parsed
   -> ( 'input
        , ('result Or_error.t Product.With_view.t, 'parsed) Product.t )
-       Bonsai.Arrow_deprecated.t
+       Bonsai_arrow_deprecated.t
 
-let form_element (type t) (module M : Model with type t = t) here ~(default : t) =
-  Bonsai.Arrow_deprecated.state_machine
-    ~sexp_of_model:[%sexp_of: M.t]
-    ~sexp_of_action:[%sexp_of: M.t]
+let form_element (type t) here ~(default : t) =
+  Bonsai_arrow_deprecated.state_machine
+    ~sexp_of_model:[%sexp_of: opaque]
+    ~sexp_of_action:[%sexp_of: opaque]
     here
     ~default_model:default
     ~apply_action:
@@ -25,12 +22,12 @@ let form_element (type t) (module M : Model with type t = t) here ~(default : t)
 ;;
 
 let form_element_dynamic_model (type t) ?sexp_of_model ?equal ~(default : t Bonsai.t) () =
-  Bonsai_extra.state_dynamic_model () ?equal ?sexp_of_model ~model:(`Given default)
+  Bonsai_extra_proc.state_dynamic_model () ?equal ?sexp_of_model ~model:(`Given default)
 ;;
 
 let text_input ~default =
-  let%map.Bonsai.Arrow_deprecated value, inject =
-    form_element (module String) ~equal:[%equal: String.t] [%here] ~default
+  let%map.Bonsai_arrow_deprecated value, inject =
+    form_element ~equal:[%equal: String.t] [%here] ~default
   in
   let view =
     Vdom_input_widgets.Entry.text
@@ -46,8 +43,8 @@ let text_input ~default =
 ;;
 
 let textarea_input ~default =
-  let%map.Bonsai.Arrow_deprecated value, inject =
-    form_element (module String) ~equal:[%equal: String.t] [%here] ~default
+  let%map.Bonsai_arrow_deprecated value, inject =
+    form_element ~equal:[%equal: String.t] [%here] ~default
   in
   let view =
     Vdom_input_widgets.Entry.text_area
@@ -61,8 +58,8 @@ let textarea_input ~default =
 ;;
 
 let checkbox_input ?(label = "") ~default () =
-  let%map.Bonsai.Arrow_deprecated value, inject =
-    form_element (module Bool) [%here] ~default ~equal:[%equal: Bool.t]
+  let%map.Bonsai_arrow_deprecated value, inject =
+    form_element [%here] ~default ~equal:[%equal: Bool.t]
   in
   let view =
     Vdom_input_widgets.Checkbox.simple
@@ -81,8 +78,8 @@ let inject_or_ignore inject_model = function
 ;;
 
 let date_picker_with_bad_user_experience ~default =
-  let%map.Bonsai.Arrow_deprecated value, inject =
-    form_element (module Date) [%here] ~default ~equal:[%equal: Date.t]
+  let%map.Bonsai_arrow_deprecated value, inject =
+    form_element [%here] ~default ~equal:[%equal: Date.t]
   in
   let view =
     Vdom_input_widgets.Entry.date
@@ -96,14 +93,8 @@ let date_picker_with_bad_user_experience ~default =
 ;;
 
 let date_picker ~default =
-  let%map.Bonsai.Arrow_deprecated value, inject =
-    form_element
-      (module struct
-        type t = Date.t option [@@deriving equal, sexp]
-      end)
-      ~equal:[%equal: Date.t option]
-      [%here]
-      ~default
+  let%map.Bonsai_arrow_deprecated value, inject =
+    form_element ~equal:[%equal: Date.t option] [%here] ~default
   in
   let view =
     Vdom_input_widgets.Entry.date
@@ -124,9 +115,9 @@ module Dropdown = struct
   end
 
   let of_input (type t) (module M : Equal with type t = t) ~default =
-    let%map.Bonsai.Arrow_deprecated value, inject =
-      form_element (module M) [%here] ~default ~equal:[%equal: M.t]
-    and all = Bonsai.Arrow_deprecated.input in
+    let%map.Bonsai_arrow_deprecated value, inject =
+      form_element [%here] ~default ~equal:[%equal: M.t]
+    and all = Bonsai_arrow_deprecated.input in
     let view =
       Vdom_input_widgets.Dropdown.of_values
         ~merge_behavior:Legacy_dont_merge
@@ -139,15 +130,9 @@ module Dropdown = struct
   ;;
 
   let of_input_opt (type t) (module M : Equal with type t = t) ~default =
-    let%map.Bonsai.Arrow_deprecated value, inject =
-      form_element
-        (module struct
-          type t = M.t option [@@deriving sexp, equal]
-        end)
-        ~equal:(Option.equal M.equal)
-        [%here]
-        ~default
-    and all = Bonsai.Arrow_deprecated.input in
+    let%map.Bonsai_arrow_deprecated value, inject =
+      form_element ~equal:(Option.equal M.equal) [%here] ~default
+    and all = Bonsai_arrow_deprecated.input in
     let view =
       Vdom_input_widgets.Dropdown.of_values_opt
         ~merge_behavior:Legacy_dont_merge
@@ -166,8 +151,8 @@ module Dropdown = struct
   end
 
   let of_enum (type t) (module M : Enum with type t = t) ~default =
-    let%map.Bonsai.Arrow_deprecated value, inject =
-      form_element (module M) ~equal:[%equal: M.t] [%here] ~default
+    let%map.Bonsai_arrow_deprecated value, inject =
+      form_element ~equal:[%equal: M.t] [%here] ~default
     in
     let view =
       Vdom_input_widgets.Dropdown.of_enum
@@ -196,14 +181,8 @@ module Dropdown = struct
   ;;
 
   let of_enum_opt (type t) (module M : Enum with type t = t) ~default =
-    let%map.Bonsai.Arrow_deprecated value, inject =
-      form_element
-        (module struct
-          type t = M.t option [@@deriving enumerate, sexp, equal]
-        end)
-        ~equal:[%equal: M.t option]
-        [%here]
-        ~default
+    let%map.Bonsai_arrow_deprecated value, inject =
+      form_element ~equal:[%equal: M.t option] [%here] ~default
     in
     let view =
       Vdom_input_widgets.Dropdown.of_enum_opt

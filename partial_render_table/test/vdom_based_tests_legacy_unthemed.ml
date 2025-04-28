@@ -149,7 +149,7 @@ let%expect_test "column visibility" =
                        max-width: 0.00px;
                      }> 1 </div>
               </div>
-              <div class="prt-table-row row"
+              <div class="prt-table-row"
                    style={
                      height: 1px;
                      width: 0.00px;
@@ -185,7 +185,7 @@ let%expect_test "column visibility" =
                        max-width: 0.00px;
                      }> 2 </div>
               </div>
-              <div class="prt-table-row row"
+              <div class="prt-table-row"
                    style={
                      height: 1px;
                      width: 0.00px;
@@ -285,7 +285,7 @@ let%expect_test "stabilization of view range" =
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
         <div>
           <div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -294,7 +294,7 @@ let%expect_test "stabilization of view range" =
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
               <div class="cell prt-table-cell" @on_click> 1 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -327,7 +327,7 @@ let%expect_test "stabilization of view range" =
                 <div class="cell prt-table-cell" @on_click> 1.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 1 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -336,7 +336,7 @@ let%expect_test "stabilization of view range" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 2 </div>
               </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 4 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -406,7 +406,7 @@ let%expect_test "resize-column" =
              }>
           <div style={ padding-top: 0px; padding-bottom: 0px; }>
             <div>
-              <div class="prt-table-row row"
+              <div class="prt-table-row"
                    style={
                      height: 1px;
     -|               width: 0.00px;
@@ -457,7 +457,7 @@ let%expect_test "resize-column" =
                        max-width: 0.00px;
                      }> 1 </div>
               </div>
-              <div class="prt-table-row row"
+              <div class="prt-table-row"
                    style={
                      height: 1px;
     -|               width: 0.00px;
@@ -508,7 +508,7 @@ let%expect_test "resize-column" =
                        max-width: 0.00px;
                      }> 2 </div>
               </div>
-              <div class="prt-table-row row"
+              <div class="prt-table-row"
                    style={
                      height: 1px;
     -|               width: 0.00px;
@@ -607,7 +607,7 @@ let%expect_test "big table" =
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
         <div>
           <div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 51 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -616,7 +616,7 @@ let%expect_test "big table" =
               <div class="cell prt-table-cell" @on_click> 25.000000 </div>
               <div class="cell prt-table-cell" @on_click> 100 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 52 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -652,7 +652,7 @@ let%expect_test "big table" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 51 </div>
     +|          <div class="cell prt-table-cell" @on_click> 55 </div>
                 <div class="cell prt-table-cell" @on_click>
@@ -663,7 +663,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 27.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 100 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 52 </div>
     +|          <div class="cell prt-table-cell" @on_click> 56 </div>
                 <div class="cell prt-table-cell" @on_click>
@@ -674,7 +674,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 28.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 57 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -683,7 +683,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 28.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 58 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -692,7 +692,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 29.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 59 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -701,7 +701,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 29.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 60 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -710,7 +710,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 30.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 61 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -719,7 +719,7 @@ let%expect_test "big table" =
     +|          <div class="cell prt-table-cell" @on_click> 30.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 100 </div>
     +|        </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 62 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -766,7 +766,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 51 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -776,7 +776,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                 <div class="cell prt-table-cell" @on_click> 25.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 100 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 52 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -845,7 +845,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
         <div>
           <div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 51 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -854,7 +854,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               <div class="cell prt-table-cell" @on_click> 25.000000 </div>
               <div class="cell prt-table-cell" @on_click> 100 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 52 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -888,6 +888,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
     {|
     Initialized
     Changed
+    Changed
     |}];
   (* Sanity check: re-stabilizing after doing no actions does not cause recomputation *)
   Handle.recompute_view test.handle;
@@ -914,7 +915,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
             ~order_to_compare:(fun () -> Unchanged)
             input
             (Bonsai.return
-               { Incr_map_collate.Collate.filter = ()
+               { Incr_map_collate.Collate_params.filter = ()
                ; order = ()
                ; key_range = All_rows
                ; rank_range = All_rows
@@ -1028,7 +1029,7 @@ let%expect_test "sorting legacy renderer" =
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
         <div>
           <div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1037,7 +1038,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
               <div class="cell prt-table-cell" @on_click> 1 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1046,7 +1047,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
               <div class="cell prt-table-cell" @on_click> 2 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 4 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1138,7 +1139,7 @@ let%expect_test "sorting legacy renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-    -|        <div class="prt-table-row row">
+    -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
     -|            <input @on_input> </input>
@@ -1147,7 +1148,7 @@ let%expect_test "sorting legacy renderer" =
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
     -|          <div class="cell prt-table-cell" @on_click> 1 </div>
     -|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1156,7 +1157,7 @@ let%expect_test "sorting legacy renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 2 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1165,7 +1166,7 @@ let%expect_test "sorting legacy renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> --- </div>
               </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -1217,7 +1218,7 @@ let%expect_test "sorting legacy renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -1226,7 +1227,7 @@ let%expect_test "sorting legacy renderer" =
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 1 </div>
     +|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1235,7 +1236,7 @@ let%expect_test "sorting legacy renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 2 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1244,7 +1245,7 @@ let%expect_test "sorting legacy renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> --- </div>
               </div>
-    -|        <div class="prt-table-row row">
+    -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
     -|            <input @on_input> </input>
@@ -1290,7 +1291,7 @@ let%expect_test "sorting legacy renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 0 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1330,7 +1331,7 @@ let%expect_test "sorting legacy renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 1 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -1339,7 +1340,7 @@ let%expect_test "sorting legacy renderer" =
     +|          <div class="cell prt-table-cell" @on_click> 2.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 2 </div>
     +|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 0 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1348,7 +1349,7 @@ let%expect_test "sorting legacy renderer" =
                 <div class="cell prt-table-cell" @on_click> 1.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 1 </div>
               </div>
-    -|        <div class="prt-table-row row">
+    -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 1 </div>
     -|          <div class="cell prt-table-cell" @on_click>
     -|            <input @on_input> </input>
@@ -1357,7 +1358,7 @@ let%expect_test "sorting legacy renderer" =
     -|          <div class="cell prt-table-cell" @on_click> 2.000000 </div>
     -|          <div class="cell prt-table-cell" @on_click> 2 </div>
     -|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1427,7 +1428,7 @@ let%expect_test "sorting default renderer" =
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
         <div>
           <div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1436,7 +1437,7 @@ let%expect_test "sorting default renderer" =
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
               <div class="cell prt-table-cell" @on_click> 1 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1445,7 +1446,7 @@ let%expect_test "sorting default renderer" =
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
               <div class="cell prt-table-cell" @on_click> 2 </div>
             </div>
-            <div class="prt-table-row row">
+            <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 4 </div>
               <div class="cell prt-table-cell" @on_click>
                 <input @on_input> </input>
@@ -1548,7 +1549,7 @@ let%expect_test "sorting default renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-    -|        <div class="prt-table-row row">
+    -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
     -|            <input @on_input> </input>
@@ -1557,7 +1558,7 @@ let%expect_test "sorting default renderer" =
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
     -|          <div class="cell prt-table-cell" @on_click> 1 </div>
     -|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1566,7 +1567,7 @@ let%expect_test "sorting default renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 2 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1575,7 +1576,7 @@ let%expect_test "sorting default renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> --- </div>
               </div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -1701,7 +1702,7 @@ let%expect_test "sorting default renderer" =
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
           <div>
             <div>
-    +|        <div class="prt-table-row row">
+    +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
     +|            <input @on_input> </input>
@@ -1710,7 +1711,7 @@ let%expect_test "sorting default renderer" =
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
     +|          <div class="cell prt-table-cell" @on_click> 1 </div>
     +|        </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1719,7 +1720,7 @@ let%expect_test "sorting default renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> 2 </div>
               </div>
-              <div class="prt-table-row row">
+              <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
                   <input @on_input> </input>
@@ -1728,7 +1729,7 @@ let%expect_test "sorting default renderer" =
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
                 <div class="cell prt-table-cell" @on_click> --- </div>
               </div>
-    -|        <div class="prt-table-row row">
+    -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
     -|            <input @on_input> </input>
@@ -1748,7 +1749,7 @@ let%expect_test "removed columns still count toward the total table width" =
   let module Table = Bonsai_web_ui_partial_render_table in
   let module Column = Table.Basic.Columns.Dynamic_columns in
   let map = Bonsai.return (Int.Map.of_alist_exn [ 1, 1; 2, 2 ]) in
-  let render_header str = Column.Sortable.Header.with_icon (Vdom.Node.text str) in
+  let render_header str = Vdom.Node.text str in
   let column_a =
     Column.column
       ~header:(render_header "a")
@@ -1977,7 +1978,7 @@ let%expect_test "removed columns still count toward the total table width" =
   let map = Bonsai.return (Int.Map.of_alist_exn (List.init 100 ~f:(fun i -> i, i))) in
   let column_a =
     Columns.column
-      ~header:(Columns.Sortable.Header.with_icon (Vdom.Node.text "a"))
+      ~header:(Vdom.Node.text "a")
       ~cell:(fun ~key:_ ~data -> Vdom.Node.text (Int.to_string data))
       ()
   in

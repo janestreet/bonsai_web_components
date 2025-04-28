@@ -256,7 +256,7 @@ module Style =
       .no_pointer {
         pointer-events: none;
       }
-      |}]
+    |}]
 
 let container_class ~direction =
   match direction with
@@ -290,8 +290,9 @@ let get_mouse_pos
   ~direction
   =
   match direction with
-  | Split_dir.Horizontal -> mouse_event##.clientX
-  | Vertical -> mouse_event##.clientY
+  | Split_dir.Horizontal ->
+    mouse_event##.clientX |> Js_of_ocaml.Js.to_float |> Int.of_float
+  | Vertical -> mouse_event##.clientY |> Js_of_ocaml.Js.to_float |> Int.of_float
 ;;
 
 module Container_dimensions = struct
@@ -485,7 +486,7 @@ end
 
 let state_machine ~parameters graph =
   let state_machine, inject_action =
-    Bonsai.state_machine1
+    Bonsai.state_machine_with_input
       ~sexp_of_model:[%sexp_of: State.t]
       ~equal:[%equal: State.t]
       ~sexp_of_action:[%sexp_of: Action.t]

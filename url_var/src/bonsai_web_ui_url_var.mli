@@ -51,14 +51,14 @@ type 'a t
     fallback value which will be used if [S.parse_exn] throws. *)
 val create_exn : (module S with type t = 'a) -> fallback:'a -> 'a t
 
-(** [set] updates the contents of the url-var as well as the current browser
-    location. When [how] is `Push (which is the default), it will add
-    a new entry to the top of the browser's history stack, but `Replace
-    will cause it to replace the top entry of the history stack with the new URL. *)
+(** [set] updates the contents of the url-var as well as the current browser location.
+    When [how] is `Push (which is the default), it will add a new entry to the top of the
+    browser's history stack, but `Replace will cause it to replace the top entry of the
+    history stack with the new URL. *)
 val set : ?how:[ `Push | `Replace ] -> 'a t -> 'a -> unit
 
 (** [update] is like [set], but gives you access to the previous value of the url right
-    before setting it.*)
+    before setting it. *)
 val update : ?how:[ `Push | `Replace ] -> 'a t -> f:('a -> 'a) -> unit
 
 val update_effect : ?how:[ `Push | `Replace ] -> 'a t -> f:('a -> 'a) -> unit Effect.t
@@ -131,6 +131,12 @@ module Typed : sig
   (** [make (module My_url) my_url_parser ~fallback] is a [My_url.t Url_var] that
       parses/unparses the current url into My_url.t, and when parsing fails it will return
 
+      If [navigation:`Intercept] is passed (default: `Ignore), the URL var will attempt to
+      intercept browser navigation events (e.g. clicking on links, running
+      [Effect.open_url], etc), and update its value instead of reloading the page. If the
+      new URL does not parse, the page will reload normally.
+      https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept
+
       [fallback] is used to potentially give out custom error messages if the parser
       fails. Please don't write parsing logic in fallback that might fail since there's no
       fallback for the fallback (i.e. if [fallback] fails, the page would crash.)
@@ -143,8 +149,7 @@ module Typed : sig
       new page.
 
       Unfortunately the halting problem remains unsolved, so we only have reasonably naive
-      limit on the number of redirects before redirects stop.
-  *)
+      limit on the number of redirects before redirects stop. *)
   val make
     :  ?navigation:[ `Ignore | `Intercept ]
     -> ?on_fallback_raises:'a
@@ -178,10 +183,11 @@ end
 (** [create_exn'] is like [create_exn], but allows for raising if no fallback is
     available.
 
-    It also allows passing [~navigation:`Intercept] which listens to browser navigation
-    events e.g. caused by clicking on links / running [Effect.open_url] etc. When the
-    target is understood by the url parser the navigation is handled client side and
-    prevents a full page reload. *)
+    If [navigation:`Intercept] is passed (default: `Ignore), the URL var will attempt to
+    intercept browser navigation events (e.g. clicking on links, running
+    [Effect.open_url], etc), and update its value instead of reloading the page. If the
+    new URL does not parse, the page will reload normally.
+    https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept *)
 val create_exn'
   :  ?navigation:[ `Ignore | `Intercept ]
   -> (module S with type t = 'a)
