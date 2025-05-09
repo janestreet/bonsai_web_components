@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open Bonsai_perf_shared
+open Bonsai_bench_scenario
 
 module Input = struct
   type ('key, 'data, 'cmp) t =

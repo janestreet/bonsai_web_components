@@ -45,6 +45,7 @@ module Record = struct
 
         let form_for_field : type a. a Typed_field.t -> Bonsai.graph -> a Form.t Bonsai.t =
           fun field graph ->
+          let field = Typed_field.globalize0 field in
           let form = M.form_for_field field graph in
           let form = Form.Dynamic.error_hint form graph in
           let%arr form and get_label in
@@ -88,6 +89,7 @@ module Record = struct
 
           let form_for_field field graph =
             let form =
+              let field = M.Typed_field.globalize0 field in
               let form = M.form_for_field field graph in
               let form = Form.Dynamic.error_hint form graph in
               let%arr form and get_label in
@@ -265,6 +267,7 @@ module Variant = struct
             match M.label_for_variant with
             | `Inferred ->
               Bonsai.return (fun t ->
+                let t = M.Typed_variant.Packed.globalize t in
                 Form_view.sexp_to_pretty_string M.Typed_variant.Packed.sexp_of_t t)
             | `Computed variant_to_string ->
               Bonsai.return (fun ({ f = T field } : M.Typed_variant.Packed.t) ->
@@ -335,7 +338,8 @@ module Variant = struct
            fun ({ f = T v } : Typed_variant.Packed.t) ->
              match v with
              | None -> empty_label
-             | Some subvariant -> to_string { f = T subvariant })
+             | Some subvariant ->
+               to_string { f = T (M.Typed_variant.globalize0 subvariant) })
       ;;
 
       let form_for_variant
@@ -386,6 +390,7 @@ module Variant = struct
           match M.label_for_variant with
           | `Inferred ->
             Bonsai.return (fun t ->
+              let t = M.Typed_variant.Packed.globalize t in
               Form_view.sexp_to_pretty_string M.Typed_variant.Packed.sexp_of_t t)
           | `Computed f -> Bonsai.return (fun { M.Typed_variant.Packed.f = T t } -> f t)
           | `Dynamic f -> f
@@ -399,6 +404,7 @@ module Variant = struct
             -> (a, cmp) Set.t Form.t Bonsai.t
           =
           fun variant comparator graph ->
+          let variant = Typed_variant.globalize0 variant in
           let form = M.form_for_variant variant comparator graph in
           let form = Form.Dynamic.error_hint form graph in
           let%arr form and get_label in

@@ -1,0 +1,6 @@
+(library
+ (name js_clipboard)
+ (public_name bonsai_web_components.js_clipboard)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx))
+ (libraries core clipboard js_of_ocaml virtual_dom.ui_effect virtual_dom))

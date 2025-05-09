@@ -30,9 +30,10 @@ module Input : sig
 end
 
 val name : t -> string
-val computation : t -> (Input.t, Vdom.Node.t) Bonsai_perf_shared.compare_computation
+val computation : t -> (Input.t, Vdom.Node.t) Bonsai_bench_scenario.compare_computation
 
 val all_computations
-  : (string * (Input.t, Vdom.Node.t) Bonsai_perf_shared.compare_computation) list Lazy.t
+  : (string * (Input.t, Vdom.Node.t) Bonsai_bench_scenario.compare_computation) list
+      Lazy.t
 
-val scenarios : (Input.t, Nothing.t) Bonsai_perf_shared.Scenario.t list
+val scenarios : (Input.t, Nothing.t) Bonsai_bench_scenario.Scenario.t list

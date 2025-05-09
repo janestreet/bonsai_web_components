@@ -337,7 +337,7 @@ let create_multi_internal
     module T = struct
       include M
 
-      let sexp_of_t = comparator.sexp_of_t
+      let sexp_of_t = Comparator.sexp_of_t comparator
     end
 
     include T

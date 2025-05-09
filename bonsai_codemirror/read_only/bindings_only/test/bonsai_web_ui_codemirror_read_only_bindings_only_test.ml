@@ -1,0 +1,2 @@
+module Test_bindings_only_doesnt_pull_in_codemiror_runtime =
+  Test_bindings_only_doesnt_pull_in_codemiror_runtime

@@ -1,0 +1,7 @@
+(library
+ (name bonsai_experimental_fancy_textbox_test)
+ (libraries bonsai_experimental_fancy_textbox bonsai_web bonsai_web_test core
+   expect_test_helpers_core.expect_test_helpers_base
+   virtual_dom.vdom_test_helpers)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai)))

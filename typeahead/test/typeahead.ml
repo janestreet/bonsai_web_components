@@ -44,7 +44,7 @@ let%expect_test "Initial typeahead state" =
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist id="bonsai_path_replaced_in_test">
         <option value="Option A"> Option A </option>
         <option value="Option B"> Option B </option>
@@ -84,7 +84,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
 
     </div>
     |}];
@@ -101,7 +101,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
     +|  <datalist id="bonsai_path_replaced_in_test">
     +|    <option value="Option A"> Option A </option>
     +|    <option value="Option B"> Option B </option>
@@ -122,7 +122,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
     -|  <datalist id="bonsai_path_replaced_in_test">
     -|    <option value="Option A"> Option A </option>
     -|    <option value="Option B"> Option B </option>
@@ -169,7 +169,7 @@ let%expect_test "Attrs are NOT merged when \
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
 
     </div>
     |}]
@@ -205,7 +205,7 @@ let%expect_test "Attrs are merged when `Merge is applied " =
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
 
     </div>
     |}]
@@ -238,7 +238,7 @@ let%expect_test "Change typeahead contents" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
           <option value="Option B"> Option B </option>
@@ -281,7 +281,7 @@ let%expect_test "use setter" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
           <option value="Option B"> Option B </option>
@@ -304,7 +304,7 @@ let%expect_test "use setter" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
           <option value="Option B"> Option B </option>
@@ -424,7 +424,7 @@ let%expect_test "setting a value that isn't present in [all_options] still sets 
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist id="bonsai_path_replaced_in_test">
         <option value="Option A"> Option A </option>
       </datalist>
@@ -445,7 +445,7 @@ let%expect_test "setting a value that isn't present in [all_options] still sets 
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist id="bonsai_path_replaced_in_test">
         <option value="Option A"> Option A </option>
       </datalist>
@@ -471,7 +471,7 @@ let%expect_test "dynamic [to_string]." =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
     -|    <option value="Option A"> Option A </option>
     +|    <option value="Option A!"> Option A! </option>

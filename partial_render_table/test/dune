@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_partial_render_table_test)
- (libraries bonsai bonsai.perf_shared bonsai_web bonsai_web_test
+ (libraries bonsai bonsai.bench_scenario bonsai_web bonsai_web_test
    bonsai_web_ui_element_size_hooks bonsai_web_ui_partial_render_table
    bonsai_web_ui_partial_render_table_ansi
    bonsai_web_ui_partial_render_table_configs_for_testing

@@ -163,7 +163,7 @@ module Expert = struct
     let module Column_cmp = struct
       include (val column_id)
 
-      let sexp_of_t = comparator.sexp_of_t
+      let sexp_of_t = Comparator.sexp_of_t comparator
     end
     in
     let module Column_widths_model = struct
@@ -190,6 +190,8 @@ module Expert = struct
     let set_column_width =
       let%arr set_column_width and set_column_width_for_reporting in
       fun ~column_id size ->
+        (* This has to contain both of these otherwise the width tracker will not work
+           properly *)
         Effect.Many
           [ set_column_width ~column_id size
           ; set_column_width_for_reporting ~column_id size
@@ -199,7 +201,7 @@ module Expert = struct
     let header_height_px =
       match%arr header_client_rect with
       | None -> 0.0
-      | Some table_body_visible_rect -> Bbox.height table_body_visible_rect
+      | Some header_rect -> Bbox.height header_rect
     in
     let range_without_preload =
       (* The goal of this value is to track the index range of the rows that would be
@@ -223,29 +225,29 @@ module Expert = struct
           let low = body_min_y /. row_height_px in
           let high = (body_max_y -. row_height_px +. 2.) /. row_height_px in
           Some (Float.(to_int (round_nearest low)), Float.(to_int (round_nearest high)))
-        | ( Some { min_y = body_min_y; max_y = body_max_y; _ }
-          , Some { min_y = client_body_min_y; _ }
-          , Some { max_y = header_max_y; _ } ) ->
+        | ( Some { min_y = table_visible_top; max_y = table_visible_bottom; _ }
+          , Some { min_y = table_absolute_top; _ }
+          , Some { max_y = header_visible_bottom; _ } ) ->
           let low_offset, high_offset =
             let header_offset =
-              Float.min header_height_px (header_max_y -. client_body_min_y)
+              Float.min header_height_px (header_visible_bottom -. table_absolute_top)
             in
             match resize_column_widths_to_fit with
-            (* resize_column_widths_to_fit:false shifts the top of the header down in position due to the
-               attr that calculates visible client rect being on an element that only
+            (* resize_column_widths_to_fit:false shifts the top of the header down in position
+               due to the attr that calculates visible client rect being on an element that only
                contains the header *)
             | false -> header_offset, 0.
-            (* When resize_column_widths_to_fit:true, the header is in the same container as the body. That
-               container is where the visible client rect attr is attached, so the client
-               rect also considers the header as part of what is visible. Due to this, we
-               have to subtract the header height from the bottom of the rect, as we're
-               reducing the visible body height and not its position.
+            (* When resize_column_widths_to_fit:true, the header is in the same container
+               as the body. That container is where the visible client rect attr is attached,
+               so the client rect also considers the header as part of what is visible. Due
+               to this, we have to subtract the header height from the bottom of the rect,
+               as we're reducing the visible body height and not its position.
             *)
             | true -> 0., header_offset *. -1.
           in
-          let low = (body_min_y +. low_offset) /. row_height_px in
+          let low = (table_visible_top +. low_offset) /. row_height_px in
           let high =
-            (body_max_y +. high_offset -. row_height_px +. 2.) /. row_height_px
+            (table_visible_bottom +. high_offset -. row_height_px +. 2.) /. row_height_px
           in
           Some (Float.(to_int (round_nearest low)), Float.(to_int (round_nearest high)))
         | _ -> None
@@ -256,11 +258,9 @@ module Expert = struct
       | None -> 0.0, 0.0
       | Some rect -> (rect.max_x +. rect.min_x) /. 2.0, (rect.max_y -. rect.min_y) /. 2.0
     in
-    let scroll_to_index =
+    let get_y_px_of_row_index =
       let%arr header_height_px
       and range_without_preload
-      and midpoint_of_container_x, _ = midpoint_of_container
-      and table_body_selector
       and resize_column_widths_to_fit
       and (`Px row_height_px) = row_height in
       fun index ->
@@ -294,7 +294,7 @@ module Expert = struct
             *)
             | true -> 0.
           in
-          Some ((row_height_px *. Float.of_int index) -. header_offset)
+          (row_height_px *. Float.of_int index) -. header_offset
         in
         let to_bottom =
           let header_offset =
@@ -306,15 +306,23 @@ module Expert = struct
           in
           (* scroll to the bottom of this row means scrolling to the top of
              a one-pixel element just below this row *)
-          Some ((row_height_px *. Float.of_int (index + 1)) +. header_offset)
+          (row_height_px *. Float.of_int (index + 1)) +. header_offset
         in
         let y_px =
           if index <= range_start
-          then to_top
+          then Some to_top
           else if index >= range_end
-          then to_bottom
+          then Some to_bottom
           else None
         in
+        y_px, to_top, to_bottom
+    in
+    let scroll_to_index =
+      let%arr get_y_px_of_row_index
+      and midpoint_of_container_x, _ = midpoint_of_container
+      and table_body_selector in
+      fun index ->
+        let y_px, _, _ = get_y_px_of_row_index index in
         match y_px with
         | Some y_px ->
           let%bind.Effect () =
@@ -338,7 +346,14 @@ module Expert = struct
         | Hidden { prev_width_px = _ } -> 0.0
       in
       let get_offset_and_width =
-        let%arr column_widths and leaves in
+        let%arr column_widths_for_reporting
+          (* It's crucial that we use [column_widths_for_reporting] because it's set in
+             both [resize_column_widths_to_fit] AND in the non-resizing version.
+             [resize_column_widths_to_fit] does _not_ set [column_widths] whenever the
+             width of the columns changes based on its content, only when the user manually
+             resizes the columns
+          *)
+        and leaves in
         fun column_id ->
           List.fold_until
             ~init:0.0
@@ -346,20 +361,23 @@ module Expert = struct
             ~finish:(fun _ -> None)
             ~f:(fun offset leaf ->
               let column_width =
-                Option.map (Map.find column_widths leaf.column_id) ~f:width
+                Option.map (Map.find column_widths_for_reporting leaf.column_id) ~f:width
                 |> Option.value ~default:0.0
               in
               match
-                Comparable.equal Column_cmp.comparator.compare leaf.column_id column_id
+                Comparable.equal
+                  (Comparator.compare Column_cmp.comparator)
+                  leaf.column_id
+                  column_id
               with
               | true -> Stop (Some (offset, column_width))
               | false -> Continue (offset +. column_width))
       in
       let%arr get_offset_and_width
+      and get_y_px_of_row_index
       and table_body_visible_rect
-      and table_body_selector
-      and _, midpoint_of_container_y = midpoint_of_container in
-      fun column_id ->
+      and table_body_selector in
+      fun ~row_index column_id ->
         match table_body_visible_rect with
         | None -> Effect.Ignore
         | Some rect ->
@@ -367,10 +385,11 @@ module Expert = struct
           (match offset_and_width with
            | None -> Effect.Ignore
            | Some (offset, width) ->
-             let scroll_me offset =
+             let y_px, to_top, _to_bottom = get_y_px_of_row_index row_index in
+             let scroll_me ~y_px ~x_px =
                Scroll.to_position_inside_element
-                 ~x_px:offset
-                 ~y_px:midpoint_of_container_y
+                 ~x_px
+                 ~y_px
                  ~selector:table_body_selector
                  `Minimal
                |> Effect.ignore_m
@@ -380,13 +399,37 @@ module Expert = struct
                  let column_id =
                    [%sexp (column_id : Column_cmp.t)] |> Sexp.to_string_hum
                  in
-                 [%string "scrolling column with id %{column_id} into view, if necessary"])
+                 [%string
+                   "scrolling cell at row index %{row_index#Int} and column id \
+                    %{column_id} into view, if necessary"])
              in
-             if Float.( < ) offset rect.min_x
-             then scroll_me offset
-             else if Float.( > ) (offset +. width) rect.max_x
-             then scroll_me (offset +. width)
-             else Effect.Ignore)
+             let column_start = offset in
+             let column_end = offset +. width in
+             let screen_left_bound = rect.min_x in
+             let screen_right_bound = rect.max_x in
+             if Float.(column_start < screen_left_bound)
+             then (
+               let y_px = Option.value y_px ~default:to_top in
+               scroll_me ~y_px ~x_px:column_start)
+             else if Float.(column_end > screen_right_bound)
+             then (
+               let y_px = Option.value y_px ~default:to_top in
+               scroll_me ~y_px ~x_px:column_end)
+             else (
+               match y_px with
+               | None -> Effect.Ignore
+               | Some y_px ->
+                 (* We know that column start is not to the left of the left bound, and we
+                    know that column end is within the right bound as well, which means that
+                    column start is within the visible bounds. This will not scroll vertically,
+                    which is the desired behavior *)
+                 scroll_me ~y_px ~x_px:column_start))
+    in
+    let scroll_to =
+      let%arr scroll_to_column and scroll_to_index in
+      function
+      | `Cell (row_index, column) -> scroll_to_column ~row_index column
+      | `Row row_index -> scroll_to_index row_index
     in
     let keep_top_row_in_position =
       let%arr range_without_preload
@@ -486,8 +529,7 @@ module Expert = struct
         ~leaves
         ~collated
         ~range:range_without_preload
-        ~scroll_to_index
-        ~scroll_to_column
+        ~scroll_to
         graph
     in
     let on_cell_click = Focus.get_on_cell_click focus_kind focus in
@@ -512,7 +554,7 @@ module Expert = struct
     let head =
       Table_header.component
         headers
-        ~column_id_equal:(Comparable.equal Column_cmp.comparator.compare)
+        ~column_id_equal:(Comparable.equal (Comparator.compare Column_cmp.comparator))
         ~focused_column:(Focus.get_focused_column focus_kind focus)
         ~themed_attrs
         ~resize_column_widths_to_fit
@@ -725,7 +767,10 @@ module Basic = struct
     let (Column_intf.Y { value; vtable; column_id }) = columns in
     let module Col_id = (val column_id) in
     let sortable_state =
-      Sortable.state ~equal:(Comparable.equal Col_id.comparator.compare) () graph
+      Sortable.state
+        ~equal:(Comparable.equal (Comparator.compare Col_id.comparator))
+        ()
+        graph
     in
     let module Column = (val vtable) in
     let default_sort =
@@ -749,7 +794,7 @@ module Basic = struct
         let%arr sorters and default_sort and sortable_state and override_sort in
         let override_sort =
           Option.map override_sort ~f:(fun override_sort ->
-            override_sort Key_cmp.comparator.compare)
+            override_sort (Comparator.compare Key_cmp.comparator))
         in
         Order.to_compare
           (Sortable.order sortable_state)

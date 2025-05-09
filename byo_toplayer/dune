@@ -1,0 +1,8 @@
+(library
+ (name byo_toplayer)
+ (public_name bonsai_web_components.byo_toplayer)
+ (preprocess
+  (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css))
+ (libraries bonsai bonsai.extra bonsai_web byo_portal
+   toplayer.floating_positioning toplayer.popover core virtual_dom.css_gen
+   js_of_ocaml))

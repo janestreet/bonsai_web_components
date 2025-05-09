@@ -183,7 +183,7 @@ let%expect_test "placeholders" =
            placeholder="placeholder1"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Bonsai.Expert.Var.set placeholder_var "placeholder2";
   Handle.show handle;
@@ -197,7 +197,7 @@ let%expect_test "placeholders" =
            placeholder="placeholder2"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -233,7 +233,7 @@ let%expect_test "typing into a string textbox" =
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -248,7 +248,7 @@ let%expect_test "typing into a string textbox" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -265,7 +265,7 @@ let%expect_test "typing into a string password textbox" =
            type="password"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -280,7 +280,7 @@ let%expect_test "typing into a string password textbox" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -768,7 +768,7 @@ let%expect_test "setting into a string textbox" =
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ "hello world" ];
   Handle.show_diff handle;
@@ -783,7 +783,7 @@ let%expect_test "setting into a string textbox" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -800,7 +800,7 @@ let%expect_test "typing into a int textbox" =
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"123";
   Handle.show_diff handle;
@@ -815,7 +815,7 @@ let%expect_test "typing into a int textbox" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized=123
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -830,7 +830,7 @@ let%expect_test "typing into a int textbox" =
              spellcheck="false"
     -|       value:normalized=123
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -847,7 +847,7 @@ let%expect_test "setting into a int textbox" =
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ 123 ];
   Handle.show_diff handle;
@@ -862,7 +862,7 @@ let%expect_test "setting into a int textbox" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized=123
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -890,12 +890,12 @@ let%expect_test "typing into a paired string textbox * int textbox " =
              type="text"
              spellcheck="false"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -917,13 +917,13 @@ let%expect_test "typing into a paired string textbox * int textbox " =
                spellcheck="false"
     -|         value:normalized=""
     +|         value:normalized="hello world"
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -952,12 +952,12 @@ let%expect_test "setting into a paired string textbox * int textbox " =
              type="text"
              spellcheck="false"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ "hello world", 123 ];
@@ -974,13 +974,13 @@ let%expect_test "setting into a paired string textbox * int textbox " =
                spellcheck="false"
     -|         value:normalized=""
     +|         value:normalized="hello world"
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -1012,17 +1012,17 @@ module%test [@name "Form.all"] _ = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.input_text
@@ -1048,18 +1048,18 @@ module%test [@name "Form.all"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1077,17 +1077,17 @@ module%test [@name "Form.all"] _ = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.do_actions handle [ [ "hello world"; "quack"; "" ] ];
@@ -1104,18 +1104,18 @@ module%test [@name "Form.all"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1141,18 +1141,18 @@ module%test [@name "Form.all"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1178,18 +1178,18 @@ module%test [@name "Form.all"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1231,17 +1231,17 @@ module%test [@name "Form.all_map"] _ = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.input_text
@@ -1271,18 +1271,18 @@ module%test [@name "Form.all_map"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1303,17 +1303,17 @@ module%test [@name "Form.all_map"] _ = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.do_actions
@@ -1336,18 +1336,18 @@ module%test [@name "Form.all_map"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1378,18 +1378,18 @@ module%test [@name "Form.all_map"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1418,18 +1418,18 @@ module%test [@name "Form.all_map"] _ = struct
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1448,7 +1448,7 @@ let%expect_test "typing into a local datetime textbox" =
     (Error "a value is required")
 
     ==============
-    <input type="datetime-local" spellcheck="false" value:normalized="" @on_input> </input>
+    <input type="datetime-local" spellcheck="false" value:normalized="" @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"1969-12-31T19:00";
   Handle.show handle;
@@ -1457,7 +1457,7 @@ let%expect_test "typing into a local datetime textbox" =
     (Ok "1969-12-31 19:00:00Z")
 
     ==============
-    <input type="datetime-local" spellcheck="false" value:normalized=1969-12-31T19:00:00 @on_input> </input>
+    <input type="datetime-local" spellcheck="false" value:normalized=1969-12-31T19:00:00 @on_input/>
     |}]
 ;;
 
@@ -1473,7 +1473,7 @@ let%expect_test "typing into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1490,7 +1490,7 @@ let%expect_test "typing into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1507,7 +1507,7 @@ let%expect_test "typing into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="false"> s </option>
@@ -1530,7 +1530,7 @@ let%expect_test "setting into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1547,7 +1547,7 @@ let%expect_test "setting into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1564,7 +1564,7 @@ let%expect_test "setting into a time span textbox" =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized=24 @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="false"> s </option>
@@ -1595,13 +1595,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1620,13 +1620,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1645,13 +1645,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1670,13 +1670,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1695,13 +1695,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:12:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1729,13 +1729,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1759,13 +1759,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text
@@ -1784,13 +1784,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1824,13 +1824,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
          -
         <input type="time"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     (* typing a start and end time where start > end does not return an [Error.t]*)
@@ -1857,13 +1857,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=10:00:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}])
       ~do_not_enforce:(fun () ->
@@ -1877,13 +1877,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=10:00:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}]);
     Handle.input_text
@@ -1904,13 +1904,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}])
       ~do_not_enforce:(fun () ->
@@ -1924,13 +1924,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:11:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}]);
     Handle.input_text
@@ -1949,13 +1949,13 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=11:11:00.000
-               @on_input> </input>
+               @on_input/>
          -
         <input type="time"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=11:12:00.000
-               @on_input> </input>
+               @on_input/>
       </div>
       |}])
 ;;
@@ -1982,13 +1982,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* Somehow, a bad range got set, so no setting should happen *)
@@ -2004,13 +2004,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* A range where the endpoints are equal is not allowed in this case *)
@@ -2026,13 +2026,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* Finally, a good range! *)
@@ -2048,13 +2048,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -2084,13 +2084,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ eleven_am, ten_am ];
@@ -2105,13 +2105,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ eleven_am, eleven_am ];
@@ -2126,13 +2126,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ ten_am, eleven_am ];
@@ -2147,13 +2147,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -2184,13 +2184,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
          -
         <input type="time"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     (* setting form to a start and end time where start > end does not return
@@ -2209,13 +2209,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}])
       ~do_not_enforce:(fun () ->
@@ -2229,13 +2229,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:00:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=10:00:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}]);
     Handle.do_actions handle [ eleven_am, eleven_am ];
@@ -2252,13 +2252,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}])
       ~do_not_enforce:(fun () ->
@@ -2272,13 +2272,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:00:00.000
-                   @on_input> </input>
+                   @on_input/>
              -
             <input type="time"
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=11:00:00.000
-                   @on_input> </input>
+                   @on_input/>
           </div>
           |}]);
     Handle.do_actions handle [ ten_am, eleven_am ];
@@ -2293,13 +2293,13 @@ let%expect_test "setting into a time range, with bounds check disabled" =
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=10:00:00.000
-               @on_input> </input>
+               @on_input/>
          -
         <input type="time"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=11:00:00.000
-               @on_input> </input>
+               @on_input/>
       </div>
       |}])
 ;;
@@ -2330,8 +2330,8 @@ let%expect_test "using the same component twice" =
 
     ==============
     <div>
-      <input @key=bonsai_path type="text" spellcheck="false" value:normalized=b @on_input> </input>
-      <input @key=bonsai_path type="text" spellcheck="false" value:normalized=b @on_input> </input>
+      <input @key=bonsai_path type="text" spellcheck="false" value:normalized=b @on_input/>
+      <input @key=bonsai_path type="text" spellcheck="false" value:normalized=b @on_input/>
     </div>
 
     Linting Failures:
@@ -2363,7 +2363,7 @@ let%expect_test "typing into an int number element (no default)" =
     (Error "value not specified")
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input/>
     |}];
   Handle.input_text ~get_vdom:Form.view handle ~selector:"input" ~text:"10";
   Handle.show_diff handle;
@@ -2373,8 +2373,8 @@ let%expect_test "typing into an int number element (no default)" =
     +|(Ok 10)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
     |}];
   Handle.input_text ~get_vdom:Form.view handle ~selector:"input" ~text:"";
   Handle.show_diff handle;
@@ -2384,8 +2384,8 @@ let%expect_test "typing into an int number element (no default)" =
     +|(Error "value not specified")
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input/>
     |}]
 ;;
 
@@ -2406,7 +2406,7 @@ let%expect_test "typing into an int number element" =
     (Ok 0)
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"10";
   Handle.show_diff handle;
@@ -2416,8 +2416,8 @@ let%expect_test "typing into an int number element" =
     +|(Ok 10)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2427,8 +2427,8 @@ let%expect_test "typing into an int number element" =
     +|(Ok -1)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"11";
   Handle.show_diff handle;
@@ -2438,8 +2438,8 @@ let%expect_test "typing into an int number element" =
     +|(Error ((value 11) "higher than allowed threshold" (max 10)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-2";
   Handle.show_diff handle;
@@ -2449,8 +2449,8 @@ let%expect_test "typing into an int number element" =
     +|(Error ((value -2) "lower than allowed threshold" (min -1)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-2 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-2 @on_input/>
     |}]
 ;;
 
@@ -2470,7 +2470,7 @@ let%expect_test "setting into an int number element (no default)" =
     (Error "value not specified")
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input/>
     |}];
   Handle.do_actions handle [ 10 ];
   Handle.show_diff handle;
@@ -2480,8 +2480,8 @@ let%expect_test "setting into an int number element (no default)" =
     +|(Ok 10)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized="" @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
     |}]
 ;;
 
@@ -2502,7 +2502,7 @@ let%expect_test "setting into an int number element" =
     (Ok 0)
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input/>
     |}];
   Handle.do_actions handle [ 10 ];
   Handle.show_diff handle;
@@ -2512,8 +2512,8 @@ let%expect_test "setting into an int number element" =
     +|(Ok 10)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=0 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
     |}];
   Handle.do_actions handle [ -1 ];
   Handle.show_diff handle;
@@ -2523,8 +2523,8 @@ let%expect_test "setting into an int number element" =
     +|(Ok -1)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=10 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input/>
     |}];
   Handle.do_actions handle [ 11 ];
   Handle.show_diff handle;
@@ -2534,8 +2534,8 @@ let%expect_test "setting into an int number element" =
     +|(Error ((value 11) "higher than allowed threshold" (max 10)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-1 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input/>
     |}];
   Handle.do_actions handle [ -2 ];
   Handle.show_diff handle;
@@ -2545,8 +2545,8 @@ let%expect_test "setting into an int number element" =
     +|(Error ((value -2) "lower than allowed threshold" (min -1)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-2 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=11 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" min="-1" max="10" value:normalized=-2 @on_input/>
     |}]
 ;;
 
@@ -2567,7 +2567,7 @@ let%expect_test "typing into a float number element" =
     (Ok 0)
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"10.1";
   Handle.show_diff handle;
@@ -2577,14 +2577,14 @@ let%expect_test "typing into a float number element" =
     +|(Ok 10.1)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
     +|<input type="number"
     +|       step="1"
     +|       spellcheck="false"
     +|       min="-1"
     +|       max="10.1"
     +|       value:normalized=10.1
-    +|       @on_input> </input>
+    +|       @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2594,14 +2594,14 @@ let%expect_test "typing into a float number element" =
     +|(Ok -1)
 
       ==============
-    -|<input type="number"
-    -|       step="1"
-    -|       spellcheck="false"
-    -|       min="-1"
-    -|       max="10.1"
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
     -|       value:normalized=10.1
-    -|       @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
+    +|       value:normalized=-1
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"10.2";
   Handle.show_diff handle;
@@ -2611,14 +2611,14 @@ let%expect_test "typing into a float number element" =
     +|(Error ((value 10.2) "higher than allowed threshold" (max 10.1)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
-    +|<input type="number"
-    +|       step="1"
-    +|       spellcheck="false"
-    +|       min="-1"
-    +|       max="10.1"
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=-1
     +|       value:normalized=10.2
-    +|       @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1.1";
   Handle.show_diff handle;
@@ -2635,7 +2635,7 @@ let%expect_test "typing into a float number element" =
              max="10.1"
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2656,7 +2656,7 @@ let%expect_test "setting into an int number element" =
     (Ok 0)
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
     |}];
   Handle.do_actions handle [ 10.1 ];
   Handle.show_diff handle;
@@ -2666,14 +2666,14 @@ let%expect_test "setting into an int number element" =
     +|(Ok 10.1)
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
     +|<input type="number"
     +|       step="1"
     +|       spellcheck="false"
     +|       min="-1"
     +|       max="10.1"
     +|       value:normalized=10.1
-    +|       @on_input> </input>
+    +|       @on_input/>
     |}];
   Handle.do_actions handle [ -1. ];
   Handle.show_diff handle;
@@ -2683,14 +2683,14 @@ let%expect_test "setting into an int number element" =
     +|(Ok -1)
 
       ==============
-    -|<input type="number"
-    -|       step="1"
-    -|       spellcheck="false"
-    -|       min="-1"
-    -|       max="10.1"
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
     -|       value:normalized=10.1
-    -|       @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
+    +|       value:normalized=-1
+             @on_input/>
     |}];
   Handle.do_actions handle [ 10.2 ];
   Handle.show_diff handle;
@@ -2700,14 +2700,14 @@ let%expect_test "setting into an int number element" =
     +|(Error ((value 10.2) "higher than allowed threshold" (max 10.1)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
-    +|<input type="number"
-    +|       step="1"
-    +|       spellcheck="false"
-    +|       min="-1"
-    +|       max="10.1"
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=-1
     +|       value:normalized=10.2
-    +|       @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ -1.1 ];
   Handle.show_diff handle;
@@ -2724,7 +2724,7 @@ let%expect_test "setting into an int number element" =
              max="10.1"
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2739,7 +2739,7 @@ let%expect_test "typing into an optional float number element" =
     (Ok ())
 
     ==============
-    <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+    <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2749,8 +2749,8 @@ let%expect_test "typing into an optional float number element" =
     +|(Ok (-1))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"";
   Handle.show_diff handle;
@@ -2760,8 +2760,8 @@ let%expect_test "typing into an optional float number element" =
     +|(Ok ())
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"10.2";
   Handle.show_diff handle;
@@ -2771,8 +2771,8 @@ let%expect_test "typing into an optional float number element" =
     +|(Ok (10.2))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1.1";
   Handle.show_diff handle;
@@ -2782,8 +2782,8 @@ let%expect_test "typing into an optional float number element" =
     +|(Ok (-1.1))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"";
   Handle.show_diff handle;
@@ -2793,8 +2793,8 @@ let%expect_test "typing into an optional float number element" =
     +|(Ok ())
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
     |}]
 ;;
 
@@ -2817,7 +2817,7 @@ let%expect_test "typing into an optional float number element (with a default an
     (Ok (0))
 
     ==============
-    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"";
   Handle.show_diff handle;
@@ -2827,8 +2827,14 @@ let%expect_test "typing into an optional float number element (with a default an
     +|(Ok ())
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized="" @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=0 @on_input/>
+    +|<input type="number"
+    +|       step="1"
+    +|       spellcheck="false"
+    +|       min="-1"
+    +|       max="10.1"
+    +|       value:normalized=""
+    +|       @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2838,8 +2844,14 @@ let%expect_test "typing into an optional float number element (with a default an
     +|(Ok (-1))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=""
+    +|       value:normalized=-1
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"10.2";
   Handle.show_diff handle;
@@ -2849,14 +2861,14 @@ let%expect_test "typing into an optional float number element (with a default an
     +|(Error ((value 10.2) "higher than allowed threshold" (max 10.1)))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" min="-1" max="10.1" value:normalized=-1 @on_input> </input>
-    +|<input type="number"
-    +|       step="1"
-    +|       spellcheck="false"
-    +|       min="-1"
-    +|       max="10.1"
+      <input type="number"
+             step="1"
+             spellcheck="false"
+             min="-1"
+             max="10.1"
+    -|       value:normalized=-1
     +|       value:normalized=10.2
-    +|       @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"-1.1";
   Handle.show_diff handle;
@@ -2873,7 +2885,7 @@ let%expect_test "typing into an optional float number element (with a default an
              max="10.1"
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2892,7 +2904,7 @@ let%expect_test "setting into an optional float number element" =
     (Ok (0))
 
     ==============
-    <input type="number" step="1" spellcheck="false" value:normalized=0 @on_input> </input>
+    <input type="number" step="1" spellcheck="false" value:normalized=0 @on_input/>
     |}];
   Handle.do_actions handle [ None ];
   Handle.show_diff handle;
@@ -2902,8 +2914,8 @@ let%expect_test "setting into an optional float number element" =
     +|(Ok ())
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=0 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=0 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
     |}];
   Handle.do_actions handle [ Some (-1.) ];
   Handle.show_diff handle;
@@ -2913,8 +2925,8 @@ let%expect_test "setting into an optional float number element" =
     +|(Ok (-1))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input/>
     |}];
   Handle.do_actions handle [ Some 10.2 ];
   Handle.show_diff handle;
@@ -2924,8 +2936,8 @@ let%expect_test "setting into an optional float number element" =
     +|(Ok (10.2))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=-1 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input/>
     |}];
   Handle.do_actions handle [ Some (-1.1) ];
   Handle.show_diff handle;
@@ -2935,8 +2947,8 @@ let%expect_test "setting into an optional float number element" =
     +|(Ok (-1.1))
 
       ==============
-    -|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input> </input>
-    +|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input> </input>
+    -|<input type="number" step="1" spellcheck="false" value:normalized=10.2 @on_input/>
+    +|<input type="number" step="1" spellcheck="false" value:normalized=-1.1 @on_input/>
     |}]
 ;;
 
@@ -2968,7 +2980,7 @@ let%expect_test "setting option that doesn't exist" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           a
         </label>
       </li>
@@ -2978,7 +2990,7 @@ let%expect_test "setting option that doesn't exist" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           b
         </label>
       </li>
@@ -3013,7 +3025,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -3023,7 +3035,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           second
         </label>
       </li>
@@ -3033,7 +3045,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           third
         </label>
       </li>
@@ -3059,7 +3071,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3069,7 +3081,7 @@ let%expect_test "clicking on radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3096,7 +3108,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="true"
     +|             #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3107,7 +3119,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3117,7 +3129,7 @@ let%expect_test "clicking on radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             third
           </label>
         </li>
@@ -3152,7 +3164,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -3162,7 +3174,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           second
         </label>
       </li>
@@ -3172,7 +3184,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           third
         </label>
       </li>
@@ -3198,7 +3210,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3208,7 +3220,7 @@ let%expect_test "setting into radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3235,7 +3247,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="true"
     +|             #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3246,7 +3258,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3256,7 +3268,7 @@ let%expect_test "setting into radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             third
           </label>
         </li>
@@ -3291,7 +3303,7 @@ let%expect_test "horizontal radio buttons render with correct styles applied" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -3314,7 +3326,7 @@ let%expect_test "setting a checklist to a value not in the input" =
     <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           a
         </label>
       </li>
@@ -3331,7 +3343,7 @@ let%expect_test "setting a checklist to a value not in the input" =
     <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="true" @on_click> </input>
+          <input type="checkbox" #checked="true" @on_click/>
           a
         </label>
       </li>
@@ -3356,19 +3368,19 @@ let%expect_test "clicking a set checklist" =
     <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           third
         </label>
       </li>
@@ -3387,21 +3399,21 @@ let%expect_test "clicking a set checklist" =
       <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3418,20 +3430,20 @@ let%expect_test "clicking a set checklist" =
       <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="true" @on_click> </input>
-    +|      <input type="checkbox" #checked="false" @on_click> </input>
+    -|      <input type="checkbox" #checked="true" @on_click/>
+    +|      <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="true" @on_click> </input>
+            <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3456,19 +3468,19 @@ let%expect_test "setting into a set checklist" =
     <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           third
         </label>
       </li>
@@ -3485,21 +3497,21 @@ let%expect_test "setting into a set checklist" =
       <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3516,20 +3528,20 @@ let%expect_test "setting into a set checklist" =
       <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="true" @on_click> </input>
-    +|      <input type="checkbox" #checked="false" @on_click> </input>
+    -|      <input type="checkbox" #checked="true" @on_click/>
+    +|      <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="true" @on_click> </input>
+            <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3565,7 +3577,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ())
 
       ==============
-      <input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
+      <input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input/>
       |}];
     Handle.input_files
       handle
@@ -3579,8 +3591,8 @@ module%test [@name "file pickers"] _ = struct
       +|(Ok ("<file test.txt>"))
 
         ==============
-      -|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
-      +|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      -|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input/>
+      +|<input type="file" accept=".txt,.png,image/jpeg" @on_input/>
       |}]
   ;;
 
@@ -3604,7 +3616,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ("<file test.txt>"))
 
       ==============
-      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input/>
       |}];
     Handle.do_actions handle [ None ];
     Handle.show_diff handle;
@@ -3614,8 +3626,8 @@ module%test [@name "file pickers"] _ = struct
       +|(Ok ())
 
         ==============
-      -|<input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
-      +|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input> </input>
+      -|<input type="file" accept=".txt,.png,image/jpeg" @on_input/>
+      +|<input type="file" accept=".txt,.png,image/jpeg" #value="" @on_input/>
       |}]
   ;;
 
@@ -3639,7 +3651,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ("<file test.txt>"))
 
       ==============
-      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input/>
       |}];
     Handle.do_actions handle [ Some (mock_bonsai_file ~name:"foo.txt") ];
     Handle.show handle;
@@ -3651,7 +3663,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ("<file test.txt>"))
 
       ==============
-      <input type="file" accept=".txt,.png,image/jpeg" @on_input> </input>
+      <input type="file" accept=".txt,.png,image/jpeg" @on_input/>
       |}]
   ;;
 
@@ -3672,7 +3684,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ())
 
       ==============
-      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
+      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input/>
       |}];
     Handle.input_files
       handle
@@ -3688,8 +3700,8 @@ module%test [@name "file pickers"] _ = struct
       +|  (test2.doc "<file test2.doc>")))
 
         ==============
-      -|<input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
-      +|<input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      -|<input type="file" accept=".doc,.docx" multiple="" #value="" @on_input/>
+      +|<input type="file" accept=".doc,.docx" multiple="" @on_input/>
       |}]
   ;;
 
@@ -3717,7 +3729,7 @@ module%test [@name "file pickers"] _ = struct
         (test2.doc "<file test2.doc>")))
 
       ==============
-      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      <input type="file" accept=".doc,.docx" multiple="" @on_input/>
       |}];
     Handle.do_actions handle [ Filename.Map.empty ];
     Handle.show handle;
@@ -3726,7 +3738,7 @@ module%test [@name "file pickers"] _ = struct
       (Ok ())
 
       ==============
-      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input> </input>
+      <input type="file" accept=".doc,.docx" multiple="" #value="" @on_input/>
       |}]
   ;;
 
@@ -3754,7 +3766,7 @@ module%test [@name "file pickers"] _ = struct
         (test2.doc "<file test2.doc>")))
 
       ==============
-      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      <input type="file" accept=".doc,.docx" multiple="" @on_input/>
       |}];
     Handle.do_actions
       handle
@@ -3774,7 +3786,7 @@ module%test [@name "file pickers"] _ = struct
         (test2.doc "<file test2.doc>")))
 
       ==============
-      <input type="file" accept=".doc,.docx" multiple="" @on_input> </input>
+      <input type="file" accept=".doc,.docx" multiple="" @on_input/>
       |}]
   ;;
 end
@@ -3809,7 +3821,7 @@ let%expect_test "on_change handler should fire when input is changed" =
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -3826,7 +3838,7 @@ let%expect_test "on_change handler should fire when input is changed" =
              spellcheck="false"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -3864,7 +3876,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -3877,7 +3889,7 @@ let%expect_test "form validated with an effect" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"5";
   Handle.recompute_view_until_stable handle;
@@ -3891,7 +3903,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | 5 -> Respond (Ok ())
@@ -3902,7 +3914,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | -3 -> Respond not_positive
@@ -3913,7 +3925,7 @@ let%expect_test "form validated with an effect" =
     (Error "not positive")
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -3947,7 +3959,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -3960,7 +3972,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"5";
   Handle.recompute_view_until_stable handle;
@@ -3976,7 +3988,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | 5 -> Respond (Ok ())
@@ -3987,7 +3999,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (-3) |}];
@@ -4000,7 +4012,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error "not positive")
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -4034,7 +4046,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -4048,7 +4060,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.advance_clock_by handle (Time_ns.Span.of_sec 2.0);
   Handle.recompute_view_until_stable handle;
@@ -4059,7 +4071,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -4097,7 +4109,7 @@ let%expect_test "extending a projection with an error" =
            type="text"
            spellcheck="false"
            value:normalized=1
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"not an int";
   Handle.show handle;
@@ -4166,12 +4178,12 @@ let%expect_test _ =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ { x = 1; y = "hello" } ];
@@ -4184,12 +4196,12 @@ let%expect_test _ =
 
     ==============
     <div>
-      <input type="number" step="1" spellcheck="false" value:normalized=1 @on_input> </input>
+      <input type="number" step="1" spellcheck="false" value:normalized=1 @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              value:normalized=hello
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -4216,7 +4228,7 @@ let%expect_test "slider input" =
     (Ok 0)
 
     ==============
-    <input value:normalized=0> </input>
+    <input value:normalized=0/>
     |}];
   Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"20";
   Handle.recompute_view handle;
@@ -4226,7 +4238,7 @@ let%expect_test "slider input" =
     (Ok 20)
 
     ==============
-    <input value:normalized=20> </input>
+    <input value:normalized=20/>
     |}]
 ;;
 
@@ -4263,7 +4275,7 @@ let%expect_test "query box" =
 
     ==============
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div> </div>
       </div>
@@ -4282,7 +4294,7 @@ let%expect_test "query box" =
 
       ==============
       <div>
-        <input> </input>
+        <input/>
         <div>
           <div> </div>
         </div>
@@ -4360,7 +4372,7 @@ module%test Typed = struct
           <label>
             a
             <span test="a">
-              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
             </span>
           </label>
           <label>
@@ -4370,7 +4382,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
           <label>
@@ -4382,7 +4394,7 @@ module%test Typed = struct
                      @on_click
                      style={
                        margin-left: 0px;
-                     }> </input>
+                     }/>
             </span>
           </label>
         </div>
@@ -4407,7 +4419,7 @@ module%test Typed = struct
           <label>
             a
             <span test="a">
-              <input type="number" step="1" spellcheck="false" value:normalized=3 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=3 @on_input/>
             </span>
           </label>
           <label>
@@ -4417,7 +4429,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=text
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
           <label>
@@ -4429,7 +4441,7 @@ module%test Typed = struct
                      @on_click
                      style={
                        margin-left: 0px;
-                     }> </input>
+                     }/>
             </span>
           </label>
         </div>
@@ -4448,7 +4460,7 @@ module%test Typed = struct
           <label>
             a
             <span test="a">
-              <input type="number" step="1" spellcheck="false" value:normalized=10 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=10 @on_input/>
             </span>
           </label>
           <label>
@@ -4458,7 +4470,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized="hi there"
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
           <label>
@@ -4470,7 +4482,7 @@ module%test Typed = struct
                      @on_click
                      style={
                        margin-left: 0px;
-                     }> </input>
+                     }/>
             </span>
           </label>
         </div>
@@ -4518,7 +4530,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         |}];
       Handle.do_actions handle [ { a = 10 } ];
       Handle.show handle;
@@ -4531,7 +4543,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=10
-               @on_input> </input>
+               @on_input/>
         |}]
     ;;
 
@@ -4598,13 +4610,13 @@ module%test Typed = struct
           <label>
             a1
             <span test="a1">
-              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
             </span>
           </label>
           <label>
             a2
             <span test="a2">
-              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized="" @on_input/>
             </span>
           </label>
           <label>
@@ -4614,7 +4626,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
         </div>
@@ -4637,13 +4649,13 @@ module%test Typed = struct
           <label>
             a1
             <span test="a1">
-              <input type="number" step="1" spellcheck="false" value:normalized=1234 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=1234 @on_input/>
             </span>
           </label>
           <label>
             a2
             <span test="a2">
-              <input type="number" step="1" spellcheck="false" value:normalized=1234 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=1234 @on_input/>
             </span>
           </label>
           <label>
@@ -4653,7 +4665,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
         </div>
@@ -4675,13 +4687,13 @@ module%test Typed = struct
           <label>
             a1
             <span test="a1">
-              <input type="number" step="1" spellcheck="false" value:normalized=4321 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=4321 @on_input/>
             </span>
           </label>
           <label>
             a2
             <span test="a2">
-              <input type="number" step="1" spellcheck="false" value:normalized=4321 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=4321 @on_input/>
             </span>
           </label>
           <label>
@@ -4691,7 +4703,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
         </div>
@@ -4709,13 +4721,13 @@ module%test Typed = struct
           <label>
             a1
             <span test="a1">
-              <input type="number" step="1" spellcheck="false" value:normalized=1423 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=1423 @on_input/>
             </span>
           </label>
           <label>
             a2
             <span test="a2">
-              <input type="number" step="1" spellcheck="false" value:normalized=1423 @on_input> </input>
+              <input type="number" step="1" spellcheck="false" value:normalized=1423 @on_input/>
             </span>
           </label>
           <label>
@@ -4725,7 +4737,7 @@ module%test Typed = struct
                      type="text"
                      spellcheck="false"
                      value:normalized=foo
-                     @on_input> </input>
+                     @on_input/>
             </span>
           </label>
         </div>
@@ -4798,7 +4810,7 @@ module%test Typed = struct
                  type="text"
                  spellcheck="false"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
         |}];
       Handle.input_text handle ~get_vdom:Form.view ~selector:"input" ~text:"1234";
@@ -4817,7 +4829,7 @@ module%test Typed = struct
                  type="text"
                  spellcheck="false"
                  value:normalized=1234
-                 @on_input> </input>
+                 @on_input/>
         </div>
         |}];
       Handle.change handle ~get_vdom:Form.view ~selector:"select" ~value:"1";
@@ -4838,7 +4850,7 @@ module%test Typed = struct
                  type="text"
                  spellcheck="false"
                  value:normalized=hi!
-                 @on_input> </input>
+                 @on_input/>
         </div>
         |}]
     ;;
@@ -4940,7 +4952,7 @@ module%test Typed = struct
                  type="text"
                  spellcheck="false"
                  value:normalized=1234
-                 @on_input> </input>
+                 @on_input/>
         </div>
         |}];
       Handle.change handle ~selector:"select" ~get_vdom:Form.view ~value:"2";
@@ -4962,7 +4974,7 @@ module%test Typed = struct
                  type="text"
                  spellcheck="false"
                  value:normalized=hi!
-                 @on_input> </input>
+                 @on_input/>
         </div>
         |}]
     ;;
@@ -5013,7 +5025,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         |}];
       Handle.do_actions handle [ Foo 5 ];
       Handle.show handle;
@@ -5028,7 +5040,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=5
-               @on_input> </input>
+               @on_input/>
         |}]
     ;;
 
@@ -5093,7 +5105,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=5
-               @on_input> </input>
+               @on_input/>
         |}];
       Handle.do_actions handle [ Some (Bar "hi!") ];
       Handle.show handle;
@@ -5106,7 +5118,7 @@ module%test Typed = struct
                type="text"
                spellcheck="false"
                value:normalized=hi!
-               @on_input> </input>
+               @on_input/>
         |}];
       Handle.do_actions handle [ None ];
       Handle.show handle;
@@ -5400,13 +5412,13 @@ let%expect_test "Checkbox.set layout options" =
     <ul class="checkbox-container widget-checklist" style={ list-style: none; margin-left: 0px; }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
@@ -5424,14 +5436,14 @@ let%expect_test "Checkbox.set layout options" =
     -|  <li style={ display: block; }>
     +|  <li style={ display: inline-block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
     -|  <li style={ display: block; }>
     +|  <li style={ display: inline-block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             second
           </label>
         </li>
@@ -5465,7 +5477,7 @@ let%expect_test "query box set to value not in all_options" =
              @on_blur
              @on_focus
              @on_input
-             @on_keydown> </input>
+             @on_keydown/>
       <div data-test="query-box-item-container"
            id="bonsai_path_replaced_in_test"
            tabindex="-1"
@@ -5511,7 +5523,7 @@ let%expect_test "labelling a range form" =
     (Ok 0)
 
     ==============
-    <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input> </input>
+    <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input/>
 
     Right label only
     ###############
@@ -5519,7 +5531,7 @@ let%expect_test "labelling a range form" =
 
     ==============
     <span style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
-      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input> </input>
+      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input/>
       right
     </span>
 
@@ -5530,7 +5542,7 @@ let%expect_test "labelling a range form" =
     ==============
     <span style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
       left
-      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input> </input>
+      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input/>
     </span>
 
     Both sides labelled
@@ -5540,7 +5552,7 @@ let%expect_test "labelling a range form" =
     ==============
     <span style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
       left
-      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input> </input>
+      <input type="range" step="1" spellcheck="false" min="0" max="100" value:normalized=0 @on_input/>
       right
     </span>
     |}]
@@ -5601,7 +5613,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                @on_blur
                @on_focus
                @on_input
-               @on_keydown> </input>
+               @on_keydown/>
         <div data-test="query-box-item-container"
              id="bonsai_path_replaced_in_test"
              tabindex="-1"
@@ -5636,7 +5648,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5686,7 +5698,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5711,7 +5723,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5738,7 +5750,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                @on_blur
                @on_focus
                @on_input
-               @on_keydown> </input>
+               @on_keydown/>
         <div data-test="query-box-item-container"
              id="bonsai_path_replaced_in_test"
              tabindex="-1"
@@ -5765,7 +5777,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5802,7 +5814,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5844,7 +5856,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5907,7 +5919,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -5952,19 +5964,19 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.list" 
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ `Set [ "foo"; "bar"; "baz" ] ];
   Handle.show handle;
@@ -5977,19 +5989,19 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.list" 
            type="text"
            spellcheck="false"
            value:normalized=foo
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=bar
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=baz
-           @on_input> </input>
+           @on_input/>
     |}];
   (* [`Remove 1] should get rid of the entry with "bar" in it. *)
   Handle.do_actions handle [ `Remove 1 ];
@@ -6003,13 +6015,13 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.list" 
            type="text"
            spellcheck="false"
            value:normalized=foo
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=baz
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -6060,19 +6072,19 @@ let%expect_test "three setters in the same frame" =
            type="text"
            spellcheck="false"
            value:normalized=d
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=e
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=f
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -6103,7 +6115,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
 
         ==============
         <div>
-          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown> </input>
+          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown/>
         </div>
         |}];
       Handle.do_actions handle [ [ "foo"; "bar"; "baz" ] ];
@@ -6114,7 +6126,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
 
         ==============
         <div>
-          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown> </input>
+          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown/>
           <div>
             <span tabindex="0" data-value="foo" @on_click @on_keyup> foo × </span>
             <span tabindex="0" data-value="bar" @on_click @on_keyup> bar × </span>
@@ -6135,7 +6147,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
                  spellcheck="false"
                  value:normalized="cooler text"
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div>
             <span tabindex="0" data-value="foo" @on_click @on_keyup> foo × </span>
             <span tabindex="0" data-value="bar" @on_click @on_keyup> bar × </span>
@@ -6153,7 +6165,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
 
         ==============
         <div>
-          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown> </input>
+          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown/>
           <div>
             <span tabindex="0" data-value="cooler text" @on_click @on_keyup> cooler text × </span>
             <span tabindex="0" data-value="foo" @on_click @on_keyup> foo × </span>
@@ -6176,7 +6188,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
 
         ==============
         <div>
-          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown> </input>
+          <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown/>
         </div>
         |}];
       Handle.input_text handle ~get_vdom:Form.view ~text:"cooler text" ~selector:"input";
@@ -6192,7 +6204,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
                  spellcheck="false"
                  value:normalized="cooler text"
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
         </div>
         |}];
       Handle.do_actions handle [ [ "foo"; "bar"; "baz" ] ];
@@ -6206,7 +6218,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
 
             ==============
             <div>
-              <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown> </input>
+              <input type="text" placeholder="" spellcheck="false" value:normalized="" @on_input @on_keydown/>
               <div>
                 <span tabindex="0" data-value="foo" @on_click @on_keyup> foo × </span>
                 <span tabindex="0" data-value="bar" @on_click @on_keyup> bar × </span>
@@ -6227,7 +6239,7 @@ module%test Multiple_stringable_list_clear_textbox_when_set = struct
                      spellcheck="false"
                      value:normalized="cooler text"
                      @on_input
-                     @on_keydown> </input>
+                     @on_keydown/>
               <div>
                 <span tabindex="0" data-value="foo" @on_click @on_keyup> foo × </span>
                 <span tabindex="0" data-value="bar" @on_click @on_keyup> bar × </span>
@@ -6301,8 +6313,8 @@ let%expect_test "a textbox customized with themes" =
       <span class="very-important"> Attrs here! </span>
       <input @key=bonsai_path_replaced_in_test-1
              placeholder="Even better placeholder: placeholder"
-             @on_input> </input>
-      <input @key=bonsai_path_replaced_in_test-2 #value="" @on_input> </input>
+             @on_input/>
+      <input @key=bonsai_path_replaced_in_test-2 #value="" @on_input/>
     </div>
     |}];
   (* In our silly implementation, typing into the first input box does nothing! *)
@@ -6322,8 +6334,8 @@ let%expect_test "a textbox customized with themes" =
       <span class="very-important"> Attrs here! </span>
       <input @key=bonsai_path_replaced_in_test-1
              placeholder="Even better placeholder: placeholder"
-             @on_input> </input>
-      <input @key=bonsai_path_replaced_in_test-2 #value="" @on_input> </input>
+             @on_input/>
+      <input @key=bonsai_path_replaced_in_test-2 #value="" @on_input/>
     </div>
     |}];
   (* But, typing into the second input is hooked up to the state *)
@@ -6342,8 +6354,8 @@ let%expect_test "a textbox customized with themes" =
       <span class="very-important"> Attrs here! </span>
       <input @key=bonsai_path_replaced_in_test-1
              placeholder="Even better placeholder: placeholder"
-             @on_input> </input>
-      <input @key=bonsai_path_replaced_in_test-2 #value="really cool text" @on_input> </input>
+             @on_input/>
+      <input @key=bonsai_path_replaced_in_test-2 #value="really cool text" @on_input/>
     </div>
     |}];
   (* And, setting behaves as you'd expect *)
@@ -6358,8 +6370,8 @@ let%expect_test "a textbox customized with themes" =
       <span class="very-important"> Attrs here! </span>
       <input @key=bonsai_path_replaced_in_test-1
              placeholder="Even better placeholder: placeholder"
-             @on_input> </input>
-      <input @key=bonsai_path_replaced_in_test-2 #value="the coolest text" @on_input> </input>
+             @on_input/>
+      <input @key=bonsai_path_replaced_in_test-2 #value="the coolest text" @on_input/>
     </div>
     |}]
 ;;
@@ -6382,7 +6394,7 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.nonemp
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ `Append; `Append; `Append ];
   Handle.show handle;
@@ -6395,25 +6407,25 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.nonemp
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ `Set (Nonempty_list.create "hi!" [ "foo"; "bar"; "baz" ]) ];
   Handle.show handle;
@@ -6426,25 +6438,25 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.nonemp
            type="text"
            spellcheck="false"
            value:normalized=hi!
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=foo
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=bar
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=baz
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ `Remove 1 ];
   Handle.show handle;
@@ -6457,19 +6469,19 @@ let%expect_test "adding to/setting/removing from a Form.Elements.Multiple.nonemp
            type="text"
            spellcheck="false"
            value:normalized=hi!
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=bar
-           @on_input> </input>
+           @on_input/>
     --------------
     <input @key=bonsai_path_replaced_in_test
            type="text"
            spellcheck="false"
            value:normalized=baz
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -6552,10 +6564,10 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
           <tbody>
             <tr>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
                 <div>
@@ -6598,10 +6610,10 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
           <tbody>
             <tr>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
                 <div>
@@ -6648,23 +6660,10 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
           <tbody>
             <tr>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
-                <input> </input>
-              </td>
-              <td>
-                <div>
-                  <button> X </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input> </input>
-              </td>
-              <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
                 <div>
@@ -6674,10 +6673,23 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
             </tr>
             <tr>
               <td>
-                <input> </input>
+                <input/>
               </td>
               <td>
-                <input> </input>
+                <input/>
+              </td>
+              <td>
+                <div>
+                  <button> X </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input/>
+              </td>
+              <td>
+                <input/>
               </td>
               <td>
                 <div>

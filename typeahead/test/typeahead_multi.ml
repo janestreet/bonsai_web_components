@@ -48,7 +48,7 @@ let%expect_test "Initial multi typeahead state" =
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist id="bonsai_path_replaced_in_test">
         <option value="Option A"> Option A </option>
         <option value="Option B"> Option B </option>
@@ -95,7 +95,7 @@ let%expect_test "Attrs are NOT merged when  \
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist> </datalist>
     </div>
     |}]
@@ -131,7 +131,7 @@ let%expect_test "Attrs are merged when `Merge is applied" =
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist> </datalist>
     </div>
     |}]
@@ -167,7 +167,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
              @on_blur
              @on_change
              @on_focus
-             @on_input> </input>
+             @on_input/>
       <datalist> </datalist>
     </div>
     |}];
@@ -184,7 +184,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
     -|  <datalist> </datalist>
     +|  <datalist id="bonsai_path_replaced_in_test">
     +|    <option value="Option A"> Option A </option>
@@ -206,7 +206,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
     -|  <datalist id="bonsai_path_replaced_in_test">
     -|    <option value="Option A"> Option A </option>
     -|    <option value="Option B"> Option B </option>
@@ -237,7 +237,7 @@ let%expect_test "Select two elements" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
     -|    <option value="Option B"> Option B </option>
@@ -273,7 +273,7 @@ let%expect_test "Deselect an element" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
     +|    <option value="Option B"> Option B </option>
@@ -316,7 +316,7 @@ let%expect_test "set the elements" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
           <option value="Option A"> Option A </option>
           <option value="Option B"> Option B </option>
@@ -370,7 +370,7 @@ let%expect_test "input multiple elements" =
                @on_blur
                @on_change
                @on_focus
-               @on_input> </input>
+               @on_input/>
         <datalist id="bonsai_path_replaced_in_test">
     -|    <option value="Option A"> Option A </option>
     -|    <option value="Option B"> Option B </option>

@@ -123,7 +123,7 @@ let%expect_test "column visibility" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hello
                 </div>
                 <div class="cell prt-table-cell"
@@ -159,7 +159,7 @@ let%expect_test "column visibility" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell"
@@ -195,7 +195,7 @@ let%expect_test "column visibility" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell"
@@ -288,7 +288,7 @@ let%expect_test "stabilization of view range" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hello
               </div>
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -297,7 +297,7 @@ let%expect_test "stabilization of view range" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 there
               </div>
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -321,7 +321,7 @@ let%expect_test "stabilization of view range" =
     {|
     === DIFF HUNK ===
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hello
                 </div>
                 <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -330,7 +330,7 @@ let%expect_test "stabilization of view range" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -339,7 +339,7 @@ let%expect_test "stabilization of view range" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 4 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            world
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -438,7 +438,7 @@ let%expect_test "resize-column" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hello
                 </div>
                 <div class="cell prt-table-cell"
@@ -489,7 +489,7 @@ let%expect_test "resize-column" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell"
@@ -540,7 +540,7 @@ let%expect_test "resize-column" =
                        min-width: 0.00px;
                        max-width: 0.00px;
                      }>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell"
@@ -610,7 +610,7 @@ let%expect_test "big table" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 51 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hi
               </div>
               <div class="cell prt-table-cell" @on_click> 25.000000 </div>
@@ -619,7 +619,7 @@ let%expect_test "big table" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 52 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hi
               </div>
               <div class="cell prt-table-cell" @on_click> 26.000000 </div>
@@ -656,7 +656,7 @@ let%expect_test "big table" =
     -|          <div class="cell prt-table-cell" @on_click> 51 </div>
     +|          <div class="cell prt-table-cell" @on_click> 55 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hi
                 </div>
     -|          <div class="cell prt-table-cell" @on_click> 25.000000 </div>
@@ -667,7 +667,7 @@ let%expect_test "big table" =
     -|          <div class="cell prt-table-cell" @on_click> 52 </div>
     +|          <div class="cell prt-table-cell" @on_click> 56 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hi
                 </div>
     -|          <div class="cell prt-table-cell" @on_click> 26.000000 </div>
@@ -677,7 +677,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 57 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 28.000000 </div>
@@ -686,7 +686,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 58 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 29.000000 </div>
@@ -695,7 +695,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 59 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 29.000000 </div>
@@ -704,7 +704,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 60 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 30.000000 </div>
@@ -713,7 +713,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 61 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 30.000000 </div>
@@ -722,7 +722,7 @@ let%expect_test "big table" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 62 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hi
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 31.000000 </div>
@@ -769,7 +769,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 51 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
     -|            hi
     +|            hi hello world
                 </div>
@@ -779,7 +779,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 52 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hi
                 </div>
                 <div class="cell prt-table-cell" @on_click> 26.000000 </div>
@@ -848,7 +848,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 51 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hi hello world
               </div>
               <div class="cell prt-table-cell" @on_click> 25.000000 </div>
@@ -857,7 +857,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 52 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hi
               </div>
               <div class="cell prt-table-cell" @on_click> 26.000000 </div>
@@ -1032,7 +1032,7 @@ let%expect_test "sorting legacy renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hello
               </div>
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1041,7 +1041,7 @@ let%expect_test "sorting legacy renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 there
               </div>
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1050,7 +1050,7 @@ let%expect_test "sorting legacy renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 4 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 world
               </div>
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1142,7 +1142,7 @@ let%expect_test "sorting legacy renderer" =
     -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
-    -|            <input @on_input> </input>
+    -|            <input @on_input/>
     -|            hello
     -|          </div>
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1151,7 +1151,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1160,7 +1160,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1169,7 +1169,7 @@ let%expect_test "sorting legacy renderer" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hello
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1221,7 +1221,7 @@ let%expect_test "sorting legacy renderer" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hello
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1230,7 +1230,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1239,7 +1239,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1248,7 +1248,7 @@ let%expect_test "sorting legacy renderer" =
     -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
-    -|            <input @on_input> </input>
+    -|            <input @on_input/>
     -|            hello
     -|          </div>
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1294,7 +1294,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 0 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hello
                 </div>
                 <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1334,7 +1334,7 @@ let%expect_test "sorting legacy renderer" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 1 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            there
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1343,7 +1343,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 0 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   hello
                 </div>
                 <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1352,7 +1352,7 @@ let%expect_test "sorting legacy renderer" =
     -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 1 </div>
     -|          <div class="cell prt-table-cell" @on_click>
-    -|            <input @on_input> </input>
+    -|            <input @on_input/>
     -|            there
     -|          </div>
     -|          <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1361,7 +1361,7 @@ let%expect_test "sorting legacy renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1431,7 +1431,7 @@ let%expect_test "sorting default renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 0 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 hello
               </div>
               <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1440,7 +1440,7 @@ let%expect_test "sorting default renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 1 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 there
               </div>
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1449,7 +1449,7 @@ let%expect_test "sorting default renderer" =
             <div class="prt-table-row">
               <div class="cell prt-table-cell" @on_click> 4 </div>
               <div class="cell prt-table-cell" @on_click>
-                <input @on_input> </input>
+                <input @on_input/>
                 world
               </div>
               <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1552,7 +1552,7 @@ let%expect_test "sorting default renderer" =
     -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
-    -|            <input @on_input> </input>
+    -|            <input @on_input/>
     -|            hello
     -|          </div>
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1561,7 +1561,7 @@ let%expect_test "sorting default renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1570,7 +1570,7 @@ let%expect_test "sorting default renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1579,7 +1579,7 @@ let%expect_test "sorting default renderer" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hello
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1705,7 +1705,7 @@ let%expect_test "sorting default renderer" =
     +|        <div class="prt-table-row">
     +|          <div class="cell prt-table-cell" @on_click> 0 </div>
     +|          <div class="cell prt-table-cell" @on_click>
-    +|            <input @on_input> </input>
+    +|            <input @on_input/>
     +|            hello
     +|          </div>
     +|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>
@@ -1714,7 +1714,7 @@ let%expect_test "sorting default renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 1 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   there
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1723,7 +1723,7 @@ let%expect_test "sorting default renderer" =
               <div class="prt-table-row">
                 <div class="cell prt-table-cell" @on_click> 4 </div>
                 <div class="cell prt-table-cell" @on_click>
-                  <input @on_input> </input>
+                  <input @on_input/>
                   world
                 </div>
                 <div class="cell prt-table-cell" @on_click> 2.000000 </div>
@@ -1732,7 +1732,7 @@ let%expect_test "sorting default renderer" =
     -|        <div class="prt-table-row">
     -|          <div class="cell prt-table-cell" @on_click> 0 </div>
     -|          <div class="cell prt-table-cell" @on_click>
-    -|            <input @on_input> </input>
+    -|            <input @on_input/>
     -|            hello
     -|          </div>
     -|          <div class="cell prt-table-cell" @on_click> 1.000000 </div>

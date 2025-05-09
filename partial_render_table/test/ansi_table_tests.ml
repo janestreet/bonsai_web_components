@@ -599,8 +599,7 @@ let%expect_test "locking focus prevents moving focus" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((0 0)))
     ((focused ((0 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -634,8 +633,7 @@ let%expect_test "locking focus prevents moving focus" =
   Handle.show_diff test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 1 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
 
     -|((focused ((0 0))) (num_filtered_rows (3)))
@@ -716,8 +714,7 @@ let%expect_test "focus down in cell-focus table" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((0 0)))
     ((focused ((0 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -732,8 +729,7 @@ let%expect_test "focus down in cell-focus table" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 1 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -810,8 +806,7 @@ let%expect_test "focus up in cell-focus table" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 2 and column id 0 into view, if necessary
     (focus_changed_to ((4 0)))
     ((focused ((4 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -826,8 +821,7 @@ let%expect_test "focus up in cell-focus table" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 1 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -1038,8 +1032,7 @@ let%expect_test "focus shadow (right)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((0 0)))
     ((focused ((0 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -1054,8 +1047,7 @@ let%expect_test "focus shadow (right)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 1 into view, if necessary
+    scrolling cell at row index 0 and column id 1 into view, if necessary
     (focus_changed_to ((0 1)))
     ((focused ((0 1))) (num_filtered_rows (3)))
     ┌───┬─────┬─────┬───────────┬──────────┬─────┐
@@ -1084,8 +1076,7 @@ let%expect_test "focus shadow (right)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 2 into view, if necessary
+    scrolling cell at row index 0 and column id 2 into view, if necessary
     (focus_changed_to ((0 2)))
     ((focused ((0 2))) (num_filtered_rows (3)))
     ┌───┬─────┬─────┬───────┬──────────────┬─────┐
@@ -1104,7 +1095,7 @@ let%expect_test "focus shadow (left)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
+    scrolling cell at row index 0 and column id 2 into view, if necessary
     (focus_changed_to ((0 2)))
     ((focused ((0 2))) (num_filtered_rows (3)))
     ┌───┬─────┬─────┬───────┬──────────────┬─────┐
@@ -1119,8 +1110,7 @@ let%expect_test "focus shadow (left)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 1 into view, if necessary
+    scrolling cell at row index 0 and column id 1 into view, if necessary
     (focus_changed_to ((0 1)))
     ((focused ((0 1))) (num_filtered_rows (3)))
     ┌───┬─────┬─────┬───────────┬──────────┬─────┐
@@ -1149,8 +1139,7 @@ let%expect_test "focus shadow (left)" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((0 0)))
     ((focused ((0 0))) (num_filtered_rows (3)))
     ┌───┬─────┬───────┬───────┬──────────┬─────┐
@@ -2534,8 +2523,7 @@ let%expect_test "directional jumping" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2551,8 +2539,7 @@ let%expect_test "directional jumping" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 3 and column id 0 into view, if necessary
     (focus_changed_to ((4 0)))
     ((focused ((4 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2568,8 +2555,7 @@ let%expect_test "directional jumping" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 3 and column id 3 into view, if necessary
     (focus_changed_to ((4 3)))
     ((focused ((4 3))) (num_filtered_rows (4)))
     ┌───┬─────┬─────┬────┬──────────┬─────────┐
@@ -2585,8 +2571,7 @@ let%expect_test "directional jumping" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 3 and column id 0 into view, if necessary
     (focus_changed_to ((4 0)))
     ((focused ((4 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2604,8 +2589,7 @@ let%expect_test "directional jumping" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2651,8 +2635,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2683,8 +2666,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 0 and column id 3 into view, if necessary
     (focus_changed_to ((1 3)))
     ((focused ((1 3))) (num_filtered_rows (4)))
     ┌───┬─────┬─────┬────┬──────────┬─────────┐
@@ -2715,8 +2697,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    scrolling to index 0 at 0.0px
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 0 and column id 0 into view, if necessary
     (focus_changed_to ((1 0)))
     ((focused ((1 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2747,8 +2728,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 3 and column id 0 into view, if necessary
     (focus_changed_to ((4 0)))
     ((focused ((4 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2780,8 +2760,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 3 and column id 3 into view, if necessary
     (focus_changed_to ((4 3)))
     ((focused ((4 3))) (num_filtered_rows (4)))
     ┌───┬─────┬─────┬────┬──────────┬─────────┐
@@ -2812,8 +2791,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 0 into view, if necessary
+    scrolling cell at row index 3 and column id 0 into view, if necessary
     (focus_changed_to ((4 0)))
     ((focused ((4 0))) (num_filtered_rows (4)))
     ┌───┬─────┬───────┬────┬──────────┬─────┐
@@ -2831,11 +2809,9 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 3 and column id 3 into view, if necessary
     (focus_changed_to ((4 3)))
-    scrolling to index 0 at 0.0px
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 0 and column id 3 into view, if necessary
     (focus_changed_to ((1 3)))
     ((focused ((1 3))) (num_filtered_rows (4)))
     ┌───┬─────┬─────┬────┬──────────┬─────────┐
@@ -2866,8 +2842,7 @@ let%expect_test "directional jumping from unfocused" =
   Handle.show test.handle;
   [%expect
     {|
-    skipping scroll because target already in view
-    scrolling column with id 3 into view, if necessary
+    scrolling cell at row index 3 and column id 3 into view, if necessary
     (focus_changed_to ((4 3)))
     ((focused ((4 3))) (num_filtered_rows (4)))
     ┌───┬─────┬─────┬────┬──────────┬─────────┐

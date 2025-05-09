@@ -83,15 +83,18 @@ module Record = struct
     let module The_results = Typed_field_map.Make (M.Typed_field) (Or_error) in
     let module To_forms = The_form_values.As_applicative.To_other_map (App) (The_forms) in
     let form_values_per_field =
-      let f field graph =
-        let subform = M.form_for_field field graph in
-        let%arr subform in
-        Form.map_error subform ~f:(M.augment_error field)
+      let f field =
+        let field = M.Typed_field.globalize0 field in
+        fun graph ->
+          let subform = M.form_for_field field graph in
+          let%arr subform in
+          Form.map_error subform ~f:[%eta1 M.augment_error field]
       in
       The_form_values.create { f }
     in
     let forms_per_field = To_forms.run form_values_per_field graph in
     let lookup field =
+      let field = M.Typed_field.globalize0 field in
       let%map forms_per_field in
       The_forms.find forms_per_field field
     in
@@ -191,6 +194,7 @@ module Record = struct
           let finalize_view { f } _graph =
             let f : type a. a Typed_field.t -> Vdom.Node.t Bonsai.t =
               fun field ->
+              let field = M.Typed_field.globalize0 field in
               let%map form = f field in
               Form.view form
             in
@@ -203,7 +207,9 @@ module Record = struct
       let to_string =
         match M.label_for_field with
         | `Inferred ->
-          Bonsai.return (fun t -> sexp_to_pretty_string M.Typed_field.Packed.sexp_of_t t)
+          Bonsai.return (fun t ->
+            let t = M.Typed_field.Packed.globalize t in
+            sexp_to_pretty_string M.Typed_field.Packed.sexp_of_t t)
         | `Computed field_to_string ->
           Bonsai.return (fun ({ f = T field } : M.Typed_field.Packed.t) ->
             field_to_string field)
@@ -572,36 +578,39 @@ module Variant = struct
         end)
         (Forms)
     in
-    let create_form_with_comparator (type a) (variant : a M.Typed_variant.t) graph =
-      let wrap = M.Typed_variant.create variant in
-      (* This is safe because this function only ever gets types of this argument. *)
-      let unwrap_exn v = M.Typed_variant.get variant v |> Option.value_exn in
-      let module Comparator = struct
-        module T = struct
-          type t = a
+    let create_form_with_comparator (type a) (variant : a M.Typed_variant.t) =
+      let variant = M.Typed_variant.globalize0 variant in
+      fun graph ->
+        let wrap x = M.Typed_variant.create variant x in
+        (* This is safe because this function only ever gets types of this argument. *)
+        let unwrap_exn v = M.Typed_variant.get variant v |> Option.value_exn in
+        let module Comparator = struct
+          module T = struct
+            type t = a
 
-          let sexp_of_t =
-            match M.sexp_of_variant_argument with
-            | `Use_sexp_of_variant -> fun a -> M.comparator.sexp_of_t (wrap a)
-            | `Custom f -> f variant
-          ;;
+            let sexp_of_t =
+              match M.sexp_of_variant_argument with
+              | `Use_sexp_of_variant ->
+                fun a -> (Comparator.sexp_of_t M.comparator) (wrap a)
+              | `Custom f -> fun a -> f variant a
+            ;;
 
-          let compare = Comparable.lift ~f:wrap M.comparator.compare
+            let compare = Comparable.lift ~f:wrap (Comparator.compare M.comparator)
+          end
+
+          include T
+          include Comparator.Make (T)
         end
-
-        include T
-        include Comparator.Make (T)
-      end
-      in
-      let form = M.form_for_variant variant (module Comparator) graph in
-      let%arr form in
-      let form = Form.map_error form ~f:(M.augment_error variant) in
-      Form_with_comparator.T
-        { cmp = (module Comparator)
-        ; wrap = Set.map (module M) ~f:wrap
-        ; form
-        ; unwrap_exn = Set.map (module Comparator) ~f:unwrap_exn
-        }
+        in
+        let form = M.form_for_variant variant (module Comparator) graph in
+        let%arr form in
+        let form = Form.map_error form ~f:[%eta1 M.augment_error variant] in
+        Form_with_comparator.T
+          { cmp = (module Comparator)
+          ; wrap = Set.map (module M) ~f:wrap
+          ; form
+          ; unwrap_exn = Set.map (module Comparator) ~f:unwrap_exn
+          }
     in
     let form_computations =
       Form_computations.create { f = create_form_with_comparator }
@@ -609,6 +618,7 @@ module Variant = struct
     let forms = To_forms.run form_computations graph in
     let view =
       let lookup variant =
+        let variant = M.Typed_variant.globalize0 variant in
         let%map forms in
         let (Form_with_comparator.T { form; cmp; _ }) = Forms.find forms variant in
         Packed_set_form.T { form; comparator = cmp }

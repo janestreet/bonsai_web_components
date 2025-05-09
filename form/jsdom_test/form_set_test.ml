@@ -32,10 +32,10 @@ let%expect_test "Form.set is reflected within a frame." =
     {|
     <html>
       <head>
-        <meta charset="UTF-8"> </meta>
+        <meta charset="UTF-8"/>
       </head>
       <body>
-        <input type="text" tabindex="0" style="outline: none;"> </input>
+        <input type="text" tabindex="0" style="outline: none;"/>
       </body>
     </html>
     |}];

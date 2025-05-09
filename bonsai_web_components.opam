@@ -19,6 +19,7 @@ depends: [
   "bonsai_web"
   "bonsai_web_test"
   "core"
+  "core_extended"
   "core_kernel"
   "expect_test_helpers_core"
   "fuzzy_match"
@@ -31,6 +32,7 @@ depends: [
   "ppx_bench"
   "ppx_css"
   "ppx_expect"
+  "ppx_html"
   "ppx_jane"
   "ppx_module_timer"
   "ppx_pattern_bind"
@@ -40,9 +42,9 @@ depends: [
   "sexp_grammar"
   "sexplib0"
   "textutils"
+  "toplayer"
   "uri_parsing"
   "virtual_dom"
-  "virtual_dom_toplayer"
   "dune"                     {>= "3.17.0"}
   "gen_js_api"               {>= "1.0.8"}
   "js_of_ocaml"              {>= "6.0.0"}

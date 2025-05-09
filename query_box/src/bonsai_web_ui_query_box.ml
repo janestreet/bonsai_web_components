@@ -114,13 +114,15 @@ let create
     let module Key = struct
       include Key
 
-      let sexp_of_t = comparator.sexp_of_t
+      let sexp_of_t = Comparator.sexp_of_t comparator
     end
     in
     let module M = struct
       type t = Key.t Model.t [@@deriving sexp_of]
 
-      let equal a b = Model.equal (fun a b -> Key.comparator.compare a b = 0) a b
+      let equal a b =
+        Model.equal (fun a b -> (Comparator.compare Key.comparator) a b = 0) a b
+      ;;
     end
     in
     Bonsai.wrap
@@ -197,7 +199,7 @@ let create
              let offset =
                let comparison =
                  Model.compare_suggestion_list_state
-                   (Map.comparator items).compare
+                   (Comparator.compare (Map.comparator items))
                    model.suggestion_list_state
                    suggestion_list_state
                in
@@ -213,7 +215,7 @@ let create
              let offset =
                let comparison =
                  Model.compare_suggestion_list_state
-                   (Map.comparator items).compare
+                   (Comparator.compare (Map.comparator items))
                    model.suggestion_list_state
                    suggestion_list_state
                in
@@ -323,8 +325,8 @@ let create
         and on_hover_item in
         let focused_attr =
           match focused_key with
-          | Some focused_key when Key.comparator.compare key focused_key = 0 ->
-            focused_item_attr
+          | Some focused_key when (Comparator.compare Key.comparator) key focused_key = 0
+            -> focused_item_attr
           | _ -> Attr.empty
         in
         let move_to_effect =
@@ -598,7 +600,7 @@ module Collate_map_with_score = struct
       type nonrec t = T.t t
       type nonrec comparator_witness = T.comparator_witness comparator_witness
 
-      let sexp_of_t = sexp_of_t T.comparator.sexp_of_t
+      let sexp_of_t = sexp_of_t (Comparator.sexp_of_t T.comparator)
       let comparator = comparator T.comparator
     end
 

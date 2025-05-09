@@ -155,7 +155,7 @@ let all_computations = lazy (List.map all ~f:(fun t -> name t, computation t))
 
 module Scenarios = struct
   module Prt_input = Input
-  open Bonsai_perf_shared
+  open Bonsai_bench_scenario
 
   let incr_dependency ~num_rows ~num_incrs =
     let starting_map = Row.init_rows num_rows in

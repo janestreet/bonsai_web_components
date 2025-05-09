@@ -42,7 +42,7 @@ let%expect_test "normal bool field" =
                  @on_click
                  style={
                    margin-left: 0px;
-                 }> </input>
+                 }/>
           |}])
       ~sexp_dot_bool_record:(fun () ->
         [%expect
@@ -52,7 +52,7 @@ let%expect_test "normal bool field" =
           ==============
           <div class="checkbox-container">
             <label>
-              <input type="checkbox" #checked="false" @on_click> </input>
+              <input type="checkbox" #checked="false" @on_click/>
 
             </label>
           </div>
@@ -75,7 +75,7 @@ let%expect_test "normal bool field" =
                    @on_click
                    style={
                      margin-left: 0px;
-                   }> </input>
+                   }/>
           |}])
       ~sexp_dot_bool_record:(fun () ->
         [%expect
@@ -86,8 +86,8 @@ let%expect_test "normal bool field" =
             ==============
             <div class="checkbox-container">
               <label>
-          -|    <input type="checkbox" #checked="false" @on_click> </input>
-          +|    <input type="checkbox" #checked="true" @on_click> </input>
+          -|    <input type="checkbox" #checked="false" @on_click/>
+          +|    <input type="checkbox" #checked="true" @on_click/>
 
               </label>
             </div>
@@ -110,7 +110,7 @@ let%expect_test "normal bool field" =
                    @on_click
                    style={
                      margin-left: 0px;
-                   }> </input>
+                   }/>
           |}])
       ~sexp_dot_bool_record:(fun () ->
         [%expect
@@ -121,8 +121,8 @@ let%expect_test "normal bool field" =
             ==============
             <div class="checkbox-container">
               <label>
-          -|    <input type="checkbox" #checked="true" @on_click> </input>
-          +|    <input type="checkbox" #checked="false" @on_click> </input>
+          -|    <input type="checkbox" #checked="true" @on_click/>
+          +|    <input type="checkbox" #checked="false" @on_click/>
 
               </label>
             </div>

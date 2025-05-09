@@ -339,7 +339,9 @@ module Checkbox = struct
     =
     fun graph ->
     let to_string =
-      Option.value to_string ~default:(sexp_to_pretty_string M.comparator.sexp_of_t)
+      Option.value
+        to_string
+        ~default:(sexp_to_pretty_string (Comparator.sexp_of_t M.comparator))
     in
     let module M = struct
       include M
@@ -347,7 +349,7 @@ module Checkbox = struct
       include Comparable.Make_plain_using_comparator (struct
           include M
 
-          let sexp_of_t = comparator.sexp_of_t
+          let sexp_of_t = Comparator.sexp_of_t comparator
         end)
 
       let to_string = to_string
@@ -1400,7 +1402,7 @@ module Multiselect = struct
       module T = struct
         include M
 
-        let sexp_of_t = comparator.sexp_of_t
+        let sexp_of_t = Comparator.sexp_of_t comparator
       end
 
       include T
@@ -2246,12 +2248,12 @@ module Query_box = struct
         module Key = struct
           include Key
 
-          let sexp_of_t = comparator.sexp_of_t
+          let sexp_of_t = Comparator.sexp_of_t comparator
         end
 
         type t = Key.t [@@deriving sexp_of]
 
-        let equal a b = Key.comparator.compare a b = 0
+        let equal a b = (Comparator.compare Key.comparator) a b = 0
       end
       in
       Bonsai.state_opt graph ~sexp_of_model:[%sexp_of: M.t] ~equal:[%equal: M.t]
@@ -2503,7 +2505,7 @@ module Query_box = struct
     in
     let to_string =
       optional_computation_value_map
-        ~default:(Fn.compose Sexp.to_string_hum M.comparator.sexp_of_t)
+        ~default:(Fn.compose Sexp.to_string_hum (Comparator.sexp_of_t M.comparator))
         ~f:Fn.id
         to_string
         graph
