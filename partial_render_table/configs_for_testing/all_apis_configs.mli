@@ -90,7 +90,7 @@ type t =
 [@@deriving equal, compare, sexp_of, enumerate, hash]
 
 type input := (int, Symbol_table.Row.t, Int.comparator_witness) Sharable.Input.t
-type computation := (input, Prt_output.t) Bonsai_perf_shared.compare_computation
+type computation := (input, Prt_output.t) Bonsai_bench_scenario.compare_computation
 
 val name : t -> string
 val computation : t -> computation

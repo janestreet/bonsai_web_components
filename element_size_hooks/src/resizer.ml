@@ -53,14 +53,16 @@ module State = struct
     ; mutable side : Side.t
     ; mutable direction : Direction.t
     ; mutable on_drag_start : unit Effect.t option
+    ; mutable on_drag : (float -> unit Effect.t) option
     ; mutable on_drag_stop : unit Effect.t option
+    ; mutable freeze_size : [ `Always | `While_dragging ]
     ; mutable parent_node : Dom_html.element Js.t option
     (* we need to store this in state because by the time we call destroy
        element.parentNode would be null *)
     }
   [@@deriving fields ~getters ~setters ~iterators:create]
 
-  let create ~direction ~side ~on_drag_start ~on_drag_stop () =
+  let create ~direction ~side ~on_drag_start ~on_drag ~on_drag_stop ~freeze_size () =
     let animation_id = request_animation_frame (Fn.const ()) in
     Fields.create
       ~listeners:Pointer_event.Map.empty
@@ -70,7 +72,9 @@ module State = struct
       ~side
       ~direction
       ~on_drag_start
+      ~on_drag
       ~on_drag_stop
+      ~freeze_size
       ~parent_node:None
   ;;
 
@@ -172,6 +176,9 @@ let rec do_update_height_or_width target state =
     (match State.direction state with
      | Horizontal -> set_width parent new_length
      | Vertical -> set_height parent new_length);
+    Option.iter state.on_drag ~f:(fun on_drag ->
+      let effect = on_drag new_length in
+      Effect.Expert.handle_non_dom_event_exn effect);
     return ()
   in
   State.clear_pointer_axis state;
@@ -184,7 +191,9 @@ module T = struct
       { direction : Direction.t
       ; side : Side.t
       ; on_drag_start : (unit Effect.t option[@sexp.opaque])
+      ; on_drag : ((float -> unit Effect.t) option[@sexp.opaque])
       ; on_drag_stop : (unit Effect.t option[@sexp.opaque])
+      ; freeze_size : [ `Always | `While_dragging ]
       }
     [@@deriving sexp_of]
 
@@ -196,16 +205,31 @@ module T = struct
   module State = State
 
   module Helpers = struct
+    (* This has to take parent_node instead of element since if we run this from destroy
+       we can no longer look it up *)
+    let clear_size_attr direction parent_node =
+      let f =
+        match direction with
+        | Direction.Horizontal -> Freeze.Expert.reset_width
+        | Vertical -> Freeze.Expert.reset_height
+      in
+      f parent_node
+    ;;
+
     let init_or_reset_state
       direction
       (state : State.t)
       element
       ~on_drag_start
+      ~on_drag
       ~on_drag_stop
+      ~freeze_size
       =
       state.direction <- direction;
       state.on_drag_start <- on_drag_start;
+      state.on_drag <- on_drag;
       state.on_drag_stop <- on_drag_stop;
+      state.freeze_size <- freeze_size;
       let on_pointer_move _ event =
         let event : Js_of_ocaml.Dom_html.pointerEvent Js.t =
           Js_of_ocaml.Js.Unsafe.coerce event
@@ -221,6 +245,9 @@ module T = struct
       in
       let on_pointer_up _ _ =
         set_cursor "initial";
+        (match state.freeze_size with
+         | `While_dragging -> Option.iter state.parent_node ~f:(clear_size_attr direction)
+         | `Always -> ());
         State.clear_pointer_start state;
         State.clear_pointer_axis state;
         State.remove_pointer_event state ~event:Move;
@@ -251,50 +278,65 @@ module T = struct
       in
       State.on_pointer_event state element ~f:on_pointer_down ~event:Down
     ;;
-
-    (* This has to take parent_node instead of element since if we run this from destroy
-       we can no longer look it up *)
-    let clear_size_attr direction parent_node =
-      let f =
-        match direction with
-        | Direction.Horizontal -> Freeze.Expert.reset_width
-        | Vertical -> Freeze.Expert.reset_height
-      in
-      f parent_node
-    ;;
   end
 
-  let init { Input.direction; side; on_drag_start; on_drag_stop } element =
-    let state = State.create ~direction ~side ~on_drag_start ~on_drag_stop () in
-    Helpers.init_or_reset_state direction state element ~on_drag_start ~on_drag_stop;
+  let init
+    { Input.direction; side; on_drag_start; on_drag; on_drag_stop; freeze_size }
+    element
+    =
+    let state =
+      State.create ~direction ~side ~on_drag_start ~on_drag ~on_drag_stop ~freeze_size ()
+    in
+    Helpers.init_or_reset_state
+      direction
+      state
+      element
+      ~on_drag_start
+      ~on_drag
+      ~on_drag_stop
+      ~freeze_size;
     state
   ;;
 
-  let on_mount _init state element =
-    let f =
-      match State.direction state with
-      | Horizontal -> Freeze.Expert.set_width
-      | Vertical -> Freeze.Expert.set_height
-    in
+  let on_mount _init (state : State.t) element =
     state.parent_node <- get_parent element;
-    Option.iter state.parent_node ~f
+    match state.freeze_size with
+    | `Always ->
+      Option.iter
+        state.parent_node
+        ~f:
+          (match State.direction state with
+           | Horizontal -> Freeze.Expert.set_width
+           | Vertical -> Freeze.Expert.set_height)
+    | `While_dragging -> ()
   ;;
 
   let on_mount = `Schedule_animation_frame on_mount
 
   let update
     ~old_input:{ Input.direction = old_direction; _ }
-    ~new_input:{ Input.direction; side; on_drag_start; on_drag_stop }
+    ~new_input:
+      { Input.direction; side; on_drag_start; on_drag; on_drag_stop; freeze_size }
     (state : State.t)
     element
     =
     state.side <- side;
+    state.on_drag_start <- on_drag_start;
+    state.on_drag <- on_drag;
+    state.on_drag_stop <- on_drag_stop;
     if not ([%equal: Direction.t] old_direction direction)
     then (
       Option.iter state.parent_node ~f:(Helpers.clear_size_attr old_direction);
       (* This might not work well if you try changing the direction while the user is
        holding their mouse down/dragging, but that's an edge case *)
-      Helpers.init_or_reset_state direction state element ~on_drag_start ~on_drag_stop)
+      Helpers.init_or_reset_state
+        direction
+        state
+        element
+        ~on_drag_start
+        ~on_drag
+        ~on_drag_stop
+        ~freeze_size)
   ;;
 
   let destroy _input (state : State.t) _element =
@@ -306,8 +348,16 @@ end
 
 module Hook = Vdom.Attr.Hooks.Make (T)
 
-let attr ?on_drag_start ?on_drag_stop ?(direction = Direction.Horizontal) ~side () =
+let attr
+  ?on_drag_start
+  ?on_drag
+  ?on_drag_stop
+  ?(freeze_size = `Always)
+  ?(direction = Direction.Horizontal)
+  ~side
+  ()
+  =
   Vdom.Attr.create_hook
     "resizer"
-    (Hook.create { direction; side; on_drag_start; on_drag_stop })
+    (Hook.create { direction; side; on_drag_start; on_drag; on_drag_stop; freeze_size })
 ;;

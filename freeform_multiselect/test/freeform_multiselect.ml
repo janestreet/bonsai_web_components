@@ -35,7 +35,7 @@ let%expect_test "Initial multiselect state" =
              placeholder="Select a value"
              value=""
              #value=""
-             @on_change> </input>
+             @on_change/>
     </div>
     |}]
 ;;
@@ -57,7 +57,7 @@ let%expect_test "Select two elements" =
                placeholder="Select a value"
                value=""
                #value=""
-               @on_change> </input>
+               @on_change/>
     +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
@@ -83,7 +83,7 @@ let%expect_test "Deselect an element" =
                placeholder="Select a value"
                value=""
                #value=""
-               @on_change> </input>
+               @on_change/>
         <div class="bonsai-web-ui-freeform-multiselect-pills">
     -|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
           <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
@@ -121,7 +121,7 @@ let%expect_test "set the elements" =
                placeholder="Select a value"
                value=""
                #value=""
-               @on_change> </input>
+               @on_change/>
     +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
@@ -147,7 +147,7 @@ let%expect_test "input multiple elements" =
                placeholder="Select a value"
                value=""
                #value=""
-               @on_change> </input>
+               @on_change/>
     +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>

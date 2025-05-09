@@ -113,7 +113,7 @@ let%expect_test "typing into a string textbox" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -129,7 +129,7 @@ let%expect_test "typing into a string textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -147,7 +147,7 @@ let%expect_test "typing into a string password textbox" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -163,7 +163,7 @@ let%expect_test "typing into a string password textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -430,7 +430,7 @@ let%expect_test "collapsible group" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
       </tbody>
@@ -467,7 +467,7 @@ let%expect_test "collapsible group" =
     -|               spellcheck="false"
     -|               id="bonsai_path_replaced_in_test"
     -|               value:normalized=""
-    -|               @on_input> </input>
+    -|               @on_input/>
     -|      </td>
     -|    </tr>
         </tbody>
@@ -489,7 +489,7 @@ let%expect_test "setting into a string textbox" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ "hello world" ];
   Handle.show_diff handle;
@@ -505,7 +505,7 @@ let%expect_test "setting into a string textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -523,7 +523,7 @@ let%expect_test "typing into a int textbox" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"123";
   Handle.show_diff handle;
@@ -539,7 +539,7 @@ let%expect_test "typing into a int textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized=123
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -555,7 +555,7 @@ let%expect_test "typing into a int textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=123
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -573,7 +573,7 @@ let%expect_test "setting into a int textbox" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ 123 ];
   Handle.show_diff handle;
@@ -589,7 +589,7 @@ let%expect_test "setting into a int textbox" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized=123
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -617,13 +617,13 @@ let%expect_test "typing into a paired string textbox * int textbox " =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input:nth-child(1)" ~text:"hello world";
@@ -642,14 +642,14 @@ let%expect_test "typing into a paired string textbox * int textbox " =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized="hello world"
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -678,13 +678,13 @@ let%expect_test "setting into a paired string textbox * int textbox " =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ "hello world", 123 ];
@@ -702,14 +702,14 @@ let%expect_test "setting into a paired string textbox * int textbox " =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized="hello world"
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -742,19 +742,19 @@ module%test [@name "Form.all"] _ = struct
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.input_text handle ~get_vdom ~selector:"input:nth-child(1)" ~text:"hello world";
@@ -773,20 +773,20 @@ module%test [@name "Form.all"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -805,19 +805,19 @@ module%test [@name "Form.all"] _ = struct
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.do_actions handle [ [ "hello world"; "quack"; "" ] ];
@@ -835,20 +835,20 @@ module%test [@name "Form.all"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -875,20 +875,20 @@ module%test [@name "Form.all"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -915,20 +915,20 @@ module%test [@name "Form.all"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -970,19 +970,19 @@ module%test [@name "Form.all_map"] _ = struct
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.input_text handle ~get_vdom ~selector:"input:nth-child(1)" ~text:"hello world";
@@ -1005,20 +1005,20 @@ module%test [@name "Form.all_map"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1040,19 +1040,19 @@ module%test [@name "Form.all_map"] _ = struct
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=""
-               @on_input> </input>
+               @on_input/>
       </div>
       |}];
     Handle.do_actions
@@ -1076,20 +1076,20 @@ module%test [@name "Form.all_map"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1121,20 +1121,20 @@ module%test [@name "Form.all_map"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1164,20 +1164,20 @@ module%test [@name "Form.all_map"] _ = struct
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized="hello world"
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
       -|         value:normalized=""
       +|         value:normalized=quack
-                 @on_input> </input>
+                 @on_input/>
           <input @key=bonsai_path_replaced_in_test
                  type="text"
                  spellcheck="false"
                  id="bonsai_path_replaced_in_test"
                  value:normalized=""
-                 @on_input> </input>
+                 @on_input/>
         </div>
       |}]
   ;;
@@ -1200,7 +1200,7 @@ let%expect_test "typing into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1222,7 +1222,7 @@ let%expect_test "typing into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1244,7 +1244,7 @@ let%expect_test "typing into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="false"> s </option>
@@ -1272,7 +1272,7 @@ let%expect_test "setting into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1294,7 +1294,7 @@ let%expect_test "setting into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="true"> s </option>
@@ -1316,7 +1316,7 @@ let%expect_test "setting into a time span textbox" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=24
-             @on_input> </input>
+             @on_input/>
       <select class="widget-dropdown" @on_change>
         <option value="0" #selected="false"> ms </option>
         <option value="1" #selected="false"> s </option>
@@ -1347,13 +1347,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"11:11 AM" ~selector:"input:nth-child(1)";
@@ -1368,13 +1368,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"10:00 AM" ~selector:"input:nth-child(2)";
@@ -1389,13 +1389,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"11:11 AM" ~selector:"input:nth-child(2)";
@@ -1410,13 +1410,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"11:12 AM" ~selector:"input:nth-child(2)";
@@ -1431,13 +1431,13 @@ let%expect_test "typing into a time range textbox, with strict inequality requir
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:12:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1465,13 +1465,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"11:11 AM" ~selector:"input:nth-child(1)";
@@ -1487,13 +1487,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~text:"11:11 AM" ~selector:"input:nth-child(2)";
@@ -1508,13 +1508,13 @@ let%expect_test "typing into a time range textbox, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:11:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1541,13 +1541,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* Somehow, a bad range got set, so no setting should happen *)
@@ -1563,13 +1563,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* A range where the endpoints are equal is not allowed in this case *)
@@ -1585,13 +1585,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   (* Finally, a good range! *)
@@ -1607,13 +1607,13 @@ let%expect_test "setting into a date range, with strict inequality required" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1643,13 +1643,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ eleven_am, ten_am ];
@@ -1664,13 +1664,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ eleven_am, eleven_am ];
@@ -1685,13 +1685,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ ten_am, eleven_am ];
@@ -1706,13 +1706,13 @@ let%expect_test "setting into a date range, with equality allowed" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=10:00:00.000
-             @on_input> </input>
+             @on_input/>
        -
       <input type="time"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=11:00:00.000
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1783,7 +1783,7 @@ let%expect_test "adding more things to a string list (indented button)" =
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=""
-    +|               @on_input> </input>
+    +|               @on_input/>
     +|      </td>
     +|    </tr>
     +|    <tr>
@@ -1838,7 +1838,7 @@ let%expect_test "adding more things to a string list (indented button)" =
                      id="bonsai_path_replaced_in_test"
     -|               value:normalized=""
     +|               value:normalized="hello world"
-                     @on_input> </input>
+                     @on_input/>
             </td>
           </tr>
           <tr>
@@ -1880,7 +1880,7 @@ let%expect_test "adding more things to a string list" =
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=""
-    +|         @on_input> </input>
+    +|         @on_input/>
         <button type="button" @on_click> Add new element </button>
     +|</div>
     |}];
@@ -1899,7 +1899,7 @@ let%expect_test "adding more things to a string list" =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized="hello world"
-               @on_input> </input>
+               @on_input/>
         <button type="button" @on_click> Add new element </button>
       </div>
     |}]
@@ -1944,7 +1944,7 @@ let%expect_test "using the same component twice" =
                    spellcheck="false"
                    id="bonsai_path_x"
                    value:normalized=b
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr @key=bonsai_path_x>
@@ -1961,7 +1961,7 @@ let%expect_test "using the same component twice" =
                    spellcheck="false"
                    id="bonsai_path_x"
                    value:normalized=b
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
       </tbody>
@@ -1971,8 +1971,8 @@ let%expect_test "using the same component twice" =
 
     <table>
       <tbody>
-        <tr @key=bonsai_path_x/> <- [ERRORS]: Siblings have same vdom key
-        <tr @key=bonsai_path_x/> <- [ERRORS]: Siblings have same vdom key
+        <tr @key=bonsai_path_x></tr> <- [ERRORS]: Siblings have same vdom key
+        <tr @key=bonsai_path_x></tr> <- [ERRORS]: Siblings have same vdom key
       </tbody>
     </table>
 
@@ -2011,19 +2011,19 @@ let%expect_test "setting things to a string list" =
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=hello
-    +|         @on_input> </input>
+    +|         @on_input/>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=there
-    +|         @on_input> </input>
+    +|         @on_input/>
     +|  <input @key=bonsai_path_replaced_in_test
     +|         type="text"
     +|         spellcheck="false"
     +|         id="bonsai_path_replaced_in_test"
     +|         value:normalized=world
-    +|         @on_input> </input>
+    +|         @on_input/>
         <button type="button" @on_click> Add new element </button>
     +|</div>
     |}]
@@ -2093,7 +2093,7 @@ let%expect_test "setting things to a string list (verbose)" =
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=hello
-    +|               @on_input> </input>
+    +|               @on_input/>
     +|      </td>
     +|    </tr>
     +|    <tr>
@@ -2125,7 +2125,7 @@ let%expect_test "setting things to a string list (verbose)" =
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=there
-    +|               @on_input> </input>
+    +|               @on_input/>
     +|      </td>
     +|    </tr>
     +|    <tr>
@@ -2157,7 +2157,7 @@ let%expect_test "setting things to a string list (verbose)" =
     +|               spellcheck="false"
     +|               id="bonsai_path_replaced_in_test"
     +|               value:normalized=world
-    +|               @on_input> </input>
+    +|               @on_input/>
     +|      </td>
     +|    </tr>
           <tr>
@@ -2198,7 +2198,7 @@ let%expect_test "nonempty list" =
         <tr>
           <td>  </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
         <tr>
@@ -2225,7 +2225,7 @@ let%expect_test "nonempty list" =
     +|    <tr>
     +|      <td>  </td>
     +|      <td>
-    +|        <input> </input>
+    +|        <input/>
     +|      </td>
     +|    </tr>
     +|    <tr>
@@ -2239,7 +2239,7 @@ let%expect_test "nonempty list" =
           <tr>
             <td>  </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
           <tr>
@@ -2267,7 +2267,7 @@ let%expect_test "nonempty list" =
           <tr>
             <td>  </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
           <tr>
@@ -2290,7 +2290,7 @@ let%expect_test "nonempty list" =
     -|    <tr>
     -|      <td>  </td>
     -|      <td>
-    -|        <input> </input>
+    -|        <input/>
     -|      </td>
     -|    </tr>
     -|    <tr>
@@ -2304,7 +2304,7 @@ let%expect_test "nonempty list" =
           <tr>
             <td>  </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
           <tr>
@@ -2340,7 +2340,7 @@ let%expect_test "typing into an int number element (no default)" =
            min="-1"
            max="10"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"10";
   Handle.show_diff handle;
@@ -2358,7 +2358,7 @@ let%expect_test "typing into an int number element (no default)" =
              max="10"
     -|       value:normalized=""
     +|       value:normalized=10
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"";
   Handle.show_diff handle;
@@ -2376,7 +2376,7 @@ let%expect_test "typing into an int number element (no default)" =
              max="10"
     -|       value:normalized=10
     +|       value:normalized=""
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2404,7 +2404,7 @@ let%expect_test "typing into an int number element" =
            min="-1"
            max="10"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"10";
   Handle.show_diff handle;
@@ -2422,7 +2422,7 @@ let%expect_test "typing into an int number element" =
              max="10"
     -|       value:normalized=0
     +|       value:normalized=10
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2440,7 +2440,7 @@ let%expect_test "typing into an int number element" =
              max="10"
     -|       value:normalized=10
     +|       value:normalized=-1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"11";
   Handle.show_diff handle;
@@ -2458,7 +2458,7 @@ let%expect_test "typing into an int number element" =
              max="10"
     -|       value:normalized=-1
     +|       value:normalized=11
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"-2";
   Handle.show_diff handle;
@@ -2476,7 +2476,7 @@ let%expect_test "typing into an int number element" =
              max="10"
     -|       value:normalized=11
     +|       value:normalized=-2
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2503,7 +2503,7 @@ let%expect_test "setting into an int number element (no default)" =
            min="-1"
            max="10"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ 10 ];
   Handle.show_diff handle;
@@ -2521,7 +2521,7 @@ let%expect_test "setting into an int number element (no default)" =
              max="10"
     -|       value:normalized=""
     +|       value:normalized=10
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2549,7 +2549,7 @@ let%expect_test "setting into an int number element" =
            min="-1"
            max="10"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ 10 ];
   Handle.show_diff handle;
@@ -2567,7 +2567,7 @@ let%expect_test "setting into an int number element" =
              max="10"
     -|       value:normalized=0
     +|       value:normalized=10
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ -1 ];
   Handle.show_diff handle;
@@ -2585,7 +2585,7 @@ let%expect_test "setting into an int number element" =
              max="10"
     -|       value:normalized=10
     +|       value:normalized=-1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ 11 ];
   Handle.show_diff handle;
@@ -2603,7 +2603,7 @@ let%expect_test "setting into an int number element" =
              max="10"
     -|       value:normalized=-1
     +|       value:normalized=11
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ -2 ];
   Handle.show_diff handle;
@@ -2621,7 +2621,7 @@ let%expect_test "setting into an int number element" =
              max="10"
     -|       value:normalized=11
     +|       value:normalized=-2
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2649,7 +2649,7 @@ let%expect_test "typing into a float number element" =
            min="-1"
            max="10.1"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"10.1";
   Handle.show_diff handle;
@@ -2667,7 +2667,7 @@ let%expect_test "typing into a float number element" =
              max="10.1"
     -|       value:normalized=0
     +|       value:normalized=10.1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"-1";
   Handle.show_diff handle;
@@ -2685,7 +2685,7 @@ let%expect_test "typing into a float number element" =
              max="10.1"
     -|       value:normalized=10.1
     +|       value:normalized=-1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"10.2";
   Handle.show_diff handle;
@@ -2703,7 +2703,7 @@ let%expect_test "typing into a float number element" =
              max="10.1"
     -|       value:normalized=-1
     +|       value:normalized=10.2
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"-1.1";
   Handle.show_diff handle;
@@ -2721,7 +2721,7 @@ let%expect_test "typing into a float number element" =
              max="10.1"
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2749,7 +2749,7 @@ let%expect_test "setting into an int number element" =
            min="-1"
            max="10.1"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ 10.1 ];
   Handle.show_diff handle;
@@ -2767,7 +2767,7 @@ let%expect_test "setting into an int number element" =
              max="10.1"
     -|       value:normalized=0
     +|       value:normalized=10.1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ -1. ];
   Handle.show_diff handle;
@@ -2785,7 +2785,7 @@ let%expect_test "setting into an int number element" =
              max="10.1"
     -|       value:normalized=10.1
     +|       value:normalized=-1
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ 10.2 ];
   Handle.show_diff handle;
@@ -2803,7 +2803,7 @@ let%expect_test "setting into an int number element" =
              max="10.1"
     -|       value:normalized=-1
     +|       value:normalized=10.2
-             @on_input> </input>
+             @on_input/>
     |}];
   Handle.do_actions handle [ -1.1 ];
   Handle.show_diff handle;
@@ -2821,7 +2821,7 @@ let%expect_test "setting into an int number element" =
              max="10.1"
     -|       value:normalized=10.2
     +|       value:normalized=-1.1
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -2853,7 +2853,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -2863,7 +2863,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           second
         </label>
       </li>
@@ -2873,7 +2873,7 @@ let%expect_test "clicking on radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           third
         </label>
       </li>
@@ -2900,7 +2900,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -2910,7 +2910,7 @@ let%expect_test "clicking on radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -2938,7 +2938,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="true"
     +|             #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -2949,7 +2949,7 @@ let%expect_test "clicking on radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -2959,7 +2959,7 @@ let%expect_test "clicking on radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             third
           </label>
         </li>
@@ -2995,7 +2995,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -3005,7 +3005,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           second
         </label>
       </li>
@@ -3015,7 +3015,7 @@ let%expect_test "setting into radio buttons" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           third
         </label>
       </li>
@@ -3042,7 +3042,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3052,7 +3052,7 @@ let%expect_test "setting into radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3080,7 +3080,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="true"
     +|             #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             first
           </label>
         </li>
@@ -3091,7 +3091,7 @@ let%expect_test "setting into radio buttons" =
                    class="radio-button"
     -|             #checked="false"
     +|             #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             second
           </label>
         </li>
@@ -3101,7 +3101,7 @@ let%expect_test "setting into radio buttons" =
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="false"
-                   @on_click> </input>
+                   @on_click/>
             third
           </label>
         </li>
@@ -3137,7 +3137,7 @@ let%expect_test "horizontal radio buttons render with correct styles applied" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           first
         </label>
       </li>
@@ -3167,19 +3167,19 @@ let%expect_test "clicking a set checklist" =
         }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           third
         </label>
       </li>
@@ -3203,21 +3203,21 @@ let%expect_test "clicking a set checklist" =
           }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3239,20 +3239,20 @@ let%expect_test "clicking a set checklist" =
           }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="true" @on_click> </input>
-    +|      <input type="checkbox" #checked="false" @on_click> </input>
+    -|      <input type="checkbox" #checked="true" @on_click/>
+    +|      <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="true" @on_click> </input>
+            <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3282,19 +3282,19 @@ let%expect_test "setting into a set checklist" =
         }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           third
         </label>
       </li>
@@ -3316,21 +3316,21 @@ let%expect_test "setting into a set checklist" =
           }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="false" @on_click> </input>
-    +|      <input type="checkbox" #checked="true" @on_click> </input>
+    -|      <input type="checkbox" #checked="false" @on_click/>
+    +|      <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3352,20 +3352,20 @@ let%expect_test "setting into a set checklist" =
           }>
         <li style={ display: block; }>
           <label>
-    -|      <input type="checkbox" #checked="true" @on_click> </input>
-    +|      <input type="checkbox" #checked="false" @on_click> </input>
+    -|      <input type="checkbox" #checked="true" @on_click/>
+    +|      <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="true" @on_click> </input>
+            <input type="checkbox" #checked="true" @on_click/>
             second
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             third
           </label>
         </li>
@@ -3426,13 +3426,13 @@ let%expect_test "form of nested record of int and float" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input:nth-child(1)" ~text:"123";
@@ -3453,13 +3453,13 @@ let%expect_test "form of nested record of int and float" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123.456
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -3535,13 +3535,13 @@ let%expect_test "form of nested record of int and float (typed fields)" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input:nth-child(1)" ~text:"123";
@@ -3562,13 +3562,13 @@ let%expect_test "form of nested record of int and float (typed fields)" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123
-             @on_input> </input>
+             @on_input/>
       <input @key=bonsai_path_replaced_in_test
              type="text"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=123.456
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions
@@ -3593,14 +3593,14 @@ let%expect_test "form of nested record of int and float (typed fields)" =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=123
     +|         value:normalized=20
-               @on_input> </input>
+               @on_input/>
         <input @key=bonsai_path_replaced_in_test
                type="text"
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=123.456
     +|         value:normalized=1.230
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -3692,7 +3692,7 @@ let%expect_test "typed records labelling overrides defaults" =
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -3716,13 +3716,13 @@ let%expect_test "typed records labelling overrides defaults" =
             <label> age </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
           <td>
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -3739,13 +3739,13 @@ let%expect_test "typed records labelling overrides defaults" =
             <label> height </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
           <td>
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -3819,7 +3819,7 @@ let%expect_test "typed records: dynamic labelling" =
             <label> initial label </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -3840,7 +3840,7 @@ let%expect_test "typed records: dynamic labelling" =
     +|        <label> updated label </label>
             </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
         </tbody>
@@ -3923,7 +3923,7 @@ let%expect_test "typed variants recursive" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
       <select id="bonsai_path_replaced_in_test"
               class="widget-dropdown"
               @on_change
@@ -3959,7 +3959,7 @@ let%expect_test "typed variants recursive" =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
         <select id="bonsai_path_replaced_in_test"
                 class="widget-dropdown"
                 @on_change
@@ -4045,7 +4045,7 @@ let%expect_test "typed variants" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"123";
@@ -4073,7 +4073,7 @@ let%expect_test "typed variants" =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}];
   Handle.do_actions handle [ Unit ];
@@ -4117,7 +4117,7 @@ let%expect_test "typed variants" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=abc
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -4184,7 +4184,7 @@ let%expect_test "typed variants: dynamic labelling" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Bonsai.Expert.Var.set label "updated label";
@@ -4209,7 +4209,7 @@ let%expect_test "typed variants: dynamic labelling" =
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=0
-               @on_input> </input>
+               @on_input/>
       </div>
     |}]
 ;;
@@ -4292,7 +4292,7 @@ let%expect_test "typed optional variants" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"123";
@@ -4321,7 +4321,7 @@ let%expect_test "typed optional variants" =
                id="bonsai_path_replaced_in_test"
     -|         value:normalized=""
     +|         value:normalized=123
-               @on_input> </input>
+               @on_input/>
       </div>
     |}];
   Handle.do_actions handle [ Some Unit ];
@@ -4367,7 +4367,7 @@ let%expect_test "typed optional variants" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=abc
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ None ];
@@ -4553,7 +4553,7 @@ let%expect_test "typed variants: radio vertical" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           unit
         </label>
       </li>
@@ -4563,7 +4563,7 @@ let%expect_test "typed variants: radio vertical" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           integer
         </label>
       </li>
@@ -4573,7 +4573,7 @@ let%expect_test "typed variants: radio vertical" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           text
         </label>
       </li>
@@ -4633,7 +4633,7 @@ let%expect_test "typed variants: radio horizontal" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           unit
         </label>
       </li>
@@ -4643,7 +4643,7 @@ let%expect_test "typed variants: radio horizontal" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           integer
         </label>
       </li>
@@ -4653,7 +4653,7 @@ let%expect_test "typed variants: radio horizontal" =
                  name="bonsai_path_replaced_in_test"
                  class="radio-button"
                  #checked="false"
-                 @on_click> </input>
+                 @on_click/>
           text
         </label>
       </li>
@@ -4820,7 +4820,7 @@ let%expect_test "file picker single" =
            accept=".txt,.png,image/jpeg"
            id="bonsai_path_replaced_in_test"
            #value=""
-           @on_input> </input>
+           @on_input/>
     |}];
   let test_file =
     Bonsai_web_ui_file.For_testing.(
@@ -4855,7 +4855,7 @@ let%expect_test "file picker list" =
            multiple=""
            id="bonsai_path_replaced_in_test"
            #value=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions
     handle
@@ -4909,7 +4909,7 @@ let%expect_test "on_change handler should fire when input is changed" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello world";
   Handle.show_diff handle;
@@ -4927,7 +4927,7 @@ let%expect_test "on_change handler should fire when input is changed" =
              id="bonsai_path_replaced_in_test"
     -|       value:normalized=""
     +|       value:normalized="hello world"
-             @on_input> </input>
+             @on_input/>
     |}]
 ;;
 
@@ -4962,7 +4962,7 @@ let%expect_test "form with both submit button and form on-submit" =
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=""> </input>
+              <input value:normalized=""/>
             </td>
           </tr>
           <tr>
@@ -5014,7 +5014,7 @@ let%expect_test "form with on-submit with custom attrs" =
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=""> </input>
+              <input value:normalized=""/>
             </td>
           </tr>
           <tr>
@@ -5057,7 +5057,7 @@ let%expect_test "form with on-submit with custom attrs and invalid form" =
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=""> </input>
+              <input value:normalized=""/>
             </td>
           </tr>
           <tr>
@@ -5099,7 +5099,7 @@ let%expect_test "both button and on-submit are disabled when the form doesn't va
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=""> </input>
+              <input value:normalized=""/>
             </td>
           </tr>
           <tr>
@@ -5136,8 +5136,8 @@ let%expect_test "both button and on-submit are disabled when the form doesn't va
             <tr>
               <td>  </td>
               <td>
-    -|          <input value:normalized=""> </input>
-    +|          <input value:normalized=123> </input>
+    -|          <input value:normalized=""/>
+    +|          <input value:normalized=123/>
               </td>
             </tr>
             <tr>
@@ -5179,7 +5179,7 @@ let%expect_test "form with just button" =
         <tr>
           <td>  </td>
           <td>
-            <input value:normalized=""> </input>
+            <input value:normalized=""/>
           </td>
         </tr>
         <tr>
@@ -5224,12 +5224,12 @@ let%expect_test "form with just enter" =
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=""> </input>
+              <input value:normalized=""/>
             </td>
           </tr>
         </tbody>
       </table>
-      <input> </input>
+      <input/>
     </form>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"hello there";
@@ -5272,7 +5272,7 @@ let%expect_test "form projected witha an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -5285,7 +5285,7 @@ let%expect_test "form projected witha an effect" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"5";
   Handle.recompute_view_until_stable handle;
@@ -5299,7 +5299,7 @@ let%expect_test "form projected witha an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | 5 -> Respond (Ok "5")
@@ -5310,7 +5310,7 @@ let%expect_test "form projected witha an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | -3 -> Respond not_positive
@@ -5321,7 +5321,7 @@ let%expect_test "form projected witha an effect" =
     (Error "not positive")
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -5356,7 +5356,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -5369,7 +5369,7 @@ let%expect_test "form validated with an effect" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"5";
   Handle.recompute_view_until_stable handle;
@@ -5383,7 +5383,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | 5 -> Respond (Ok ())
@@ -5394,7 +5394,7 @@ let%expect_test "form validated with an effect" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | -3 -> Respond not_positive
@@ -5405,7 +5405,7 @@ let%expect_test "form validated with an effect" =
     (Error "not positive")
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -5441,7 +5441,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -5454,7 +5454,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"5";
   Handle.recompute_view_until_stable handle;
@@ -5470,7 +5470,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Q.maybe_respond tracker ~f:(function
     | 5 -> Respond (Ok ())
@@ -5481,7 +5481,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (-3) |}];
@@ -5494,7 +5494,7 @@ let%expect_test "form validated with an effect with one_at_at_time" =
     (Error "not positive")
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -5530,7 +5530,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   print_queued ();
   [%expect {| (2) |}];
@@ -5544,7 +5544,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Error validating...)
 
     ==============
-    <input> </input>
+    <input/>
     |}];
   Handle.advance_clock_by handle (Time_ns.Span.of_sec 2.0);
   Handle.recompute_view_until_stable handle;
@@ -5555,7 +5555,7 @@ let%expect_test "form validated with an effect and debounced" =
     (Ok 2)
 
     ==============
-    <input> </input>
+    <input/>
     |}]
 ;;
 
@@ -5597,12 +5597,12 @@ let%expect_test "slider input" =
           <tr>
             <td>  </td>
             <td>
-              <input value:normalized=0> </input>
+              <input value:normalized=0/>
             </td>
           </tr>
         </tbody>
       </table>
-      <input> </input>
+      <input/>
     </form>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"20";
@@ -5658,7 +5658,7 @@ let%expect_test "query box" =
             <td>  </td>
             <td>
               <div>
-                <input> </input>
+                <input/>
                 <div>
                   <div> </div>
                 </div>
@@ -5667,7 +5667,7 @@ let%expect_test "query box" =
           </tr>
         </tbody>
       </table>
-      <input> </input>
+      <input/>
     </form>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"a";
@@ -5689,7 +5689,7 @@ let%expect_test "query box" =
               <td>  </td>
               <td>
                 <div>
-                  <input> </input>
+                  <input/>
                   <div>
                     <div> </div>
                   </div>
@@ -5736,13 +5736,13 @@ let%expect_test "add tooltip to form" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
           </td>
           <td>
             <div style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
               <div class="container_hash_replaced_in_test">
                 <label class="label_hash_replaced_in_test" style={ color: blue; }>
-                  <input type="checkbox" tabindex="-1" class="checkbox_hash_replaced_in_test"> </input>
+                  <input type="checkbox" tabindex="-1" class="checkbox_hash_replaced_in_test"/>
                   <span class="span_hash_replaced_in_test"> ⓘ </span>
                   <div class="above_hash_replaced_in_test text_hash_replaced_in_test"
                        style={
@@ -5845,7 +5845,7 @@ let%expect_test "Bonsai_form.Typed sets groups/labels correctly on nested record
             <label> a_1 </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
         <tr>
@@ -5858,7 +5858,7 @@ let%expect_test "Bonsai_form.Typed sets groups/labels correctly on nested record
             <label> b_1 </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
         <tr>
@@ -5866,7 +5866,7 @@ let%expect_test "Bonsai_form.Typed sets groups/labels correctly on nested record
             <label> b_2 </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -5901,7 +5901,7 @@ let%expect_test "view_as_vdom editable:`Currently_yes" =
                      spellcheck="false"
                      id="bonsai_path_replaced_in_test"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </td>
           </tr>
         </tbody>
@@ -5940,7 +5940,7 @@ let%expect_test "view_as_vdom editable:`Currently_no" =
                      spellcheck="false"
                      id="bonsai_path_replaced_in_test"
                      value:normalized=""
-                     @on_input> </input>
+                     @on_input/>
             </td>
           </tr>
         </tbody>
@@ -5978,7 +5978,7 @@ let%expect_test "view_as_vdom not editable, with on_submit" =
                        spellcheck="false"
                        id="bonsai_path_replaced_in_test"
                        value:normalized=""
-                       @on_input> </input>
+                       @on_input/>
               </td>
             </tr>
             <tr>
@@ -6030,13 +6030,13 @@ let%expect_test "Adding error hints to the top level of various views" =
         <tr>
           <td>  </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
           <td>
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -6067,7 +6067,7 @@ let%expect_test "Adding error hints to the top level of various views" =
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -6084,7 +6084,7 @@ let%expect_test "Adding error hints to the top level of various views" =
             <label> field </label>
           </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -6109,7 +6109,7 @@ let%expect_test "Adding error hints to the top level of various views" =
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -6124,7 +6124,7 @@ let%expect_test "Adding error hints to the top level of various views" =
         <tr>
           <td>  </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -6147,7 +6147,7 @@ let%expect_test "Adding error hints to the top level of various views" =
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -6162,7 +6162,7 @@ let%expect_test "Adding error hints to the top level of various views" =
         <tr>
           <td>  </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -6186,7 +6186,7 @@ let%expect_test "Adding error hints to the top level of various views" =
             <div>
               <div>
                 <label>
-                  <input> </input>
+                  <input/>
                   <span> ⚠ </span>
                   <div>
                     <div>
@@ -6201,7 +6201,7 @@ let%expect_test "Adding error hints to the top level of various views" =
         <tr>
           <td>  </td>
           <td>
-            <input> </input>
+            <input/>
           </td>
         </tr>
       </tbody>
@@ -6590,13 +6590,13 @@ let%expect_test "Checkbox.set layout options" =
         }>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           first
         </label>
       </li>
       <li style={ display: block; }>
         <label>
-          <input type="checkbox" #checked="false" @on_click> </input>
+          <input type="checkbox" #checked="false" @on_click/>
           second
         </label>
       </li>
@@ -6619,14 +6619,14 @@ let%expect_test "Checkbox.set layout options" =
     -|  <li style={ display: block; }>
     +|  <li style={ display: inline-block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             first
           </label>
         </li>
     -|  <li style={ display: block; }>
     +|  <li style={ display: inline-block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
             second
           </label>
         </li>
@@ -6680,7 +6680,7 @@ let%expect_test "typed variant forms with radio buttons can be initialized to th
                    name="bonsai_path_replaced_in_test"
                    class="radio-button"
                    #checked="true"
-                   @on_click> </input>
+                   @on_click/>
             string
           </label>
         </li>
@@ -6690,7 +6690,7 @@ let%expect_test "typed variant forms with radio buttons can be initialized to th
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=""
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -6733,7 +6733,7 @@ let%expect_test "labelling a range form" =
            min="0"
            max="100"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
 
     Right label only
     ###############
@@ -6748,7 +6748,7 @@ let%expect_test "labelling a range form" =
              min="0"
              max="100"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
       right
     </span>
 
@@ -6766,7 +6766,7 @@ let%expect_test "labelling a range form" =
              min="0"
              max="100"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
     </span>
 
     Both sides labelled
@@ -6783,7 +6783,7 @@ let%expect_test "labelling a range form" =
              min="0"
              max="100"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
       right
     </span>
     |}]
@@ -6844,13 +6844,13 @@ module%test [@name "Typed fields monomorphization"] _ = struct
               <label> a </label>
             </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
             <td>
               <div>
                 <div>
                   <label>
-                    <input> </input>
+                    <input/>
                     <span> ⚠ </span>
                     <div>
                       <div>
@@ -6867,7 +6867,7 @@ module%test [@name "Typed fields monomorphization"] _ = struct
               <label> b </label>
             </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
           <tr>
@@ -6875,13 +6875,13 @@ module%test [@name "Typed fields monomorphization"] _ = struct
               <label> c </label>
             </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
             <td>
               <div>
                 <div>
                   <label>
-                    <input> </input>
+                    <input/>
                     <span> ⚠ </span>
                     <div>
                       <div>
@@ -6958,7 +6958,7 @@ module%test [@name "Typed fields monomorphization"] _ = struct
           <tr>
             <td>  </td>
             <td>
-              <input> </input>
+              <input/>
             </td>
           </tr>
         </tbody>
@@ -7033,7 +7033,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                        @on_blur
                        @on_focus
                        @on_input
-                       @on_keydown> </input>
+                       @on_keydown/>
                 <div data-test="query-box-item-container"
                      id="bonsai_path_replaced_in_test"
                      tabindex="-1"
@@ -7083,7 +7083,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7148,7 +7148,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7184,7 +7184,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7222,7 +7222,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                        @on_blur
                        @on_focus
                        @on_input
-                       @on_keydown> </input>
+                       @on_keydown/>
                 <div data-test="query-box-item-container"
                      id="bonsai_path_replaced_in_test"
                      tabindex="-1"
@@ -7264,7 +7264,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7316,7 +7316,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7362,7 +7362,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7440,7 +7440,7 @@ module%test [@name "Querybox as typeahead"] _ = struct
                          @on_blur
                          @on_focus
                          @on_input
-                         @on_keydown> </input>
+                         @on_keydown/>
                   <div data-test="query-box-item-container"
                        id="bonsai_path_replaced_in_test"
                        tabindex="-1"
@@ -7598,7 +7598,7 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
                              spellcheck="false"
                              id="bonsai_path_replaced_in_test"
                              value:normalized=""
-                             @on_input> </input>
+                             @on_input/>
                     </td>
                     <td>
                       <div style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
@@ -7606,7 +7606,7 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
                           <label class="label_hash_replaced_in_test" style={ color: #f54646; }>
                             <input type="checkbox"
                                    tabindex="-1"
-                                   class="checkbox_hash_replaced_in_test"> </input>
+                                   class="checkbox_hash_replaced_in_test"/>
                             <span class="span_hash_replaced_in_test"> ⚠ </span>
                             <div class="right_hash_replaced_in_test text_hash_replaced_in_test"
                                  style={
@@ -7643,7 +7643,7 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
                              spellcheck="false"
                              id="bonsai_path_replaced_in_test"
                              value:normalized=""
-                             @on_input> </input>
+                             @on_input/>
                     </td>
                   </tr>
                 </tbody>
@@ -7733,13 +7733,13 @@ let%expect_test "Typed variant set form" =
           }>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
              foo a
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
              foo b
           </label>
         </li>
@@ -7752,19 +7752,19 @@ let%expect_test "Typed variant set form" =
           }>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
              bar c
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
              bar d
           </label>
         </li>
         <li style={ display: block; }>
           <label>
-            <input type="checkbox" #checked="false" @on_click> </input>
+            <input type="checkbox" #checked="false" @on_click/>
              bar e
           </label>
         </li>
@@ -7791,14 +7791,14 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-    -|        <input type="checkbox" #checked="false" @on_click> </input>
-    +|        <input type="checkbox" #checked="true" @on_click> </input>
+    -|        <input type="checkbox" #checked="false" @on_click/>
+    +|        <input type="checkbox" #checked="true" @on_click/>
                foo a
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="false" @on_click> </input>
+              <input type="checkbox" #checked="false" @on_click/>
                foo b
             </label>
           </li>
@@ -7811,21 +7811,21 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-    -|        <input type="checkbox" #checked="false" @on_click> </input>
-    +|        <input type="checkbox" #checked="true" @on_click> </input>
+    -|        <input type="checkbox" #checked="false" @on_click/>
+    +|        <input type="checkbox" #checked="true" @on_click/>
                bar c
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="false" @on_click> </input>
+              <input type="checkbox" #checked="false" @on_click/>
                bar d
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-    -|        <input type="checkbox" #checked="false" @on_click> </input>
-    +|        <input type="checkbox" #checked="true" @on_click> </input>
+    -|        <input type="checkbox" #checked="false" @on_click/>
+    +|        <input type="checkbox" #checked="true" @on_click/>
                bar e
             </label>
           </li>
@@ -7856,14 +7856,14 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="true" @on_click> </input>
+              <input type="checkbox" #checked="true" @on_click/>
                foo a
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-    -|        <input type="checkbox" #checked="false" @on_click> </input>
-    +|        <input type="checkbox" #checked="true" @on_click> </input>
+    -|        <input type="checkbox" #checked="false" @on_click/>
+    +|        <input type="checkbox" #checked="true" @on_click/>
                foo b
             </label>
           </li>
@@ -7876,7 +7876,7 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="true" @on_click> </input>
+              <input type="checkbox" #checked="true" @on_click/>
                bar c
             </label>
           </li>
@@ -7905,13 +7905,13 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="true" @on_click> </input>
+              <input type="checkbox" #checked="true" @on_click/>
                foo a
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="true" @on_click> </input>
+              <input type="checkbox" #checked="true" @on_click/>
                foo b
             </label>
           </li>
@@ -7924,20 +7924,20 @@ let%expect_test "Typed variant set form" =
             }>
           <li style={ display: block; }>
             <label>
-    -|        <input type="checkbox" #checked="true" @on_click> </input>
-    +|        <input type="checkbox" #checked="false" @on_click> </input>
+    -|        <input type="checkbox" #checked="true" @on_click/>
+    +|        <input type="checkbox" #checked="false" @on_click/>
                bar c
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="false" @on_click> </input>
+              <input type="checkbox" #checked="false" @on_click/>
                bar d
             </label>
           </li>
           <li style={ display: block; }>
             <label>
-              <input type="checkbox" #checked="true" @on_click> </input>
+              <input type="checkbox" #checked="true" @on_click/>
                bar e
             </label>
           </li>

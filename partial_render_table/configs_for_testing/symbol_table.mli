@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open Bonsai_perf_shared
+open Bonsai_bench_scenario
 
 (** The [Symbol_table] module contains types and scenarios which can be shared across PRTs
     that use the [Row.t] column type, and an [Int] key. *)

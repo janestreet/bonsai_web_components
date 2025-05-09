@@ -667,6 +667,10 @@ module View : sig
     val dispatch : t -> State.Transaction.t -> unit [@@js.call]
     val dispatch_specs : t -> State.Transaction_spec.t -> unit [@@js.call "dispatch"]
     val set_state : t -> State.Editor_state.t -> unit [@@js.call]
+
+    (* This also supports an int parameter to enable it temporarily, feel free to add that
+       to the binding if it's useful to you *)
+    val set_tab_focus_mode : t -> bool -> unit [@@js.call]
     val state : t -> State.Editor_state.t [@@js.get]
     val focus : t -> unit [@@js.call]
     val has_focus : t -> bool [@@js.get]
@@ -682,6 +686,8 @@ module View : sig
           , (editor_view -> Decoration_set.t) Callback.t )
           State.Facet.t
     [@@js.global "decorations"]
+
+    val content_attributes : (Ojs.t, Ojs.t) State.Facet.t [@@js.global]
 
     module Viewport : sig
       type t
@@ -713,6 +719,8 @@ module View : sig
 
     val theme : spec:Ojs.t -> ?options:Theme_options.t -> unit -> State.Extension.t
     [@@js.global]
+
+    val find_from_dom : Dom_html_element.t -> t option [@@js.global "findFromDOM"]
   end
   [@@js.scope "EditorView"]
 

@@ -96,14 +96,16 @@ let rows
     let%arr visually_focused in
     match visually_focused with
     | Nothing_focused | Cell_focused _ -> return_false_1
-    | Row_focused k -> fun key -> Comparable.equal Key_cmp.comparator.compare k key
+    | Row_focused k ->
+      fun key -> Comparable.equal (Comparator.compare Key_cmp.comparator) k key
   in
   let focused_column_in_row =
     let%arr visually_focused in
     match visually_focused with
     | Nothing_focused | Row_focused _ -> return_none_1
     | Cell_focused (k, c) ->
-      fun key -> Option.some_if (Comparable.equal Key_cmp.comparator.compare k key) c
+      fun key ->
+        Option.some_if (Comparable.equal (Comparator.compare Key_cmp.comparator) k key) c
   in
   Bonsai.assoc
     (module Opaque_map.Key)
@@ -130,7 +132,10 @@ let rows
           let cell_is_focused =
             match focus with
             | Cell_in_row_is_focused focused_column_id ->
-              Comparable.equal Col_cmp.comparator.compare column_id focused_column_id
+              Comparable.equal
+                (Comparator.compare Col_cmp.comparator)
+                column_id
+                focused_column_id
             | _ -> false
           in
           Table_view.Cell.view
@@ -249,7 +254,8 @@ let component
              let row_focused =
                match visually_focused with
                | Nothing_focused | Cell_focused _ -> false
-               | Row_focused k -> Comparable.equal Key_cmp.comparator.compare k key
+               | Row_focused k ->
+                 Comparable.equal (Comparator.compare Key_cmp.comparator) k key
              in
              let cells =
                List.map view ~f:(fun (column, view) ->
@@ -257,8 +263,8 @@ let component
                    match visually_focused with
                    | Nothing_focused | Row_focused _ -> false
                    | Cell_focused (k, c) ->
-                     Comparable.equal Key_cmp.comparator.compare key k
-                     && Comparable.equal Col_cmp.comparator.compare c column
+                     Comparable.equal (Comparator.compare Key_cmp.comparator) key k
+                     && Comparable.equal (Comparator.compare Col_cmp.comparator) c column
                  in
                  { For_testing.view; cell_focused })
              in

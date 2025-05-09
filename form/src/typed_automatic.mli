@@ -14,16 +14,19 @@ module Record : sig
         field will be labelled with the result of calling [f] on it. *)
     val label_for_field
       : [ `Inferred
-        | `Computed of 'a Typed_field.t -> string
+        | `Computed of 'a Typed_field.t @ local -> string
           (** The value passed to [`Dynamic] is used in many [let%arr]s within [make].
               Thus, it's possible to accidentally duplicate work, if the provided value is
               built using [let%map] instead of [let%arr]. *)
-        | `Dynamic of (Typed_field.Packed.t -> string) Bonsai.t
+        | `Dynamic of (Typed_field.Packed.t @ local -> string) Bonsai.t
         ]
 
     (** For each of the fields in your record, you need to provide a form component which
         produces values of that type. *)
-    val form_for_field : 'a Typed_field.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_field
+      :  local_ 'a Typed_field.t
+      -> local_ Bonsai.graph
+      -> 'a Form.t Bonsai.t
   end
 
   val make
@@ -50,16 +53,19 @@ module Variant : sig
         of the variants. *)
     val label_for_variant
       : [ `Inferred
-        | `Computed of 'a Typed_variant.t -> string
+        | `Computed of 'a Typed_variant.t @ local -> string
           (** The value passed to [`Dynamic] is used in many [let%arr]s within [make].
               Thus, it's possible to accidentally duplicate work, if the provided value is
               built using [let%map] instead of [let%arr]. *)
-        | `Dynamic of (Typed_variant.Packed.t -> string) Bonsai.t
+        | `Dynamic of (Typed_variant.Packed.t @ local -> string) Bonsai.t
         ]
 
     (** For each of the variants in your sum type, you need to provide a form component
         which produces values of that type. *)
-    val form_for_variant : 'a Typed_variant.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_variant
+      :  local_ 'a Typed_variant.t
+      -> local_ Bonsai.graph
+      -> 'a Form.t Bonsai.t
 
     (* [initial_choice] can be used to change which constructor in the variant is
        initially selected. *)
@@ -77,23 +83,23 @@ module Variant : sig
         then the labels will be the result of calling [f] on each of the variants. *)
     val label_for_variant
       : [ `Inferred
-        | `Computed of 'a Typed_variant.t -> string
+        | `Computed of 'a Typed_variant.t @ local -> string
           (** The value passed to [`Dynamic] is used in many [let%arr]s within [make].
               Thus, it's possible to accidentally duplicate work, if the provided value is
               built using [let%map] instead of [let%arr]. *)
-        | `Dynamic of (Typed_variant.Packed.t -> string) Bonsai.t
+        | `Dynamic of (Typed_variant.Packed.t @ local -> string) Bonsai.t
         ]
 
     (** The sexp_of function to use in the comparator. If `Use_sexp_of_variant is
         provided, the argument will be used to construct a value of type t, and that sexp
         of that value will be used. *)
     val sexp_of_variant_argument
-      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t -> 'a -> Sexp.t ]
+      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t @ local -> 'a -> Sexp.t ]
 
     (** For each of the variants in your sum type, you need to provide a form component
         which produces sets of values of that type. *)
     val form_for_variant
-      :  'a Typed_variant.t
+      :  local_ 'a Typed_variant.t
       -> ('a, 'cmp) Comparator.Module.t
       -> local_ Bonsai.graph
       -> ('a, 'cmp) Set.t Form.t Bonsai.t

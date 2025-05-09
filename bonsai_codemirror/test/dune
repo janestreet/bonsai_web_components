@@ -4,6 +4,7 @@
    bonsai_web_test bonsai_web_ui_codemirror
    bonsai_web_ui_codemirror_read_only codemirror codemirror_sexp
    codemirror_themes core expect_test_helpers_core.expect_test_helpers_base
-   js_of_ocaml jsdom skyline_functional_test testable_timeout with)
+   js_of_ocaml bonsai_web_test.jsdom skyline_functional_test testable_timeout
+   with)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai js_of_ocaml-ppx)))

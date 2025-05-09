@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open Bonsai_perf_shared
+open Bonsai_bench_scenario
 
 (** The tools in the [Sharable] module are intended to be usable for any PRT. *)
 

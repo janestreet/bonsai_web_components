@@ -88,7 +88,7 @@ let%expect_test "changing text does filtering" =
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -101,7 +101,7 @@ let%expect_test "changing text does filtering" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -118,7 +118,7 @@ let%expect_test "changing text does filtering" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -144,7 +144,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -162,7 +162,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -177,7 +177,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -196,7 +196,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 1
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -215,7 +215,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -235,7 +235,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -256,7 +256,7 @@ let%expect_test "keybindings and filtering behavior" =
     +|Focused item: 1
 
       <div>
-        <input> </input>
+        <input/>
         <div data-test="query-box-item-container">
           <div>
     -|      <div class="focused-item"> apple </div>
@@ -285,7 +285,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -303,7 +303,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -318,7 +318,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: 3
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> orange </div>
@@ -339,7 +339,7 @@ let%expect_test "keybindings and filtering behavior" =
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -363,7 +363,7 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -382,7 +382,7 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> ab </div>
@@ -400,7 +400,7 @@ let%expect_test "inputting text twice in the same frame shouldn't be a problem" 
     Focused item: 1
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> ac </div>
@@ -465,7 +465,7 @@ let%expect_test "partial-rendering" =
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div class="focused-item"> apple </div>
@@ -481,7 +481,7 @@ let%expect_test "partial-rendering" =
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div class="focused-item"> strawberry </div>
@@ -496,7 +496,7 @@ let%expect_test "partial-rendering" =
     {|
     ("default prevented" (key Tab))
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div> strawberry </div>
@@ -512,7 +512,7 @@ let%expect_test "partial-rendering" =
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div> raspberry </div>
@@ -530,7 +530,7 @@ let%expect_test "partial-rendering" =
     {|
     ("default prevented" (key ArrowDown))
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div class="focused-item"> apple </div>
@@ -548,7 +548,7 @@ let%expect_test "partial-rendering" =
     {|
     ("default prevented" (key ArrowUp))
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div> raspberry </div>
@@ -575,7 +575,7 @@ let%expect_test "partial-rendering" =
     ("default prevented" (key ArrowUp))
     ("default prevented" (key ArrowUp))
     <div>
-      <input> </input>
+      <input/>
       <div>
         <div>
           <div class="focused-item"> grapefruit </div>
@@ -602,7 +602,7 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> kiwi </div>
@@ -619,7 +619,7 @@ let%expect_test "tabbing one item visible should exit First_item mode" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> orange </div>
@@ -645,7 +645,7 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> kiwi </div>
@@ -662,7 +662,7 @@ let%expect_test "shift-tabbing one item visible should exit First_item mode" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -696,7 +696,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle Tab;
@@ -714,7 +714,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div> orange </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle Tab;
@@ -732,7 +732,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div> orange </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle ArrowDown;
@@ -750,7 +750,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div class="focused-item"> orange </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle ~shift_key_down:true Tab;
@@ -768,7 +768,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div> orange </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle ArrowUp;
@@ -786,7 +786,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div> orange </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   keydown handle ArrowUp;
@@ -804,7 +804,7 @@ let%expect_test "[expand_direction=Up] reverses list order and keybindings" =
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}]
 ;;
@@ -834,7 +834,7 @@ let%expect_test "The element containing all the items should be focusable withou
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   (* Blurring the input to focus the list of items doesn't close the list of items. *)
@@ -852,7 +852,7 @@ let%expect_test "The element containing all the items should be focusable withou
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   (* However, blurring the input without focusing something else *will* close the list of items. *)
@@ -867,7 +867,7 @@ let%expect_test "The element containing all the items should be focusable withou
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   focus handle;
@@ -884,7 +884,7 @@ let%expect_test "The element containing all the items should be focusable withou
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   (* Also, blurring the item container to focus the input will also not close the list of items. *)
@@ -902,7 +902,7 @@ let%expect_test "The element containing all the items should be focusable withou
           <div class="focused-item"> apple </div>
         </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}];
   (* But blurring the item container without focusing something else *will* close the list of items. *)
@@ -917,7 +917,7 @@ let%expect_test "The element containing all the items should be focusable withou
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
-      <input> </input>
+      <input/>
     </div>
     |}]
 ;;
@@ -937,7 +937,7 @@ let%expect_test "clicking on item invokes the callback and closes the list" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -955,7 +955,7 @@ let%expect_test "clicking on item invokes the callback and closes the list" =
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>
@@ -978,7 +978,7 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -998,7 +998,7 @@ let%expect_test "mouseenter on an item selects it, and mousewheel scrolls up and
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -1025,7 +1025,7 @@ let%expect_test "mousewheel on an item selects it" =
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -1045,7 +1045,7 @@ let%expect_test "mousewheel on an item selects it" =
     Focused item: 2
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -1066,7 +1066,7 @@ let%expect_test "mousewheel on an item selects it" =
     Focused item: 1
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> apple </div>
@@ -1115,7 +1115,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
     {|
     ("default prevented" (key ArrowDown))
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> a </div>
@@ -1130,7 +1130,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
@@ -1145,7 +1145,7 @@ let%expect_test {|key stays on the same item if the list of items changes (simpl
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
@@ -1197,7 +1197,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
     {|
     ("default prevented" (key ArrowDown))
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> a </div>
@@ -1212,7 +1212,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
@@ -1227,7 +1227,7 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
   [%expect
     {|
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div> b </div>
@@ -1269,7 +1269,7 @@ struct
                @on_blur
                @on_focus
                @on_input
-               @on_keydown> </input>
+               @on_keydown/>
         <div data-test="query-box-item-container"
              id="bonsai_path_replaced_in_test"
              tabindex="-1"
@@ -1295,7 +1295,7 @@ struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -1327,7 +1327,7 @@ struct
                @on_blur
                @on_focus
                @on_input
-               @on_keydown> </input>
+               @on_keydown/>
         <div data-test="query-box-item-container"
              id="bonsai_path_replaced_in_test"
              tabindex="-1"
@@ -1354,7 +1354,7 @@ struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -1381,7 +1381,7 @@ struct
                @on_blur
                @on_focus
                @on_input
-               @on_keydown> </input>
+               @on_keydown/>
         <div data-test="query-box-item-container"
              id="bonsai_path_replaced_in_test"
              tabindex="-1"
@@ -1408,7 +1408,7 @@ struct
                  @on_blur
                  @on_focus
                  @on_input
-                 @on_keydown> </input>
+                 @on_keydown/>
           <div data-test="query-box-item-container"
                id="bonsai_path_replaced_in_test"
                tabindex="-1"
@@ -1462,7 +1462,7 @@ let%expect_test "[modify_input_on_select] field works" =
   [%expect
     {|
     <div>
-      <input #value="apple"> </input>
+      <input #value="apple"/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -1478,8 +1478,8 @@ let%expect_test "[modify_input_on_select] field works" =
     (item 0)
 
       <div>
-    -|  <input #value="apple"> </input>
-    +|  <input #value="oran"> </input>
+    -|  <input #value="apple"/>
+    +|  <input #value="oran"/>
         <div data-test="query-box-item-container">
     -|    <div>
     -|      <div class="focused-item"> apple </div>
@@ -1494,7 +1494,7 @@ let%expect_test "[modify_input_on_select] field works" =
   [%expect
     {|
       <div>
-        <input #value="oran"> </input>
+        <input #value="oran"/>
         <div data-test="query-box-item-container">
     -|    <div> </div>
     +|    <div>
@@ -1539,7 +1539,7 @@ let%expect_test "Different on_focus_behavior" =
           Focused item: None
 
           <div>
-            <input> </input>
+            <input/>
             <div data-test="query-box-item-container">
               <div> </div>
             </div>
@@ -1551,7 +1551,7 @@ let%expect_test "Different on_focus_behavior" =
           Focused item: 0
 
           <div>
-            <input> </input>
+            <input/>
             <div data-test="query-box-item-container">
               <div>
                 <div class="focused-item"> apple </div>
@@ -1574,7 +1574,7 @@ let%expect_test "Different on_focus_behavior" =
           +|Focused item: 0
 
             <div>
-              <input> </input>
+              <input/>
               <div data-test="query-box-item-container">
           -|    <div> </div>
           +|    <div>
@@ -1594,7 +1594,7 @@ let%expect_test "Different on_focus_behavior" =
           +|Focused item: 1
 
             <div>
-              <input> </input>
+              <input/>
               <div data-test="query-box-item-container">
                 <div>
           -|      <div class="focused-item"> apple </div>
@@ -1630,7 +1630,7 @@ let%expect_test "different on_hover_item behaviors" =
       Focused item: 0
 
       <div>
-        <input> </input>
+        <input/>
         <div data-test="query-box-item-container">
           <div>
             <div class="focused-item"> apple </div>
@@ -1659,7 +1659,7 @@ let%expect_test "different on_hover_item behaviors" =
           +|Focused item: 2
 
             <div>
-              <input> </input>
+              <input/>
               <div data-test="query-box-item-container">
                 <div>
           -|      <div class="focused-item"> apple </div>
@@ -1692,7 +1692,7 @@ let%expect_test "inputting text and hitting enter immediately selects the correc
     Focused item: 0
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div>
           <div class="focused-item"> apple </div>
@@ -1712,7 +1712,7 @@ let%expect_test "inputting text and hitting enter immediately selects the correc
     Focused item: None
 
     <div>
-      <input> </input>
+      <input/>
       <div data-test="query-box-item-container">
         <div> </div>
       </div>

@@ -11,11 +11,14 @@ module Record = struct
 
     val label_for_field
       : [ `Inferred
-        | `Computed of 'a Typed_field.t -> string
-        | `Dynamic of (Typed_field.Packed.t -> string) Bonsai.t
+        | `Computed of 'a Typed_field.t @ local -> string
+        | `Dynamic of (Typed_field.Packed.t @ local -> string) Bonsai.t
         ]
 
-    val form_for_field : 'a Typed_field.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_field
+      :  local_ 'a Typed_field.t
+      -> local_ Bonsai.graph
+      -> 'a Form.t Bonsai.t
   end
 
   let attach_fieldname_to_error name t =
@@ -44,9 +47,10 @@ module Record = struct
         ;;
 
         let form_for_field
-          : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+          : type a. local_ a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
           =
           fun field (local_ graph) ->
+          let field = Typed_field.globalize0 field in
           let form = M.form_for_field field graph in
           let form = Form.Dynamic.error_hint form graph in
           let%arr form and get_label in
@@ -55,7 +59,7 @@ module Record = struct
         ;;
 
         type form_of_field_fn =
-          { f : 'a. 'a Typed_field.t -> ('a, field_view) Form_manual.t Bonsai.t }
+          { f : 'a. 'a Typed_field.t @ local -> ('a, field_view) Form_manual.t Bonsai.t }
 
         let finalize_view { f } (local_ _graph) =
           let all_fields =
@@ -94,6 +98,7 @@ module Record = struct
 
           let form_for_field field (local_ graph) =
             let form =
+              let field = M.Typed_field.globalize0 field in
               let form = M.form_for_field field graph in
               let form = Form.Dynamic.error_hint form graph in
               let%arr form and get_label in
@@ -118,11 +123,15 @@ module Variant = struct
 
     val label_for_variant
       : [ `Inferred
-        | `Computed of 'a Typed_variant.t -> string
-        | `Dynamic of (Typed_variant.Packed.t -> string) Bonsai.t
+        | `Computed of 'a Typed_variant.t @ local -> string
+        | `Dynamic of (Typed_variant.Packed.t @ local -> string) Bonsai.t
         ]
 
-    val form_for_variant : 'a Typed_variant.t -> local_ Bonsai.graph -> 'a Form.t Bonsai.t
+    val form_for_variant
+      :  local_ 'a Typed_variant.t
+      -> local_ Bonsai.graph
+      -> 'a Form.t Bonsai.t
+
     val initial_choice : [ `First_constructor | `Empty | `This of Typed_variant.Packed.t ]
   end
 
@@ -132,15 +141,15 @@ module Variant = struct
 
     val label_for_variant
       : [ `Inferred
-        | `Computed of 'a Typed_variant.t -> string
-        | `Dynamic of (Typed_variant.Packed.t -> string) Bonsai.t
+        | `Computed of 'a Typed_variant.t @ local -> string
+        | `Dynamic of (Typed_variant.Packed.t @ local -> string) Bonsai.t
         ]
 
     val sexp_of_variant_argument
-      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t -> 'a -> Sexp.t ]
+      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t @ local -> 'a -> Sexp.t ]
 
     val form_for_variant
-      :  'a Typed_variant.t
+      :  local_ 'a Typed_variant.t
       -> ('a, 'cmp) Comparator.Module.t
       -> local_ Bonsai.graph
       -> ('a, 'cmp) Set.t Form.t Bonsai.t
@@ -271,6 +280,7 @@ module Variant = struct
             match M.label_for_variant with
             | `Inferred ->
               Bonsai.return (fun t ->
+                let t = M.Typed_variant.Packed.globalize t in
                 Form_view.sexp_to_pretty_string M.Typed_variant.Packed.sexp_of_t t)
             | `Computed variant_to_string ->
               Bonsai.return (fun ({ f = T field } : M.Typed_variant.Packed.t) ->
@@ -338,14 +348,15 @@ module Variant = struct
                  f field)
              | `Dynamic f -> f
            in
-           fun ({ f = T v } : Typed_variant.Packed.t) ->
+           fun ({ f = T v } : Typed_variant.Packed.t @@ local) ->
              match v with
              | None -> empty_label
-             | Some subvariant -> to_string { f = T subvariant })
+             | Some subvariant ->
+               to_string { f = T (M.Typed_variant.globalize0 subvariant) })
       ;;
 
       let form_for_variant
-        : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+        : type a. local_ a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
         =
         fun typed_field (local_ graph) ->
         match typed_field with
@@ -392,6 +403,7 @@ module Variant = struct
           match M.label_for_variant with
           | `Inferred ->
             Bonsai.return (fun t ->
+              let t = M.Typed_variant.Packed.globalize t in
               Form_view.sexp_to_pretty_string M.Typed_variant.Packed.sexp_of_t t)
           | `Computed f -> Bonsai.return (fun { M.Typed_variant.Packed.f = T t } -> f t)
           | `Dynamic f -> f
@@ -399,12 +411,13 @@ module Variant = struct
 
         let form_for_variant
           : type a cmp.
-            a Typed_variant.t
+            local_ a Typed_variant.t
             -> (a, cmp) Comparator.Module.t
             -> local_ Bonsai.graph
             -> (a, cmp) Set.t Form.t Bonsai.t
           =
           fun variant comparator (local_ graph) ->
+          let variant = Typed_variant.globalize0 variant in
           let form = M.form_for_variant variant comparator graph in
           let form = Form.Dynamic.error_hint form graph in
           let%arr form and get_label in
@@ -415,7 +428,8 @@ module Variant = struct
         type form_of_variant_fn =
           { f :
               'a.
-              'a Typed_variant.t -> ('a, variant_view) Variant.Packed_set_form.t Bonsai.t
+              'a Typed_variant.t @ local
+              -> ('a, variant_view) Variant.Packed_set_form.t Bonsai.t
           }
 
         let finalize_view { f } (local_ _graph) =

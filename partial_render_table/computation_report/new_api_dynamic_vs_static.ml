@@ -197,31 +197,31 @@ let%expect_test "Pure" =
     ┌─────────────────────────────────────────────────────────────────────────┬──────────────────┬────────────┐
     │                                                                         │ dynamic (not cf) │ dynamic cf │
     ├─────────────────────────────────────────────────────────────────────────┼──────────────────┼────────────┤
-    │ Focus by key (key not present) and unfocus in 10 element map            │ .                │ +2 (1%)    │
-    │ Focus by key (key not present) and unfocus in 100 element map           │ .                │ +2 (1%)    │
-    │ Focus by key (key not present) and unfocus in 101 element map           │ .                │ +2 (1%)    │
-    │ Focus by key (key not present) and unfocus in 1000 element map          │ .                │ +2 (1%)    │
-    │ Focus by key (key not present) and unfocus in 10000 element map         │ .                │ +2 (1%)    │
-    │ Focus by key (key present) and unfocus in 10 element map                │ .                │ .          │
-    │ Focus by key (key present) and unfocus in 100 element map               │ .                │ .          │
-    │ Focus by key (key present) and unfocus in 101 element map               │ .                │ .          │
-    │ Focus by key (key present) and unfocus in 1000 element map              │ .                │ .          │
-    │ Focus by key (key present) and unfocus in 10000 element map             │ .                │ .          │
-    │ Focus up and down in 10 element map                                     │ .                │ .          │
-    │ Focus up and down in 100 element map                                    │ .                │ .          │
-    │ Focus up and down in 101 element map                                    │ .                │ .          │
-    │ Focus up and down in 1000 element map                                   │ .                │ .          │
-    │ Focus up and down in 10000 element map                                  │ .                │ .          │
-    │ Focus left and right in a map with 10 rows                              │ .                │ .          │
-    │ Focus left and right in a map with 100 rows                             │ .                │ .          │
-    │ Focus left and right in a map with 101 rows                             │ .                │ .          │
-    │ Focus left and right in a map with 1000 rows                            │ .                │ .          │
-    │ Focus left and right in a map with 10000 rows                           │ .                │ .          │
-    │ Page up and down in 10 element map                                      │ .                │ .          │
-    │ Page up and down in 100 element map                                     │ .                │ .          │
-    │ Page up and down in 101 element map                                     │ .                │ .          │
-    │ Page up and down in 1000 element map                                    │ .                │ .          │
-    │ Page up and down in 10000 element map                                   │ .                │ .          │
+    │ Focus by key (key not present) and unfocus in 10 element map            │ +3 (2%)          │ +2 (1%)    │
+    │ Focus by key (key not present) and unfocus in 100 element map           │ +4 (3%)          │ +2 (1%)    │
+    │ Focus by key (key not present) and unfocus in 101 element map           │ +4 (3%)          │ +2 (1%)    │
+    │ Focus by key (key not present) and unfocus in 1000 element map          │ +4 (3%)          │ +2 (1%)    │
+    │ Focus by key (key not present) and unfocus in 10000 element map         │ +4 (3%)          │ +2 (1%)    │
+    │ Focus by key (key present) and unfocus in 10 element map                │ +4 (2%)          │ .          │
+    │ Focus by key (key present) and unfocus in 100 element map               │ +4 (1%)          │ .          │
+    │ Focus by key (key present) and unfocus in 101 element map               │ +4 (1%)          │ .          │
+    │ Focus by key (key present) and unfocus in 1000 element map              │ +4 (1%)          │ .          │
+    │ Focus by key (key present) and unfocus in 10000 element map             │ +4 (1%)          │ .          │
+    │ Focus up and down in 10 element map                                     │ +2 (3%)          │ .          │
+    │ Focus up and down in 100 element map                                    │ +2 (1%)          │ .          │
+    │ Focus up and down in 101 element map                                    │ +2 (1%)          │ .          │
+    │ Focus up and down in 1000 element map                                   │ +2 (1%)          │ .          │
+    │ Focus up and down in 10000 element map                                  │ +2 (1%)          │ .          │
+    │ Focus left and right in a map with 10 rows                              │ +2 (3%)          │ .          │
+    │ Focus left and right in a map with 100 rows                             │ +2 (1%)          │ .          │
+    │ Focus left and right in a map with 101 rows                             │ +2 (1%)          │ .          │
+    │ Focus left and right in a map with 1000 rows                            │ +2 (1%)          │ .          │
+    │ Focus left and right in a map with 10000 rows                           │ +2 (1%)          │ .          │
+    │ Page up and down in 10 element map                                      │ +2 (3%)          │ .          │
+    │ Page up and down in 100 element map                                     │ +2 (1%)          │ .          │
+    │ Page up and down in 101 element map                                     │ +2 (1%)          │ .          │
+    │ Page up and down in 1000 element map                                    │ +2 (1%)          │ .          │
+    │ Page up and down in 10000 element map                                   │ +2 (1%)          │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ .                │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ .                │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ .                │ .          │
@@ -326,9 +326,9 @@ let%expect_test "Stateful Rows" =
     ┌──────────────────────────┬────────────┬────────────┬─────────────┬───────────────┐
     │                          │ max_height │ node_count │ max_node_id │ nodes_created │
     ├──────────────────────────┼────────────┼────────────┼─────────────┼───────────────┤
-    │ dynamic (not cf): 100    │ .          │ +500 (17%) │ +501 (13%)  │ +500 (13%)    │
+    │ dynamic (not cf): 100    │ .          │ +500 (17%) │ +501 (14%)  │ +500 (13%)    │
     │ dynamic cf: 100          │ .          │ .          │ .           │ .             │
-    │ dynamic (not cf): 100000 │ .          │ +505 (17%) │ +506 (13%)  │ +505 (13%)    │
+    │ dynamic (not cf): 100000 │ .          │ +505 (17%) │ +506 (14%)  │ +505 (13%)    │
     │ dynamic cf: 100000       │ .          │ .          │ .           │ .             │
     └──────────────────────────┴────────────┴────────────┴─────────────┴───────────────┘
     |}];
@@ -343,60 +343,60 @@ let%expect_test "Stateful Rows" =
     ┌─────────────────────────────────────────────────────────────────────────┬──────────────────┬────────────┐
     │                                                                         │ dynamic (not cf) │ dynamic cf │
     ├─────────────────────────────────────────────────────────────────────────┼──────────────────┼────────────┤
-    │ Focus by key (key not present) and unfocus in 10 element map            │ +50 (9%)         │ +5 (1%)    │
+    │ Focus by key (key not present) and unfocus in 10 element map            │ +50 (9%)         │ +5 (2%)    │
     │ Focus by key (key not present) and unfocus in 100 element map           │ +500 (17%)       │ .          │
     │ Focus by key (key not present) and unfocus in 101 element map           │ +505 (17%)       │ .          │
     │ Focus by key (key not present) and unfocus in 1000 element map          │ +505 (17%)       │ .          │
     │ Focus by key (key not present) and unfocus in 10000 element map         │ +505 (17%)       │ .          │
-    │ Focus by key (key present) and unfocus in 10 element map                │ +50 (9%)         │ +5 (1%)    │
+    │ Focus by key (key present) and unfocus in 10 element map                │ +50 (9%)         │ +5 (2%)    │
     │ Focus by key (key present) and unfocus in 100 element map               │ +500 (17%)       │ .          │
     │ Focus by key (key present) and unfocus in 101 element map               │ +505 (17%)       │ .          │
     │ Focus by key (key present) and unfocus in 1000 element map              │ +505 (17%)       │ .          │
     │ Focus by key (key present) and unfocus in 10000 element map             │ +505 (17%)       │ .          │
-    │ Focus up and down in 10 element map                                     │ +50 (9%)         │ +5 (1%)    │
+    │ Focus up and down in 10 element map                                     │ +50 (9%)         │ +5 (2%)    │
     │ Focus up and down in 100 element map                                    │ +500 (17%)       │ .          │
     │ Focus up and down in 101 element map                                    │ +505 (17%)       │ .          │
     │ Focus up and down in 1000 element map                                   │ +505 (17%)       │ .          │
     │ Focus up and down in 10000 element map                                  │ +505 (17%)       │ .          │
-    │ Focus left and right in a map with 10 rows                              │ +50 (9%)         │ +5 (1%)    │
+    │ Focus left and right in a map with 10 rows                              │ +50 (9%)         │ +5 (2%)    │
     │ Focus left and right in a map with 100 rows                             │ +500 (17%)       │ .          │
     │ Focus left and right in a map with 101 rows                             │ +505 (17%)       │ .          │
     │ Focus left and right in a map with 1000 rows                            │ +505 (17%)       │ .          │
     │ Focus left and right in a map with 10000 rows                           │ +505 (17%)       │ .          │
-    │ Page up and down in 10 element map                                      │ +50 (9%)         │ +5 (1%)    │
+    │ Page up and down in 10 element map                                      │ +50 (9%)         │ +5 (2%)    │
     │ Page up and down in 100 element map                                     │ +500 (17%)       │ .          │
     │ Page up and down in 101 element map                                     │ +505 (17%)       │ .          │
     │ Page up and down in 1000 element map                                    │ +505 (17%)       │ .          │
     │ Page up and down in 10000 element map                                   │ +505 (17%)       │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +5 (2%)          │ +5 (2%)    │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +50 (9%)         │ +5 (1%)    │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +50 (9%)         │ +5 (2%)    │
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +5 (2%)          │ +5 (2%)    │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +50 (9%)         │ +5 (1%)    │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +50 (9%)         │ +5 (2%)    │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +500 (17%)       │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ +50 (9%)         │ +5 (1%)    │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ +50 (9%)         │ +5 (1%)    │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +50 (9%)         │ +5 (1%)    │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ +50 (9%)         │ +5 (2%)    │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ +50 (9%)         │ +5 (2%)    │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +50 (9%)         │ +5 (2%)    │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ +250 (15%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ +250 (15%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ +500 (17%)       │ .          │
-    │ Invert ordering of 10 element map                                       │ +50 (9%)         │ +5 (1%)    │
+    │ Invert ordering of 10 element map                                       │ +50 (9%)         │ +5 (2%)    │
     │ Invert ordering of 100 element map                                      │ +500 (17%)       │ .          │
     │ Invert ordering of 101 element map                                      │ +505 (17%)       │ .          │
     │ Invert ordering of 1000 element map                                     │ +505 (17%)       │ .          │
-    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (1%)    │
-    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (1%)    │
-    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +50 (9%)         │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +50 (9%)         │ +5 (1%)    │
+    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (2%)    │
+    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (2%)    │
+    │ Randomly select a row, then change one cell in it.                      │ +50 (9%)         │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +50 (9%)         │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +50 (9%)         │ +5 (2%)    │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ +500 (17%)       │ .          │
     └─────────────────────────────────────────────────────────────────────────┴──────────────────┴────────────┘
 
@@ -429,14 +429,14 @@ let%expect_test "Stateful Rows" =
     │ Page up and down in 101 element map                                     │ .                │ .          │
     │ Page up and down in 1000 element map                                    │ .                │ .          │
     │ Page up and down in 10000 element map                                   │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (29%)        │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (30%)        │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +80 (14%)        │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (29%)        │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (30%)        │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +80 (14%)        │ .          │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +80 (14%)        │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (24%)       │ .          │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (24%)       │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (24%)       │ .          │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (25%)       │ .          │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (25%)       │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (25%)       │ .          │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ +980 (31%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ +980 (31%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ +1_980 (32%)     │ .          │
@@ -490,16 +490,16 @@ let%expect_test "Stateful Rows" =
     │ Page up and down in 101 element map                                     │ .                │ .          │
     │ Page up and down in 1000 element map                                    │ .                │ .          │
     │ Page up and down in 10000 element map                                   │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (4%)         │ .          │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +80 (4%)         │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (4%)         │ .          │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +80 (4%)         │ .          │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +80 (4%)         │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (12%)       │ .          │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (12%)       │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (12%)       │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +980 (17%)       │ .          │
-    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +980 (17%)       │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (5%)         │ .          │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +80 (5%)         │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (5%)         │ .          │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +80 (5%)         │ .          │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +80 (5%)         │ .          │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (13%)       │ .          │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (13%)       │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (13%)       │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +980 (18%)       │ .          │
+    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +980 (18%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ +1_980 (18%)     │ .          │
     │ Invert ordering of 10 element map                                       │ .                │ .          │
     │ Invert ordering of 100 element map                                      │ .                │ .          │
@@ -511,14 +511,14 @@ let%expect_test "Stateful Rows" =
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +95 (9%)         │ .          │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +275 (17%)       │ .          │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +95 (9%)         │ .          │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +275 (17%)       │ .          │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +95 (9%)         │ .          │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +275 (17%)       │ .          │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +95 (9%)         │ .          │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +275 (17%)       │ .          │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +95 (10%)        │ .          │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +275 (18%)       │ .          │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +95 (10%)        │ .          │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +275 (18%)       │ .          │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +95 (10%)        │ .          │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +275 (18%)       │ .          │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +95 (10%)        │ .          │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +275 (18%)       │ .          │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ +950 (25%)       │ .          │
     └─────────────────────────────────────────────────────────────────────────┴──────────────────┴────────────┘
 
@@ -551,17 +551,17 @@ let%expect_test "Stateful Rows" =
     │ Page up and down in 101 element map                                     │ .                │ .          │
     │ Page up and down in 1000 element map                                    │ .                │ .          │
     │ Page up and down in 10000 element map                                   │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (17%)        │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +80 (18%)        │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (17%)        │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +80 (18%)        │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ .                │ .          │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ .                │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (25%)       │ .          │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (25%)       │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (25%)       │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +980 (33%)       │ .          │
-    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +980 (33%)       │ .          │
-    │ Apply 4 filters and clear with 10000 element map using 100 window       │ +1_980 (34%)     │ .          │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ +180 (27%)       │ .          │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ +180 (27%)       │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +180 (27%)       │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +980 (34%)       │ .          │
+    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +980 (34%)       │ .          │
+    │ Apply 4 filters and clear with 10000 element map using 100 window       │ +1_980 (35%)     │ .          │
     │ Invert ordering of 10 element map                                       │ .                │ .          │
     │ Invert ordering of 100 element map                                      │ .                │ .          │
     │ Invert ordering of 101 element map                                      │ .                │ .          │
@@ -611,60 +611,60 @@ let%expect_test "Stateful_cells" =
     ┌─────────────────────────────────────────────────────────────────────────┬──────────────────┬────────────┐
     │                                                                         │ dynamic (not cf) │ dynamic cf │
     ├─────────────────────────────────────────────────────────────────────────┼──────────────────┼────────────┤
-    │ Focus by key (key not present) and unfocus in 10 element map            │ -130 (12%)       │ +5 (1%)    │
+    │ Focus by key (key not present) and unfocus in 10 element map            │ -130 (12%)       │ +5 (2%)    │
     │ Focus by key (key not present) and unfocus in 100 element map           │ -1_300 (16%)     │ .          │
     │ Focus by key (key not present) and unfocus in 101 element map           │ -1_313 (16%)     │ .          │
     │ Focus by key (key not present) and unfocus in 1000 element map          │ -1_313 (16%)     │ .          │
     │ Focus by key (key not present) and unfocus in 10000 element map         │ -1_313 (16%)     │ .          │
-    │ Focus by key (key present) and unfocus in 10 element map                │ -130 (12%)       │ +5 (1%)    │
+    │ Focus by key (key present) and unfocus in 10 element map                │ -130 (12%)       │ +5 (2%)    │
     │ Focus by key (key present) and unfocus in 100 element map               │ -1_300 (16%)     │ .          │
     │ Focus by key (key present) and unfocus in 101 element map               │ -1_313 (16%)     │ .          │
     │ Focus by key (key present) and unfocus in 1000 element map              │ -1_313 (16%)     │ .          │
     │ Focus by key (key present) and unfocus in 10000 element map             │ -1_313 (16%)     │ .          │
-    │ Focus up and down in 10 element map                                     │ -130 (12%)       │ +5 (1%)    │
+    │ Focus up and down in 10 element map                                     │ -130 (12%)       │ +5 (2%)    │
     │ Focus up and down in 100 element map                                    │ -1_300 (16%)     │ .          │
     │ Focus up and down in 101 element map                                    │ -1_313 (16%)     │ .          │
     │ Focus up and down in 1000 element map                                   │ -1_313 (16%)     │ .          │
     │ Focus up and down in 10000 element map                                  │ -1_313 (16%)     │ .          │
-    │ Focus left and right in a map with 10 rows                              │ -130 (12%)       │ +5 (1%)    │
+    │ Focus left and right in a map with 10 rows                              │ -130 (12%)       │ +5 (2%)    │
     │ Focus left and right in a map with 100 rows                             │ -1_300 (16%)     │ .          │
     │ Focus left and right in a map with 101 rows                             │ -1_313 (16%)     │ .          │
     │ Focus left and right in a map with 1000 rows                            │ -1_313 (16%)     │ .          │
     │ Focus left and right in a map with 10000 rows                           │ -1_313 (16%)     │ .          │
-    │ Page up and down in 10 element map                                      │ -130 (12%)       │ +5 (1%)    │
+    │ Page up and down in 10 element map                                      │ -130 (12%)       │ +5 (2%)    │
     │ Page up and down in 100 element map                                     │ -1_300 (16%)     │ .          │
     │ Page up and down in 101 element map                                     │ -1_313 (16%)     │ .          │
     │ Page up and down in 1000 element map                                    │ -1_313 (16%)     │ .          │
     │ Page up and down in 10000 element map                                   │ -1_313 (16%)     │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -13 (4%)         │ +5 (2%)    │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -130 (12%)       │ +5 (1%)    │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -130 (12%)       │ +5 (2%)    │
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -13 (4%)         │ +5 (2%)    │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -130 (12%)       │ +5 (1%)    │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -130 (12%)       │ +5 (2%)    │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -1_300 (16%)     │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ -130 (12%)       │ +5 (1%)    │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ -130 (12%)       │ +5 (1%)    │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -130 (12%)       │ +5 (1%)    │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ -130 (12%)       │ +5 (2%)    │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ -130 (12%)       │ +5 (2%)    │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -130 (12%)       │ +5 (2%)    │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ -650 (15%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ -650 (15%)       │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -1_300 (16%)     │ .          │
-    │ Invert ordering of 10 element map                                       │ -130 (12%)       │ +5 (1%)    │
+    │ Invert ordering of 10 element map                                       │ -130 (12%)       │ +5 (2%)    │
     │ Invert ordering of 100 element map                                      │ -1_300 (16%)     │ .          │
     │ Invert ordering of 101 element map                                      │ -1_313 (16%)     │ .          │
     │ Invert ordering of 1000 element map                                     │ -1_313 (16%)     │ .          │
-    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (1%)    │
-    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (1%)    │
-    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (1%)    │
-    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ -130 (12%)       │ +5 (1%)    │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ -130 (12%)       │ +5 (1%)    │
+    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (2%)    │
+    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (2%)    │
+    │ Randomly select a row, then change one cell in it.                      │ -130 (12%)       │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (2%)    │
+    │ Randomly select a row, then change all cells in it.                     │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ -130 (12%)       │ +5 (2%)    │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ -130 (12%)       │ +5 (2%)    │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ -1_300 (16%)     │ .          │
     └─────────────────────────────────────────────────────────────────────────┴──────────────────┴────────────┘
 
@@ -702,9 +702,9 @@ let%expect_test "Stateful_cells" =
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -576 (39%)       │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -576 (32%)       │ .          │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -576 (32%)       │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ -1_296 (37%)     │ .          │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ -1_296 (37%)     │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -1_296 (37%)     │ .          │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ -1_296 (38%)     │ .          │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ -1_296 (38%)     │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -1_296 (38%)     │ .          │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ -7_056 (39%)     │ .          │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ -7_056 (39%)     │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -14_256 (39%)    │ .          │
@@ -759,10 +759,10 @@ let%expect_test "Stateful_cells" =
     │ Page up and down in 1000 element map                                    │ .                │ .          │
     │ Page up and down in 10000 element map                                   │ .                │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -208 (8%)        │ .          │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -208 (7%)        │ .          │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -208 (8%)        │ .          │
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -208 (8%)        │ .          │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -208 (7%)        │ .          │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -208 (7%)        │ .          │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -208 (8%)        │ .          │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -208 (8%)        │ .          │
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -468 (14%)       │ .          │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ -468 (14%)       │ .          │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ -468 (14%)       │ .          │
@@ -780,14 +780,14 @@ let%expect_test "Stateful_cells" =
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +76 (7%)         │ .          │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +220 (11%)       │ .          │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +220 (12%)       │ .          │
     │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +76 (7%)         │ .          │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +220 (11%)       │ .          │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +220 (12%)       │ .          │
     │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +76 (7%)         │ .          │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +220 (11%)       │ .          │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +220 (12%)       │ .          │
     │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +76 (7%)         │ .          │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +220 (11%)       │ .          │
-    │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ +760 (15%)       │ .          │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +220 (12%)       │ .          │
+    │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ +760 (16%)       │ .          │
     └─────────────────────────────────────────────────────────────────────────┴──────────────────┴────────────┘
 
     ====== Nodes Invalidated (static - dynamic) ======
@@ -819,16 +819,16 @@ let%expect_test "Stateful_cells" =
     │ Page up and down in 101 element map                                     │ .                │ .          │
     │ Page up and down in 1000 element map                                    │ .                │ .          │
     │ Page up and down in 10000 element map                                   │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +544 (98%)       │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +544 (99%)       │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ .                │ .          │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +544 (97%)       │ .          │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +544 (99%)       │ .          │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ .                │ .          │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ .                │ .          │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ +1_224 (132%)    │ .          │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ +1_224 (132%)    │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +1_224 (132%)    │ .          │
-    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +6_664 (161%)    │ .          │
-    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +6_664 (161%)    │ .          │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ +1_224 (137%)    │ .          │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ +1_224 (137%)    │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ +1_224 (137%)    │ .          │
+    │ Apply 4 filters and clear with 1000 element map using 50 window         │ +6_664 (163%)    │ .          │
+    │ Apply 4 filters and clear with 10000 element map using 50 window        │ +6_664 (163%)    │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ +13_464 (166%)   │ .          │
     │ Invert ordering of 10 element map                                       │ .                │ .          │
     │ Invert ordering of 100 element map                                      │ .                │ .          │

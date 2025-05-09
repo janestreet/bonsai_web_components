@@ -121,7 +121,7 @@ let all_map (type k cmp) (forms : (k, _, cmp) Map.t) =
                  [%message
                    {|WARNING: Form.set on the result of Form.all_map has mismatched keys|}
                      ~_:(details : string)
-                     ~key:(C.comparator.sexp_of_t key : Sexp.t)]
+                     ~key:((Comparator.sexp_of_t C.comparator) key : Sexp.t)]
              in
              match data with
              | `Left _form ->

@@ -138,7 +138,7 @@ let component (type key cmp) (key : (key, cmp) Comparator.Module.t) (local_ grap
   let module Key = struct
     include (val key)
 
-    let sexp_of_t = comparator.sexp_of_t
+    let sexp_of_t = Comparator.sexp_of_t comparator
   end
   in
   let on_change ~group_key ~key =

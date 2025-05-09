@@ -192,7 +192,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Foo"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -201,15 +201,15 @@ let%expect_test "html view" =
             </div>
             <div class="multi-select-checkboxes">
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo1 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo2 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo3 </label>
               </div>
             </div>
@@ -227,7 +227,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Bar"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -249,7 +249,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Baz"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -258,11 +258,11 @@ let%expect_test "html view" =
             </div>
             <div class="multi-select-checkboxes">
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> baz1 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> baz2 </label>
               </div>
             </div>
@@ -296,7 +296,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Foo"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -305,15 +305,15 @@ let%expect_test "html view" =
             </div>
             <div class="multi-select-checkboxes">
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo1 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo2 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> foo3 </label>
               </div>
             </div>
@@ -331,7 +331,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Bar"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -353,7 +353,7 @@ let%expect_test "html view" =
                    spellcheck="false"
                    id="test-foo-search-box-Baz"
                    value:normalized=""
-                   @on_input> </input>
+                   @on_input/>
             <div class="multi-select-select-all-none">
               Select:
               <a href="about:blank" class="multi-select-select-all" @on_click> all </a>
@@ -362,11 +362,11 @@ let%expect_test "html view" =
             </div>
             <div class="multi-select-checkboxes">
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> baz1 </label>
               </div>
               <div class="multi-select-item" @on_click>
-                <input type="checkbox" checked="" #checked="true" @on_change> </input>
+                <input type="checkbox" checked="" #checked="true" @on_change/>
                 <label> baz2 </label>
               </div>
             </div>

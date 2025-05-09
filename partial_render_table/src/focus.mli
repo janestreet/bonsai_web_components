@@ -96,8 +96,7 @@ val component
   -> collated:('key, 'data) Collated.t Bonsai.t
   -> leaves:'col_id Header_tree.leaf list Bonsai.t
   -> range:(int * int) Bonsai.t
-  -> scroll_to_index:(int -> unit Effect.t) Bonsai.t
-  -> scroll_to_column:('col_id -> unit Effect.t) Bonsai.t
+  -> scroll_to:([ `Row of int | `Cell of int * 'col_id ] -> unit Effect.t) Bonsai.t
   -> local_ Bonsai.graph
   -> ('kind, 'key, 'col_id) t Bonsai.t
 

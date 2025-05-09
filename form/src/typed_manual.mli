@@ -15,12 +15,12 @@ module Record : sig
     (** For each of the fields in your record, you need to provide a form component which
         produces values of that type. *)
     val form_for_field
-      :  'a Typed_field.t
+      :  local_ 'a Typed_field.t
       -> local_ Bonsai.graph
       -> ('a, field_view) Form.t Bonsai.t
 
     type form_of_field_fn =
-      { f : 'a. 'a Typed_field.t -> ('a, field_view) Form.t Bonsai.t }
+      { f : 'a. 'a Typed_field.t @ local -> ('a, field_view) Form.t Bonsai.t }
 
     (** Once each of the forms for your record have been created, you need to combine them
         into a final view of your choosing. *)
@@ -53,14 +53,14 @@ module Record : sig
     (** The label to use for each column of the table. *)
     val label_for_field
       : [ `Inferred
-        | `Computed of 'a Typed_field.t -> string
-        | `Dynamic of (Typed_field.Packed.t -> string) Bonsai.t
+        | `Computed of 'a Typed_field.t @ local -> string
+        | `Dynamic of (Typed_field.Packed.t @ local -> string) Bonsai.t
         ]
 
     (** For each of the fields in your record, you need to provide a form component which
         produces values of that type. *)
     val form_for_field
-      :  'a Typed_field.t
+      :  local_ 'a Typed_field.t
       -> local_ Bonsai.graph
       -> ('a, Vdom.Node.t) Form.t Bonsai.t
   end
@@ -87,7 +87,7 @@ module Variant : sig
       -> (Typed_variant.Packed.t, picker_view) Form.t Bonsai.t
 
     val form_for_variant
-      :  'a Typed_variant.t
+      :  local_ 'a Typed_variant.t
       -> local_ Bonsai.graph
       -> ('a, variant_view) Form.t Bonsai.t
 
@@ -111,7 +111,7 @@ module Variant : sig
       -> (Typed_variant.Packed.t option, picker_view) Form.t Bonsai.t
 
     val form_for_variant
-      :  'a Typed_variant.t
+      :  local_ 'a Typed_variant.t
       -> local_ Bonsai.graph
       -> ('a, variant_view) Form.t Bonsai.t
 
@@ -145,16 +145,19 @@ module Variant : sig
         [`Use_sexp_of_variant] respects this by default. Ensure that any [`Custom]
         implementations respect this as well. *)
     val sexp_of_variant_argument
-      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t -> 'a -> Sexp.t ]
+      : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t @ local -> 'a -> Sexp.t ]
 
     val form_for_variant
-      :  'a Typed_variant.t
+      :  local_ 'a Typed_variant.t
       -> ('a, 'cmp) Comparator.Module.t
       -> local_ Bonsai.graph
       -> (('a, 'cmp) Set.t, variant_view) Form.t Bonsai.t
 
     type form_of_variant_fn =
-      { f : 'a 'cmp. 'a Typed_variant.t -> ('a, variant_view) Packed_set_form.t Bonsai.t }
+      { f :
+          'a 'cmp.
+          'a Typed_variant.t @ local -> ('a, variant_view) Packed_set_form.t Bonsai.t
+      }
 
     val finalize_view
       :  form_of_variant_fn

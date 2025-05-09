@@ -2,11 +2,15 @@ open! Core
 open! Bonsai_web
 module Styling = Bonsai_web_ui_toplayer_styling
 
-(** Toplayer elements will not show up in tests by default, because they are portalled
-    outside of the app root. You should use [bonsai_web_ui_toplayer_test] as a helper
-    library in your testing. *)
+(** NOTE: This library is implemented in terms of [Byo_toplayer]. The implementation in
+    [Bonsai_web_ui_toplayer.ml] is mainly a wrapper, providing [Config.t]s, themability,
+    etc.
 
-(** [bonsai_web_ui_toplayer] contains pure vdom tooltips, and stateful Bonsai popovers and
+    Toplayer elements will not show up in tests by default, because they are portalled
+    outside of the app root. You should use [bonsai_web_ui_toplayer_test] as a helper
+    library in your testing.
+
+    [bonsai_web_ui_toplayer] contains pure vdom tooltips, and stateful Bonsai popovers and
     modals: UI elements that appear in the browser top layer, on top of everything else in
     your web UI.
 
@@ -29,39 +33,12 @@ module Styling = Bonsai_web_ui_toplayer_styling
     state, or a [Bonsai.scope_model] if the popover/modal is keyed by one of multiple
     inputs.
 
-    Authors of reusable components might also be interested in the [vdom_toplayer]
-    library, which is the foundation for this one. *)
+    Authors of reusable components might also be interested in the [byo_toplayer] library,
+    which is the foundation for this one. *)
 
-module Position : sig
-  type t = Floating_positioning_new.Position.t =
-    | Auto
-    | Top
-    | Bottom
-    | Left
-    | Right
-  [@@deriving sexp, sexp_grammar, equal, compare, enumerate]
-end
-
-module Alignment : sig
-  type t = Floating_positioning_new.Alignment.t =
-    | Center
-    | Start
-    | End
-  [@@deriving sexp, sexp_grammar, equal, compare, enumerate]
-end
-
-module Offset : sig
-  (** Allows controlling how far the floating element is positioned away from the anchor.
-      Usually, you don't want to set cross_axis. *)
-  type t = Floating_positioning_new.Offset.t =
-    { main_axis : float
-    ; cross_axis : float
-    }
-  [@@deriving sexp, sexp_grammar, equal, compare]
-
-  (** Apply no offset. *)
-  val zero : t
-end
+module Position = Byo_toplayer.Position
+module Alignment = Byo_toplayer.Alignment
+module Offset = Byo_toplayer.Offset
 
 (** A utility for creating tooltip/popover arrows. You probably want the same colors for
     the arrow and the tooltip / popover. [attrs] should not include padding or size, since
@@ -136,20 +113,10 @@ module Tooltip : sig
     -> Vdom.Attr.t
 end
 
-module Match_anchor_side : sig
-  (** [Grow_to_match] will set [min-width] or [min-height]; [Match_exactly] will set
-      [width] or [height], and [Shrink_to_match] will set [max-width] or [max-height].
-
-      If not set here, max height and width will be set to the available space. *)
-  type t = Floating_positioning_new.Match_anchor_side.t =
-    | Grow_to_match
-    | Match_exactly
-    | Shrink_to_match
-  [@@deriving sexp, sexp_grammar, equal, compare, enumerate]
-end
+module Match_anchor_side = Byo_toplayer.Match_anchor_side
 
 module Anchor : sig
-  type t [@@deriving sexp_of]
+  type t = Byo_toplayer.Anchor.t [@@deriving sexp_of]
 
   (** [top], [bottom], and [left], [right] are the # of pixels down and right from the top
       left corner to form the (top, bottom), and (left, right) borders of the virtual
@@ -175,32 +142,32 @@ module Anchor : sig
 end
 
 module Close_on_click_outside : sig
-  type t =
+  type t = Byo_toplayer.Close_on_click_outside.t =
     | Yes
     | Yes_unless_target_is_popover
     | No
 end
 
+module Autoclose : sig
+  type t = private Vdom.Attr.t
+
+  (** [create] allows you to react to outside clicks and escapes for popovers and modals.
+      It's particularly useful when you own the open/closed state. *)
+  val create
+    :  close:unit Effect.t Bonsai.t
+    -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
+    -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t
+    -> ?close_on_esc:bool Bonsai.t
+    -> local_ Bonsai.graph
+    -> t Bonsai.t
+end
+
 module Controls : sig
-  type t =
+  type t = Byo_toplayer.Controls.t =
     { open_ : unit Effect.t Bonsai.t
     ; close : unit Effect.t Bonsai.t
     ; is_open : bool Bonsai.t
     }
-
-  module For_external_state : sig
-    type t = private Vdom.Attr.t
-
-    (** [create] allows you to react to outside clicks and escapes for popovers and modals
-        where you own the state. *)
-    val create
-      :  close:unit Effect.t Bonsai.t
-      -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
-      -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t
-      -> ?close_on_esc:bool Bonsai.t
-      -> local_ Bonsai.graph
-      -> t Bonsai.t
-  end
 end
 
 module Popover : sig
@@ -267,8 +234,8 @@ module Popover : sig
       length equal to the corresponding axis of the anchor. This is particularly useful
       for dropdowns and typeaheads.
 
-      If [overflow_auto_wrapper], the popover's contents will be wrapped in a div with
-      [overflow: auto]. We recommend turning this off.
+      If [overflow_auto_wrapper] (default: [false]), the popover's contents will be
+      wrapped in a div with [overflow: auto].
 
       If you want to run some [unit Effect.t] on close, you can make an [on_deactivate]
       lifecycle hook inside of [content].
@@ -285,7 +252,7 @@ module Popover : sig
     -> ?alignment:Alignment.t Bonsai.t
     -> ?offset:Offset.t Bonsai.t
     -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-    -> overflow_auto_wrapper:bool Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
     -> content:
@@ -321,7 +288,7 @@ module Popover : sig
     -> ?alignment:Alignment.t Bonsai.t
     -> ?offset:Offset.t Bonsai.t
     -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-    -> overflow_auto_wrapper:bool Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
     -> content:
@@ -330,103 +297,66 @@ module Popover : sig
     -> local_ Bonsai.graph
     -> Controls.t
 
-  module For_external_state : sig
-    (** These are like the regular popovers, but you own their open/closed state.
+  (** Like [Popover.create], but always open when active. Use by computing / storing your
+      own open state, and [match%sub]ing on it. For example:
 
-        The [opt] versions take [is_open: 'a option Bonsai.t], and are open if [is_open]
-        is [Some 'a], and provide the ['a Bonsai.t] to [content].
+      {[
+        let popover_attr =
+          match%sub is_open with
+            | Some input ->
+              Popover.always_open
+                ~content:(fun graph -> ...)
+                graph
+            | None -> Vdom.Attr.empty
+        in
+        ...
+      ]}
 
-        The [bool] versions don't accept an input, just [is_open: bool Bonsai.t].
+      Typically, you'll calculate [is_open] as a function of some other state you own.
 
-        Typically, you'll calculate [is_open] as a function of some other state you own.
+      They will be stacked in the order opened, so the popover whose [is_open] input last
+      became [true] will appear on top. *)
+  val always_open
+    :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?autoclose:Autoclose.t Bonsai.t
+    -> ?position:Position.t Bonsai.t
+    -> ?alignment:Alignment.t Bonsai.t
+    -> ?offset:Offset.t Bonsai.t
+    -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
+    -> ?focus_on_open:bool Bonsai.t
+    -> ?has_arrow:bool Bonsai.t
+    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> local_ Bonsai.graph
+    -> Vdom.Attr.t Bonsai.t
 
-        They will be stacked in the order opened, so the popover whose [is_open] input
-        last became [true] will appear on top. *)
+  (** Like [always_open], but for [create_css].
 
-    val opt
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?position:Position.t Bonsai.t
-      -> ?alignment:Alignment.t Bonsai.t
-      -> ?offset:Offset.t Bonsai.t
-      -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> ?has_arrow:bool Bonsai.t
-      -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> Vdom.Attr.t Bonsai.t
+      [attrs] are required to force you to provide some positioning via css. *)
+  val always_open_css
+    :  extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?autoclose:Autoclose.t Bonsai.t
+    -> ?focus_on_open:bool Bonsai.t
+    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> local_ Bonsai.graph
+    -> unit
 
-    val bool
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?position:Position.t Bonsai.t
-      -> ?alignment:Alignment.t Bonsai.t
-      -> ?offset:Offset.t Bonsai.t
-      -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> ?has_arrow:bool Bonsai.t
-      -> is_open:bool Bonsai.t
-      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> Vdom.Attr.t Bonsai.t
-
-    val opt_css
-      :  extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> unit
-
-    val bool_css
-      :  extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> is_open:bool Bonsai.t
-      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> unit
-
-    val opt_virtual
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?position:Position.t Bonsai.t
-      -> ?alignment:Alignment.t Bonsai.t
-      -> ?offset:Offset.t Bonsai.t
-      -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> ?has_arrow:bool Bonsai.t
-      -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Anchor.t Bonsai.t
-      -> local_ Bonsai.graph
-      -> unit
-
-    val bool_virtual
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?position:Position.t Bonsai.t
-      -> ?alignment:Alignment.t Bonsai.t
-      -> ?offset:Offset.t Bonsai.t
-      -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> ?has_arrow:bool Bonsai.t
-      -> is_open:bool Bonsai.t
-      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> Anchor.t Bonsai.t
-      -> local_ Bonsai.graph
-      -> unit
-  end
+  val always_open_virtual
+    :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?autoclose:Autoclose.t Bonsai.t
+    -> ?position:Position.t Bonsai.t
+    -> ?alignment:Alignment.t Bonsai.t
+    -> ?offset:Offset.t Bonsai.t
+    -> ?match_anchor_side_length:Match_anchor_side.t option Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
+    -> ?focus_on_open:bool Bonsai.t
+    -> ?has_arrow:bool Bonsai.t
+    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> Anchor.t Bonsai.t
+    -> local_ Bonsai.graph
+    -> unit
 end
 
 module Modal : sig
@@ -458,8 +388,8 @@ module Modal : sig
       If [lock_body_scroll] is set to true (default false), scrolling the page behind the
       modal will not be possible.
 
-      If [overflow_auto_wrapper], the popover's contents will be wrapped in a div with
-      [overflow: auto]. We recommend turning this off.
+      If [overflow_auto_wrapper] (default: [false]), the popover's contents will be
+      wrapped in a div with [overflow: auto].
 
       You can style the modal backdrop by targetting the [::backdrop] pseudo-element via
       [extra_attrs].
@@ -473,38 +403,42 @@ module Modal : sig
     -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t
     -> ?close_on_esc:bool Bonsai.t
     -> ?lock_body_scroll:bool Bonsai.t
-    -> overflow_auto_wrapper:bool Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> content:
          (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> local_ Bonsai.graph
     -> Controls.t
 
-  module For_external_state : sig
-    val opt
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?lock_body_scroll:bool Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> is_open:'a option Bonsai.t
-      -> content:('a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> unit
+  (** Like [Modal.create], but always open when active. Use by computing / storing your
+      own open state, and [match%sub]ing on it. For example:
 
-    val bool
-      :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
-      -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
-      -> ?controls:Controls.For_external_state.t Bonsai.t
-      -> ?lock_body_scroll:bool Bonsai.t
-      -> overflow_auto_wrapper:bool Bonsai.t
-      -> ?focus_on_open:bool Bonsai.t
-      -> is_open:bool Bonsai.t
-      -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-      -> local_ Bonsai.graph
-      -> unit
-  end
+      {[
+        let (_ : unit Bonsai.t) =
+          match%sub is_open with
+            | Some input ->
+              Modal.always_open
+                ~content:(fun graph -> ...)
+                graph;
+              return ()
+
+            | None -> return ()
+        in
+        ...
+      ]}
+
+      Typically, you'll calculate [is_open] as a function of some other state you own.
+
+      They will be stacked in the order opened, so the popover whose [is_open] input last
+      became [true] will appear on top. *)
+  val always_open
+    :  ?config:[ `This_one of Config.t Bonsai.t | `From_theme ]
+    -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?autoclose:Autoclose.t Bonsai.t
+    -> ?lock_body_scroll:bool Bonsai.t
+    -> ?overflow_auto_wrapper:bool Bonsai.t
+    -> ?focus_on_open:bool Bonsai.t
+    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> local_ Bonsai.graph
+    -> unit
 end
-
-module For_testing = Byo_portal.For_testing

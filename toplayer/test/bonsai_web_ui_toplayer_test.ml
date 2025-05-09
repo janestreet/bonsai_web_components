@@ -2,7 +2,6 @@ open! Core
 open Bonsai_web
 open Bonsai_web_test
 open Bonsai.Let_syntax
-open Bonsai_web_ui_toplayer
 module Node_helpers = Virtual_dom_test_helpers.Node_helpers
 module Var = Bonsai.Expert.Var
 
@@ -10,10 +9,10 @@ module Helper = struct
   type popover_inputs =
     { content : Node_helpers.t
     ; arrow : Node_helpers.t option
-    ; position : Position.t
-    ; alignment : Alignment.t
-    ; offset : Offset.t
-    ; match_anchor_side_length : Match_anchor_side.t option
+    ; position : Byo_toplayer_private_vdom.Position.t
+    ; alignment : Byo_toplayer_private_vdom.Alignment.t
+    ; offset : Byo_toplayer_private_vdom.Offset.t
+    ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
     ; nested_anchored_popovers : anchored list
     }
 
@@ -27,10 +26,10 @@ module Helper = struct
     type t = popover_inputs =
       { content : Node_helpers.t
       ; arrow : Node_helpers.t option
-      ; position : Position.t
-      ; alignment : Alignment.t
-      ; offset : Offset.t
-      ; match_anchor_side_length : Match_anchor_side.t option
+      ; position : Byo_toplayer_private_vdom.Position.t
+      ; alignment : Byo_toplayer_private_vdom.Alignment.t
+      ; offset : Byo_toplayer_private_vdom.Offset.t
+      ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
       ; nested_anchored_popovers : anchored list
       }
   end
@@ -56,7 +55,7 @@ module Helper = struct
           val tagName = Js_of_ocaml.Js.string "fake_anchor_for_anchored_popover"
         end
       in
-      Vdom_toplayer.For_testing_bonsai_web_ui_toplayer.wrap_anchored_popover
+      Byo_toplayer_private_vdom.For_testing_byo_toplayer.wrap_anchored_popover
         ~restore_focus_on_close:true
         ~overflow_auto_wrapper:false
         ~position
@@ -92,13 +91,14 @@ module Helper = struct
     ;;
 
     let is_modal =
-      has_attr ~attr_name:Vdom_toplayer.For_testing_bonsai_web_ui_toplayer.modal_attr_name
+      has_attr
+        ~attr_name:Byo_toplayer_private_vdom.For_testing_byo_toplayer.modal_attr_name
     ;;
 
     let lock_body_scroll =
       has_attr
         ~attr_name:
-          Vdom_toplayer.For_testing_bonsai_web_ui_toplayer.lock_body_scroll_attr_name
+          Byo_toplayer_private_vdom.For_testing_byo_toplayer.lock_body_scroll_attr_name
     ;;
   end
 
@@ -306,8 +306,8 @@ module Helper = struct
     let hook_inputs =
       Node_helpers.get_hook_value_opt
         node_helper
-        ~name:Vdom_toplayer.For_testing_popover_hook.hook_name
-        ~type_id:Vdom_toplayer.For_testing_popover_hook.type_id
+        ~name:Byo_toplayer_private_vdom.For_testing_popover_hook.hook_name
+        ~type_id:Byo_toplayer_private_vdom.For_testing_popover_hook.type_id
     in
     match hook_inputs with
     | Some [] ->
@@ -374,8 +374,8 @@ module Helper = struct
       try
         Node_helpers.get_hook_value
           root_helper
-          ~name:Floating_positioning_new.For_testing_position_me_hook.hook_name
-          ~type_id:Floating_positioning_new.For_testing_position_me_hook.type_id
+          ~name:Byo_toplayer_private_floating.For_testing_position_me_hook.hook_name
+          ~type_id:Byo_toplayer_private_floating.For_testing_position_me_hook.type_id
       with
       | e -> raise_s [%message "Virtual fail" (e : exn) (root_helper : Node_helpers.t)]
     in
@@ -478,10 +478,10 @@ module Popover_test_result = struct
     | Open of
         { content_html : string
         ; arrow_html : string option
-        ; position : Floating_positioning_new.Position.t
-        ; alignment : Floating_positioning_new.Alignment.t
-        ; offset : Floating_positioning_new.Offset.t
-        ; match_anchor_side_length : Floating_positioning_new.Match_anchor_side.t option
+        ; position : Byo_toplayer_private_vdom.Position.t
+        ; alignment : Byo_toplayer_private_vdom.Alignment.t
+        ; offset : Byo_toplayer_private_vdom.Offset.t
+        ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
         }
     | Closed
   [@@deriving sexp, equal]
@@ -516,9 +516,11 @@ module Test_result = struct
     }
 end
 
+open Bonsai_web_ui_toplayer
+
 let test_component ?position ?alignment ?offset ?match_anchor_side_length ~content =
   Bonsai.with_model_resetter' ~f:(fun ~reset:reset_models (local_ graph) ->
-    let popover, { Controls.open_ = open_anchored; close = close_anchored; is_open = _ } =
+    let%tydi popover, { open_ = open_anchored; close = close_anchored; is_open = _ } =
       Popover.create
         ~overflow_auto_wrapper:(return false)
         ?position
@@ -528,7 +530,7 @@ let test_component ?position ?alignment ?offset ?match_anchor_side_length ~conte
         ~content
         graph
     in
-    let { Controls.open_ = open_virtual; close = close_virtual; is_open = _ } =
+    let%tydi { Controls.open_ = open_virtual; close = close_virtual; is_open = _ } =
       Popover.create_virtual
         ~overflow_auto_wrapper:(return false)
         ?position
@@ -1169,9 +1171,9 @@ module _ = struct
   ;;
 
   let%expect_test "Popover changing directions and alignments" =
-    let position_var = Var.create Floating_positioning_new.Position.Top in
-    let alignment_var = Var.create Floating_positioning_new.Alignment.Center in
-    let offset_var = Var.create Floating_positioning_new.Offset.zero in
+    let position_var = Var.create Position.Top in
+    let alignment_var = Var.create Alignment.Center in
+    let offset_var = Var.create Offset.zero in
     let match_anchor_side_length_var = Var.create None in
     let test_component =
       test_component

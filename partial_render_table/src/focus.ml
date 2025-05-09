@@ -243,8 +243,7 @@ module Cell_machine = struct
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(columns : column_id list Bonsai.t)
     ~(range : (int * int) Bonsai.t)
-    ~(scroll_to_index : (int -> unit Effect.t) Bonsai.t)
-    ~(scroll_to_column : (column_id -> unit Effect.t) Bonsai.t)
+    ~(scroll_to : (row_index:int -> column_id -> unit Effect.t) Bonsai.t)
     :  local_ Bonsai.graph
     -> ((key, column_id, presence) By_cell.t, key, column_id) t Bonsai.t
     =
@@ -252,15 +251,15 @@ module Cell_machine = struct
     let module Key = struct
       include (val key)
 
-      let sexp_of_t = comparator.sexp_of_t
-      let equal = Comparable.equal comparator.compare
+      let sexp_of_t = Comparator.sexp_of_t comparator
+      let equal = Comparable.equal (Comparator.compare comparator)
     end
     in
     let module Column_id = struct
       include (val column_id)
 
-      let sexp_of_t = comparator.sexp_of_t
-      let equal = Comparable.equal comparator.compare
+      let sexp_of_t = Comparator.sexp_of_t comparator
+      let equal = Comparable.equal (Comparator.compare comparator)
     end
     in
     let module Action = struct
@@ -301,27 +300,13 @@ module Cell_machine = struct
         ; range : int * int
         ; on_change : (key * column_id) option -> unit Ui_effect.t
         ; key_rank : key -> int option Effect.t
-        ; scroll_to_index : int -> unit Effect.t
-        ; scroll_to_column : column_id -> unit Effect.t
+        ; scroll_to : row_index:int -> column_id -> unit Effect.t
         }
     end
     in
     let input =
-      let%arr collated
-      and columns
-      and range
-      and on_change
-      and key_rank
-      and scroll_to_index
-      and scroll_to_column in
-      { Input.collated
-      ; columns
-      ; range
-      ; on_change
-      ; key_rank
-      ; scroll_to_index
-      ; scroll_to_column
-      }
+      let%arr collated and columns and range and on_change and key_rank and scroll_to in
+      { Input.collated; columns; range; on_change; key_rank; scroll_to }
     in
     let apply_action context input (model : Model.t) action =
       match input with
@@ -331,8 +316,7 @@ module Cell_machine = struct
           ; range = _
           ; on_change = _
           ; key_rank = _
-          ; scroll_to_index = _
-          ; scroll_to_column = _
+          ; scroll_to = _
           } ->
         (* There are no columns, therefore no cells, so there is nothing to focus. *)
         { model with current_focus = No_focused_cell }
@@ -345,19 +329,17 @@ module Cell_machine = struct
           ; range = range_start, range_end
           ; on_change
           ; key_rank
-          ; scroll_to_index
-          ; scroll_to_column
+          ; scroll_to
           } ->
         (match model, (action : Action.t) with
          | { locked = true; current_focus = _; pending_select_id = _ }, Unlock ->
            { model with locked = false }
          | { locked = true; current_focus = _; pending_select_id = _ }, _ -> model
          | { locked = false; current_focus; pending_select_id }, _ ->
-           let scroll_to_index index =
-             Bonsai.Apply_action_context.schedule_event context (scroll_to_index index)
-           in
-           let scroll_to_column column =
-             Bonsai.Apply_action_context.schedule_event context (scroll_to_column column)
+           let scroll_to index column =
+             Bonsai.Apply_action_context.schedule_event
+               context
+               (scroll_to ~row_index:index column)
            in
            let update_focus ~f =
              let original_index_and_column =
@@ -382,8 +364,7 @@ module Cell_machine = struct
                      + Collated.length collated
                      - 1))
              in
-             scroll_to_index new_index;
-             scroll_to_column new_column;
+             scroll_to new_index new_column;
              let row =
                match find_by_index collated ~index:new_index with
                | Some triple -> Currently_selected_row.At_key triple
@@ -437,7 +418,7 @@ module Cell_machine = struct
              | Select (key, column) ->
                (match find_by_key ~key ~key_equal:Key.equal collated with
                 | Some ({ index; key = _ } as triple) ->
-                  scroll_to_index index;
+                  scroll_to index column;
                   Visible { row = At_key triple; column }, `Cancel
                 | None ->
                   let pending_select_id = Pending_select_id.create () in
@@ -682,7 +663,7 @@ module Row_machine = struct
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(range : (int * int) Bonsai.t)
-    ~(scroll_to_index : (int -> unit Effect.t) Bonsai.t)
+    ~(scroll_to : (row_index:int -> unit Effect.t) Bonsai.t)
     : local_ Bonsai.graph -> ((key, presence) By_row.t, key, _) t Bonsai.t
     =
     fun (local_ graph) ->
@@ -710,8 +691,9 @@ module Row_machine = struct
         ~collated
         ~columns:(Bonsai.return [ () ])
         ~range
-        ~scroll_to_index
-        ~scroll_to_column:(Bonsai.return (fun _ -> Effect.Ignore))
+        ~scroll_to:
+          (let%arr scroll_to in
+           fun ~row_index () -> scroll_to ~row_index)
         graph
     in
     let visually_focused =
@@ -733,32 +715,17 @@ let component
     -> collated:(key, _) Collated.t Bonsai.t
     -> leaves:column_id Header_tree.leaf list Bonsai.t
     -> range:_
-    -> scroll_to_index:_
-    -> scroll_to_column:(column_id -> unit Effect.t) Bonsai.t
+    -> scroll_to:([ `Row of int | `Cell of int * column_id ] -> unit Effect.t) Bonsai.t
     -> local_ Bonsai.graph
     -> (kind, key, column_id) t Bonsai.t
   =
   fun kind ->
   match kind with
   | None ->
-    fun _
-      _
-      ~collated:_
-      ~leaves:_
-      ~range:_
-      ~scroll_to_index:_
-      ~scroll_to_column:_
-      (local_ _graph) ->
+    fun _ _ ~collated:_ ~leaves:_ ~range:_ ~scroll_to:_ (local_ _graph) ->
       Bonsai.return { focus = (); visually_focused = Nothing_focused }
   | By_row { on_change; compute_presence; key_rank } ->
-    fun key
-      _
-      ~collated
-      ~leaves:_
-      ~range
-      ~scroll_to_index
-      ~scroll_to_column:_
-      (local_ graph) ->
+    fun key _ ~collated ~leaves:_ ~range ~scroll_to (local_ graph) ->
       Row_machine.component
         key
         ~on_change
@@ -766,17 +733,12 @@ let component
         ~key_rank
         ~collated
         ~range
-        ~scroll_to_index
+        ~scroll_to:
+          (let%arr scroll_to in
+           fun ~row_index -> scroll_to (`Row row_index))
         graph
   | By_cell { on_change; compute_presence; key_rank } ->
-    fun key
-      column
-      ~collated
-      ~leaves
-      ~range
-      ~scroll_to_index
-      ~scroll_to_column
-      (local_ graph) ->
+    fun key column ~collated ~leaves ~range ~scroll_to (local_ graph) ->
       let columns =
         let%arr leaves in
         List.map leaves ~f:(fun leaf -> leaf.column_id)
@@ -790,8 +752,9 @@ let component
         ~collated
         ~columns
         ~range
-        ~scroll_to_index
-        ~scroll_to_column
+        ~scroll_to:
+          (let%arr scroll_to in
+           fun ~row_index column -> scroll_to (`Cell (row_index, column)))
         graph
 ;;
 

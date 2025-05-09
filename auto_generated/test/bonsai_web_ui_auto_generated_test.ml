@@ -76,7 +76,7 @@ let%expect_test "setting option form" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   Handle.do_actions handle [ Some 3 ];
   Handle.show handle;
@@ -93,13 +93,13 @@ let%expect_test "setting option form" =
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
       <input type="number"
              step="1"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.do_actions handle [ None ];
@@ -116,7 +116,7 @@ let%expect_test "setting option form" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}]
 ;;
 
@@ -139,7 +139,7 @@ let%expect_test "interacting with option form" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   Handle.set_checkbox handle ~get_vdom ~selector:"input" ~checked:true;
   Handle.show handle;
@@ -156,13 +156,13 @@ let%expect_test "interacting with option form" =
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
       <input type="number"
              step="1"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input:nth-child(2)" ~text:"3";
@@ -180,13 +180,13 @@ let%expect_test "interacting with option form" =
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
       <input type="number"
              step="1"
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -228,7 +228,7 @@ let%expect_test "record's field order is preserved" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr @key=bonsai_path_replaced_in_test>
@@ -247,7 +247,7 @@ let%expect_test "record's field order is preserved" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
       </tbody>
@@ -289,7 +289,7 @@ let%expect_test "record's field order is preserved" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr @key=bonsai_path_replaced_in_test>
@@ -308,7 +308,7 @@ let%expect_test "record's field order is preserved" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
       </tbody>
@@ -346,7 +346,7 @@ let%expect_test "a tuple form gets labels on the elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr @key=bonsai_path_replaced_in_test>
@@ -402,7 +402,7 @@ let%expect_test "a list field within a record form gets a label" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -464,7 +464,7 @@ let%expect_test "a nested record gets a label" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -502,7 +502,7 @@ let%expect_test "a nested record gets a label" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=0
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
       </tbody>
@@ -542,7 +542,7 @@ let%expect_test "record with doc comments gets a tooltip" =
             <div style={ display: flex; flex-direction: row; flex-wrap: nowrap; }>
               <div class="container_hash_replaced_in_test">
                 <label class="label_hash_replaced_in_test" style={ color: blue; }>
-                  <input type="checkbox" tabindex="-1" class="checkbox_hash_replaced_in_test"> </input>
+                  <input type="checkbox" tabindex="-1" class="checkbox_hash_replaced_in_test"/>
                   <span class="span_hash_replaced_in_test"> ⓘ </span>
                   <div class="above_hash_replaced_in_test text_hash_replaced_in_test"
                        style={
@@ -739,7 +739,7 @@ let%expect_test "setting variant forms" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -841,7 +841,7 @@ let%expect_test "interacting with variant forms" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"3";
@@ -867,7 +867,7 @@ let%expect_test "interacting with variant forms" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -1204,7 +1204,7 @@ let%expect_test "setting custom time form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ Time_ns.of_string_with_utc_offset "2022-04-05 13:31:55Z" ];
   Handle.show handle;
@@ -1217,7 +1217,7 @@ let%expect_test "setting custom time form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2022-04-05T13:31:55
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -1243,20 +1243,20 @@ let%expect_test "interacting with custom time form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=""
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"2022-04-05T09:31:55";
   Handle.show handle;
   [%expect
     {|
-    (Ok "2022-04-05 09:31:00Z")
+    (Ok "2022-04-05 09:31:55Z")
 
     ==============
     <input type="datetime-local"
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
-           value:normalized=2022-04-05T09:31:00
-           @on_input> </input>
+           value:normalized=2022-04-05T09:31:55
+           @on_input/>
     |}]
 ;;
 
@@ -1298,7 +1298,7 @@ let%expect_test "duplicating list elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1324,7 +1324,7 @@ let%expect_test "duplicating list elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1368,7 +1368,7 @@ let%expect_test "duplicating list elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1394,7 +1394,7 @@ let%expect_test "duplicating list elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1420,7 +1420,7 @@ let%expect_test "duplicating list elements" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1484,7 +1484,7 @@ let%expect_test "opting out of duplication in lists" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1516,7 +1516,7 @@ let%expect_test "opting out of duplication in lists" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1614,7 +1614,7 @@ let%expect_test "customizing a tuple within a list" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr @key=bonsai_path_replaced_in_test>
@@ -1633,7 +1633,7 @@ let%expect_test "customizing a tuple within a list" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1706,7 +1706,7 @@ let%expect_test "customizing an alist" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1779,7 +1779,7 @@ let%expect_test "customizing a map" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=2
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -1854,7 +1854,7 @@ let%expect_test "interacting with an optional field" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=1
-             @on_input> </input>
+             @on_input/>
       <textarea placeholder="" id="bonsai_path_replaced_in_test" value:normalized=foo @on_input> </textarea>
     </div>
     |}]
@@ -1939,7 +1939,7 @@ let%expect_test "setting into an optional field with the value" =
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=1
-             @on_input> </input>
+             @on_input/>
       <textarea placeholder="" id="bonsai_path_replaced_in_test" value:normalized=foo @on_input> </textarea>
     </div>
     |}]
@@ -1995,7 +1995,7 @@ let%expect_test "regression test: optional groups have keys attached" =
                     <div class="container_hash_replaced_in_test label_hash_replaced_in_test">
                       <label for="bonsai_path_replaced_in_test" style={ display: block; }> one </label>
 
-                           }> </input>
+                           }/>
                   </td>
                 </tr>
                 <tr>
@@ -2016,7 +2016,7 @@ let%expect_test "regression test: optional groups have keys attached" =
                            @on_click
                            style={
                              margin-left: 0px;
-                           }> </input>
+                           }/>
                   </td>
                 </tr>
                 <tr>
@@ -2097,7 +2097,7 @@ let%expect_test "regression test: optional groups have keys attached" =
                            @on_click
                            style={
                              margin-left: 0px;
-                           }> </input>
+                           }/>
                   </td>
                 </tr>
                 <tr>
@@ -2130,7 +2130,7 @@ let%expect_test "regression test: optional groups have keys attached" =
                            @on_click
                            style={
                              margin-left: 0px;
-                           }> </input>
+                           }/>
                   </td>
     |}]
 ;;
@@ -2153,7 +2153,7 @@ let%expect_test "dynamic sexp_grammar form is rendered" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Bonsai.Expert.Var.set grammar_var grammar'.untyped;
   Handle.show handle;
@@ -2169,7 +2169,7 @@ let%expect_test "dynamic sexp_grammar form is rendered" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}]
 ;;
 
@@ -2191,7 +2191,7 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"2";
   Handle.show handle;
@@ -2205,7 +2205,7 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2
-           @on_input> </input>
+           @on_input/>
     |}];
   Bonsai.Expert.Var.set grammar_var grammar'.untyped;
   Handle.show handle;
@@ -2221,7 +2221,7 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   Handle.set_checkbox handle ~get_vdom ~selector:"input" ~checked:true;
   Handle.show handle;
@@ -2237,7 +2237,7 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   (* We remember the value of the form before the grammar was changed *)
   Bonsai.Expert.Var.set grammar_var grammar.untyped;
@@ -2252,7 +2252,7 @@ let%expect_test "interactions with dynamic sexp_grammar form" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=2
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -2275,7 +2275,7 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   Handle.do_actions handle [ [%sexp_of: int] 5 ];
   Handle.show handle;
@@ -2289,7 +2289,7 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=5
-           @on_input> </input>
+           @on_input/>
     |}];
   Bonsai.Expert.Var.set grammar_var grammar'.untyped;
   Handle.show handle;
@@ -2305,7 +2305,7 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   Handle.do_actions handle [ [%sexp_of: bool] true ];
   Handle.show handle;
@@ -2321,7 +2321,7 @@ let%expect_test "setting into a dynamic grammar form works, but should be done w
            @on_click
            style={
              margin-left: 0px;
-           }> </input>
+           }/>
     |}];
   (* But if you set something that doesn't match the current grammar, [on_set_error] will
      be called *)
@@ -2368,7 +2368,7 @@ let%expect_test "customizations are applied dynamically" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}];
   (* When the grammar transitions to a grammar which customizations are defined for, those
      customizations are applied *)
@@ -2394,7 +2394,7 @@ let%expect_test "customizations are applied dynamically" =
            spellcheck="false"
            id="bonsai_path_replaced_in_test"
            value:normalized=0
-           @on_input> </input>
+           @on_input/>
     |}]
 ;;
 
@@ -2454,7 +2454,7 @@ let%expect_test "customizing a list to have better button text" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -2533,7 +2533,7 @@ let%expect_test "customizing a list in a record to have better button text" =
                    spellcheck="false"
                    id="bonsai_path_replaced_in_test"
                    value:normalized=1
-                   @on_input> </input>
+                   @on_input/>
           </td>
         </tr>
         <tr>
@@ -2599,7 +2599,7 @@ let%expect_test "model state is not shared between variants even when they have 
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.change handle ~get_vdom ~selector:"select" ~value:"2";
@@ -2625,7 +2625,7 @@ let%expect_test "model state is not shared between variants even when they have 
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=0
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"3";
@@ -2651,7 +2651,7 @@ let%expect_test "model state is not shared between variants even when they have 
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=3
-             @on_input> </input>
+             @on_input/>
     </div>
     |}];
   Handle.change handle ~get_vdom ~selector:"select" ~value:"1";
@@ -2677,7 +2677,7 @@ let%expect_test "model state is not shared between variants even when they have 
              spellcheck="false"
              id="bonsai_path_replaced_in_test"
              value:normalized=2
-             @on_input> </input>
+             @on_input/>
     </div>
     |}]
 ;;
@@ -2940,7 +2940,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -2948,7 +2948,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
 
       (Ok ((this (((this ()) (that ((self ())))))) (that ((self (((self ()))))))))
@@ -2962,7 +2962,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -2970,7 +2970,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -2978,7 +2978,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -2986,7 +2986,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -2994,7 +2994,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
       |}]
   ;;
@@ -3054,7 +3054,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <select id="bonsai_path_replaced_in_test"
                 class="widget-dropdown"
                 @on_change
@@ -3071,7 +3071,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
       |}]
   ;;
@@ -3101,7 +3101,7 @@ module%test [@name "regressions"] _ = struct
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
 
       (Ok ((that ((this (((this ()))))))))
 
@@ -3114,7 +3114,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3122,7 +3122,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
       |}]
   ;;
@@ -3155,7 +3155,7 @@ module%test [@name "regressions"] _ = struct
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
 
       (Ok ((that ((this (((this ()))))))))
 
@@ -3168,7 +3168,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3176,7 +3176,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
       |}]
   ;;
@@ -3207,7 +3207,7 @@ module%test [@name "regressions"] _ = struct
              @on_click
              style={
                margin-left: 0px;
-             }> </input>
+             }/>
 
       (Ok ((that ((this (((this ()))))))))
 
@@ -3220,7 +3220,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
         <input @key=bonsai_path_replaced_in_test
                type="checkbox"
                id="bonsai_path_replaced_in_test"
@@ -3228,7 +3228,7 @@ module%test [@name "regressions"] _ = struct
                @on_click
                style={
                  margin-left: 0px;
-               }> </input>
+               }/>
       </div>
       |}]
   ;;
@@ -3289,7 +3289,7 @@ module%test [@name "regressions"] _ = struct
                spellcheck="false"
                id="bonsai_path_replaced_in_test"
                value:normalized=1
-               @on_input> </input>
+               @on_input/>
       </div>
       |}]
   ;;

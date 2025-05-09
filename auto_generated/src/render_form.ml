@@ -161,14 +161,25 @@ module Style =
       }
       .nested_table {
         padding-left: 1.3rem;
-        border-width: 0 0 0 1px;
-        border-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 1);
-        border-style: solid;
+        border-width: 0;
+        /* We want to use inset box shadown instead of border to avoid the content of the
+           nested tables shifting on hover.
+
+           Why the content shifts currently? Turns out Chrome rounds border values to
+           device pixels, which means that you cannot offset the shift caused by thicker
+           border by e.g. [margin-left: -1px].
+
+           The form elements are styled under [box-sizing: border-box], which should mean
+           the overall size of the element will be the same as if we had a border instead
+           of inset box shadow... almost - there's a small sub-pixel width equal to the
+           border device pixel rounding which is not accounted for. */
+        box-shadow: inset 1px 0
+          hsla(var(--accent-h), var(--accent-s), var(--accent-l), 1);
         background-color: hsla(var(--accent-h), var(--accent-s), 95%, 1);
       }
       .nested_table:hover {
-        border-width: 0 0 0 2px;
-        margin-left: -1px;
+        box-shadow: inset 2px 0
+          hsla(var(--accent-h), var(--accent-s), var(--accent-l), 1);
       }
     |}]
 

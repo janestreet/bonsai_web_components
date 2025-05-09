@@ -484,7 +484,7 @@ let with_inject
   let module Key = struct
     include (val key)
 
-    let equal a b = comparator.compare a b = 0
+    let equal a b = (Comparator.compare comparator) a b = 0
   end
   in
   let module A = struct
@@ -734,13 +734,13 @@ module Multi = struct
     let module Key = struct
       include (val key)
 
-      let equal a b = comparator.compare a b = 0
+      let equal a b = (Comparator.compare comparator) a b = 0
     end
     in
     let module Which = struct
       include (val which)
 
-      let equal a b = comparator.compare a b = 0
+      let equal a b = (Comparator.compare comparator) a b = 0
     end
     in
     let module Action = struct

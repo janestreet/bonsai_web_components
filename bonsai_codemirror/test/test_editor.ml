@@ -1015,7 +1015,7 @@ let%expect_test "Setting lines to an empty array" =
              role="textbox"
              aria-multiline="true">
           <div class="cm-line">
-            <br> </br>
+            <br/>
           </div>
         </div>
       </div>
