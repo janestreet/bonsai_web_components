@@ -85,7 +85,7 @@ let%expect_test "column visibility" =
   [%expect
     {|
     === DIFF HUNK ===
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -97,7 +97,7 @@ let%expect_test "column visibility" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -116,7 +116,7 @@ let%expect_test "column visibility" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>
     === DIFF HUNK ===
                        width: 0.00px;
@@ -244,7 +244,7 @@ let%expect_test "stabilization of view range" =
         <tbody>
           <tr>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -253,7 +253,7 @@ let%expect_test "stabilization of view range" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div>
                 <div>
@@ -262,7 +262,7 @@ let%expect_test "stabilization of view range" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -271,7 +271,7 @@ let%expect_test "stabilization of view range" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -371,7 +371,7 @@ let%expect_test "resize-column" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>
                   style={
     -|              width: 50px;
@@ -390,7 +390,7 @@ let%expect_test "resize-column" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>
     === DIFF HUNK ===
                   </div>
@@ -566,7 +566,7 @@ let%expect_test "big table" =
         <tbody>
           <tr>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -575,7 +575,7 @@ let%expect_test "big table" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div>
                 <div>
@@ -584,7 +584,7 @@ let%expect_test "big table" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -593,7 +593,7 @@ let%expect_test "big table" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -638,7 +638,7 @@ let%expect_test "big table" =
     {|
     === DIFF HUNK ===
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -804,7 +804,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         <tbody>
           <tr>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -813,7 +813,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div>
                 <div>
@@ -822,7 +822,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -831,7 +831,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -998,26 +998,26 @@ let%expect_test "sorting legacy renderer" =
         <tbody>
           <tr>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <span> ◇  key </span>
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div> a </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <span> ◇  b </span>
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <span> ◇  d </span>
@@ -1072,7 +1072,7 @@ let%expect_test "sorting legacy renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ◇  key </span>
@@ -1080,19 +1080,19 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div> a </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  b </span>
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
     |}];
   (* this one actually does stuff, click on it twice for a reverse sort *)
   Handle.click_on test.handle ~selector:"td:nth-child(3) > div" ~get_vdom:test.get_vdom;
@@ -1106,7 +1106,7 @@ let%expect_test "sorting legacy renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ⬘  key </span>
@@ -1114,12 +1114,12 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div> a </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ◇  b </span>
@@ -1127,7 +1127,7 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  d </span>
@@ -1186,19 +1186,19 @@ let%expect_test "sorting legacy renderer" =
     {|
     === DIFF HUNK ===
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  key </span>
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div> a </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ⬙  b </span>
@@ -1206,7 +1206,7 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  d </span>
@@ -1266,19 +1266,19 @@ let%expect_test "sorting legacy renderer" =
   [%expect
     {|
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div> a </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  b </span>
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ◇  d </span>
@@ -1306,19 +1306,19 @@ let%expect_test "sorting legacy renderer" =
   [%expect
     {|
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div> a </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <span> ◇  b </span>
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     -|            <span> ⬘  d </span>
@@ -1387,7 +1387,7 @@ let%expect_test "sorting default renderer" =
         <tbody>
           <tr>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -1396,7 +1396,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div>
                 <div>
@@ -1405,7 +1405,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -1414,7 +1414,7 @@ let%expect_test "sorting default renderer" =
               </div>
             </td>
             <td colspan="1"
-                class="header_cell header_label leaf_header leaf_header_resizable"
+                class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                 size_tracker=<fun>>
               <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                 <div>
@@ -1471,7 +1471,7 @@ let%expect_test "sorting default renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1481,7 +1481,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div>
                   <div>
@@ -1490,7 +1490,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
     |}];
@@ -1506,7 +1506,7 @@ let%expect_test "sorting default renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1516,7 +1516,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div>
                   <div>
@@ -1525,7 +1525,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1535,7 +1535,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1605,7 +1605,7 @@ let%expect_test "sorting default renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1615,7 +1615,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div>
                   <div>
@@ -1624,7 +1624,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1635,7 +1635,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1659,7 +1659,7 @@ let%expect_test "sorting default renderer" =
           <tbody>
             <tr>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1669,7 +1669,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div>
                   <div>
@@ -1678,7 +1678,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>
@@ -1688,7 +1688,7 @@ let%expect_test "sorting default renderer" =
                 </div>
               </td>
               <td colspan="1"
-                  class="header_cell header_label leaf_header leaf_header_resizable"
+                  class="header_label leaf_header leaf_header_resizable table_view__inline_class"
                   size_tracker=<fun>>
                 <div role="button" tabindex="0" class="sortable_header_cell" @on_click>
                   <div>

@@ -187,7 +187,7 @@ let%expect_test "dyn cells with `visible`" =
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
                   size_tracker=<fun>
                   style={
-    -96,8 +103,25
+    -92,8 +99,25
                     <button @on_click> 0 </button>
                   </div>
                 </div>
@@ -312,9 +312,9 @@ let%expect_test "duplicate col adds the another col, with the same view" =
     +|            }> edge </th>
             </tr>
           </thead>
-          <div class="body_hash_replaced_in_test"
-               style={
-    -172,8 +179,27
+          <div style={ display: table-row-group; position: relative; }>
+            <div @key=top_padding style={ height: 0px; }> </div>
+    -168,8 +175,27
                     <button @on_click> 0 </button>
                   </div>
                 </div>

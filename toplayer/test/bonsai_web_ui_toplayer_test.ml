@@ -6,13 +6,18 @@ module Node_helpers = Virtual_dom_test_helpers.Node_helpers
 module Var = Bonsai.Expert.Var
 
 module Helper = struct
-  type popover_inputs =
-    { content : Node_helpers.t
-    ; arrow : Node_helpers.t option
-    ; position : Byo_toplayer_private_vdom.Position.t
+  type positioning =
+    { position : Byo_toplayer_private_vdom.Position.t
     ; alignment : Byo_toplayer_private_vdom.Alignment.t
     ; offset : Byo_toplayer_private_vdom.Offset.t
     ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
+    }
+  [@@deriving sexp_of, equal]
+
+  type popover_inputs =
+    { content : Node_helpers.t
+    ; arrow : Node_helpers.t option
+    ; positioning : positioning option
     ; nested_anchored_popovers : anchored list
     }
 
@@ -26,10 +31,7 @@ module Helper = struct
     type t = popover_inputs =
       { content : Node_helpers.t
       ; arrow : Node_helpers.t option
-      ; position : Byo_toplayer_private_vdom.Position.t
-      ; alignment : Byo_toplayer_private_vdom.Alignment.t
-      ; offset : Byo_toplayer_private_vdom.Offset.t
-      ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
+      ; positioning : positioning option
       ; nested_anchored_popovers : anchored list
       }
   end
@@ -45,27 +47,27 @@ module Helper = struct
     let content_vdom { content_vdom; _ } = content_vdom
 
     let best_effort_wrap_content_in_popover_vdom
-      { inputs = { position; alignment; offset; match_anchor_side_length; _ }
-      ; content_vdom
-      ; arrow_vdom
-      }
+      { inputs = { positioning; _ }; content_vdom; arrow_vdom }
       =
-      let fake_anchor =
-        object%js (_self)
-          val tagName = Js_of_ocaml.Js.string "fake_anchor_for_anchored_popover"
-        end
-      in
-      Byo_toplayer_private_vdom.For_testing_byo_toplayer.wrap_anchored_popover
-        ~restore_focus_on_close:true
-        ~overflow_auto_wrapper:false
-        ~position
-        ~alignment
-        ~offset
-        ~match_anchor_side_length
-        ~content:content_vdom
-        ~popover_attrs:[ Vdom.Attr.class_ "currently-untestable" ]
-        ~arrow:arrow_vdom
-        ~anchor:(Js_of_ocaml.Js.Unsafe.coerce fake_anchor)
+      match positioning with
+      | None -> raise_s [%message "Anchored popovers must have a positioning config"]
+      | Some { position; alignment; offset; match_anchor_side_length } ->
+        let fake_anchor =
+          object%js (_self)
+            val tagName = Js_of_ocaml.Js.string "fake_anchor_for_anchored_popover"
+          end
+        in
+        Byo_toplayer_private_vdom.For_testing_byo_toplayer.wrap_anchored_popover
+          ~restore_focus_on_close:true
+          ~overflow_auto_wrapper:false
+          ~position
+          ~alignment
+          ~offset
+          ~match_anchor_side_length
+          ~content:content_vdom
+          ~popover_attrs:[ Vdom.Attr.class_ "currently-untestable" ]
+          ~arrow:arrow_vdom
+          ~anchor:(Js_of_ocaml.Js.Unsafe.coerce fake_anchor)
     ;;
   end
 
@@ -325,10 +327,8 @@ module Helper = struct
           ; inputs =
               { content = content_helper
               ; arrow = Option.map arrow ~f:Node_helpers.unsafe_convert_exn
-              ; position
-              ; alignment
-              ; offset
-              ; match_anchor_side_length
+              ; positioning =
+                  Some { position; alignment; offset; match_anchor_side_length }
               ; nested_anchored_popovers = get_all_anchored content_helper
               }
           })
@@ -370,14 +370,18 @@ module Helper = struct
        are active / inactive independently of vdom. Therefore, we can always just pull them
        from the Var that backs portalling. *)
   let extract_virtual root_vdom root_helper =
-    let hook_inputs =
-      try
-        Node_helpers.get_hook_value
+    let positioning =
+      let%map.Option hook_inputs =
+        Node_helpers.get_hook_value_opt
           root_helper
           ~name:Byo_toplayer_private_floating.For_testing_position_me_hook.hook_name
           ~type_id:Byo_toplayer_private_floating.For_testing_position_me_hook.type_id
-      with
-      | e -> raise_s [%message "Virtual fail" (e : exn) (root_helper : Node_helpers.t)]
+      in
+      { position = hook_inputs.position
+      ; alignment = hook_inputs.alignment
+      ; offset = hook_inputs.offset
+      ; match_anchor_side_length = hook_inputs.match_anchor_side_length
+      }
     in
     (* We could probably factor something out for structural tests of modals /
          popovers, but:
@@ -408,10 +412,7 @@ module Helper = struct
       ; inputs =
           { content
           ; arrow
-          ; position = hook_inputs.position
-          ; alignment = hook_inputs.alignment
-          ; offset = hook_inputs.offset
-          ; match_anchor_side_length = hook_inputs.match_anchor_side_length
+          ; positioning
           ; nested_anchored_popovers = get_all_anchored content
           }
       }
@@ -478,31 +479,18 @@ module Popover_test_result = struct
     | Open of
         { content_html : string
         ; arrow_html : string option
-        ; position : Byo_toplayer_private_vdom.Position.t
-        ; alignment : Byo_toplayer_private_vdom.Alignment.t
-        ; offset : Byo_toplayer_private_vdom.Offset.t
-        ; match_anchor_side_length : Byo_toplayer_private_vdom.Match_anchor_side.t option
+        ; positioning : Helper.positioning option
         }
     | Closed
-  [@@deriving sexp, equal]
+  [@@deriving sexp_of, equal]
 
   let conv
-    { Helper.Popover_inputs.content
-    ; arrow
-    ; position
-    ; alignment
-    ; offset
-    ; match_anchor_side_length
-    ; nested_anchored_popovers = _
-    }
+    { Helper.Popover_inputs.content; arrow; positioning; nested_anchored_popovers = _ }
     =
     Open
       { content_html = Node_helpers.to_string_html content
       ; arrow_html = Option.map ~f:Node_helpers.to_string_html arrow
-      ; position
-      ; alignment
-      ; offset
-      ; match_anchor_side_length
+      ; positioning
       }
   ;;
 end
@@ -1086,6 +1074,84 @@ module%test [@name "vdom output"] _ = struct
     Handle.show handle;
     [%expect {| "No Modals" |}]
   ;;
+
+  let%expect_test "CSS-positioned popover doesn't break tests" =
+    let handle =
+      Handle.create (Result_spec.vdom Fn.id) (fun graph ->
+        let view =
+          let%tydi { open_; close; _ } =
+            Popover.create_css
+              ~extra_attrs:(Bonsai.return [])
+              ~content:(fun ~close:_ __FILE__ ->
+                return (Vdom.Node.div [ Vdom.Node.text "popover" ]))
+              graph
+          in
+          let%arr open_ and close in
+          {%html|
+            <div>
+              <button on_click=%{fun _ -> open_} id="open">Open</button
+              ><button on_click=%{fun _ -> close} id="close">Close</button>
+            </div>
+          |}
+        in
+        Helper.wrap_app_vdom ~verbose:true view)
+    in
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#open";
+    Handle.recompute_view_until_stable handle;
+    Handle.show handle;
+    [%expect
+      {|
+      <html id="html-for-tests">
+        <div id="app-root-for-tests">
+          <div>
+            <button id="open" @on_click> Open </button>
+            <button id="close" @on_click> Close </button>
+          </div>
+        </div>
+        <div id="anchored-popovers-for-tests"> </div>
+        <div id="virtual-popovers-for-tests">
+          <popover>
+            <div popover="manual"
+                 tabindex="-1"
+                 data-bonsai-popover-356c4f74-f7b7-11ee-8823-aa63f6b8d3b4=""
+                 id="bonsai_path_replaced_in_test"
+                 class="floating_hash_replaced_in_test popover_hash_replaced_in_test"
+                 custom-css-vars=((--ppx_css_anonymous_var_1_hash_replaced_in_test"var(--floatingHeight, fit-content)")(--ppx_css_anonymous_var_2_hash_replaced_in_test"var(--floatingWidth, fit-content)")(--ppx_css_anonymous_var_3_hash_replaced_in_test"var(--floatingMinHeight)")(--ppx_css_anonymous_var_4_hash_replaced_in_test"var(--floatingMinWidth)")(--ppx_css_anonymous_var_5_hash_replaced_in_test"var(--floatingAvailableWidth, 100.00%)"))
+                 global-click-listener=((capture <fun>))
+                 global-keydown-listener=((bubbling <fun>))
+                 global-mousedown-listener=((capture <fun>))
+                 vdom_toplayer_popover_inertness=()
+                 vdom_toplayer_restore_focus_on_close=()
+                 vdom_toplayer_show_on_mount=()
+                 @on_keydown>
+              <div class="popover_dom__inline_class_hash_replaced_in_test">
+                <div> popover </div>
+              </div>
+              <nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget> </nested-popover-root-priv-2ecfd118-f7b7-11ee-abec-aa63f6b8d3b4-widget>
+            </div>
+          </popover>
+        </div>
+        <div id="modals-for-tests"> </div>
+      </html>
+      |}];
+    Handle.click_on ~get_vdom:Fn.id handle ~selector:"#close";
+    Handle.recompute_view_until_stable handle;
+    Handle.show handle;
+    [%expect
+      {|
+      <html id="html-for-tests">
+        <div id="app-root-for-tests">
+          <div>
+            <button id="open" @on_click> Open </button>
+            <button id="close" @on_click> Close </button>
+          </div>
+        </div>
+        <div id="anchored-popovers-for-tests"> </div>
+        <div id="virtual-popovers-for-tests"> </div>
+        <div id="modals-for-tests"> </div>
+      </html>
+      |}]
+  ;;
 end
 
 (* Test that virtual and anchored are consistent, and that inputs are propogated to the
@@ -1161,8 +1227,9 @@ module _ = struct
     [%expect
       {|
       ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-        (position Auto) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-        (match_anchor_side_length ())))
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.do_actions handle [ Close ];
     Handle.recompute_view_until_stable handle;
@@ -1192,116 +1259,115 @@ module _ = struct
     [%expect
       {|
       ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-        (position Top) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-        (match_anchor_side_length ())))
+        (positioning
+         (((position Top) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set position_var Left;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Top) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-      +|  (position Left) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-          (match_anchor_side_length ())))
+          (positioning
+      -|   (((position Top) (alignment Center)
+      +|   (((position Left) (alignment Center)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set position_var Top;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Left) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-      +|  (position Top) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-          (match_anchor_side_length ())))
+          (positioning
+      -|   (((position Left) (alignment Center)
+      +|   (((position Top) (alignment Center)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set position_var Bottom;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Top) (alignment Center) (offset ((main_axis 0) (cross_axis 0)))
-      -|  (match_anchor_side_length ())))
-      +|  (position Bottom) (alignment Center)
-      +|  (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+          (positioning
+      -|   (((position Top) (alignment Center)
+      +|   (((position Bottom) (alignment Center)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set alignment_var Start;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Bottom) (alignment Center)
-      -|  (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
-      +|  (position Bottom) (alignment Start) (offset ((main_axis 0) (cross_axis 0)))
-      +|  (match_anchor_side_length ())))
+          (positioning
+      -|   (((position Bottom) (alignment Center)
+      +|   (((position Bottom) (alignment Start)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set alignment_var End;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Bottom) (alignment Start) (offset ((main_axis 0) (cross_axis 0)))
-      +|  (position Bottom) (alignment End) (offset ((main_axis 0) (cross_axis 0)))
-          (match_anchor_side_length ())))
+          (positioning
+      -|   (((position Bottom) (alignment Start)
+      +|   (((position Bottom) (alignment End)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Var.set offset_var { main_axis = 3.; cross_axis = 2. };
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Bottom) (alignment End) (offset ((main_axis 0) (cross_axis 0)))
-      +|  (position Bottom) (alignment End) (offset ((main_axis 3) (cross_axis 2)))
-          (match_anchor_side_length ())))
+           (((position Bottom) (alignment End)
+      -|     (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
+      +|     (offset ((main_axis 3) (cross_axis 2))) (match_anchor_side_length ()))))))
       |}];
     Var.set offset_var { main_axis = -3.; cross_axis = 16. };
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-        ((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Bottom) (alignment End) (offset ((main_axis 3) (cross_axis 2)))
-      +|  (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-          (match_anchor_side_length ())))
+           (((position Bottom) (alignment End)
+      -|     (offset ((main_axis 3) (cross_axis 2))) (match_anchor_side_length ()))))))
+      +|     (offset ((main_axis -3) (cross_axis 16))) (match_anchor_side_length ()))))))
       |}];
     Var.set match_anchor_side_length_var (Some Grow_to_match);
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-          (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-      -|  (match_anchor_side_length ())))
-      +|  (match_anchor_side_length (Grow_to_match))))
+           (((position Bottom) (alignment End)
+      -|     (offset ((main_axis -3) (cross_axis 16))) (match_anchor_side_length ()))))))
+      +|     (offset ((main_axis -3) (cross_axis 16)))
+      +|     (match_anchor_side_length (Grow_to_match)))))))
       |}];
     Var.set match_anchor_side_length_var (Some Match_exactly);
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-          (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-      -|  (match_anchor_side_length (Grow_to_match))))
-      +|  (match_anchor_side_length (Match_exactly))))
+             (offset ((main_axis -3) (cross_axis 16)))
+      -|     (match_anchor_side_length (Grow_to_match)))))))
+      +|     (match_anchor_side_length (Match_exactly)))))))
       |}];
     Var.set match_anchor_side_length_var (Some Shrink_to_match);
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-          (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-      -|  (match_anchor_side_length (Match_exactly))))
-      +|  (match_anchor_side_length (Shrink_to_match))))
+             (offset ((main_axis -3) (cross_axis 16)))
+      -|     (match_anchor_side_length (Match_exactly)))))))
+      +|     (match_anchor_side_length (Shrink_to_match)))))))
       |}];
     Var.set match_anchor_side_length_var None;
     Handle.recompute_view_until_stable handle;
     Handle.show_diff ~diff_context:1 handle;
     [%expect
       {|
-          (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-      -|  (match_anchor_side_length (Shrink_to_match))))
-      +|  (match_anchor_side_length ())))
+           (((position Bottom) (alignment End)
+      -|     (offset ((main_axis -3) (cross_axis 16)))
+      -|     (match_anchor_side_length (Shrink_to_match)))))))
+      +|     (offset ((main_axis -3) (cross_axis 16))) (match_anchor_side_length ()))))))
       |}];
     Handle.do_actions handle [ Close ];
     Handle.recompute_view_until_stable handle;
@@ -1309,8 +1375,9 @@ module _ = struct
     [%expect
       {|
       -|((Open (content_html "<span> Popover content! </span>") (arrow_html ())
-      -|  (position Bottom) (alignment End) (offset ((main_axis -3) (cross_axis 16)))
-      -|  (match_anchor_side_length ())))
+      -|  (positioning
+      -|   (((position Bottom) (alignment End)
+      -|     (offset ((main_axis -3) (cross_axis 16))) (match_anchor_side_length ()))))))
       +|(Closed)
       |}]
   ;;
@@ -1344,8 +1411,10 @@ module _ = struct
          \n    <span> Close </span>\
          \n  </button>\
          \n</div>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.click_on handle ~selector:".close_button" ~get_vdom:(get_vdom ~for_:`Anchored);
     Handle.click_on handle ~selector:".close_button" ~get_vdom:(get_vdom ~for_:`Virtual);
@@ -1382,8 +1451,10 @@ module _ = struct
           "<button class=\"increment\" @on_click>\
          \n  <span> 0 </span>\
          \n</button>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.click_on handle ~selector:".increment" ~get_vdom:(get_vdom ~for_:`Anchored);
     Handle.click_on handle ~selector:".increment" ~get_vdom:(get_vdom ~for_:`Virtual);
@@ -1396,8 +1467,10 @@ module _ = struct
           "<button class=\"increment\" @on_click>\
          \n  <span> 1 </span>\
          \n</button>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.do_actions handle [ Close ];
     Handle.recompute_view_until_stable handle;
@@ -1413,8 +1486,10 @@ module _ = struct
           "<button class=\"increment\" @on_click>\
          \n  <span> 1 </span>\
          \n</button>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.do_actions handle [ Reset_models ];
     Handle.recompute_view_until_stable handle;
@@ -1430,8 +1505,10 @@ module _ = struct
           "<button class=\"increment\" @on_click>\
          \n  <span> 0 </span>\
          \n</button>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.do_actions handle [ Close ];
     Handle.recompute_view_until_stable handle;
@@ -1479,8 +1556,10 @@ module _ = struct
          \n  </button>\
          \n  <button class=\"reset_contents\" @on_click> reset </button>\
          \n</div>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.click_on handle ~selector:".increment" ~get_vdom:(get_vdom ~for_:`Anchored);
     Handle.click_on handle ~selector:".increment" ~get_vdom:(get_vdom ~for_:`Virtual);
@@ -1496,8 +1575,10 @@ module _ = struct
          \n  </button>\
          \n  <button class=\"reset_contents\" @on_click> reset </button>\
          \n</div>")
-        (arrow_html ()) (position Auto) (alignment Center)
-        (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+        (arrow_html ())
+        (positioning
+         (((position Auto) (alignment Center)
+           (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}];
     Handle.click_on
       handle
@@ -1517,8 +1598,10 @@ module _ = struct
            \n  </button>\
            \n  <button class=\"reset_contents\" @on_click> reset </button>\
            \n</div>")
-          (arrow_html ()) (position Auto) (alignment Center)
-          (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ())))
+          (arrow_html ())
+          (positioning
+           (((position Auto) (alignment Center)
+             (offset ((main_axis 0) (cross_axis 0))) (match_anchor_side_length ()))))))
       |}]
   ;;
 end

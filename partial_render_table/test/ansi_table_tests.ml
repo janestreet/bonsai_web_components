@@ -2875,11 +2875,12 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
     let collate, key_rank =
       let collate =
         let%map rank_range = Bonsai.Expert.Var.value rank_range in
-        { Collate_params.filter = None
+        { Collate_params.Stable.V1.filter = None
         ; order = Compare.Unchanged
         ; key_range = Collate_params.Which_range.All_rows
         ; rank_range
         }
+        |> Collate_params.of_stable_v1
       in
       Table_expert.collate
         ~filter_equal:phys_equal
@@ -3518,11 +3519,12 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
   let rank = Bonsai.Expert.Var.create (Between (0, 10)) in
   let collate =
     let%map rank_range = Bonsai.Expert.Var.value rank in
-    { Incr_map_collate.Collate_params.filter = ()
+    { Incr_map_collate.Collate_params.Stable.V1.filter = ()
     ; order = ()
     ; key_range = All_rows
     ; rank_range
     }
+    |> Incr_map_collate.Collate_params.of_stable_v1
   in
   let test =
     Test.create

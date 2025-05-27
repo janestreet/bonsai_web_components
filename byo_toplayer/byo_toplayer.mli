@@ -73,11 +73,7 @@ val arrow_helper
   -> Vdom.Node.t
 
 (** Tooltips can be used to provide additional information to a user when they hover over
-    an element.
-
-    [config] defaults to [Config.default ()], although we recommend using the config
-    provided by your component library. [position] defaults to [Auto] [alignment] defaults
-    to [Center] [hoverable_inside] defaults to [false]. *)
+    an element. *)
 val tooltip
   :  ?tooltip_attrs:Vdom.Attr.t list
   -> ?position:Position.t
@@ -170,7 +166,12 @@ module Autoclose : sig
   type t = private Vdom.Attr.t
 
   (** [create] allows you to react to outside clicks and escapes for popovers and modals
-      where you own the state. *)
+      where you own the state.
+
+      Notably, the [close] effect is [bonk]ed, so that if the user clicks on an element
+      that opens the popover on click, the [close] will win. This might not be desirable
+      when clicking outside to open a _different_ popover, in which case you might want to
+      [bonk] your [open_] effect. *)
   val create
     :  close:unit Effect.t Bonsai.t
     -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
@@ -353,9 +354,7 @@ module Modal : sig
       wrapped in a div with [overflow: auto].
 
       You can style the modal backdrop by targetting the [::backdrop] pseudo-element via
-      [attrs].
-
-      [config] defaults to [`From_theme]. *)
+      [attrs]. *)
   val create
     :  ?attrs:Vdom.Attr.t list Bonsai.t
     -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t

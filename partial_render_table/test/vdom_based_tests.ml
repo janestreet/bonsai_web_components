@@ -276,7 +276,7 @@ let%expect_test "stabilization of view range" =
         </tbody>
       </table>
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-        <div class="body">
+        <div>
           <div>
             <div class="body_row">
               <div class="body_cell cell" @on_click> 0 </div>
@@ -413,7 +413,7 @@ let%expect_test "resize-column" =
                style={
                  height: 3.00px;
                }>
-            <div class="body" style={ padding-top: 0px; padding-bottom: 0px; }>
+            <div style={ padding-top: 0px; padding-bottom: 0px; }>
               <div>
                 <div class="body_row"
                      style={
@@ -612,7 +612,7 @@ let%expect_test "big table" =
         </tbody>
       </table>
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-        <div class="body">
+        <div>
           <div>
             <div class="body_row">
               <div class="body_cell cell" @on_click> 51 </div>
@@ -657,7 +657,7 @@ let%expect_test "big table" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
     -|          <div class="body_cell cell" @on_click> 51 </div>
@@ -768,7 +768,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 51 </div>
@@ -848,7 +848,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         </tbody>
       </table>
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-        <div class="body">
+        <div>
           <div>
             <div class="body_row">
               <div class="body_cell cell" @on_click> 51 </div>
@@ -1024,7 +1024,7 @@ let%expect_test "sorting legacy renderer" =
         </tbody>
       </table>
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-        <div class="body">
+        <div>
           <div>
             <div class="body_row">
               <div class="body_cell cell" @on_click> 0 </div>
@@ -1136,7 +1136,7 @@ let%expect_test "sorting legacy renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     -|        <div class="body_row">
     -|          <div class="body_cell cell" @on_click> 0 </div>
@@ -1215,7 +1215,7 @@ let%expect_test "sorting legacy renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     +|        <div class="body_row">
     +|          <div class="body_cell cell" @on_click> 0 </div>
@@ -1288,7 +1288,7 @@ let%expect_test "sorting legacy renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -1328,7 +1328,7 @@ let%expect_test "sorting legacy renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     +|        <div class="body_row">
     +|          <div class="body_cell cell" @on_click> 1 </div>
@@ -1430,7 +1430,7 @@ let%expect_test "sorting default renderer" =
         </tbody>
       </table>
       <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-        <div class="body">
+        <div>
           <div>
             <div class="body_row">
               <div class="body_cell cell" @on_click> 0 </div>
@@ -1553,7 +1553,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     -|        <div class="body_row">
     -|          <div class="body_cell cell" @on_click> 0 </div>
@@ -1640,7 +1640,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     +|        <div class="body_row">
     +|          <div class="body_cell cell" @on_click> 0 </div>
@@ -1730,7 +1730,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -1842,7 +1842,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     +|        <div class="body_row">
     +|          <div class="body_cell cell" @on_click> 1 </div>
@@ -1921,7 +1921,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     +|        <div class="body_row">
     +|          <div class="body_cell cell" @on_click> 0 </div>
@@ -2131,7 +2131,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -2187,7 +2187,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -2240,7 +2240,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -2294,7 +2294,7 @@ let%expect_test "sorting default renderer" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
               <div class="body_row">
                 <div class="body_cell cell" @on_click> 0 </div>
@@ -2716,7 +2716,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     -|        <div class="body_row">
     +|        <div class="body_row_focused body_row">
@@ -2776,7 +2776,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body partial-render-table-body-" bounds-change=<opaque>>
-          <div class="body">
+          <div>
             <div>
     -|        <div class="body_row_focused body_row">
     +|        <div class="body_row">

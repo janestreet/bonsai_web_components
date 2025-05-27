@@ -804,7 +804,8 @@ module Basic = struct
       in
       let%arr filter and order and rank_range in
       let key_range = Collate_params.Which_range.All_rows in
-      { Collate_params.filter; order; key_range; rank_range }
+      { Collate_params.Stable.V1.filter; order; key_range; rank_range }
+      |> Collate_params.of_stable_v1
     in
     let collated, key_rank =
       Expert.collate

@@ -13,16 +13,6 @@ end
 module Themed = struct
   type t = Styling.Expert.t
 
-  module Legacy_style =
-    [%css
-    stylesheet
-      {|
-        .header_cell {
-          text-align: center;
-          font-weight: bold;
-        }
-      |}]
-
   module Prt_view = Bonsai_web_ui_view.For_components.Prt
 
   let resolve ~resize_column_widths_to_fit which_styling graph =
@@ -30,7 +20,11 @@ module Themed = struct
     match which_styling with
     | Which_styling.Legacy_unsafe_raw_classnames ->
       return
-        { Styling.Expert.header_cell = Legacy_style.header_cell
+        { Styling.Expert.header_cell =
+            {%css|
+              text-align: center;
+              font-weight: bold;
+            |}
         ; header_cell_focused = Vdom.Attr.empty
         ; header_row = Vdom.Attr.empty
         ; header = Vdom.Attr.class_ "prt-table-header"
@@ -113,6 +107,10 @@ module Functional_style =
 
       .autosize_wrapped_cell {
         display: block;
+      }
+
+      .autosize_table_cell_wrapper {
+        display: table-cell;
       }
     |}]
 
@@ -428,7 +426,8 @@ module Cell = struct
       *)
       Vdom.Node.div
         ~attrs:
-          [ themed_attrs.autosize_table_cell_wrapper
+          [ Functional_style.autosize_table_cell_wrapper
+          ; themed_attrs.autosize_table_cell_wrapper
           ; (if is_focused
              then themed_attrs.autosize_table_cell_wrapper_focused
              else Vdom.Attr.empty)
