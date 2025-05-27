@@ -68,25 +68,13 @@ module Autoclose = struct
     |> Option.is_some
   ;;
 
-  let on_evt_outside ~eff ~root_id ~bonk (ev : mouse_event) =
+  let on_evt_outside ~eff ~root_id (ev : mouse_event) =
     match Js_of_ocaml.Dom_html.getElementById_opt root_id with
     | None -> Effect.Ignore
     | Some root ->
       if element_contains root ev##.target || element_inert root
       then Effect.Ignore
-      else
-        (* The browser doesn't give you an API to detect "clicks outside", so we've
-        attached an event listener to the window. It needs to run on [Capture], because
-        otherwise, if [stop_propagation] is called on the trigger element, we will never
-        detect a click outside.
-
-        However, if you click on the trigger element, the [Capture] window listener will
-        schedule a "close" effect, and then the trigger element's [on_click] will schedule
-        an "open" effect, and the popover will stay open. This is not what people expect.
-
-        To counteract this, we [bonk] the close effect, so that it will necessarily run
-        after the open effect. *)
-        bonk (eff ~click_target_was_another_popover:(event_target_inside_a_popover ev))
+      else eff ~click_target_was_another_popover:(event_target_inside_a_popover ev)
   ;;
 
   let on_esc_attrs ~eff ~root_id =
@@ -167,7 +155,23 @@ module Autoclose = struct
           in
           let close_effect ~click_target_was_another_popover =
             match kind with
-            | `Right_click -> f ~click_target_was_another_popover
+            | `Right_click ->
+              (* The browser doesn't give you an API to detect "clicks outside", so we've
+                 attached an event listener to the window. It needs to run on [Capture], because
+                 otherwise, if [stop_propagation] is called on the trigger element, we will never
+                 detect a click outside.
+
+                 However, if you click on the trigger element, the [Capture] window listener will
+                 schedule a "close" effect, and then the trigger element's [on_click] will schedule
+                 an "open" effect, and the popover will stay open. This is not what people expect.
+
+                 To counteract this, we [bonk] the close effect, so that it will necessarily run
+                 after the open effect.
+
+                 A [bonk] isn't needed for [`Click], because the [peek] used there accomplishes
+                 the same result of moving the [close] after the [open].
+              *)
+              bonk (f ~click_target_was_another_popover)
             | `Click ->
               (match%bind.Effect peek_last_mousedown with
                (* If the click "started" inside the popover, we disregard it because
@@ -179,7 +183,7 @@ module Autoclose = struct
           in
           listener_f
             ~phase:Vdom.Attr.Global_listeners.Phase.Capture
-            ~f:(on_evt_outside ~eff:close_effect ~root_id ~bonk)
+            ~f:(on_evt_outside ~eff:close_effect ~root_id)
       in
       ( build_click_listener ~kind:`Click ~f:on_click_outside
       , build_click_listener ~kind:`Right_click ~f:on_right_click_outside )

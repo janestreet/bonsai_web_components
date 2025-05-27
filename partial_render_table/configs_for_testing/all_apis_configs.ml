@@ -631,7 +631,8 @@ let computation config input (local_ graph) =
         =
         input
       in
-      { Incr_map_collate.Collate_params.filter; order; key_range; rank_range }
+      { Incr_map_collate.Collate_params.Stable.V1.filter; order; key_range; rank_range }
+      |> Incr_map_collate.Collate_params.of_stable_v1
     in
     Table.collate
       ~filter_equal:phys_equal

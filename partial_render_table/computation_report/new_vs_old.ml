@@ -104,9 +104,9 @@ let%expect_test "Old -> New, no col groups" =
     │ Page up and down in 101 element map                                     │ -5_916 (43%) │ .               │ .            │
     │ Page up and down in 1000 element map                                    │ -5_916 (43%) │ .               │ .            │
     │ Page up and down in 10000 element map                                   │ -5_916 (43%) │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -116 (25%)   │ +3 (1%)         │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -116 (26%)   │ +3 (1%)         │ .            │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -638 (39%)   │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -116 (25%)   │ +3 (1%)         │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -116 (26%)   │ +3 (1%)         │ .            │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -638 (39%)   │ .               │ .            │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -5_858 (43%) │ .               │ .            │
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -638 (39%)   │ .               │ .            │
@@ -173,8 +173,8 @@ let%expect_test "Old -> New, no col groups" =
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -1_008 (29%)  │ .               │ .            │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ -1_008 (29%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ -1_008 (29%)  │ .               │ .            │
-    │ Apply 4 filters and clear with 1000 element map using 50 window         │ -5_488 (30%)  │ .               │ .            │
-    │ Apply 4 filters and clear with 10000 element map using 50 window        │ -5_488 (30%)  │ .               │ .            │
+    │ Apply 4 filters and clear with 1000 element map using 50 window         │ -5_488 (31%)  │ .               │ .            │
+    │ Apply 4 filters and clear with 10000 element map using 50 window        │ -5_488 (31%)  │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -11_088 (31%) │ .               │ .            │
     │ Invert ordering of 10 element map                                       │ .             │ .               │ .            │
     │ Invert ordering of 100 element map                                      │ .             │ .               │ .            │
@@ -226,18 +226,18 @@ let%expect_test "Old -> New, no col groups" =
     │ Page up and down in 101 element map                                     │ .             │ .               │ .            │
     │ Page up and down in 1000 element map                                    │ .             │ .               │ .            │
     │ Page up and down in 10000 element map                                   │ .             │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -1_608 (39%)  │ .               │ .            │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -1_608 (39%)  │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -1_608 (39%)  │ .               │ .            │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -1_608 (39%)  │ .               │ .            │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -1_608 (39%)  │ .               │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -1_608 (40%)  │ .               │ .            │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -1_608 (40%)  │ .               │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -1_608 (40%)  │ .               │ .            │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -1_608 (40%)  │ .               │ .            │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -1_608 (40%)  │ .               │ .            │
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -2_344 (43%)  │ .               │ .            │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ -2_344 (43%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ -2_344 (43%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ -11_624 (44%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ -11_624 (44%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -23_224 (44%) │ .               │ .            │
-    │ Invert ordering of 10 element map                                       │ -246 (66%)    │ .               │ .            │
+    │ Invert ordering of 10 element map                                       │ -246 (67%)    │ .               │ .            │
     │ Invert ordering of 100 element map                                      │ -2_406 (83%)  │ .               │ .            │
     │ Invert ordering of 101 element map                                      │ -2_430 (83%)  │ .               │ .            │
     │ Invert ordering of 1000 element map                                     │ -2_430 (83%)  │ .               │ .            │
@@ -382,8 +382,8 @@ let%expect_test "Old -> New, col groups" =
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -544 (37%)   │ .               │ .            │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ -544 (37%)   │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ -544 (37%)   │ .               │ .            │
-    │ Apply 4 filters and clear with 1000 element map using 50 window         │ -2_464 (40%) │ .               │ .            │
-    │ Apply 4 filters and clear with 10000 element map using 50 window        │ -2_464 (40%) │ .               │ .            │
+    │ Apply 4 filters and clear with 1000 element map using 50 window         │ -2_464 (41%) │ .               │ .            │
+    │ Apply 4 filters and clear with 10000 element map using 50 window        │ -2_464 (41%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -4_864 (41%) │ .               │ .            │
     │ Invert ordering of 10 element map                                       │ -544 (37%)   │ .               │ .            │
     │ Invert ordering of 100 element map                                      │ -4_864 (41%) │ .               │ .            │
@@ -496,18 +496,18 @@ let%expect_test "Old -> New, col groups" =
     │ Page up and down in 101 element map                                     │ .             │ .               │ .            │
     │ Page up and down in 1000 element map                                    │ .             │ .               │ .            │
     │ Page up and down in 10000 element map                                   │ .             │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -1_450 (38%)  │ .               │ .            │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -1_450 (38%)  │ .               │ .            │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -1_450 (38%)  │ .               │ .            │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -1_450 (38%)  │ .               │ .            │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -1_450 (38%)  │ .               │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ -1_450 (39%)  │ .               │ .            │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ -1_450 (39%)  │ .               │ .            │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -1_450 (39%)  │ .               │ .            │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -1_450 (39%)  │ .               │ .            │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -1_450 (39%)  │ .               │ .            │
     │ Apply 4 filters and clear with 100 element map using 10 window          │ -1_990 (41%)  │ .               │ .            │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ -1_990 (41%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ -1_990 (41%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ -9_670 (42%)  │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ -9_670 (42%)  │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -19_270 (42%) │ .               │ .            │
-    │ Invert ordering of 10 element map                                       │ -274 (68%)    │ .               │ .            │
+    │ Invert ordering of 10 element map                                       │ -274 (69%)    │ .               │ .            │
     │ Invert ordering of 100 element map                                      │ -2_524 (84%)  │ .               │ .            │
     │ Invert ordering of 101 element map                                      │ -2_549 (84%)  │ .               │ .            │
     │ Invert ordering of 1000 element map                                     │ -2_549 (84%)  │ .               │ .            │
@@ -562,9 +562,9 @@ let%expect_test "Old -> New, col groups" =
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ -788 (42%)   │ .               │ .            │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ -535 (69%)   │ .               │ .            │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ -85 (57%)    │ .               │ .            │
-    │ Apply 4 filters and clear with 100 element map using 10 window          │ -648 (23%)   │ .               │ .            │
-    │ Apply 4 filters and clear with 101 element map using 10 window          │ -648 (23%)   │ .               │ .            │
-    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -648 (23%)   │ .               │ .            │
+    │ Apply 4 filters and clear with 100 element map using 10 window          │ -648 (24%)   │ .               │ .            │
+    │ Apply 4 filters and clear with 101 element map using 10 window          │ -648 (24%)   │ .               │ .            │
+    │ Apply 4 filters and clear with 1000 element map using 10 window         │ -648 (24%)   │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ -3_528 (25%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ -3_528 (25%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ -7_128 (25%) │ .               │ .            │

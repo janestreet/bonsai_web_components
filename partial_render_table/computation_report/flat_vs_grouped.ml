@@ -221,11 +221,11 @@ let%expect_test "Flat -> Grouped" =
     │ Page up and down in 101 element map                                     │ .                   │ .                      │ .                  │ .                         │
     │ Page up and down in 1000 element map                                    │ .                   │ .                      │ .                  │ .                         │
     │ Page up and down in 10000 element map                                   │ .                   │ .                      │ .                  │ .                         │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +282 (7%)           │ -20 (1%)               │ .                  │ .                         │
-    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +282 (7%)           │ .                      │ .                  │ .                         │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +282 (7%)           │ -20 (1%)               │ .                  │ .                         │
-    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +282 (7%)           │ .                      │ .                  │ .                         │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +282 (7%)           │ .                      │ .                  │ .                         │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map            │ +282 (8%)           │ -20 (1%)               │ .                  │ .                         │
+    │ Scroll 10-wide window from 0 to 9 and back in 100 element map           │ +282 (8%)           │ -20 (1%)               │ .                  │ .                         │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map           │ +282 (8%)           │ -20 (1%)               │ .                  │ .                         │
+    │ Scroll 10-wide window from 0 to 9 and back in 1000 element map          │ +282 (8%)           │ -20 (1%)               │ .                  │ .                         │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map         │ +282 (8%)           │ -20 (1%)               │ .                  │ .                         │
     │ Apply 4 filters and clear with 100 element map using 10 window          │ +638 (13%)          │ .                      │ .                  │ .                         │
     │ Apply 4 filters and clear with 101 element map using 10 window          │ +638 (13%)          │ .                      │ .                  │ .                         │
     │ Apply 4 filters and clear with 1000 element map using 10 window         │ +638 (13%)          │ .                      │ .                  │ .                         │

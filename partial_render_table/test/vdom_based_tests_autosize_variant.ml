@@ -119,7 +119,7 @@ let%expect_test "autosizing table initial HTML" =
     +|        </th>
     +|      </tr>
     +|    </thead>
-    +|    <div class="body">
+    +|    <div>
     +|      <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -400,7 +400,7 @@ let%expect_test "stabilization of view range" =
             </th>
           </tr>
         </thead>
-        <div class="body">
+        <div>
           <div @key=top_padding> </div>
           <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -652,7 +652,7 @@ let%expect_test "big table" =
             </th>
           </tr>
         </thead>
-        <div class="body">
+        <div>
           <div @key=top_padding> </div>
           <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -727,7 +727,7 @@ let%expect_test "big table" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -963,7 +963,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1047,7 +1047,7 @@ let%expect_test "typing into a column, leaving that column, and then coming back
             </th>
           </tr>
         </thead>
-        <div class="body">
+        <div>
           <div @key=top_padding> </div>
           <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1258,7 +1258,7 @@ let%expect_test "sorting legacy renderer" =
             </th>
           </tr>
         </thead>
-        <div class="body">
+        <div>
           <div @key=top_padding> </div>
           <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1416,7 +1416,7 @@ let%expect_test "sorting legacy renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1540,7 +1540,7 @@ let%expect_test "sorting legacy renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1658,7 +1658,7 @@ let%expect_test "sorting legacy renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1698,7 +1698,7 @@ let%expect_test "sorting legacy renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -1850,7 +1850,7 @@ let%expect_test "sorting default renderer" =
             </th>
           </tr>
         </thead>
-        <div class="body">
+        <div>
           <div @key=top_padding> </div>
           <div class="body_row">
             <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2019,7 +2019,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     -|      <div class="body_row">
     -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2151,7 +2151,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2286,7 +2286,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2398,7 +2398,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2526,7 +2526,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
     +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2663,7 +2663,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     |}];
   (* Shift+clicking while either enabled: should add another to multiselect *)
@@ -2724,7 +2724,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     |}];
   (* Shift+clicking while that mode is disabled again *)
@@ -2785,7 +2785,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2826,7 +2826,7 @@ let%expect_test "sorting default renderer" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
             <div class="body_row">
               <div class="autosize_table_cell_wrapper table_view__inline_class">
@@ -2872,7 +2872,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
               </th>
             </tr>
           </thead>
-          <div class="body">
+          <div>
             <div @key=top_padding> </div>
     -|      <div class="body_row">
     +|      <div class="body_row_focused body_row">
