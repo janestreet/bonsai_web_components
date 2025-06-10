@@ -17,14 +17,11 @@ open My_tabs
 let basic_tab_component ?additional_button_attributes ?decorate ?f () (local_ graph) =
   let f =
     Option.value f ~default:(fun ~change_tab:_ tab ->
-      Bonsai.enum
-        (module My_tabs)
-        ~match_:tab
-        ~with_:(fun tab (local_ _graph) ->
-          match tab with
-          | A -> Bonsai.return (Vdom.Node.text "a")
-          | B -> Bonsai.return (Vdom.Node.text "b")
-          | C -> Bonsai.return (Vdom.Node.text "c")))
+      Bonsai.enum (module My_tabs) ~match_:tab ~with_:(fun tab (local_ _graph) ->
+        match tab with
+        | A -> Bonsai.return (Vdom.Node.text "a")
+        | B -> Bonsai.return (Vdom.Node.text "b")
+        | C -> Bonsai.return (Vdom.Node.text "c")))
   in
   let state =
     Tabs.tab_state

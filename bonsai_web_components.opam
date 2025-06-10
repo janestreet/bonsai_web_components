@@ -25,7 +25,6 @@ depends: [
   "fuzzy_match"
   "incr_map"
   "incremental"
-  "js_of_ocaml_patches"
   "ocaml-embed-file"
   "ordinal_abbreviation"
   "patdiff"

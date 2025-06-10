@@ -1,10 +1,8 @@
 (library
  (name bonsai_web_ui_partial_render_table_computation_report)
  (libraries bonsai bonsai.bench_scenario bonsai_web bonsai_web_test
-   bonsai_web_ui_element_size_hooks
-   bonsai_web_ui_partial_render_table_configs_for_testing
-   bonsai_web_ui_partial_render_table_protocol core incr_map.collate
-   js_of_ocaml incr_map.erase_key virtual_dom.ui_effect
+   bonsai_web_ui_partial_render_table_configs_for_testing core
+   incr_map.collate js_of_ocaml incr_map.erase_key virtual_dom.ui_effect
    virtual_dom.vdom_test_helpers)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

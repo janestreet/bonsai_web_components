@@ -348,7 +348,7 @@ module Variant = struct
                  f field)
              | `Dynamic f -> f
            in
-           fun ({ f = T v } : Typed_variant.Packed.t @@ local) ->
+           fun ({ f = T v } : Typed_variant.Packed.t @ local) ->
              match v with
              | None -> empty_label
              | Some subvariant ->

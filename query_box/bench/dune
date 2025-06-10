@@ -2,6 +2,6 @@
  (modes byte exe)
  (names main)
  (libraries bonsai_bench bonsai_web bonsai_web_ui_query_box core
-   core_bench.js incr_map.collate)
+   core_bench.js)
  (preprocess
   (pps ppx_jane ppx_bench bonsai.ppx_bonsai)))

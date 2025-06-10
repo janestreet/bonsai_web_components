@@ -1,3 +1,5 @@
+@@ portable
+
 open Core
 
 (** This module is the implementation of table sorting that powers the Basic PRT, and the

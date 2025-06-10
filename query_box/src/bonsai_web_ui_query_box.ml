@@ -98,6 +98,7 @@ let create
   ?(on_blur = Bonsai.return (Effect.return ()))
   ?(modify_input_on_blur = Bonsai.return None)
   ?(modify_input_on_select = Bonsai.return (fun _focused_key _query -> ""))
+  ?(ignore_tab_key = false)
   ~f
   ~on_select
   ()
@@ -386,12 +387,12 @@ let create
       in
       match Dom_html.Keyboard_code.of_event ev with
       | ArrowUp -> up
-      | Tab when Js.to_bool ev##.shiftKey ->
+      | Tab when Js.to_bool ev##.shiftKey && not ignore_tab_key ->
         (match focused_key_potentially_stale with
          | Some _ -> up
          | None -> Effect.Ignore)
       | ArrowDown -> down
-      | Tab ->
+      | Tab when not ignore_tab_key ->
         (match focused_key_potentially_stale with
          | Some _ -> down
          | None -> Effect.Ignore)

@@ -600,22 +600,7 @@ let%expect_test "variant with doc comments gets a tooltip" =
                 <option value="1" #selected="true"> foo </option>
                 <option value="2" #selected="false"> bar </option>
               </select>
-              <span class="inline_padding_hash_replaced_in_test right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-                ?
-                <div class="scrollable_tooltip_hash_replaced_in_test tooltip_hash_replaced_in_test"
-                     custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))>
-                  <div style={ display: flex; flex-direction: column; row-gap: 0.15rem; }>
-                    <div style={ display: flex; flex-direction: column; }>
-                      <span class="bold_text_hash_replaced_in_test"> Bar </span>
-                       This is a bar!
-                    </div>
-                    <div style={ display: flex; flex-direction: column; }>
-                      <span class="bold_text_hash_replaced_in_test"> Foo </span>
-                       This is a foo!
-                    </div>
-                  </div>
-                </div>
-              </span>
+              <div class="anchor_hash_replaced_in_test" vdom_tooltip=<omitted>> ? </div>
             </div>
           </td>
         </tr>
@@ -654,21 +639,12 @@ let%expect_test "variant with doc comments gets a tooltip" =
     -|            <option value="2" #selected="false"> bar </option>
     +|            <option value="2" #selected="true"> bar </option>
                 </select>
-                <span class="inline_padding_hash_replaced_in_test right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-                  ?
-                  <div class="scrollable_tooltip_hash_replaced_in_test tooltip_hash_replaced_in_test"
-                       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))>
-                    <div style={ display: flex; flex-direction: column; row-gap: 0.15rem; }>
-                      <div style={ display: flex; flex-direction: column; }>
-                        <span class="bold_text_hash_replaced_in_test"> Bar </span>
-                         This is a bar!
-                      </div>
-                      <div style={ display: flex; flex-direction: column; }>
-                        <span class="bold_text_hash_replaced_in_test"> Foo </span>
-                         This is a foo!
-                      </div>
-                    </div>
-                  </div>
+                <div class="anchor_hash_replaced_in_test" vdom_tooltip=<omitted>> ? </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     |}]
 ;;
 

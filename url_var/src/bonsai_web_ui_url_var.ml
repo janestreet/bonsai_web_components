@@ -80,20 +80,73 @@ end
 
 module Original_components = Components
 
+let reload_without_intercepting =
+  let reload =
+    Js_of_ocaml.Js.Unsafe.js_expr
+      {js|
+    (function(on_finished) {
+      window.navigation.reload({
+        info: {
+          bypass_intercept: true
+        }
+      }).finished.then(on_finished);
+    })
+    |js}
+  in
+  Bonsai.Effect.Expert.of_fun ~f:(fun ~callback ->
+    let wrapped_callback = Js_of_ocaml.Js.Unsafe.callback callback in
+    Js_of_ocaml.Js.Unsafe.fun_call
+      reload
+      [| Js_of_ocaml.Js.Unsafe.inject wrapped_callback |])
+;;
+
+let can_bypass_intercept =
+  let check_can_bypass =
+    Js_of_ocaml.Js.Unsafe.js_expr {js| ((event) => !!(event.info?.bypass_intercept)) |js}
+  in
+  fun event ->
+    let js_bool =
+      Js_of_ocaml.Js.Unsafe.fun_call
+        check_can_bypass
+        [| Js_of_ocaml.Js.Unsafe.inject event |]
+    in
+    Js_of_ocaml.Js.to_bool js_bool
+;;
+
 type 'a t =
-  { var : 'a Bonsai.Expert.Var.t
-  ; history : 'a History.t
-  }
+  | Browser of
+      { var : 'a Bonsai.Expert.Var.t
+      ; history : 'a History.t
+      }
+  | In_nodejs_test of
+      { var : 'a Bonsai.Expert.Var.t
+      ; sexp_of : 'a -> Sexp.t
+      }
+
+let get_var = function
+  | Browser { var; _ } -> var
+  | In_nodejs_test { var; _ } -> var
+;;
+
+let get_global =
+  let get = Js_of_ocaml.Js.Unsafe.js_expr {js|(function () { return globalThis }) |js} in
+  fun () -> Js_of_ocaml.Js.Unsafe.fun_call get [||]
+;;
 
 let listen_to_navigation_events_exn ~parse_exn ~f =
   let open Js_of_ocaml in
-  let navigation = (Js.Unsafe.coerce Dom_html.window)##.navigation in
+  (* We have to retrieve this value fresh every time in case the user is mocking the 
+     browser implementation in tests multiple times
+  *)
+  let navigation = (Js.Unsafe.coerce (get_global ()))##.navigation in
   let (_ : _ Js.t) =
     navigation##addEventListener
       (Js.string "navigate")
       (Dom_html.handler (fun event ->
          let can_intercept =
-           Js.to_bool event##.canIntercept && not (Js.Opt.test event##.downloadRequest)
+           Js.to_bool event##.canIntercept
+           && (not (Js.Opt.test event##.downloadRequest))
+           && not (can_bypass_intercept event)
          in
          let try_intercept () =
            let value =
@@ -102,6 +155,10 @@ let listen_to_navigation_events_exn ~parse_exn ~f =
              |> Original_components.of_uri
              |> parse_exn
            in
+           (match am_running_how with
+            | `Node_jsdom_test | `Node_test ->
+              Core.print_endline "Intercepted navigation event"
+            | _ -> ());
            event##intercept
              (Js.Unsafe.obj
                 [| ( "handler"
@@ -125,18 +182,61 @@ let listen_to_navigation_events ~parse_exn ~f =
   (* We wrap this call in a try-catch until the API is finalized as per
      https://html.spec.whatwg.org/#navigation-api *)
   try listen_to_navigation_events_exn ~parse_exn ~f with
-  | _ -> ()
+  | _ ->
+    (match am_running_how with
+     | `Browser
+     | `Browser_test
+     | `Browser_benchmark
+     | `Node
+     | `Node_benchmark
+     | `Node_test -> ()
+     | `Node_jsdom_test ->
+       (* Only JSDom tests can have the intercept handler actually attached. *)
+       print_s
+         [%message
+           "Unable to attach intercept handler in tests. If you want to test this \n\
+           \ functionality, please call \
+            [For_testing.mock_browser_functionality_for_tests] \n\
+           \  \n\
+           \            before creating the URL var."])
 ;;
 
-let set ?(how : [ `Push | `Replace ] option) { var; history } a =
+let set ?(how : [ `Push | `Replace ] option) t a =
+  let var = get_var t in
   (* We need to make sure the bonsai var is set _before_ we update the history. Otherwise
      the [listen_to_navigation_events] callback will observe the new value before it's
      updated in the var which causes an infinite loop of history updates. *)
   Bonsai.Expert.Var.set var a;
   let how = Option.value how ~default:`Push in
-  match how with
-  | `Push -> History.update history a
-  | `Replace -> History.replace history a
+  match t with
+  | Browser { history; _ } ->
+    (match how with
+     | `Push -> History.update history a
+     | `Replace -> History.replace history a)
+  | In_nodejs_test { sexp_of; _ } ->
+    (* In tests, we don't interact with the [History] API and instead just log the value *)
+    (match how with
+     | `Push -> print_s [%message "Pushing to history" ~new_location:(sexp_of a : Sexp.t)]
+     | `Replace ->
+       print_s
+         [%message
+           "Replacing current location in history" ~new_location:(sexp_of a : Sexp.t)])
+;;
+
+let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navigation t =
+  match navigation with
+  | `Ignore -> ()
+  | `Intercept ->
+    (* At the point where we intercept a navigation event the URL / histroy has already
+       updated, so we don't want to duplicate the navigation entry.
+
+       Instead we can replace the current entry with a new one that carries a payload
+       generated based on the parsed new URL.
+
+       See https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
+    listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
+      let is_current_page = S.equal next_page (Bonsai.Expert.Var.get (get_var t)) in
+      if not is_current_page then set ~how:`Replace t next_page)
 ;;
 
 let create_exn'
@@ -145,96 +245,94 @@ let create_exn'
   (module S : S with type t = a)
   ~on_bad_uri
   =
-  (match am_running_how with
-   | `Browser | `Browser_test | `Browser_benchmark | `Node_jsdom_test -> ()
-   | (`Node | `Node_benchmark | `Node_test) as am_running_how ->
-     let error_message =
-       let am_running_how =
-         [%sexp
-           (am_running_how : [ `Browser_test | `Node | `Node_benchmark | `Node_test ])]
+  match am_running_how with
+  | `Browser | `Browser_test | `Browser_benchmark ->
+    let module Uri_routing = struct
+      include S
+
+      let parse uri =
+        let components = Components.of_uri uri in
+        match parse_exn components with
+        | a -> Ok a
+        | exception e ->
+          eprint_s [%message "couldn't parse uri" (components : Components.t) (e : exn)];
+          Error `Not_found
+      ;;
+
+      let to_path_and_query uri = Components.to_path_and_query (unparse uri)
+    end
+    in
+    let module History_state = struct
+      type uri_routing = a
+
+      include S
+
+      include Binable.Of_sexpable_with_uuid (struct
+          include S
+
+          let caller_identity =
+            Bin_prot.Shape.Uuid.of_string "918e794b-02c3-4f27-ad86-3f406a41fc4b"
+          ;;
+        end)
+
+      let to_uri_routing = Fn.id
+      let of_uri_routing = Fn.id
+    end
+    in
+    let t =
+      History.init_exn
+        ~log_s:(ignore : Sexp.t -> unit)
+        (module History_state)
+        (module Uri_routing)
+        ~on_bad_uri
+    in
+    let value = History.current t in
+    let var = Bonsai.Expert.Var.create value in
+    Bus.subscribe_permanently_exn (History.changes_bus t) ~f:(Bonsai.Expert.Var.set var);
+    let t = Browser { var; history = t } in
+    maybe_add_navigation_listener ~navigation (module S) t;
+    t
+  | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
+    (match on_bad_uri with
+     | `Raise ->
+       let error_message =
+         [%string
+           "Error: [Bonsai_web_ui_url_var.create_exn] requires a fallback value to work \
+            within a \n\
+            nodejs environment because it relies on the browser's history API. This is \
+            stubbed \n\
+            out in tests, but we still require a default in order to initialize the url \
+            var."]
        in
-       [%string
-         "Error: Bonsai_web_ui_url_var.create_exn is not supported within a nodejs\n\
-          environment because it relies on the browser's history API. One way to fix this\n\
-          is by having your app receive the url value as a parameter, and passing some\n\
-          mock implementation in tests instead of the real implementation provided by this\n\
-          library. Am_running_how: '%{am_running_how#Sexp}'."]
-     in
-     failwith error_message);
-  let module Uri_routing = struct
-    include S
-
-    let parse uri =
-      let components = Components.of_uri uri in
-      match parse_exn components with
-      | a -> Ok a
-      | exception e ->
-        eprint_s [%message "couldn't parse uri" (components : Components.t) (e : exn)];
-        Error `Not_found
-    ;;
-
-    let to_path_and_query uri = Components.to_path_and_query (unparse uri)
-  end
-  in
-  let module History_state = struct
-    type uri_routing = a
-
-    include S
-
-    include Binable.Of_sexpable_with_uuid (struct
-        include S
-
-        let caller_identity =
-          Bin_prot.Shape.Uuid.of_string "918e794b-02c3-4f27-ad86-3f406a41fc4b"
-        ;;
-      end)
-
-    let to_uri_routing = Fn.id
-    let of_uri_routing = Fn.id
-  end
-  in
-  let t =
-    History.init_exn
-      ~log_s:(ignore : Sexp.t -> unit)
-      (module History_state)
-      (module Uri_routing)
-      ~on_bad_uri
-  in
-  let value = History.current t in
-  let var = Bonsai.Expert.Var.create value in
-  Bus.subscribe_permanently_exn (History.changes_bus t) ~f:(Bonsai.Expert.Var.set var);
-  let url_var = { var; history = t } in
-  (match navigation with
-   | `Ignore -> ()
-   | `Intercept ->
-     (* At the point where we intercept a navigation event the URL / histroy has already
-       updated, so we don't want to duplicate the navigation entry.
-
-       Instead we can replace the current entry with a new one that carries a payload
-       generated based on the parsed new URL.
-
-       See https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
-     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
-       let is_current_page = S.equal next_page (Bonsai.Expert.Var.get var) in
-       if not is_current_page then set ~how:`Replace url_var next_page));
-  url_var
+       failwith error_message
+     | `Default_state default ->
+       let t =
+         In_nodejs_test { var = Bonsai.Expert.Var.create default; sexp_of = S.sexp_of_t }
+       in
+       maybe_add_navigation_listener ~navigation (module S) t;
+       t)
 ;;
 
 let create_exn (type a) (module S : S with type t = a) ~fallback =
   create_exn' (module S) ~navigation:`Ignore ~on_bad_uri:(`Default_state fallback)
 ;;
 
-let value { var; history = _ } = Bonsai.Expert.Var.value var
-let incr { var; history = _ } = Ui_incr.Var.watch (Bonsai.Expert.Var.incr_var var)
+let value t =
+  let var = get_var t in
+  Bonsai.Expert.Var.value var
+;;
 
-let update ?how ({ var; history = _ } as t) ~f =
-  Bonsai.Expert.Var.update var ~f:(fun old ->
+let incr t = Ui_incr.Var.watch (Bonsai.Expert.Var.incr_var (get_var t))
+
+let update ?how t ~f =
+  get_var t
+  |> Bonsai.Expert.Var.update ~f:(fun old ->
     let new_ = f old in
     set ?how t new_;
     new_)
 ;;
 
-let get { var; _ } = Bonsai.Expert.Var.get var
+let get t = get_var t |> Bonsai.Expert.Var.get
 let set_effect ?how t = Effect.of_sync_fun (fun a -> set ?how t a)
 
 let update_effect ?how url_var ~f =
@@ -376,7 +474,18 @@ module Typed = struct
       let unparse = projection.unparse
     end
     in
-    create_exn' (module S) ~navigation ~on_bad_uri:`Raise
+    let on_bad_uri =
+      match am_running_how with
+      | `Browser | `Browser_benchmark | `Browser_test -> `Raise
+      | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
+        (* Passing in some dummy values to [fallback] so that we can receive a default value 
+           in tests *)
+        let default_value =
+          fallback (Exn.create_s [%message "Dummy exception"]) Original_components.empty
+        in
+        `Default_state default_value
+    in
+    create_exn' (module S) ~navigation ~on_bad_uri
   ;;
 
   let make_projection
@@ -442,4 +551,59 @@ module For_testing = struct
     let parse_exn (projection : 'a t) = projection.parse_exn
     let unparse (projection : 'a t) = projection.unparse
   end
+
+  let mock_required_browser_functionality_for_navigation_intercept () =
+    let () =
+      Js_of_ocaml.Js.Unsafe.js_expr
+        {js|
+    (function() {
+      const handlersForListener = {};
+      const dispatchEvent = (event) => {
+          (handlersForListener[event.type] || []).forEach(handler => {
+            handler(event);
+          });
+      };
+
+      globalThis.navigation = {
+        ...globalThis.navigation,
+        handlersForListener,
+        addEventListener: (name, handler) => {
+          globalThis.addEventListener(name, handler);
+          handlersForListener[name] = handlersForListener[name] || [];
+          handlersForListener[name].push(handler);
+        },
+        reload: (options) => {
+          let event = {
+            info: options?.info,
+            canIntercept: true,
+            downloadRequest: false,
+            intercept: () => { throw new Error(); },
+            destination: {
+              url: globalThis.location.href
+            },
+          };
+          return { 
+            committed: new Promise((resolve, reject) => resolve ()),
+            finished: new Promise((resolve, reject) => {
+              dispatchEvent(event);
+              resolve();
+            }),
+          };
+        },
+        dispatchEvent
+      };
+
+      if (!globalThis.window) {
+        globalThis.window = {}
+      }
+      globalThis.window.navigation = globalThis.navigation;
+
+      // This is for JSDom
+      if (window) {
+        window.navigation = globalThis.navigation;
+      }
+    })()|js}
+    in
+    ()
+  ;;
 end

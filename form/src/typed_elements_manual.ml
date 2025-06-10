@@ -58,8 +58,8 @@ module Optional = struct
               ?extra_attrs
               (module M.Typed_variant.Packed)
               ~to_string:(function
-                | { M.Typed_variant.Packed.f = T None } -> none_label
-                | { M.Typed_variant.Packed.f = T Some } -> some_label)
+              | { M.Typed_variant.Packed.f = T None } -> none_label
+              | { M.Typed_variant.Packed.f = T Some } -> some_label)
           ;;
 
           let finalize_view picker_view inner (local_ _graph) =

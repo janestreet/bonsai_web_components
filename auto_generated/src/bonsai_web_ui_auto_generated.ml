@@ -1129,13 +1129,16 @@ let form
                 | info ->
                   View.hbox
                     [ dropdown
-                    ; View.tooltip'
-                        theme
-                        ~direction:Right
-                        ~tooltip_attrs:[ Style.scrollable_tooltip ]
-                        ~container_attrs:[ Style.inline_padding ]
-                        ~tooltip:(View.vbox ~gap:(`Rem 0.15) info)
-                        (Vdom.Node.text "?")
+                    ; Vdom.Node.div
+                        ~attrs:
+                          [ View.tooltip_attr'
+                              theme
+                              ~tooltip_attrs:[ Style.scrollable_tooltip ]
+                              ~hoverable_inside:true
+                              ~position:Right
+                              info
+                          ]
+                        [ Vdom.Node.text "?" ]
                     ]
               in
               ( Opt.to_option outer ~allow_illegal_values:true

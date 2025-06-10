@@ -187,10 +187,30 @@ module Checkbox : sig
 end
 
 module Toggle : sig
+  module Colors : sig
+    type t
+
+    (** Customize the colors of the toggle to fit your app's theme. [toggle] is the color
+        of the circle moving inside the slider. By default, this is white.
+
+        [background_on] is the color of the slider when the toggle is flipped on, By
+        default, blue.
+
+        [background_off] is the color of the slider then the toggle is off. By default,
+        light grey. *)
+    val create
+      :  ?toggle:Css_gen.Color.t
+      -> ?background_on:Css_gen.Color.t
+      -> ?background_off:Css_gen.Color.t
+      -> unit
+      -> t
+  end
+
   (** Very similar to [Checkbox.bool], but with a different stylization. Looks similar to
       the rounded variant here: https://www.w3schools.com/howto/howto_css_switch.asp *)
   val bool
-    :  ?extra_attr:Vdom.Attr.t Bonsai.t
+    :  ?colors:Colors.t Bonsai.t
+    -> ?extra_attr:Vdom.Attr.t Bonsai.t
     -> default:bool
     -> unit
     -> local_ Bonsai.graph

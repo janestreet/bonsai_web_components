@@ -1,7 +1,7 @@
 (executables
  (modes byte exe)
  (names main)
- (libraries bonsai_bench bonsai_web bonsai_web_ui_partial_render_table
+ (libraries bonsai_bench bonsai_web
    bonsai_web_ui_partial_render_table_configs_for_testing core core_bench.js
    incr_map.collate)
  (preprocess

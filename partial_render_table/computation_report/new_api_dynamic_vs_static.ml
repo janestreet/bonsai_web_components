@@ -111,7 +111,7 @@ let%expect_test "Pure" =
     │ Apply 4 filters and clear with 1000 element map using 50 window         │ .                │ .          │
     │ Apply 4 filters and clear with 10000 element map using 50 window        │ .                │ .          │
     │ Apply 4 filters and clear with 10000 element map using 100 window       │ .                │ .          │
-    │ Invert ordering of 10 element map                                       │ .                │ +5 (2%)    │
+    │ Invert ordering of 10 element map                                       │ .                │ +5 (1%)    │
     │ Invert ordering of 100 element map                                      │ .                │ .          │
     │ Invert ordering of 101 element map                                      │ .                │ .          │
     │ Invert ordering of 1000 element map                                     │ .                │ .          │
@@ -328,7 +328,7 @@ let%expect_test "Stateful Rows" =
     ├──────────────────────────┼────────────┼────────────┼─────────────┼───────────────┤
     │ dynamic (not cf): 100    │ .          │ +500 (17%) │ +501 (14%)  │ +500 (13%)    │
     │ dynamic cf: 100          │ .          │ .          │ .           │ .             │
-    │ dynamic (not cf): 100000 │ .          │ +505 (17%) │ +506 (14%)  │ +505 (14%)    │
+    │ dynamic (not cf): 100000 │ .          │ +505 (17%) │ +506 (14%)  │ +505 (13%)    │
     │ dynamic cf: 100000       │ .          │ .          │ .           │ .             │
     └──────────────────────────┴────────────┴────────────┴─────────────┴───────────────┘
     |}];
@@ -511,14 +511,14 @@ let%expect_test "Stateful Rows" =
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
     │ Randomly select a row, then change all cells in it.                     │ .                │ .          │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +95 (10%)        │ .          │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +275 (18%)       │ .          │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +95 (10%)        │ .          │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +275 (18%)       │ .          │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +95 (10%)        │ .          │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +275 (18%)       │ .          │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +95 (10%)        │ .          │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +275 (18%)       │ .          │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window      │ +95 (9%)         │ .          │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window      │ +275 (17%)       │ .          │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window      │ +95 (9%)         │ .          │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window      │ +275 (17%)       │ .          │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window     │ +95 (9%)         │ .          │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window     │ +275 (17%)       │ .          │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window    │ +95 (9%)         │ .          │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window    │ +275 (17%)       │ .          │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window  │ +950 (25%)       │ .          │
     └─────────────────────────────────────────────────────────────────────────┴──────────────────┴────────────┘
 

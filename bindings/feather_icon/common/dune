@@ -1,0 +1,6 @@
+(library
+ (name feather_icon_common)
+ (public_name bonsai_web_components.feather_icon_common)
+ (libraries core)
+ (preprocess
+  (pps ppx_jane)))
