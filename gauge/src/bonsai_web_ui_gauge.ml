@@ -37,14 +37,14 @@ let gauge ~radius ~(percent : Percent.t) ~percent_to_color =
   in
   let base =
     Svg.Node.circle
-      ~attrs:[ create_roundy_gauge_attr ~color:Tailwind_colors.gray200 ~extra_attr:[] ]
+      ~attrs:[ create_roundy_gauge_attr ~color:Tailwind_v3_colors.gray200 ~extra_attr:[] ]
       []
   in
   let offset = arc -. (percent_as_float /. 100. *. arc) in
   let color =
     match percent_to_color with
     | Some f -> (f percent :> Css_gen.Color.t)
-    | None -> (Tailwind_colors.blue500 :> Css_gen.Color.t)
+    | None -> (Tailwind_v3_colors.blue500 :> Css_gen.Color.t)
   in
   let percent =
     Svg.Node.circle

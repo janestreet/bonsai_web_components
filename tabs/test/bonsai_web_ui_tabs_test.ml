@@ -17,14 +17,11 @@ open My_tabs
 let basic_tab_component ?additional_button_attributes ?decorate ?f () graph =
   let f =
     Option.value f ~default:(fun ~change_tab:_ tab ->
-      Bonsai.enum
-        (module My_tabs)
-        ~match_:tab
-        ~with_:(fun tab _graph ->
-          match tab with
-          | A -> Bonsai.return (Vdom.Node.text "a")
-          | B -> Bonsai.return (Vdom.Node.text "b")
-          | C -> Bonsai.return (Vdom.Node.text "c")))
+      Bonsai.enum (module My_tabs) ~match_:tab ~with_:(fun tab _graph ->
+        match tab with
+        | A -> Bonsai.return (Vdom.Node.text "a")
+        | B -> Bonsai.return (Vdom.Node.text "b")
+        | C -> Bonsai.return (Vdom.Node.text "c")))
   in
   let state =
     Tabs.tab_state
@@ -73,7 +70,7 @@ let%expect_test "you can click on a button to change the tab" =
   Expect_test_patdiff.print_patdiff before after;
   [%expect
     {|
-    -1,8 +1,8
+    === DIFF HUNK ===
       <div class="bonsai_ui_tab_container">
         <div class="bonsai_ui_tab_tabs">
     -|    <button name="A" class="bonsai_ui_tab selected" @on_click> A </button>

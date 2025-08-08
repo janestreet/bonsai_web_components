@@ -766,20 +766,23 @@ let form
             View.hbox
               ~gap:(`Em_float 0.5)
               [ View.textf "%d - " i
-              ; render_button ~theme ~enabled:true ~on_click:remove "[ remove ]"
+              ; render_button ~theme ~enabled:true ~on_click:remove "remove"
               ; render_button
                   ~theme
                   ~enabled:(Or_error.is_ok (Form2.value list_form))
                   ~on_click:(duplicate i)
-                  "[ duplicate ]"
+                  "duplicate"
               ]
           in
           Form.View.list_item
             ~view:(Form.view form)
             ~remove_item:(Remove_view remove_view))
       in
+      let append_view =
+        render_button ~theme ~enabled:true ~on_click:add_element "Add new element"
+      in
       Form.View.list
-        ~append_item:(Append_info { append = add_element; text = None })
+        ~append_item:(Append_view append_view)
         ~legacy_button_position:`Indented
         items
     in
@@ -1115,13 +1118,16 @@ let form
                 | info ->
                   View.hbox
                     [ dropdown
-                    ; View.tooltip'
-                        theme
-                        ~direction:Right
-                        ~tooltip_attrs:[ Style.scrollable_tooltip ]
-                        ~container_attrs:[ Style.inline_padding ]
-                        ~tooltip:(View.vbox ~gap:(`Rem 0.15) info)
-                        (Vdom.Node.text "?")
+                    ; Vdom.Node.div
+                        ~attrs:
+                          [ View.tooltip_attr'
+                              theme
+                              ~tooltip_attrs:[ Style.scrollable_tooltip ]
+                              ~hoverable_inside:true
+                              ~position:Right
+                              info
+                          ]
+                        [ Vdom.Node.text "?" ]
                     ]
               in
               ( Opt.to_option outer ~allow_illegal_values:true

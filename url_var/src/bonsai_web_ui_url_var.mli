@@ -139,7 +139,10 @@ module Typed : sig
 
       [fallback] is used to potentially give out custom error messages if the parser
       fails. Please don't write parsing logic in fallback that might fail since there's no
-      fallback for the fallback (i.e. if [fallback] fails, the page would crash.)
+      fallback for the fallback (i.e. if [fallback] fails, the page would crash.).
+
+      [fallback] is also used to provide a value for the [Url_var] in tests. If [fallback]
+      raises, [Url_var] creation will fail and raise, causing the tests to also fail.
 
       [redirect] is handy if you have an old URL shape that you want to immediately
       redirect into a new URL (e.g. A change in your site might involve changing URLs like
@@ -194,6 +197,13 @@ val create_exn'
   -> on_bad_uri:[ `Default_state of 'a | `Raise ]
   -> 'a t
 
+(** [reload_without_intercepting] fully reloads the page by bypassing the intercept
+    handler attached by a [Url_var] that had [navigation:`Intercept] set.
+
+    Reloading behavior is unchanged for [navigation:`Ignore], meaning that this effect
+    will reload the page for [navigation:`Ignore] as well. *)
+val reload_without_intercepting : unit Effect.t
+
 module For_testing : sig
   module Parse_result = Uri_parsing.Parse_result
 
@@ -213,4 +223,10 @@ module For_testing : sig
     val parse_exn : 'a t -> Typed.Components.t -> 'a Parse_result.t
     val unparse : 'a t -> 'a Parse_result.t -> Typed.Components.t
   end
+
+  (** [mock_required_browser_functionality_for_navigation_intercept] adds the necessary
+      methods to [globalThis] so that [navigation:`Intercept] can be tested properly. This
+      should be called at the start of every test so that handlers from previous tests are
+      released. *)
+  val mock_required_browser_functionality_for_navigation_intercept : unit -> unit
 end

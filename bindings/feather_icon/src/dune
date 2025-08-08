@@ -1,7 +1,8 @@
 (library
  (name feather_icon)
  (public_name bonsai_web_components.feather_icon)
- (libraries core bonsai_web virtual_dom.css_gen virtual_dom)
+ (libraries am_running_how_js core virtual_dom.css_gen feather_icon_common
+   virtual_dom)
  (preprocess
   (pps ppx_jane)))
 

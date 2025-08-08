@@ -198,7 +198,7 @@ module State : sig
     val compose_desc : t -> t -> t [@@js.call]
     val map_desc : t -> t -> ?before:bool -> unit -> t [@@js.call]
 
-    val map_pos : t -> int -> assoc:Cursor_association.t -> mode:Map_mode.t -> t
+    val map_pos : t -> int -> assoc:Cursor_association.t -> mode:Map_mode.t -> int option
     [@@js.call]
 
     val touches_range : t -> from:int -> ?to_:int -> unit -> Touches_range.t [@@js.call]
@@ -1086,6 +1086,12 @@ module Lint : sig
     [@@js.builder]
   end
 
+  module Lint_source : sig
+    type t
+
+    val of_sync_fun : (View.Editor_view.t -> Diagnostic.t list) -> t [@@js.cast]
+  end
+
   val set_diagnostics
     :  state:State.Editor_state.t
     -> diagnostics:Diagnostic.t list
@@ -1094,6 +1100,9 @@ module Lint : sig
 
   val diagnostic_count : State.Editor_state.t -> int [@@js.global]
   val lint_gutter : unit -> State.Extension.t [@@js.global]
+  val lint_keymap : View.Key_binding.t list [@@js.global]
+  val linter : Lint_source.t -> State.Extension.t [@@js.global]
+  val force_linting : View.Editor_view.t -> unit [@@js.global]
 end
 
 module Commands : sig

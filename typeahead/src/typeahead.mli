@@ -48,6 +48,7 @@ val create
 
 val create_multi
   :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+  -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
   -> ?placeholder:string Bonsai.t
   -> ?on_set_change:(('a, 'cmp) Set.t -> unit Ui_effect.t) Bonsai.t
   -> ?to_string:('a -> string) Bonsai.t
@@ -78,6 +79,7 @@ module Private : sig
 
     val create_multi_with_browser_behavior_in_test
       :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+      -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
       -> ?placeholder:string Bonsai.t
       -> ?on_set_change:(('a, 'cmp) Set.t -> unit Ui_effect.t) Bonsai.t
       -> ?to_string:('a -> string) Bonsai.t

@@ -411,7 +411,7 @@ module Toggle = struct
           left: 0;
           right: 0;
           bottom: 0;
-          background-color: #ccc; /* change */
+          background-color: var(--bg-off);
           transition: 0.2s;
           border-radius: 34px;
         }
@@ -424,16 +424,16 @@ module Toggle = struct
           left: 2px;
           bottom: 2px;
           border-radius: 50%;
-          background-color: white;
+          background-color: var(--bg-toggle);
           transition: 0.2s;
         }
 
         .invisible:checked + .slider {
-          background-color: #2196f3;
+          background-color: var(--bg-on);
         }
 
         .invisible:focused + .slider {
-          box-shadow: 0 0 1px #2196f3;
+          box-shadow: 0 0 1px var(--bg-on);
         }
 
         .invisible:checked + .slider::before {
@@ -441,10 +441,40 @@ module Toggle = struct
         }
       |}]
 
-  let bool ?(extra_attr = Bonsai.return Vdom.Attr.empty) ~default () graph =
+  module Colors = struct
+    type t =
+      { background_on : Css_gen.Color.t
+      ; background_off : Css_gen.Color.t
+      ; toggle : Css_gen.Color.t
+      }
+
+    let default =
+      { background_on = `Hex "#2196f3"
+      ; background_off = `Hex "#ccc"
+      ; toggle = `Name "white"
+      }
+    ;;
+
+    let create
+      ?(toggle = default.toggle)
+      ?(background_on = default.background_on)
+      ?(background_off = default.background_off)
+      ()
+      =
+      { background_on; background_off; toggle }
+    ;;
+  end
+
+  let bool
+    ?(colors = Bonsai.return Colors.default)
+    ?(extra_attr = Bonsai.return Vdom.Attr.empty)
+    ~default
+    ()
+    graph
+    =
     let view =
       let path = Bonsai.path_id graph in
-      let%arr extra_attr and path in
+      let%arr extra_attr and path and colors in
       fun ~state ~set_state ->
         let checkbox =
           Checkbox.make_input
@@ -455,7 +485,15 @@ module Toggle = struct
             ()
         in
         let slider = Vdom.Node.span ~attrs:[ Style.slider ] [] in
-        Vdom.Node.label ~attrs:[ Style.toggle ] [ checkbox; slider ]
+        Vdom.Node.label
+          ~attrs:
+            [ Style.toggle
+            ; Style.Variables.set_all
+                ~bg_on:(Css_gen.Color.to_string_css colors.background_on)
+                ~bg_off:(Css_gen.Color.to_string_css colors.background_off)
+                ~bg_toggle:(Css_gen.Color.to_string_css colors.toggle)
+            ]
+          [ checkbox; slider ]
     in
     Basic_stateful.make
       (Bonsai.state default ~sexp_of_model:[%sexp_of: Bool.t] ~equal:[%equal: Bool.t])
@@ -875,6 +913,7 @@ module Typeahead = struct
 
   let set
     ?(extra_attrs = Bonsai.return [])
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -886,6 +925,7 @@ module Typeahead = struct
     =
     let%sub { selected = value; view; set_selected = set; _ } =
       Bonsai_web_ui_typeahead.Typeahead.create_multi
+        ?extra_pills_container_attrs
         ?placeholder
         ?to_string
         ?to_option_description
@@ -905,6 +945,7 @@ module Typeahead = struct
   let list
     (type a cmp)
     ?extra_attrs
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -917,6 +958,7 @@ module Typeahead = struct
     let%map.Bonsai form =
       set
         ?extra_attrs
+        ?extra_pills_container_attrs
         ?placeholder
         ?to_string
         ?to_option_description
@@ -1303,7 +1345,7 @@ module Date_time = struct
         ~equal:[%equal: Date.t]
         (module Date)
         (fun ~extra_attrs ->
-          Vdom_input_widgets.Entry.date ~allow_updates_when_focused ~extra_attrs ())
+           Vdom_input_widgets.Entry.date ~allow_updates_when_focused ~extra_attrs ())
     ;;
 
     let date ?extra_attr ?allow_equal ?(allow_updates_when_focused = `Always) () graph =
@@ -1329,7 +1371,7 @@ module Date_time = struct
         ~equal:[%equal: Time_ns.Ofday.t]
         (module Time_ns.Ofday)
         (fun ~extra_attrs ->
-          Vdom_input_widgets.Entry.time ~allow_updates_when_focused ~extra_attrs ())
+           Vdom_input_widgets.Entry.time ~allow_updates_when_focused ~extra_attrs ())
     ;;
 
     let time
@@ -1366,10 +1408,10 @@ module Date_time = struct
         ~equal:[%equal: Time_ns.Alternate_sexp.t]
         (module Time_ns.Alternate_sexp)
         (fun ~extra_attrs ->
-          Vdom_input_widgets.Entry.datetime_local
-            ~allow_updates_when_focused
-            ~extra_attrs
-            ())
+           Vdom_input_widgets.Entry.datetime_local
+             ~allow_updates_when_focused
+             ~extra_attrs
+             ())
     ;;
 
     let datetime_local

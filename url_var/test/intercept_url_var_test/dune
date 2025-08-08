@@ -1,0 +1,6 @@
+(library
+ (name intercept_url_var_test)
+ (libraries base_quickcheck bonsai_web bonsai_web_ui_url_var core js_of_ocaml
+   bonsai_web_test.jsdom uri_parsing uri_parsing_test with)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx ppx_with)))

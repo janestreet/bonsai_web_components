@@ -201,7 +201,8 @@ module Line_numbers = struct
             let line =
               Codemirror.Text.Line.number (Codemirror.Text.Text.line_at doc location)
             in
-            Ui_effect.Expert.handle (on_click line)
+            Ui_effect.Expert.handle (on_click line) ~on_exn:(fun exn ->
+              Exn.reraise exn "Unhandled exception raised in effect")
           in
           Line_numbers_config.Dom_event_handlers.create ~mousedown ()
         in

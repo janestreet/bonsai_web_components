@@ -182,7 +182,10 @@ module For_testing = struct
             Test_data.read
               test_data
               { on_progress =
-                  (fun progress -> on_progress progress |> Ui_effect.Expert.handle)
+                  (fun progress ->
+                    on_progress progress
+                    |> Ui_effect.Expert.handle ~on_exn:(fun exn ->
+                      Exn.reraise exn "Unhandled exception raised in effect"))
               ; on_finished =
                   (fun result ->
                     Svar.fill_if_empty

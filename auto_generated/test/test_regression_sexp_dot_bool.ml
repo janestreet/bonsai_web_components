@@ -146,18 +146,16 @@ let%expect_test "Minimal repro" =
   end
   in
   let handle =
-    Handle.create
-      (module Result_spec)
-      (fun graph ->
-        let form = Auto_generated.form (module Record_with_sexp_dot_bool) graph in
-        let () =
-          Bonsai.Edge.lifecycle
-            ~on_activate:
-              (let%arr form in
-               Form.set form { a = true })
-            graph
-        in
-        form)
+    Handle.create (module Result_spec) (fun graph ->
+      let form = Auto_generated.form (module Record_with_sexp_dot_bool) graph in
+      let () =
+        Bonsai.Edge.lifecycle
+          ~on_activate:
+            (let%arr form in
+             Form.set form { a = true })
+          graph
+      in
+      form)
   in
   Handle.show handle;
   [%expect {| false |}];
@@ -210,24 +208,22 @@ let%expect_test "Minimal repro with two record fields. It also tests that other 
   end
   in
   let handle =
-    Handle.create
-      (module Result_spec)
-      (fun graph ->
-        let form =
-          Auto_generated.form
-            (module struct
-              type t = Result_spec.record [@@deriving sexp, sexp_grammar]
-            end)
-            graph
-        in
-        let () =
-          Bonsai.Edge.lifecycle
-            ~on_activate:
-              (let%arr form in
-               Form.set form { a = true; b = true; c = None })
-            graph
-        in
-        form)
+    Handle.create (module Result_spec) (fun graph ->
+      let form =
+        Auto_generated.form
+          (module struct
+            type t = Result_spec.record [@@deriving sexp, sexp_grammar]
+          end)
+          graph
+      in
+      let () =
+        Bonsai.Edge.lifecycle
+          ~on_activate:
+            (let%arr form in
+             Form.set form { a = true; b = true; c = None })
+          graph
+      in
+      form)
   in
   Handle.show handle;
   [%expect {| a: false, b: false, c: None |}];

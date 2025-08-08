@@ -90,7 +90,8 @@ module State = struct
       (match event, state with
        | Pointer_event.Down, { on_drag_start = Some effect; _ }
        | Pointer_event.Up, { on_drag_stop = Some effect; _ } ->
-         Effect.Expert.handle pointer_event effect
+         Effect.Expert.handle pointer_event effect ~on_exn:(fun exn ->
+           Exn.reraise exn "Unhandled exception raised in effect")
        | _ -> ());
       f event_target pointer_event
     in

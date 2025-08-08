@@ -163,7 +163,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(something!)
         +|(ultra_new_foo something!)
         |}])
@@ -196,7 +196,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(bar 7)
         +|(new_bar 7)
         |}])
@@ -222,7 +222,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(baz 1.0)
         +|(baz 1.)
         |}])
@@ -316,7 +316,7 @@ let%expect_test "typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(foo something!)
         +|(ultra_new_foo something!)
         |}])
@@ -349,7 +349,7 @@ let%expect_test "typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(bar 7)
         +|(new_bar 7)
         |}])
@@ -435,7 +435,7 @@ let%expect_test "to_url_string" =
   [%expect {| 1?b=2&c=3. |}]
 ;;
 
-let%expect_test "self-documenting error for typed api." =
+let%expect_test "Typed API should allow for creation in tests if it has a fallback" =
   let module Url = struct
     type t = { int : int } [@@deriving sexp, equal, typed_fields]
 
@@ -457,14 +457,109 @@ let%expect_test "self-documenting error for typed api." =
        ~encoding_behavior:Correct
        versioned_parser
    with
-   | _ -> failwith "creating should fail in test"
+   | _ -> ()
+   | exception Failure message -> failwith message);
+  [%expect {| |}]
+;;
+
+let%expect_test "Typed API should NOT allow for creation in tests if it is missing a \
+                 fallback"
+  =
+  let module Url = struct
+    type t = { int : int } [@@deriving sexp, equal, typed_fields]
+
+    let parser_for_field : type a. a Typed_field.t -> a Parser.t = function
+      | Int -> Parser.from_path Value_parser.int
+    ;;
+
+    module Path_order = Path_order (Typed_field)
+
+    let path_order = Path_order.T [ Int ]
+  end
+  in
+  let parser = Parser.Record.make (module Url) in
+  let versioned_parser = Versioned_parser.first_parser parser in
+  (match
+     Url_var.Typed.make
+       (module Url)
+       ~fallback:(fun _ _ -> failwith "This should be printed!")
+       ~encoding_behavior:Correct
+       versioned_parser
+   with
+   | _ -> failwith "Should not allow for creating if fallback is invalid"
    | exception Failure message -> print_endline message);
-  [%expect
-    {|
-    Error: Bonsai_web_ui_url_var.create_exn is not supported within a nodejs
-    environment because it relies on the browser's history API. One way to fix this
-    is by having your app receive the url value as a parameter, and passing some
-    mock implementation in tests instead of the real implementation provided by this
-    library. Am_running_how: 'Node_test'.
-    |}]
+  [%expect {| This should be printed! |}]
+;;
+
+let%expect_test "Typed API should allow for setting value within tests" =
+  let module Url = struct
+    type t = { int : int } [@@deriving sexp, equal, typed_fields]
+
+    let parser_for_field : type a. a Typed_field.t -> a Parser.t = function
+      | Int -> Parser.from_path Value_parser.int
+    ;;
+
+    module Path_order = Path_order (Typed_field)
+
+    let path_order = Path_order.T [ Int ]
+  end
+  in
+  let parser = Parser.Record.make (module Url) in
+  let versioned_parser = Versioned_parser.first_parser parser in
+  let url_var =
+    Url_var.Typed.make
+      (module Url)
+      ~fallback:(fun _ _ -> Url.{ int = 1 })
+      ~encoding_behavior:Correct
+      versioned_parser
+  in
+  Url_var.update ~how:`Push url_var ~f:(fun _ -> Url.{ int = 4 });
+  [%expect {| ("Pushing to history" (new_location ((int 4)))) |}];
+  let value = Url_var.get url_var in
+  print_s [%message (value : Url.t)];
+  [%expect {| (value ((int 4))) |}];
+  Url_var.update ~how:`Replace url_var ~f:(fun _ -> Url.{ int = 5 });
+  [%expect {| ("Replacing current location in history" (new_location ((int 5)))) |}];
+  let value = Url_var.get url_var in
+  print_s [%message (value : Url.t)];
+  [%expect {| (value ((int 5))) |}]
+;;
+
+let%expect_test "legacy api allows creation in tests" =
+  (match
+     Url_var.create_exn
+       (module struct
+         type t = int [@@deriving sexp, equal]
+
+         let parse_exn _ = 1
+         let unparse _ = Url_var.Components.create ()
+       end)
+       ~fallback:1
+   with
+   | _ -> ()
+   | exception Failure message -> failwith message);
+  [%expect {| |}]
+;;
+
+let%expect_test "Legacy API allows for setting values within tests" =
+  let url_var =
+    Url_var.create_exn
+      (module struct
+        type t = int [@@deriving sexp, equal]
+
+        let parse_exn _ = 1
+        let unparse _ = Url_var.Components.create ()
+      end)
+      ~fallback:1
+  in
+  Url_var.update ~how:`Push url_var ~f:(fun _ -> 2);
+  [%expect {| ("Pushing to history" (new_location 2)) |}];
+  let value = Url_var.get url_var in
+  print_s [%message (value : int)];
+  [%expect {| (value 2) |}];
+  Url_var.update ~how:`Replace url_var ~f:(fun _ -> 3);
+  [%expect {| ("Replacing current location in history" (new_location 3)) |}];
+  let value = Url_var.get url_var in
+  print_s [%message (value : int)];
+  [%expect {| (value 3) |}]
 ;;

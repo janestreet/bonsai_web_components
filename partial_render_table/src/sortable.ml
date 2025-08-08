@@ -113,7 +113,7 @@ module Wrap_header = struct
     -> Vdom.Node.t
     -> Vdom.Node.t
 
-  let clickable_with_icon ?sort_indicator_attrs ?multisort_columns_when () =
+  let clickable_with_icon ?extra_attrs ?sort_indicator_attrs ?multisort_columns_when () =
     let basic_wrap_header_function sortable ~is_sortable ~column_id content =
       let is_sortable = is_sortable column_id in
       Header.Expert.default_click_handler
@@ -121,7 +121,7 @@ module Wrap_header = struct
         sortable
         ~column_id
         ~sortable:is_sortable
-        (Header.with_icon ?sort_indicator_attrs content)
+        (Header.with_icon ?extra_attrs ?sort_indicator_attrs content)
     in
     basic_wrap_header_function
   ;;

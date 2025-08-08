@@ -8,14 +8,14 @@ let create ?(mode = (`Raw_contents : [ `Raw_contents | `As_data_url ])) file =
       let file_reader = new%js File.fileReader in
       let result = Ivar.create () in
       let result =
-        Bonsai_web.Effect.of_deferred_fun
-          (fun () ->
+        Bonsai_web.Effect.of_deferred_fun'
+          (fun () ~on_exn ->
             let call_on_progress ev =
               if Js.to_bool ev##.lengthComputable
               then
                 on_progress
                   { Bonsai_web_ui_file.Progress.loaded = ev##.loaded; total = ev##.total }
-                |> Ui_effect.Expert.handle
+                |> Ui_effect.Expert.handle ~on_exn
             in
             file_reader##.onprogress
             := Dom.handler (fun ev ->

@@ -64,13 +64,10 @@ let rows
      columns in [col_widths] may not actually be present in the table. *)
   let row_width =
     let%arr col_widths and leaves in
-    List.sum
-      (module Float)
-      leaves
-      ~f:(fun leaf ->
-        match Map.find col_widths leaf.column_id with
-        | Some (Visible { width_px }) -> width_px
-        | None | Some (Hidden _) -> 0.0)
+    List.sum (module Float) leaves ~f:(fun leaf ->
+      match Map.find col_widths leaf.column_id with
+      | Some (Visible { width_px }) -> width_px
+      | None | Some (Hidden _) -> 0.0)
   in
   let col_styles =
     let%arr themed_attrs

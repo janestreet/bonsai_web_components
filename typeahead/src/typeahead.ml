@@ -318,6 +318,7 @@ let input
 let create_multi_internal
   (type comparator_witness t)
   ?(extra_attrs = Bonsai.return [])
+  ?(extra_pills_container_attrs = Bonsai.return [])
   ?(placeholder = Bonsai.return "")
   ?(on_set_change = Bonsai.return (const Ui_effect.Ignore))
   ?to_string
@@ -397,7 +398,10 @@ let create_multi_internal
   let pills =
     Pills.of_set
       ~extra_container_attr:
-        (Bonsai.return Vdom.Attr.(class_ "bonsai-web-ui-typeahead-pills"))
+        (let%arr extra_pills_container_attrs in
+         Vdom.Attr.many
+           (Vdom.Attr.(class_ "bonsai-web-ui-typeahead-pills")
+            :: extra_pills_container_attrs))
       ~to_string
       ~inject_selected_options
       selected_options

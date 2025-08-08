@@ -30,19 +30,17 @@ end
 let%expect_test "render some notifications and test that they close as expected" =
   let open! Bonsai.Let_syntax in
   let handle =
-    Handle.create
-      (module Notification_spec)
-      (fun graph ->
-        let notifications =
-          Notifications.Basic.create
-            ~dismiss_notifications_after:(Bonsai.return (Time_ns.Span.create ~sec:15 ()))
-            ~dismiss_errors_automatically:(Bonsai.return false)
-            ()
-            graph
-        in
-        let vdom = Notifications.Basic.render notifications graph in
-        let%arr notifications and vdom in
-        notifications, vdom)
+    Handle.create (module Notification_spec) (fun graph ->
+      let notifications =
+        Notifications.Basic.create
+          ~dismiss_notifications_after:(Bonsai.return (Time_ns.Span.create ~sec:15 ()))
+          ~dismiss_errors_automatically:(Bonsai.return false)
+          ()
+          graph
+      in
+      let vdom = Notifications.Basic.render notifications graph in
+      let%arr notifications and vdom in
+      notifications, vdom)
   in
   Handle.show handle;
   (* Empty notification container as nothing has raised yet. *)

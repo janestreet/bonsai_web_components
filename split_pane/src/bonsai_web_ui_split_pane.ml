@@ -312,7 +312,6 @@ end
 module Action = struct
   type t =
     | Set_size of Panel_and_size.t
-    | Parameters_changed
     | Container_resized of Container_dimensions.t
     | Drag_start of
         { container_start : float
@@ -375,6 +374,34 @@ module State = struct
     | Vertical -> Css_gen.height size_css
   ;;
 
+  let clamp_size_according_to_constraints t ~direction ~separator_size_px ~constraints =
+    match t.container_dimensions, t.first_panel_px with
+    | Some container_dimensions, Some prev_px ->
+      let container_size_px =
+        Container_dimensions.for_direction container_dimensions ~direction
+      in
+      let sep = Float.of_int separator_size_px in
+      (match Float.O.(container_size_px < sep) with
+       | true ->
+         (* If the container is really small, don't bother doing anything to avoid
+           divisions with small denominators *)
+         t
+       | false ->
+         let min_size, max_size =
+           constraints_to_bounds ~constraints ~container_size_px ~separator_size_px
+         in
+         let new_px =
+           if Float.O.(min_size > max_size)
+           then
+             (* Conflicting constraints: we just split the difference here *)
+             max_size +. ((min_size -. max_size) /. 2.)
+           else prev_px |> Float.min max_size |> Float.max min_size
+         in
+         let delta = Float.O.(abs (prev_px - new_px)) in
+         if Float.O.(delta < 0.1) then t else { t with first_panel_px = Some new_px })
+    | _ -> (* not initialized yet *) t
+  ;;
+
   let update_size t ~panel_and_size ~direction ~separator_size_px ~constraints =
     match t.container_dimensions with
     | Some container_dimensions ->
@@ -387,26 +414,11 @@ module State = struct
           ~separator_size_px
           ~container_size_px
       in
-      let sep = Float.of_int separator_size_px in
-      if Float.O.(container_size_px < sep)
-      then
-        (* If the container is really small, don't bother doing anything to avoid
-           divisions with small denominators *)
-        t
-      else (
-        let min_size, max_size =
-          constraints_to_bounds ~constraints ~container_size_px ~separator_size_px
-        in
-        let new_px =
-          if Float.O.(min_size > max_size)
-          then
-            (* We just split the difference here *)
-            max_size +. ((min_size -. max_size) /. 2.)
-          else desired_size |> Float.min max_size |> Float.max min_size
-        in
-        match t.first_panel_px with
-        | Some prev_px when Float.O.(abs (prev_px - new_px) < 0.1) -> t
-        | _ -> { t with first_panel_px = Some new_px })
+      clamp_size_according_to_constraints
+        { t with first_panel_px = Some desired_size }
+        ~direction
+        ~separator_size_px
+        ~constraints
     | None -> t
   ;;
 
@@ -485,7 +497,7 @@ module Parameters = struct
 end
 
 let state_machine ~parameters graph =
-  let state_machine, inject_action =
+  let state, inject_action =
     Bonsai.state_machine_with_input
       ~sexp_of_model:[%sexp_of: State.t]
       ~equal:[%equal: State.t]
@@ -501,6 +513,17 @@ let state_machine ~parameters graph =
             ; on_container_resize
             ; constraints
             } ->
+          let state =
+            (* This is also done in the let%arr below, but the parameters may have changed
+               without an effect here to update things so the state machine value could
+               still be stale. Make sure we're consistent going in with the state of the
+               output displayed to users *)
+            State.clamp_size_according_to_constraints
+              state
+              ~direction
+              ~separator_size_px
+              ~constraints
+          in
           let state' =
             match action, State.current_drag state with
             | Set_size panel_and_size, _ ->
@@ -510,16 +533,6 @@ let state_machine ~parameters graph =
                 ~direction
                 ~separator_size_px
                 ~constraints
-            | Parameters_changed, _ ->
-              (match state.first_panel_px with
-               | None -> (* not yet initialised *) state
-               | Some first_panel_px ->
-                 State.update_size
-                   state
-                   ~panel_and_size:(Panel_and_size.px First first_panel_px)
-                   ~direction
-                   ~separator_size_px
-                   ~constraints)
             | Container_resized container_dimensions, _ ->
               State.change_container_size
                 state
@@ -564,17 +577,18 @@ let state_machine ~parameters graph =
       parameters
       graph
   in
-  let () =
-    Bonsai.Edge.on_change
-      ~sexp_of_model:[%sexp_of: Parameters.t]
-      ~equal:[%equal: Parameters.t]
-      parameters
-      ~callback:
-        (let%map inject_action in
-         fun (_ : Parameters.t) -> inject_action Parameters_changed)
-      graph
+  let state =
+    let%arr state
+    and { Parameters.direction; separator_size_px; constraints; _ } = parameters in
+    (* When parameters update we won't necessarily have a state machine update, but want
+       to re-clamp things according to the new constraints. *)
+    State.clamp_size_according_to_constraints
+      state
+      ~direction
+      ~separator_size_px
+      ~constraints
   in
-  state_machine, inject_action
+  state, inject_action
 ;;
 
 module Panel_extra_attrs = struct
@@ -619,6 +633,7 @@ let create_separator ~listeners ~direction ~size ~extra_attr =
 ;;
 
 let create_from_parameters
+  ?(on_drag_end = return (Fn.const Effect.Ignore))
   ?(panel_extra_attrs = Bonsai.return Panel_extra_attrs.default)
   ?(container_extra_attrs = Bonsai.return [])
   parameters
@@ -642,7 +657,9 @@ let create_from_parameters
     and size_change_attr
     and { Parameters.separator_size_px; direction; separator_color; _ } = parameters
     and container_extra_attrs
-    and panel_extra_attrs in
+    and panel_extra_attrs
+    and on_drag_end in
+    let panel_sizes = State.panel_sizes ~direction ~separator_size_px state in
     let separator_listeners =
       if State.is_dragging state
       then Attr.empty
@@ -673,7 +690,8 @@ let create_from_parameters
               inject_action (Action.Drag_move { mouse_pos }))
           ; Attr.Global_listeners.mouseup ~phase:Capture ~f:(fun mouse_event ->
               let mouse_pos = get_mouse_pos ~mouse_event ~direction in
-              inject_action (Action.Drag_end { mouse_pos }))
+              Effect.Many
+                [ inject_action (Action.Drag_end { mouse_pos }); on_drag_end panel_sizes ])
           ]
       else Attr.empty
     in
@@ -738,10 +756,7 @@ let create_from_parameters
           ]
       in
       let node = Node.div ~attrs:([ wrapper_attr ] @ container_extra_attrs) children in
-      { node
-      ; inject_set_size
-      ; panel_sizes = State.panel_sizes ~direction ~separator_size_px state
-      }
+      { node; inject_set_size; panel_sizes }
   in
   let%arr container_builder and first_panel and second_panel in
   container_builder first_panel second_panel
@@ -755,6 +770,7 @@ let create
   ?(constraints = Bonsai.return Parameters.default.constraints)
   ?panel_extra_attrs
   ?(container_extra_attrs = Bonsai.return [])
+  ?on_drag_end
   ~direction
   ~first_panel
   ~second_panel
@@ -782,6 +798,7 @@ let create
     }
   in
   create_from_parameters
+    ?on_drag_end
     ?panel_extra_attrs
     ~container_extra_attrs
     parameters
@@ -794,7 +811,10 @@ module For_testing = struct
   module Parameters = Parameters
 
   let create_from_parameters =
-    create_from_parameters ?panel_extra_attrs:None ?container_extra_attrs:None
+    create_from_parameters
+      ?on_drag_end:None
+      ?panel_extra_attrs:None
+      ?container_extra_attrs:None
   ;;
 
   module Container_dimensions = Container_dimensions

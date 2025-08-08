@@ -170,7 +170,12 @@ val create
   -> ?constraints:Constraint.t list Bonsai.t
   -> ?panel_extra_attrs:Panel_extra_attrs.t Bonsai.t
   -> ?container_extra_attrs:Vdom.Attr.t list Bonsai.t
+  -> ?on_drag_end:(Panel_sizes.t option -> unit Effect.t) Bonsai.t
   -> direction:Split_dir.t Bonsai.t
+       (** NOTE: If the app supports changing directions, you may want to call
+           [inject_set_size] to reset things as part of the effect causing the change as
+           it's likely the horizontal and vertical orientations have different reasonable
+           values to want to use. *)
   -> first_panel:Vdom.Node.t Bonsai.t
   -> second_panel:Vdom.Node.t Bonsai.t
   -> unit
@@ -233,7 +238,6 @@ module For_testing : sig
   module Action : sig
     type t =
       | Set_size of Panel_and_size.t
-      | Parameters_changed
       | Container_resized of Container_dimensions.t
       | Drag_start of
           { container_start : float

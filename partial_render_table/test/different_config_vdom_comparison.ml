@@ -131,7 +131,7 @@ let%expect_test "dyn cells with `visible`" =
     {|
     ===== Not Autosize =====
     Config dyn cells (counters) (groups) doesn't match first run (new pure (static cols) (counters) (groups))!:
-    -21,8 +21,15
+    === DIFF HUNK ===
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -147,7 +147,7 @@ let%expect_test "dyn cells with `visible`" =
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
                   size_tracker=<fun>
                   style={
-    -89,8 +96,19
+    === DIFF HUNK ===
                      }>
                   0.
                   <button @on_click> 0 </button>
@@ -171,7 +171,7 @@ let%expect_test "dyn cells with `visible`" =
 
     ===== Autosize =====
     Config dyn cells (counters) (groups) doesn't match first run (new pure (static cols) (counters) (groups))!:
-    -25,8 +25,15
+    === DIFF HUNK ===
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -187,7 +187,7 @@ let%expect_test "dyn cells with `visible`" =
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
                   size_tracker=<fun>
                   style={
-    -92,8 +99,25
+    === DIFF HUNK ===
                     <button @on_click> 0 </button>
                   </div>
                 </div>
@@ -238,7 +238,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
     {|
     ===== Not Autosize =====
     Config new pure (static cols) (counters) (groups) doesn't match first run (new pure (static cols) (counters) (groups))!:
-    -7,8 +7,9
+    === DIFF HUNK ===
               <td class="header_cell_hash_replaced_in_test"> </td>
               <td class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test"> Edge </td>
               <td colspan="4"
@@ -248,7 +248,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
             <tr class="header_row_hash_replaced_in_test">
               <td colspan="1"
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
-    -45,8 +46,14
+    === DIFF HUNK ===
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -263,7 +263,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
           </tbody>
         </table>
         <div class="default_partial_render_table_body_hash_replaced_in_test partial-render-table-body-bonsai_path_replaced_in_test"
-    -141,8 +148,21
+    === DIFF HUNK ===
                      }>
                   0
                   <button @on_click> 0 </button>
@@ -289,7 +289,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
 
     ===== Autosize =====
     Config new pure (static cols) (counters) (groups) doesn't match first run (new pure (static cols) (counters) (groups))!:
-    -11,8 +11,9
+    === DIFF HUNK ===
               <th class="header_cell_hash_replaced_in_test"> </th>
               <th class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test"> Edge </th>
               <th colspan="4"
@@ -299,7 +299,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
             <tr class="header_row_hash_replaced_in_test">
               <th colspan="1"
                   class="header_cell_hash_replaced_in_test header_label_hash_replaced_in_test leaf_header_hash_replaced_in_test leaf_header_resizable_hash_replaced_in_test"
-    -49,8 +50,14
+    === DIFF HUNK ===
                   size_tracker=<fun>
                   style={
                     width: 50px;
@@ -314,7 +314,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
           </thead>
           <div style={ display: table-row-group; position: relative; }>
             <div @key=top_padding style={ height: 0px; }> </div>
-    -168,8 +175,27
+    === DIFF HUNK ===
                     <button @on_click> 0 </button>
                   </div>
                 </div>

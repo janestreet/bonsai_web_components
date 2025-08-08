@@ -412,7 +412,7 @@ let%expect_test "a list field within a record form gets a label" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -600,22 +600,7 @@ let%expect_test "variant with doc comments gets a tooltip" =
                 <option value="1" #selected="true"> foo </option>
                 <option value="2" #selected="false"> bar </option>
               </select>
-              <span class="inline_padding_hash_replaced_in_test right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-                ?
-                <div class="scrollable_tooltip_hash_replaced_in_test tooltip_hash_replaced_in_test"
-                     custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))>
-                  <div style={ display: flex; flex-direction: column; row-gap: 0.15rem; }>
-                    <div style={ display: flex; flex-direction: column; }>
-                      <span class="bold_text_hash_replaced_in_test"> Bar </span>
-                       This is a bar!
-                    </div>
-                    <div style={ display: flex; flex-direction: column; }>
-                      <span class="bold_text_hash_replaced_in_test"> Foo </span>
-                       This is a foo!
-                    </div>
-                  </div>
-                </div>
-              </span>
+              <div class="anchor_hash_replaced_in_test" vdom_tooltip=<omitted>> ? </div>
             </div>
           </td>
         </tr>
@@ -654,21 +639,12 @@ let%expect_test "variant with doc comments gets a tooltip" =
     -|            <option value="2" #selected="false"> bar </option>
     +|            <option value="2" #selected="true"> bar </option>
                 </select>
-                <span class="inline_padding_hash_replaced_in_test right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
-                  ?
-                  <div class="scrollable_tooltip_hash_replaced_in_test tooltip_hash_replaced_in_test"
-                       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))>
-                    <div style={ display: flex; flex-direction: column; row-gap: 0.15rem; }>
-                      <div style={ display: flex; flex-direction: column; }>
-                        <span class="bold_text_hash_replaced_in_test"> Bar </span>
-                         This is a bar!
-                      </div>
-                      <div style={ display: flex; flex-direction: column; }>
-                        <span class="bold_text_hash_replaced_in_test"> Foo </span>
-                         This is a foo!
-                      </div>
-                    </div>
-                  </div>
+                <div class="anchor_hash_replaced_in_test" vdom_tooltip=<omitted>> ? </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     |}]
 ;;
 
@@ -1279,8 +1255,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1305,8 +1281,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 1 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1329,7 +1305,7 @@ let%expect_test "duplicating list elements" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -1349,8 +1325,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1375,8 +1351,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 1 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1401,8 +1377,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 2 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1425,7 +1401,7 @@ let%expect_test "duplicating list elements" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -1591,8 +1567,8 @@ let%expect_test "customizing a tuple within a list" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1636,7 +1612,7 @@ let%expect_test "customizing a tuple within a list" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2414,7 +2390,7 @@ let%expect_test "customizing a list to have better button text" =
       <tbody>
         <tr>
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2433,8 +2409,8 @@ let%expect_test "customizing a list to have better button text" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -2457,7 +2433,7 @@ let%expect_test "customizing a list to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2488,7 +2464,7 @@ let%expect_test "customizing a list in a record to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2512,8 +2488,8 @@ let%expect_test "customizing a list in a record to have better button text" =
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -2536,7 +2512,7 @@ let%expect_test "customizing a list in a record to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 2em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>

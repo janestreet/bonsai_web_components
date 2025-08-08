@@ -38,8 +38,13 @@ module Sort_kind = struct
     ; reverse : ('key, 'data) sort
     }
 
-  let reversible ~forward = { forward; reverse = Comparable.reverse forward }
-  let reversible' ~reverse = { forward = Comparable.reverse reverse; reverse }
+  let reversible ~forward =
+    { forward; reverse = (fun a b -> Comparable.reverse forward a b) }
+  ;;
+
+  let reversible' ~reverse =
+    { forward = (fun a b -> Comparable.reverse reverse a b); reverse }
+  ;;
 end
 
 module Dir = struct

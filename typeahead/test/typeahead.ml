@@ -226,7 +226,7 @@ let%expect_test "Change typeahead contents" =
   (* Expected change: input value should change. *)
   [%expect
     {|
-    -1,16 +1,16
+    === DIFF HUNK ===
       <div>
         <input type="text"
                list="bonsai_path_replaced_in_test"

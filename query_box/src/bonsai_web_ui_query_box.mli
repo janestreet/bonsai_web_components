@@ -127,6 +127,9 @@ val create
            currently entered filter from the textbox part of the component is provided as
            an argument to the function and it is expected that you use this to do your own
            filtering and return the filtered map. *)
+  -> ?ignore_tab_key:bool
+       (** when [ignore_tab_key] is true, [Tab] will select a next focusable element on a
+           page instead of selecting a next item in the drop down *)
   -> f:(string Bonsai.t -> Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
        (** [on_select] is called when [enter] is hit, or an item is clicked. *)
   -> on_select:('k -> unit Effect.t) Bonsai.t
