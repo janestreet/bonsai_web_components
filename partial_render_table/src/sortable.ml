@@ -15,7 +15,7 @@ let inject t = t.inject
 let state ?(initial_order = Bonsai.return Order.default) ~equal:col_id_equal () graph =
   let equal = Order.equal col_id_equal in
   let order, inject =
-    Bonsai_extra.state_machine0_dynamic_model
+    Bonsai_extra.State_machine.state_machine0_dynamic_model
       ~equal
       ~model:(`Given initial_order)
       ~apply_action:(fun _ -> Order.apply_action ~equal:col_id_equal)

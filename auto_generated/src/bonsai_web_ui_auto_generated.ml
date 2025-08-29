@@ -468,7 +468,7 @@ let form
                | Error err -> Error err)
           in
           let set =
-            let bonk = Bonsai_extra.bonk graph in
+            let bonk = Bonsai_extra.Effects.bonk graph in
             let%arr set_outer and inject_outer and outer and bonk in
             function
             | Sexp.List [] | Atom "None" | Atom "none" -> set_outer false
@@ -697,7 +697,7 @@ let form
                 (Form.return_error (Error.of_string "unreachable auto-gen code"))
             | true -> list_grammar_form args graph
           in
-          let bonk = Bonsai_extra.bonk graph in
+          let bonk = Bonsai_extra.Effects.bonk graph in
           let%arr override
           and set_override
           and toggle
@@ -1158,7 +1158,7 @@ let form
                   else Bonsai.return (Form.return (Sexp.List [])))
                 graph
             in
-            let bonk = Bonsai_extra.bonk graph in
+            let bonk = Bonsai_extra.Effects.bonk graph in
             let%arr outer
             and clauses_forms
             and bonk

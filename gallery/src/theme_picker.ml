@@ -63,7 +63,7 @@ let component ?(default = Theme_id.Default) ?(standalone = false) () graph =
       graph
   in
   let () =
-    Bonsai_extra.mirror
+    Bonsai_extra.Mirror.mirror
       ~sexp_of_model:[%sexp_of: Theme_id.t]
       ~equal:[%equal: Theme_id.t]
       ~store_value:var_value

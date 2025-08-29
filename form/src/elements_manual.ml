@@ -1690,7 +1690,7 @@ module Multiple = struct
                      ])))
         ~f:(fun (_ : unit Bonsai.t) inject_outer graph ->
           let extendy = Extendy.component t graph in
-          let bonk = Bonsai_extra.bonk graph in
+          let bonk = Bonsai_extra.Effects.bonk graph in
           let get_next_seqnum, most_recent_seqnum =
             Seqnum_for_list.component' ~reset:`Bump graph
           in
@@ -1964,7 +1964,9 @@ module Range = struct
           | elements ->
             Vdom.Node.span ~attrs:[ Vdom.Attr.style (Css_gen.flex_container ()) ] elements
       in
-      let value_with_override graph = Bonsai_extra.value_with_override default graph in
+      let value_with_override graph =
+        Bonsai_extra.Value_utilities.value_with_override default graph
+      in
       Basic_stateful.make_themed value_with_override ~view graph
     in
     let%arr min and max and unvalidated in

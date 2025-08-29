@@ -319,6 +319,7 @@ let create_multi_internal
   (type comparator_witness t)
   ?(extra_attrs = Bonsai.return [])
   ?(extra_pills_container_attrs = Bonsai.return [])
+  ?pills_tab_behavior
   ?(placeholder = Bonsai.return "")
   ?(on_set_change = Bonsai.return (const Ui_effect.Ignore))
   ?to_string
@@ -402,6 +403,7 @@ let create_multi_internal
          Vdom.Attr.many
            (Vdom.Attr.(class_ "bonsai-web-ui-typeahead-pills")
             :: extra_pills_container_attrs))
+      ?tab_behavior:pills_tab_behavior
       ~to_string
       ~inject_selected_options
       selected_options

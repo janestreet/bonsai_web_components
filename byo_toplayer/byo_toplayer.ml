@@ -135,7 +135,7 @@ module Autoclose = struct
 
   let listeners ~on_click_outside ~on_right_click_outside ~on_esc graph =
     let root_id = Bonsai.path_id graph in
-    let bonk = Bonsai_extra.bonk graph in
+    let bonk = Bonsai_extra.Effects.bonk graph in
     let monitor_mousedowns_attr, last_mousedown_was_inside =
       monitor_mousedown ~root_id graph
     in

@@ -21,7 +21,12 @@ let view t = t.view
 let map_view t ~f = { t with view = f t.view }
 let is_valid t = Or_error.is_ok t.value
 
-let return ?(here = Stdlib.Lexing.dummy_pos) ?sexp_of_t ?(equal = phys_equal) value =
+let return
+  ?(here = Stdlib.Lexing.dummy_pos)
+  ?sexp_of_t
+  ?(equal = [%eta2 phys_equal])
+  value
+  =
   let set new_value =
     (* Only log a message if someone tried to set a non-equal value. This prevents
        superfluous messages when e.g. someone sets a unit into a unit form. *)
@@ -215,7 +220,7 @@ module Dynamic = struct
       let%arr form in
       Or_error.ok (value form), set form
     in
-    Bonsai_extra.mirror'
+    Bonsai_extra.Mirror.mirror'
       ?sexp_of_model
       ~equal
       ~store_value
@@ -375,7 +380,7 @@ module Dynamic = struct
         (match debounce_ui with
          | None -> Bonsai.return true
          | Some time_to_stable ->
-           Bonsai_extra.is_stable
+           Bonsai_extra.Value_stability.is_stable
              ~equal:equal_input
              value
              ~time_to_stable:(Bonsai.return time_to_stable)
