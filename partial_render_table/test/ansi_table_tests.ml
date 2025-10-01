@@ -3042,6 +3042,7 @@ let%expect_test "focus down when presence says that all responses are None" =
       ; order = ()
       ; key_range = All_rows
       ; rank_range = All_rows
+      ; widen_range_by = 0, 0
       }
   in
   let test =
@@ -3106,6 +3107,7 @@ module%test [@name "focus by key `key_rank` fallback"] _ = struct
         ; order = ()
         ; key_range = To 4
         ; rank_range = All_rows
+        ; widen_range_by = 0, 0
         }
     in
     Test.create ~stats:true ~map:big_map ~should_set_bounds:false (fun input filter ->
@@ -3837,6 +3839,7 @@ module%test [@name "dynamic columns with visibility"] _ = struct
           ; order = Compare.Unchanged
           ; key_range = Collate_params.Which_range.All_rows
           ; rank_range = Collate_params.Which_range.All_rows
+          ; widen_range_by = 0, 0
           }
         in
         Table_expert.collate

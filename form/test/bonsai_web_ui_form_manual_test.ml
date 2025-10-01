@@ -5440,7 +5440,7 @@ let%expect_test "Checkbox.set layout options" =
   unstage print_diff [%expect.output];
   [%expect
     {|
-    -1,18 +1,18
+    === DIFF HUNK ===
       (Ok ())
 
       ==============
@@ -6714,6 +6714,244 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
         </table>
         <button> + </button>
       </div>
+      |}]
+  ;;
+end
+
+module%test [@name "Form.combine"] _ = struct
+  let make_handle () =
+    let component (local_ graph) =
+      let int_form =
+        Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
+      in
+      let string_form =
+        Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
+      in
+      let float_form =
+        Form.Elements.Textbox.float ~allow_updates_when_focused:`Never () graph
+      in
+      let%arr int_form and string_form and float_form in
+      Form.combine [ int_form; string_form; float_form ]
+      |> Form.map_view ~f:(fun [ int_view; string_view; float_view ] ->
+        Vdom.Node.div [ int_view; string_view; float_view ])
+    in
+    let sexp_of Form.Heterogeneous_list.[ int; string; float ] =
+      Sexp.List [ Int.sexp_of_t int; String.sexp_of_t string; Float.sexp_of_t float ]
+    in
+    Handle.create (form_result_spec sexp_of) component
+  ;;
+
+  let%expect_test "typing into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Error ("Expected an integer" "Expected a floating point number"))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+      </div>
+      |}];
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(1)"
+      ~text:"123";
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(2)"
+      ~text:"quack";
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(3)"
+      ~text:"3.1415";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Error ("Expected an integer" "Expected a floating point number"))
+      +|(Ok (123 quack 3.1415))
+
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=123
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=quack
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=3.1415
+                 @on_input/>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "setting into a list of string textboxes " =
+    let handle = make_handle () in
+    Handle.show handle;
+    [%expect
+      {|
+      (Error ("Expected an integer" "Expected a floating point number"))
+
+      ==============
+      <div>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+        <input @key=bonsai_path_replaced_in_test
+               type="text"
+               spellcheck="false"
+               value:normalized=""
+               @on_input/>
+      </div>
+      |}];
+    Handle.do_actions handle [ Form.Heterogeneous_list.[ 1; "A"; 3.0 ] ];
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Error ("Expected an integer" "Expected a floating point number"))
+      +|(Ok (1 A 3))
+
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=1
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=A
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=""
+      +|         value:normalized=3.000
+                 @on_input/>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "One of the sub-forms has an error" =
+    let handle = make_handle () in
+    Handle.recompute_view handle;
+    [%expect {| |}];
+    Handle.do_actions handle [ Form.Heterogeneous_list.[ 1; "A"; 3.0 ] ];
+    Handle.store_view handle;
+    [%expect {| |}];
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(1)"
+      ~text:"not an integer";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok (1 A 3))
+      +|(Error "Expected an integer")
+
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=1
+      +|         value:normalized="not an integer"
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+                 value:normalized=A
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+                 value:normalized=3.000
+                 @on_input/>
+        </div>
+      |}]
+  ;;
+
+  let%expect_test "Multiple of the forms have errors" =
+    let handle = make_handle () in
+    Handle.recompute_view handle;
+    [%expect {| |}];
+    Handle.do_actions handle [ Form.Heterogeneous_list.[ 1; "A"; 3.0 ] ];
+    Handle.store_view handle;
+    [%expect {| |}];
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(1)"
+      ~text:"not an integer";
+    Handle.input_text
+      handle
+      ~get_vdom:Form.view
+      ~selector:"input:nth-child(3)"
+      ~text:"not a float";
+    Handle.show_diff handle;
+    [%expect
+      {|
+      -|(Ok (1 A 3))
+      +|(Error ("Expected an integer" "Expected a floating point number"))
+
+        ==============
+        <div>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=1
+      +|         value:normalized="not an integer"
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+                 value:normalized=A
+                 @on_input/>
+          <input @key=bonsai_path_replaced_in_test
+                 type="text"
+                 spellcheck="false"
+      -|         value:normalized=3.000
+      +|         value:normalized="not a float"
+                 @on_input/>
+        </div>
       |}]
   ;;
 end

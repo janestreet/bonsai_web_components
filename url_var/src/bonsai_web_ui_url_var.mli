@@ -96,6 +96,7 @@ module Typed : sig
 
     val of_original_components
       :  ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
+      -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
       -> Components.t
       -> t
   end
@@ -114,6 +115,7 @@ module Typed : sig
         break your existing links? Use [of_non_typed_parser] instead of [first_parser]. *)
     val of_non_typed_parser
       :  ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
+      -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
       -> parse_exn:(Original_components.t -> 'a)
       -> unparse:('a -> Original_components.t)
       -> unit
@@ -157,6 +159,7 @@ module Typed : sig
     :  ?navigation:[ `Ignore | `Intercept ]
     -> ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
+    -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
     -> (module T with type t = 'a)
     -> 'a Versioned_parser.t
     -> fallback:(Exn.t -> Original_components.t -> 'a)
@@ -170,6 +173,7 @@ module Typed : sig
   val make_projection
     :  ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
+    -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
     -> 'a Versioned_parser.t
     -> fallback:(Exn.t -> Original_components.t -> 'a)
     -> (Original_components.t, 'a) Projection.t

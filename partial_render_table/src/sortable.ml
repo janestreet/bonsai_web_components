@@ -20,7 +20,7 @@ let state
   =
   let equal = Order.equal col_id_equal in
   let order, inject =
-    Bonsai_extra.state_machine0_dynamic_model
+    Bonsai_extra.State_machine.state_machine0_dynamic_model
       ~equal
       ~model:(`Given initial_order)
       ~apply_action:(fun _ -> Order.apply_action ~equal:col_id_equal)
@@ -118,7 +118,7 @@ module Wrap_header = struct
     -> Vdom.Node.t
     -> Vdom.Node.t
 
-  let clickable_with_icon ?sort_indicator_attrs ?multisort_columns_when () =
+  let clickable_with_icon ?extra_attrs ?sort_indicator_attrs ?multisort_columns_when () =
     let basic_wrap_header_function sortable ~is_sortable ~column_id content =
       let is_sortable = is_sortable column_id in
       Header.Expert.default_click_handler
@@ -126,7 +126,7 @@ module Wrap_header = struct
         sortable
         ~column_id
         ~sortable:is_sortable
-        (Header.with_icon ?sort_indicator_attrs content)
+        (Header.with_icon ?extra_attrs ?sort_indicator_attrs content)
     in
     basic_wrap_header_function
   ;;

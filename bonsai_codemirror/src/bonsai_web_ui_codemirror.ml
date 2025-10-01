@@ -215,13 +215,8 @@ type t =
   ; focus : unit Effect.t
   ; blur : unit Effect.t
   }
+[@@deriving fields ~getters]
 
-let view t = t.view
-let state t = t.state
-let send_transaction t = t.send_transaction
-let focus t = t.focus
-let blur t = t.blur
-let execute_command t = t.execute_command
 let text { state; _ } = state_text state
 let set_lines t new_lines = t.send_transaction (Transaction.set_lines new_lines)
 

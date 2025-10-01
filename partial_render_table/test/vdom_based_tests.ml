@@ -922,6 +922,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
                ; order = ()
                ; key_range = All_rows
                ; rank_range = All_rows
+               ; widen_range_by = 0, 0
                })
             graph
         in
@@ -2802,5 +2803,171 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
           </div>
         </div>
       </div>
+    |}]
+;;
+
+let%expect_test "round_column_with actually rounds width" =
+  let module Table = Bonsai_web_ui_partial_render_table in
+  let module Column = Table.Basic.Columns.Dynamic_columns in
+  let map = Bonsai.return (Int.Map.of_alist_exn [ 1, 1; 2, 2 ]) in
+  let render_header str = Vdom.Node.text str in
+  let column_a =
+    Column.column
+      ~header:(render_header "a")
+      ~cell:(fun ~key:_ ~data -> Vdom.Node.text (Int.to_string data))
+      ()
+  in
+  let column_b =
+    Column.column
+      ~header:(render_header "b")
+      ~cell:(fun ~key:_ ~data -> Vdom.Node.text (Int.to_string (data * 2)))
+      ()
+  in
+  let component =
+    Table.Basic.component
+      ~round_column_width:Float.round_nearest
+      (module Int)
+      ~focus:None
+      ~row_height:(Bonsai.return (`Px 20))
+      ~columns:(Column.lift (Bonsai.return [ column_a; column_b ]))
+      map
+  in
+  let get_vdom { Table.Basic.Result.view; _ } = view in
+  let handle =
+    Handle.create
+      (Result_spec.vdom
+         ~filter_printed_attributes:(fun ~key ~data:_ -> String.equal key "style.width")
+         get_vdom)
+      component
+  in
+  let resize_column ~idx ~width =
+    Shared.Test.resize_column_for_handle handle ~get_vdom ~idx ~width
+  in
+  Handle.recompute_view handle;
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td style={ width: 50px; }>
+              <div>
+                <div>
+                  <span> a </span>
+                </div>
+              </div>
+            </td>
+            <td style={ width: 50px; }>
+              <div>
+                <div>
+                  <span> b </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <div>
+          <div>
+            <div style={ width: 0.00px; }>
+              <div style={ width: 0.00px; }> 1 </div>
+              <div style={ width: 0.00px; }> 2 </div>
+            </div>
+            <div style={ width: 0.00px; }>
+              <div style={ width: 0.00px; }> 2 </div>
+              <div style={ width: 0.00px; }> 4 </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    |}];
+  resize_column ~idx:0 ~width:10.234 ~resize_column_widths_to_fit:false;
+  resize_column ~idx:1 ~width:20.221 ~resize_column_widths_to_fit:false;
+  Handle.recompute_view handle;
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td style={ width: 10.00px; }>
+              <div>
+                <div>
+                  <span> a </span>
+                </div>
+              </div>
+            </td>
+            <td style={ width: 20.00px; }>
+              <div>
+                <div>
+                  <span> b </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <div>
+          <div>
+            <div style={ width: 30.00px; }>
+              <div style={ width: 10.00px; }> 1 </div>
+              <div style={ width: 20.00px; }> 2 </div>
+            </div>
+            <div style={ width: 30.00px; }>
+              <div style={ width: 10.00px; }> 2 </div>
+              <div style={ width: 20.00px; }> 4 </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    |}];
+  resize_column ~idx:0 ~width:10.234 ~resize_column_widths_to_fit:false;
+  resize_column ~idx:1 ~width:20.221 ~resize_column_widths_to_fit:false;
+  Handle.recompute_view handle;
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td style={ width: 10.00px; }>
+              <div>
+                <div>
+                  <span> a </span>
+                </div>
+              </div>
+            </td>
+            <td style={ width: 20.00px; }>
+              <div>
+                <div>
+                  <span> b </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <div>
+          <div>
+            <div style={ width: 30.00px; }>
+              <div style={ width: 10.00px; }> 1 </div>
+              <div style={ width: 20.00px; }> 2 </div>
+            </div>
+            <div style={ width: 30.00px; }>
+              <div style={ width: 10.00px; }> 2 </div>
+              <div style={ width: 20.00px; }> 4 </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     |}]
 ;;

@@ -475,7 +475,7 @@ let form
                | Error err -> Error err)
           in
           let set =
-            let bonk = Bonsai_extra.bonk graph in
+            let bonk = Bonsai_extra.Effects.bonk graph in
             let%arr set_outer and inject_outer and outer and bonk in
             function
             | Sexp.List [] | Atom "None" | Atom "none" -> set_outer false
@@ -704,7 +704,7 @@ let form
                 (Form.return_error (Error.of_string "unreachable auto-gen code"))
             | true -> list_grammar_form args graph
           in
-          let bonk = Bonsai_extra.bonk graph in
+          let bonk = Bonsai_extra.Effects.bonk graph in
           let%arr override
           and set_override
           and toggle
@@ -773,20 +773,23 @@ let form
             View.hbox
               ~gap:(`Em_float 0.5)
               [ View.textf "%d - " i
-              ; render_button ~theme ~enabled:true ~on_click:remove "[ remove ]"
+              ; render_button ~theme ~enabled:true ~on_click:remove "remove"
               ; render_button
                   ~theme
                   ~enabled:(Or_error.is_ok (Form2.value list_form))
                   ~on_click:(duplicate i)
-                  "[ duplicate ]"
+                  "duplicate"
               ]
           in
           Form.View.list_item
             ~view:(Form.view form)
             ~remove_item:(Remove_view remove_view))
       in
+      let append_view =
+        render_button ~theme ~enabled:true ~on_click:add_element "Add new element"
+      in
       Form.View.list
-        ~append_item:(Append_info { append = add_element; text = None })
+        ~append_item:(Append_view append_view)
         ~legacy_button_position:`Indented
         items
     in
@@ -1169,7 +1172,7 @@ let form
                   else Bonsai.return (Form.return (Sexp.List [])))
                 graph
             in
-            let bonk = Bonsai_extra.bonk graph in
+            let bonk = Bonsai_extra.Effects.bonk graph in
             let%arr outer
             and clauses_forms
             and bonk

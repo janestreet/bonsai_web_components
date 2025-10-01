@@ -21,7 +21,7 @@ let view t = t.view
 let map_view t ~f = { t with view = f t.view }
 let is_valid t = Or_error.is_ok t.value
 
-let return ~(here : [%call_pos]) ?sexp_of_t ?(equal = phys_equal) value =
+let return ~(here : [%call_pos]) ?sexp_of_t ?(equal = [%eta2 phys_equal]) value =
   let set new_value =
     (* Only log a message if someone tried to set a non-equal value. This prevents
        superfluous messages when e.g. someone sets a unit into a unit form. *)
@@ -93,6 +93,56 @@ let all forms =
          in
          Ui_effect.Many (error_message :: List.map paired ~f:(fun (a, edit) -> a.set edit))))
   in
+  { value; view; set }
+;;
+
+module Heterogeneous_list = struct
+  type 'a t =
+    | [] : unit t
+    | ( :: ) : 'a * 'b t -> ('a * 'b) t
+
+  let cons a b = a :: b
+  let empty = []
+end
+
+module Form_list = struct
+  type ('a, 'view) form = ('a, 'view) t
+
+  type ('a, 'view) t =
+    | [] : (unit, unit) t
+    | ( :: ) :
+        ('a, 'view) form * ('a_rest, 'view_rest) t
+        -> ('a * 'a_rest, 'view * 'view_rest) t
+end
+
+let combine forms =
+  let rec get_values : type a b. (a, b) Form_list.t -> a Heterogeneous_list.t Or_error.t
+    = function
+    | [] -> Ok Heterogeneous_list.empty
+    | form :: remaining ->
+      let value = value form in
+      let remaining = get_values remaining in
+      Or_error.both value remaining
+      |> Or_error.map ~f:(fun (value, remaining) ->
+        Heterogeneous_list.cons value remaining)
+  in
+  let rec get_views : type a b. (a, b) Form_list.t -> b Heterogeneous_list.t = function
+    | [] -> Heterogeneous_list.empty
+    | form :: remaining -> view form :: get_views remaining
+  in
+  let rec set_all
+    : type a b. a Heterogeneous_list.t -> (a, b) Form_list.t -> unit Effect.t
+    =
+    fun values forms ->
+    match values, forms with
+    | [], [] -> Effect.return ()
+    | value :: remaining_values, form :: remaining_forms ->
+      let%bind.Effect () = set form value in
+      set_all remaining_values remaining_forms
+  in
+  let value = get_values forms in
+  let view = get_views forms in
+  let set values = set_all values forms in
   { value; view; set }
 ;;
 
@@ -215,7 +265,7 @@ module Dynamic = struct
       let%arr form in
       Or_error.ok (value form), set form
     in
-    Bonsai_extra.mirror'
+    Bonsai_extra.Mirror.mirror'
       ?sexp_of_model
       ~equal
       ~store_value
@@ -375,7 +425,7 @@ module Dynamic = struct
         (match debounce_ui with
          | None -> Bonsai.return true
          | Some time_to_stable ->
-           Bonsai_extra.is_stable
+           Bonsai_extra.Value_stability.is_stable
              ~equal:equal_input
              value
              ~time_to_stable:(Bonsai.return time_to_stable)

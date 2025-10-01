@@ -343,6 +343,7 @@ module Typeahead : sig
 
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -355,6 +356,7 @@ module Typeahead : sig
 
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t

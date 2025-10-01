@@ -15,8 +15,25 @@ let shared_computation =
       Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
 ;;
 
+let shared_computation_no_tabbing =
+  Typeahead.create_multi
+    (module Data)
+    ~all_options:(Bonsai.return Data.all)
+    ~pills_tab_behavior:(Bonsai.return `Prevent_tabbing)
+    ~placeholder:(Bonsai.return "Select a value")
+    ~to_string:(Bonsai.return Data.to_string)
+    ~split:(String.split ~on:',')
+    ~attr_merge_behavior:
+      Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+;;
+
 let view_computation (local_ graph) =
   let%sub { view; _ } = shared_computation graph in
+  view
+;;
+
+let no_tabbing_view_computation (local_ graph) =
+  let%sub { view; _ } = shared_computation_no_tabbing graph in
   view
 ;;
 
@@ -83,8 +100,8 @@ let%expect_test "Attrs are NOT merged when  \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead_multi__inline_class_hash_9d88fdcd18))
-     (second (typeahead_multi__inline_class_hash_00f98f620d)))
+     (first (typeahead_multi__inline_class_hash_9a2857faa9))
+     (second (typeahead_multi__inline_class_hash_682aa43e9a)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -379,6 +396,40 @@ let%expect_test "input multiple elements" =
     +|  <div class="bonsai-web-ui-typeahead-pills">
     +|    <span tabindex="0" data-value="Option A" @on_click @on_keyup> Option A × </span>
     +|    <span tabindex="0" data-value="Option B" @on_click @on_keyup> Option B × </span>
+    +|  </div>
+      </div>
+    |}]
+;;
+
+let%expect_test "input multiple elements without tabbing" =
+  let handle = Handle.create (Result_spec.vdom Fn.id) no_tabbing_view_computation in
+  Handle.store_view handle;
+  Handle.input_text
+    handle
+    ~get_vdom:Fn.id
+    ~selector:"input"
+    ~text:(Data.to_string Data.Option_A ^ "," ^ Data.to_string Data.Option_B);
+  Handle.show_diff handle;
+  [%expect
+    {|
+      <div>
+        <input type="text"
+               list="bonsai_path_replaced_in_test"
+               placeholder="Select a value"
+               value=""
+               #value=""
+               @on_blur
+               @on_change
+               @on_focus
+               @on_input/>
+        <datalist id="bonsai_path_replaced_in_test">
+    -|    <option value="Option A"> Option A </option>
+    -|    <option value="Option B"> Option B </option>
+          <option value="Option C"> Option C </option>
+        </datalist>
+    +|  <div class="bonsai-web-ui-typeahead-pills">
+    +|    <span tabindex="-1" data-value="Option A" @on_click @on_keyup> Option A × </span>
+    +|    <span tabindex="-1" data-value="Option B" @on_click @on_keyup> Option B × </span>
     +|  </div>
       </div>
     |}]

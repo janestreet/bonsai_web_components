@@ -412,7 +412,7 @@ let%expect_test "a list field within a record form gets a label" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -1255,8 +1255,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1281,8 +1281,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 1 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1305,7 +1305,7 @@ let%expect_test "duplicating list elements" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -1325,8 +1325,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1351,8 +1351,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 1 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1377,8 +1377,8 @@ let%expect_test "duplicating list elements" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 2 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1401,7 +1401,7 @@ let%expect_test "duplicating list elements" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -1569,8 +1569,8 @@ let%expect_test "customizing a tuple within a list" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -1614,7 +1614,7 @@ let%expect_test "customizing a tuple within a list" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> Add new element </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2392,7 +2392,7 @@ let%expect_test "customizing a list to have better button text" =
       <tbody>
         <tr>
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2411,8 +2411,8 @@ let%expect_test "customizing a list to have better button text" =
           <td colspan="2" style={ padding-left: 0em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -2435,7 +2435,7 @@ let%expect_test "customizing a list to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2466,7 +2466,7 @@ let%expect_test "customizing a list in a record to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>
@@ -2490,8 +2490,8 @@ let%expect_test "customizing a list in a record to have better button text" =
           <td colspan="2" style={ padding-left: 1em; font-weight: bold; }>
             <div style={ display: flex; column-gap: 0.50em; }>
               <span> 0 -  </span>
-              <button type="button" @on_click style={ color: blue; }> [ remove ] </button>
-              <button type="button" @on_click style={ color: blue; }> [ duplicate ] </button>
+              <button type="button" @on_click style={ color: blue; }> remove </button>
+              <button type="button" @on_click style={ color: blue; }> duplicate </button>
             </div>
           </td>
         </tr>
@@ -2514,7 +2514,7 @@ let%expect_test "customizing a list in a record to have better button text" =
         </tr>
         <tr>
           <td colspan="2" style={ padding-left: 2em; font-weight: bold; }>
-            <button type="button" @on_click> add new integer </button>
+            <button type="button" @on_click style={ color: blue; }> Add new element </button>
           </td>
         </tr>
       </tbody>

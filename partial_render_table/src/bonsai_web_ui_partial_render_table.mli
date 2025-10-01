@@ -179,6 +179,18 @@ module Basic : sig
              set min-width.
 
              If [false], columns can be set to any size, but will not autoresize. *)
+    -> ?round_column_width:(float -> float)
+         (** [round_column_width] will by default round column widths to 2 decimal places.
+             This is not a [Bonsai.t] as it's used within the column width tracker state
+             machine.
+
+             This argument is useful for rounding the column widths to whole pixel values
+             before setting it if we are experiencing issues with subpixels looping and
+             constantly firing insignificant width changes
+
+             If required in the future, this can be changed by switching the
+             [state_machine] to a [state_machine_with_input], but the functionality
+             doesn't seem like it would ever need to be dynamically set *)
     -> ?filter:(key:'key -> data:'data -> bool) Bonsai.t
          (** An optional function may be provided, which filters the rows in the table. *)
     -> ?override_sort:
@@ -322,6 +334,18 @@ module Expert : sig
              set min-width.
 
              If [false], columns can be set to any size, but will not autoresize. *)
+    -> ?round_column_width:(float -> float)
+         (** [round_column_width] will by default round column widths to 2 decimal places.
+             This is not a [Bonsai.t] as it's used within the column width tracker state
+             machine.
+
+             This argument is useful for rounding the column widths to whole pixel values
+             before setting it if we are experiencing issues with subpixels looping and
+             constantly firing insignificant width changes
+
+             If required in the future, this can be changed by switching the
+             [state_machine] to a [state_machine_with_input], but the functionality
+             doesn't seem like it would ever need to be dynamically set *)
     -> ?preload_rows:int
          (** [preload_rows] is the number of rows that are maintained before and after the
              viewport range. This number can have a significant effect on performance: too

@@ -148,10 +148,17 @@ module Anchor : sig
 end
 
 module Close_on_click_outside : sig
+  open Js_of_ocaml
+
   type t =
     | Yes
     | Yes_unless_target_is_popover
     | No
+    | Custom of (target:Dom_html.element Js.t Js.opt -> [ `Close | `Don't_close ])
+
+  (** Returns true if the [target] element is inside a popover. (i.e. has a popover as a
+      parent at some point) *)
+  val is_target_inside_a_popover : target:Dom_html.element Js.t Js.opt -> bool
 end
 
 module Controls : sig

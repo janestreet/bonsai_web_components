@@ -181,7 +181,10 @@ module Scenarios = struct
       | `All -> "all cells"
     in
     { Scenario.initial = Input.create ~rank_range:(To (window_size - 1)) starting_map
-    ; test_name = [%string "Randomly select a row, then change %{to_change_str} in it."]
+    ; test_name =
+        [%string
+          "Randomly select a row out of a table with %{size #Int} rows and a window of \
+           %{window_size #Int}, then change %{to_change_str} in it."]
     ; interaction =
         (fun input ->
           Input.update_map input ~f:(fun current_map ->

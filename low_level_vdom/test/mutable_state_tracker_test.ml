@@ -20,7 +20,8 @@ let%expect_test _ =
   let print () =
     Ui_effect.Expert.handle
       (let%map.Ui_effect strings = read Ref.( ! ) in
-       print_s [%sexp (strings : string list)]);
+       print_s [%sexp (strings : string list)])
+      ~on_exn:Base.raise;
     Handle.recompute_view handle
   in
   let ref_a = ref "hello" in
@@ -37,7 +38,9 @@ let%expect_test _ =
   ref_b := "bar";
   print ();
   [%expect {| (world bar) |}];
-  Ui_effect.Expert.handle (modify (fun s -> Ref.replace s String.uppercase));
+  Ui_effect.Expert.handle
+    (modify (fun s -> Ref.replace s String.uppercase))
+    ~on_exn:Base.raise;
   print ();
   [%expect {| (WORLD BAR) |}];
   unsafe_destroy id_b;

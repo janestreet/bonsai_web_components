@@ -424,6 +424,7 @@ module Typeahead = struct
 
   let set
     ?extra_attrs
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -436,6 +437,7 @@ module Typeahead = struct
       (fun ~extra_attrs ->
         set
           ~extra_attrs
+          ?extra_pills_container_attrs
           ?placeholder
           ?to_string
           ?to_option_description
@@ -448,6 +450,7 @@ module Typeahead = struct
 
   let list
     ?extra_attrs
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -460,6 +463,7 @@ module Typeahead = struct
       (fun ~extra_attrs ->
         list
           ~extra_attrs
+          ?extra_pills_container_attrs
           ?placeholder
           ?to_string
           ?to_option_description

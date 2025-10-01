@@ -63,8 +63,12 @@ let parser_ =
 ;;
 
 let _url_var =
-  Url_var.Typed.make ~navigation:`Ignore (module Url) parser_ ~fallback:(fun _ ->
-    failwith "Error!")
+  Url_var.Typed.make
+    ~trailing_slash_behavior:Keep_trailing_slashes
+    ~navigation:`Ignore
+    (module Url)
+    parser_
+    ~fallback:(fun _ -> failwith "Error!")
 ;;
 
 let%expect_test "Ignore variants never intercept" =

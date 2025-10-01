@@ -6,6 +6,7 @@ module Pills = struct
   let component
     ~extra_container_attr
     ~extra_pill_attr
+    ~tab_behavior
     ~to_string
     ~to_list
     ~inject_selected_options
@@ -15,9 +16,15 @@ module Pills = struct
     =
     let%arr extra_container_attr
     and extra_pill_attr
+    and tab_behavior
     and selected_options
     and inject_selected_options
     and to_string in
+    let tab_index =
+      match tab_behavior with
+      | `Tab_with_index index -> Vdom.Attr.tabindex index
+      | `Prevent_tabbing -> Vdom.Attr.tabindex (-1)
+    in
     let pill option =
       let remove_option event =
         if Bonsai_web.am_within_disabled_fieldset event
@@ -30,7 +37,7 @@ module Pills = struct
         ~attrs:
           [ Vdom.Attr.(
               extra_pill_attr
-              @ tabindex 0
+              @ tab_index
               @ create "data-value" (to_string option)
               @ on_click remove_option
               @ on_keyup (fun ev ->
@@ -49,6 +56,7 @@ module Pills = struct
   let of_list
     ?(extra_container_attr = Bonsai.return Vdom.Attr.empty)
     ?(extra_pill_attr = Bonsai.return Vdom.Attr.empty)
+    ?(tab_behavior = Bonsai.return (`Tab_with_index 0))
     ~to_string
     ~inject_selected_options
     selected_options
@@ -71,6 +79,7 @@ module Pills = struct
     component
       ~extra_container_attr
       ~extra_pill_attr
+      ~tab_behavior
       ~to_string
       ~to_list:Fn.id
       ~inject_selected_options
@@ -83,6 +92,7 @@ module Pills = struct
   let of_set
     ?(extra_container_attr = Bonsai.return Vdom.Attr.empty)
     ?(extra_pill_attr = Bonsai.return Vdom.Attr.empty)
+    ?(tab_behavior = Bonsai.return (`Tab_with_index 0))
     ~to_string
     ~inject_selected_options
     selected_options
@@ -90,6 +100,7 @@ module Pills = struct
     component
       ~extra_container_attr
       ~extra_pill_attr
+      ~tab_behavior
       ~to_string
       ~to_list:Set.to_list
       ~inject_selected_options

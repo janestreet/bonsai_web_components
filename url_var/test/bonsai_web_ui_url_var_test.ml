@@ -34,6 +34,7 @@ let%expect_test "Catch all when there is a fallback that fails" =
     |}];
   let projection =
     Url_var.Typed.make_projection
+      ~trailing_slash_behavior:Keep_trailing_slashes
       ~on_fallback_raises:Url.Catch_all
       ~encoding_behavior:Legacy_incorrect
       versioned_parser
@@ -56,6 +57,7 @@ let%expect_test "first non-typed projection test" =
   in
   let versioned_parser =
     Url_var.Typed.Versioned_parser.of_non_typed_parser
+      ~trailing_slash_behavior:Keep_trailing_slashes
       ~encoding_behavior:Legacy_incorrect
       ~parse_exn:Old_url.parse_exn
       ~unparse:Old_url.unparse
@@ -114,6 +116,7 @@ let%expect_test "non-typed -> typed -> typed" =
   in
   let first_parser =
     Url_var.Typed.Versioned_parser.of_non_typed_parser
+      ~trailing_slash_behavior:Keep_trailing_slashes
       ~encoding_behavior:Legacy_incorrect
       ~parse_exn:Old_url.parse_exn
       ~unparse:Old_url.unparse
@@ -163,7 +166,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(something!)
         +|(ultra_new_foo something!)
         |}])
@@ -196,7 +199,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(bar 7)
         +|(new_bar 7)
         |}])
@@ -222,7 +225,7 @@ let%expect_test "non-typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(baz 1.0)
         +|(baz 1.)
         |}])
@@ -316,7 +319,7 @@ let%expect_test "typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(foo something!)
         +|(ultra_new_foo something!)
         |}])
@@ -349,7 +352,7 @@ let%expect_test "typed -> typed -> typed" =
     ~expect_diff:(fun () ->
       [%expect
         {|
-        -1,1 +1,1
+        === DIFF HUNK ===
         -|(bar 7)
         +|(new_bar 7)
         |}])
@@ -452,6 +455,7 @@ let%expect_test "Typed API should allow for creation in tests if it has a fallba
   let versioned_parser = Versioned_parser.first_parser parser in
   (match
      Url_var.Typed.make
+       ~trailing_slash_behavior:Keep_trailing_slashes
        (module Url)
        ~fallback:(fun _ _ -> { Url.int = 1 })
        ~encoding_behavior:Correct
@@ -481,6 +485,7 @@ let%expect_test "Typed API should NOT allow for creation in tests if it is missi
   let versioned_parser = Versioned_parser.first_parser parser in
   (match
      Url_var.Typed.make
+       ~trailing_slash_behavior:Keep_trailing_slashes
        (module Url)
        ~fallback:(fun _ _ -> failwith "This should be printed!")
        ~encoding_behavior:Correct
@@ -508,6 +513,7 @@ let%expect_test "Typed API should allow for setting value within tests" =
   let versioned_parser = Versioned_parser.first_parser parser in
   let url_var =
     Url_var.Typed.make
+      ~trailing_slash_behavior:Keep_trailing_slashes
       (module Url)
       ~fallback:(fun _ _ -> Url.{ int = 1 })
       ~encoding_behavior:Correct

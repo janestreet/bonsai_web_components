@@ -42,10 +42,20 @@ let focus_on_open_attr = function
 ;;
 
 module Close_on_click_outside = struct
+  open Js_of_ocaml
+
   type t =
     | Yes
     | Yes_unless_target_is_popover
     | No
+    | Custom of (target:Dom_html.element Js.t Js.opt -> [ `Close | `Don't_close ])
+
+  let is_target_inside_a_popover ~target =
+    Js.Opt.to_option target
+    |> Option.bind
+         ~f:Byo_toplayer_private_vdom.For_byo_toplayer.find_nearest_popover_ancestor
+    |> Option.is_some
+  ;;
 end
 
 module Autoclose = struct
@@ -61,20 +71,13 @@ module Autoclose = struct
     element##hasAttribute (Js.string "inert") |> Js.to_bool
   ;;
 
-  let event_target_inside_a_popover (ev : mouse_event) =
-    Option.bind
-      (ev##.target |> Js_of_ocaml.Js.Opt.to_option)
-      ~f:Byo_toplayer_private_vdom.For_byo_toplayer.find_nearest_popover_ancestor
-    |> Option.is_some
-  ;;
-
   let on_evt_outside ~eff ~root_id (ev : mouse_event) =
     match Js_of_ocaml.Dom_html.getElementById_opt root_id with
     | None -> Effect.Ignore
     | Some root ->
       if element_contains root ev##.target || element_inert root
       then Effect.Ignore
-      else eff ~click_target_was_another_popover:(event_target_inside_a_popover ev)
+      else eff ~target:ev##.target
   ;;
 
   let on_esc_attrs ~eff ~root_id =
@@ -112,7 +115,7 @@ module Autoclose = struct
      the click will not close that popover. *)
   let monitor_mousedown ~root_id graph =
     let last_mousedown_was_inside, set_last_mousedown_was_inside =
-      Bonsai.state `Outside graph
+      Bonsai.state `Initial graph
     in
     let monitor_mousedowns_attr =
       let%arr set_last_mousedown_was_inside and root_id in
@@ -125,16 +128,14 @@ module Autoclose = struct
             set_last_mousedown_was_inside
               (if element_contains root ev##.target
                then `Inside_self
-               else if event_target_inside_a_popover ev
-               then `Inside_another_popover
-               else `Outside))
+               else `Clicked_on ev##.target))
     in
     monitor_mousedowns_attr, last_mousedown_was_inside
   ;;
 
   let listeners ~on_click_outside ~on_right_click_outside ~on_esc (local_ graph) =
     let root_id = Bonsai.path_id graph in
-    let bonk = Bonsai_extra.bonk graph in
+    let bonk = Bonsai_extra.Effects.bonk graph in
     let monitor_mousedowns_attr, last_mousedown_was_inside =
       monitor_mousedown ~root_id graph
     in
@@ -153,7 +154,7 @@ module Autoclose = struct
             | `Click -> Vdom.Attr.Global_listeners.click
             | `Right_click -> Vdom.Attr.Global_listeners.contextmenu
           in
-          let close_effect ~click_target_was_another_popover =
+          let close_effect ~target:click_event_target =
             match kind with
             | `Right_click ->
               (* The browser doesn't give you an API to detect "clicks outside", so we've
@@ -171,15 +172,18 @@ module Autoclose = struct
                  A [bonk] isn't needed for [`Click], because the [peek] used there accomplishes
                  the same result of moving the [close] after the [open].
               *)
-              bonk (f ~click_target_was_another_popover)
+              (* We use [click_event_target], because you can't drag on a right click. *)
+              bonk (f ~target:click_event_target)
             | `Click ->
               (match%bind.Effect peek_last_mousedown with
-               (* If the click "started" inside the popover, we disregard it because
+               | Inactive | Active `Inside_self ->
+                 (* If the click "started" inside the popover, we disregard it because
                  clicking inside, then dragging outside and releasing shouldn't close. *)
-               | Inactive | Active `Inside_self -> Effect.Ignore
-               | Active `Inside_another_popover ->
-                 f ~click_target_was_another_popover:true
-               | Active `Outside -> f ~click_target_was_another_popover)
+                 Effect.Ignore
+               | Active `Initial ->
+                 (* If we don't have an initial mousedown saved, fall back to the click target. *)
+                 f ~target:click_event_target
+               | Active (`Clicked_on mousedown_target) -> f ~target:mousedown_target)
           in
           listener_f
             ~phase:Vdom.Attr.Global_listeners.Phase.Capture
@@ -213,11 +217,20 @@ module Autoclose = struct
       | Yes_unless_target_is_popover ->
         let%arr close in
         Some
-          (fun ~click_target_was_another_popover ->
-            if click_target_was_another_popover then Effect.Ignore else close)
+          (fun ~target ->
+            if Close_on_click_outside.is_target_inside_a_popover ~target
+            then Effect.Ignore
+            else close)
       | Yes ->
         let%arr close in
-        Some (fun ~click_target_was_another_popover:_ -> close)
+        Some (fun ~target:_ -> close)
+      | Custom f ->
+        let%arr f and close in
+        Some
+          (fun ~target ->
+            match f ~target with
+            | `Close -> close
+            | `Don't_close -> Effect.Ignore)
     in
     let on_click_outside = build_on_click close_on_click_outside in
     let on_right_click_outside = build_on_click close_on_right_click_outside in

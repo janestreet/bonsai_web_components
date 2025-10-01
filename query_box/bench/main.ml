@@ -26,19 +26,13 @@ let get_random_set_of_words ~n =
   !map
 ;;
 
-let () = print_endline "======== Startup Benchmarking ========"
-
-let () =
-  let quota = Core_bench_js.Quota.Span (Time_float.Span.of_sec 1.0) in
+let startup =
   List.map [ 1; 100; 10_000; 1_000_000 ] ~f:(fun num_words ->
     let possible_words = get_random_set_of_words ~n:num_words |> return in
     Bonsai_bench.create_for_startup
       ~name:[%string "querybox with %{num_words#Int} options"]
       (component ~possible_words))
-  |> Bonsai_bench.benchmark ~run_config:(Core_bench_js.Run_config.create () ~quota)
 ;;
-
-let () = print_endline "======== Interaction benchmarking: changing query ========"
 
 let get_random_query () =
   let generator =
@@ -48,8 +42,7 @@ let get_random_query () =
   Quickcheck.random_value generator
 ;;
 
-let () =
-  let quota = Core_bench_js.Quota.Span (Time_float.Span.of_sec 1.0) in
+let interaction_changing_query =
   List.map [ 1; 100; 10_000; 1_000_000 ] ~f:(fun num_words ->
     let possible_words = get_random_set_of_words ~n:num_words |> return in
     let interaction =
@@ -66,7 +59,13 @@ let () =
         | `Set_query query -> Query_box.set_query query_box query
         | `Activate -> Query_box.activate_for_benchmarking query_box)
       interaction)
-  |> Bonsai_bench.benchmark ~run_config:(Core_bench_js.Run_config.create () ~quota)
+;;
+
+let () =
+  Bonsai_bench.run_sets_via_command
+    [ Bonsai_bench.set ~name:"Startup" startup
+    ; Bonsai_bench.set ~name:"Changing Query" interaction_changing_query
+    ]
 ;;
 
 (** {v

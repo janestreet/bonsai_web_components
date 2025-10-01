@@ -27,7 +27,8 @@ module Header_label : sig
     -> Vdom.Node.t
 
   val wrap_with_icon
-    :  ?sort_indicator_attrs:Vdom.Attr.t list
+    :  ?extra_attrs:Vdom.Attr.t list
+    -> ?sort_indicator_attrs:Vdom.Attr.t list
     -> Vdom.Node.t
     -> Bonsai_web_ui_partial_render_table_protocol.Sort_state.t
     -> Vdom.Node.t

@@ -33,7 +33,8 @@ module Wrap_header : sig
       If [`Disabled], clicking on an unsorted column will always replace the existing
       sort. *)
   val clickable_with_icon
-    :  ?sort_indicator_attrs:Vdom.Attr.t list
+    :  ?extra_attrs:Vdom.Attr.t list
+    -> ?sort_indicator_attrs:Vdom.Attr.t list
     -> ?multisort_columns_when:
          [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click | `Disabled ]
     -> unit
@@ -64,7 +65,8 @@ module Header : sig
   (** Wraps the input label in an HTML element, which also contains an icon that reflects
       the current sort state. *)
   val with_icon
-    :  ?sort_indicator_attrs:Vdom.Attr.t list
+    :  ?extra_attrs:Vdom.Attr.t list
+    -> ?sort_indicator_attrs:Vdom.Attr.t list
     -> Vdom.Node.t
     -> Sort_state.t
     -> Vdom.Node.t

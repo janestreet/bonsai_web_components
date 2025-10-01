@@ -6606,7 +6606,7 @@ let%expect_test "Checkbox.set layout options" =
   unstage print_diff [%expect.output];
   [%expect
     {|
-    -1,23 +1,23
+    === DIFF HUNK ===
       (Ok ())
 
       ==============

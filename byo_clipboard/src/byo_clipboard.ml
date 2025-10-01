@@ -109,4 +109,47 @@ module With_status = struct
     in
     with_confirmation Js_clipboard.Asynchronous.copy_blob value graph
   ;;
+
+  module Incrementing_id : sig
+    val next : unit -> int
+  end = struct
+    let global = ref 0
+
+    let next () =
+      incr global;
+      !global
+    ;;
+  end
+
+  let copy_text_factory (local_ graph) =
+    let copy_state, set_copy_state = Bonsai.state' String.Map.empty graph in
+    let sleep = Bonsai.Clock.sleep graph in
+    let%arr copy_state and set_copy_state and sleep in
+    fun ?key content ->
+      let lookup_key = Option.value key ~default:content in
+      match Map.mem copy_state lookup_key with
+      | true -> `Copied
+      | false ->
+        let effect =
+          let sequence_number = Incrementing_id.next () in
+          let%bind.Effect () =
+            let%map.Effect (_ : unit Or_error.t) =
+              Js_clipboard.Asynchronous.copy_text (Js_of_ocaml.Js.string content)
+            in
+            ()
+          in
+          let%bind.Effect () =
+            set_copy_state (Map.set ~key:lookup_key ~data:sequence_number)
+          in
+          let%bind.Effect () = sleep (Time_ns.Span.of_sec 1.0) in
+          set_copy_state (fun prev_state ->
+            Map.change prev_state lookup_key ~f:(function
+              | None -> None
+              | Some stored_seq_no ->
+                if Int.(sequence_number >= stored_seq_no)
+                then None
+                else Some stored_seq_no))
+        in
+        `Idle effect
+  ;;
 end

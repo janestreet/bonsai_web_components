@@ -73,8 +73,12 @@ let%expect_test "Fails to add intercept handler if \
     Handle.with_ ~get_vdom:(fun _ -> Vdom.Node.none) (fun _graph -> Bonsai.return ())
   in
   let _url_var =
-    Url_var.Typed.make ~navigation:`Intercept (module Url) parser_ ~fallback:(fun _ _ ->
-      Url.Catch_all)
+    Url_var.Typed.make
+      ~trailing_slash_behavior:Keep_trailing_slashes
+      ~navigation:`Intercept
+      (module Url)
+      parser_
+      ~fallback:(fun _ _ -> Url.Catch_all)
   in
   [%expect
     {|
@@ -91,8 +95,12 @@ let%expect_test "`Intercept actually calls the intercept event" =
   in
   Url_var.For_testing.mock_required_browser_functionality_for_navigation_intercept ();
   let _url_var =
-    Url_var.Typed.make ~navigation:`Intercept (module Url) parser_ ~fallback:(fun _ _ ->
-      Url.Catch_all)
+    Url_var.Typed.make
+      ~trailing_slash_behavior:Keep_trailing_slashes
+      ~navigation:`Intercept
+      (module Url)
+      parser_
+      ~fallback:(fun _ _ -> Url.Catch_all)
   in
   let fire_event = fire_navigation_event Fn.id ~destination:"/normal/3" in
   Handle.inject handle (fun () -> fire_event);
@@ -105,8 +113,12 @@ let%expect_test "`Intercept can be bypassed with special-cased reload method" =
   in
   Url_var.For_testing.mock_required_browser_functionality_for_navigation_intercept ();
   let _url_var =
-    Url_var.Typed.make ~navigation:`Intercept (module Url) parser_ ~fallback:(fun _ _ ->
-      Url.Catch_all)
+    Url_var.Typed.make
+      ~trailing_slash_behavior:Keep_trailing_slashes
+      ~navigation:`Intercept
+      (module Url)
+      parser_
+      ~fallback:(fun _ _ -> Url.Catch_all)
   in
   Handle.inject handle (fun () -> Bonsai_web_ui_url_var.reload_without_intercepting);
   [%expect {| |}]

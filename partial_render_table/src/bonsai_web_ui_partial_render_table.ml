@@ -65,7 +65,13 @@ module Expert = struct
       Effect.of_sync_fun (fun () -> print_endline (f ())) ()
   ;;
 
-  let column_width_tracker ~sexp_of_model ~equal ~default_model graph =
+  let column_width_tracker
+    ?(round_column_width = Float.round_decimal ~decimal_digits:2)
+    ~sexp_of_model
+    ~equal
+    ~default_model
+    graph
+    =
     let column_widths, set_column_width =
       Bonsai.state_machine
         graph
@@ -88,7 +94,7 @@ module Expert = struct
                 Hidden { prev_width_px = Some width_px }
               | Some (Hidden _ as prev) -> prev)
             else (
-              let rounded = Float.round_decimal ~decimal_digits:2 width in
+              let rounded = round_column_width width in
               Visible { width_px = rounded })))
     in
     let column_widths = Bonsai.cutoff ~equal column_widths in
@@ -104,6 +110,7 @@ module Expert = struct
     ?extra_row_attrs
     ~styling
     ~resize_column_widths_to_fit
+    ?round_column_width
     ~preload_rows
     ~(wrap_header : (column_id:column_id -> Vdom.Node.t -> Vdom.Node.t) Bonsai.t)
     (key_comparator : (key, cmp) Comparator.Module.t)
@@ -172,6 +179,7 @@ module Expert = struct
     in
     let column_widths, set_column_width =
       column_width_tracker
+        ?round_column_width
         graph
         ~sexp_of_model:[%sexp_of: Column_widths_model.t]
         ~equal:[%equal: Column_widths_model.t]
@@ -182,6 +190,7 @@ module Expert = struct
          keep the primary [column_widths] value for explicitly set column widths,
          while this tracker maintains all the currently-known sizes. *)
       column_width_tracker
+        ?round_column_width
         graph
         ~sexp_of_model:[%sexp_of: Column_widths_model.t]
         ~equal:[%equal: Column_widths_model.t]
@@ -636,6 +645,7 @@ module Expert = struct
     (type column_id key data cmp)
     ?(styling = Which_styling.From_theme)
     ?(resize_column_widths_to_fit = Bonsai.return false)
+    ?round_column_width
     ?(preload_rows = default_preload)
     ?extra_row_attrs
     (key_comparator : (key, cmp) Comparator.Module.t)
@@ -649,6 +659,7 @@ module Expert = struct
       ?extra_row_attrs
       ~styling
       ~resize_column_widths_to_fit
+      ?round_column_width
       ~preload_rows
       ~wrap_header:(return (fun ~column_id:_ view -> view))
       key_comparator
@@ -742,6 +753,7 @@ module Basic = struct
     (type key presence focus data cmp column_id)
     ?(styling = Which_styling.From_theme)
     ?(resize_column_widths_to_fit = Bonsai.return false)
+    ?round_column_width
     ?filter
     ?override_sort
     ?default_sort
@@ -849,6 +861,7 @@ module Basic = struct
           ~styling
           ~resize_column_widths_to_fit
           ~preload_rows
+          ?round_column_width
           ?extra_row_attrs
           ~wrap_header
           key_comparator

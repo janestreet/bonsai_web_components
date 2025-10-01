@@ -146,6 +146,7 @@ module Header_label = struct
   (* As an externally exposed component with no prior style overrides,
      we don't allow opting out of theming to keep user code simpler. *)
   let wrap_with_icon
+    ?(extra_attrs = [])
     ?(sort_indicator_attrs = [])
     (label : Vdom.Node.t)
     (sort_state : Bonsai_web_ui_partial_render_table_protocol.Sort_state.t)
@@ -168,9 +169,9 @@ module Header_label = struct
       in
       Vdom.Node.div
         ~attrs:
-          [ Vdom.Attr.style
-              (Css_gen.flex_container ~column_gap:(`Px 6) ~align_items:`Baseline ())
-          ]
+          (Vdom.Attr.style
+             (Css_gen.flex_container ~column_gap:(`Px 6) ~align_items:`Baseline ())
+           :: extra_attrs)
         [ Vdom.Node.span [ label ]
         ; sort_indicator
           |> Option.value ~default:(Vdom.Node.none_deprecated [@alert "-deprecated"])

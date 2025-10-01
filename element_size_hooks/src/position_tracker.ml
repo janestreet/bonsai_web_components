@@ -106,7 +106,8 @@ module Hook = struct
         |> Collected_effects.to_alist
         |> List.map ~f:(fun (T (_, effect)) -> effect)
       in
-      Ui_effect.Expert.handle (Ui_effect.Many events)
+      Ui_effect.Expert.handle (Ui_effect.Many events) ~on_exn:(fun exn ->
+        Exn.reraise exn "Unhandled exception raised in effect")
     ;;
 
     let init _ _ = ()

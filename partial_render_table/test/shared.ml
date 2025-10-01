@@ -369,6 +369,7 @@ module Test = struct
     ;;
 
     let default
+      ?round_column_width
       ?styling
       ?resize_column_widths_to_fit
       ?(preload_rows = 0)
@@ -388,6 +389,7 @@ module Test = struct
             (module Int)
             ?styling
             ?resize_column_widths_to_fit
+            ?round_column_width
             ~focus:(By_row { on_change = focus_changed })
             ~filter
             ?override_sort

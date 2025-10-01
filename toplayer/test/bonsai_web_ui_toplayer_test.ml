@@ -185,6 +185,8 @@ module Helper = struct
       | "reset" -> on_reset |> make1
       | "animationend" -> on_animationend |> make1
       | "focus" -> on_focus |> make1
+      | "focusin" -> on_focusin |> make1
+      | "focusout" -> on_focusout |> make1
       | "blur" -> on_blur |> make1
       | evt_name ->
         raise_s

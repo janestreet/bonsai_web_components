@@ -70,7 +70,7 @@ let%expect_test "you can click on a button to change the tab" =
   Expect_test_patdiff.print_patdiff before after;
   [%expect
     {|
-    -1,8 +1,8
+    === DIFF HUNK ===
       <div class="bonsai_ui_tab_container">
         <div class="bonsai_ui_tab_tabs">
     -|    <button name="A" class="bonsai_ui_tab selected" @on_click> A </button>

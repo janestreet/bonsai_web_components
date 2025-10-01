@@ -937,6 +937,7 @@ module Typeahead = struct
 
   let set
     ?(extra_attrs = Bonsai.return [])
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -948,6 +949,7 @@ module Typeahead = struct
     =
     let%sub { selected = value; view; set_selected = set; _ } =
       Bonsai_web_ui_typeahead.Typeahead.create_multi
+        ?extra_pills_container_attrs
         ?placeholder
         ?to_string
         ?to_option_description
@@ -967,6 +969,7 @@ module Typeahead = struct
   let list
     (type a cmp)
     ?extra_attrs
+    ?extra_pills_container_attrs
     ?placeholder
     ?to_string
     ?to_option_description
@@ -979,6 +982,7 @@ module Typeahead = struct
     let%map.Bonsai form =
       set
         ?extra_attrs
+        ?extra_pills_container_attrs
         ?placeholder
         ?to_string
         ?to_option_description
@@ -1719,7 +1723,7 @@ module Multiple = struct
                      ])))
         ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
           let extendy = Extendy.component t graph in
-          let bonk = Bonsai_extra.bonk graph in
+          let bonk = Bonsai_extra.Effects.bonk graph in
           let get_next_seqnum, most_recent_seqnum =
             Seqnum_for_list.component' ~reset:`Bump graph
           in
@@ -1993,7 +1997,9 @@ module Range = struct
           | elements ->
             Vdom.Node.span ~attrs:[ Vdom.Attr.style (Css_gen.flex_container ()) ] elements
       in
-      let value_with_override graph = Bonsai_extra.value_with_override default graph in
+      let value_with_override graph =
+        Bonsai_extra.Value_utilities.value_with_override default graph
+      in
       Basic_stateful.make_themed value_with_override ~view graph
     in
     let%arr min and max and unvalidated in

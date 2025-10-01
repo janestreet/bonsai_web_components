@@ -34,4 +34,12 @@ module With_status : sig
     -> title:string Bonsai.t
     -> local_ Bonsai.graph
     -> t Bonsai.t
+
+  (** Creates a copy_text factory for use in environments where it would otherwise be
+      awkward or impossible to thread graph around.
+
+      By default, the text-to-copy is used as the indentifier for the status. The optional
+      [key] parameter allows distinguishing between multiple copy buttons that have the
+      same text. *)
+  val copy_text_factory : local_ Bonsai.graph -> (?key:string -> string -> t) Bonsai.t
 end
