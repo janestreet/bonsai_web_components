@@ -9,14 +9,15 @@ module Transaction : sig
   val set_lines : string list -> t
 end
 
-type t
-
-val view : t -> Vdom.Node.t
-val state : t -> State.Editor_state.t
-val send_transaction : t -> Transaction.t -> unit Effect.t
-val focus : t -> unit Effect.t
-val blur : t -> unit Effect.t
-val execute_command : t -> View.Command.t -> unit Effect.t
+type t = private
+  { view : Vdom.Node.t
+  ; state : State.Editor_state.t
+  ; send_transaction : (State.Editor_state.t -> State.Transaction.t) -> unit Effect.t
+  ; execute_command : View.Command.t -> unit Effect.t
+  ; focus : unit Effect.t
+  ; blur : unit Effect.t
+  }
+[@@deriving fields ~getters]
 
 (** [text] retrieves the current contents of the editor. This can be slow if your file is
     very large. *)

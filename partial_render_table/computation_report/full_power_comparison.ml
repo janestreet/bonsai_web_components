@@ -17,22 +17,22 @@ let%expect_test "" =
     ┌────────────────────────────────────┬────────────┬────────────┬─────────────┬───────────────┬──────────────────┬───────────────────┐
     │                                    │ max_height │ node_count │ max_node_id │ nodes_created │ nodes_recomputed │ nodes_invalidated │
     ├────────────────────────────────────┼────────────┼────────────┼─────────────┼───────────────┼──────────────────┼───────────────────┤
-    │ new (incr cells) (dynamic): 100    │ 78         │  7364      │ 10104       │ 10104         │  7366            │ 0                 │
-    │ new (incr rows) (dynamic): 100     │ 74         │  2864      │  3604       │  3604         │  2866            │ 0                 │
-    │ new (pure) (dynamic): 100          │ 63         │   974      │  1414       │  1412         │   976            │ 0                 │
-    │ new (incr cells) (static): 100     │ 78         │  6865      │  7606       │  7605         │  6867            │ 0                 │
-    │ new (incr rows) (static): 100      │ 74         │  3365      │  4106       │  4105         │  3367            │ 0                 │
-    │ new (pure) (static): 100           │ 63         │   974      │  1415       │  1412         │   976            │ 0                 │
-    │ dyn cols: 100                      │ 64         │   970      │  1407       │  1408         │   972            │ 0                 │
-    │ dyn cells: 100                     │ 93         │ 11224      │ 13485       │ 13483         │ 11226            │ 0                 │
-    │ new (incr cells) (dynamic): 100000 │ 78         │  7435      │ 10202       │ 10202         │  7437            │ 0                 │
-    │ new (incr rows) (dynamic): 100000  │ 74         │  2890      │  3637       │  3637         │  2892            │ 0                 │
-    │ new (pure) (dynamic): 100000       │ 63         │   981      │  1425       │  1423         │   983            │ 0                 │
-    │ new (incr cells) (static): 100000  │ 78         │  6931      │  7679       │  7678         │  6933            │ 0                 │
-    │ new (incr rows) (static): 100000   │ 74         │  3396      │  4144       │  4143         │  3398            │ 0                 │
-    │ new (pure) (static): 100000        │ 63         │   981      │  1426       │  1423         │   983            │ 0                 │
-    │ dyn cols: 100000                   │ 64         │   977      │  1418       │  1419         │   979            │ 0                 │
-    │ dyn cells: 100000                  │ 93         │ 11333      │ 13616       │ 13614         │ 11335            │ 0                 │
+    │ new (incr cells) (dynamic): 100    │  89        │  7371      │ 10111       │ 10111         │  7373            │ 0                 │
+    │ new (incr rows) (dynamic): 100     │  85        │  2871      │  3611       │  3611         │  2873            │ 0                 │
+    │ new (pure) (dynamic): 100          │  74        │   981      │  1421       │  1419         │   983            │ 0                 │
+    │ new (incr cells) (static): 100     │  89        │  6872      │  7613       │  7612         │  6874            │ 0                 │
+    │ new (incr rows) (static): 100      │  85        │  3372      │  4113       │  4112         │  3374            │ 0                 │
+    │ new (pure) (static): 100           │  74        │   981      │  1422       │  1419         │   983            │ 0                 │
+    │ dyn cols: 100                      │  75        │   977      │  1414       │  1415         │   979            │ 0                 │
+    │ dyn cells: 100                     │ 104        │ 11231      │ 13492       │ 13490         │ 11233            │ 0                 │
+    │ new (incr cells) (dynamic): 100000 │  89        │  7442      │ 10209       │ 10209         │  7444            │ 0                 │
+    │ new (incr rows) (dynamic): 100000  │  85        │  2897      │  3644       │  3644         │  2899            │ 0                 │
+    │ new (pure) (dynamic): 100000       │  74        │   988      │  1432       │  1430         │   990            │ 0                 │
+    │ new (incr cells) (static): 100000  │  89        │  6938      │  7686       │  7685         │  6940            │ 0                 │
+    │ new (incr rows) (static): 100000   │  85        │  3403      │  4151       │  4150         │  3405            │ 0                 │
+    │ new (pure) (static): 100000        │  74        │   988      │  1433       │  1430         │   990            │ 0                 │
+    │ dyn cols: 100000                   │  75        │   984      │  1425       │  1426         │   986            │ 0                 │
+    │ dyn cells: 100000                  │ 104        │ 11340      │ 13623       │ 13621         │ 11342            │ 0                 │
     └────────────────────────────────────┴────────────┴────────────┴─────────────┴───────────────┴──────────────────┴───────────────────┘
 
     ======= Startup Incr Annotated Node Counts =======
@@ -138,107 +138,107 @@ let%expect_test "" =
     │                                           │ new (incr cells)    │ new (incr rows)     │ new (pure)          │ new (incr cells)    │ new (incr rows)     │ new (pure) (static) │ dyn cols │ dyn cells │
     │                                           │ (dynamic)           │ (dynamic)           │ (dynamic)           │ (static)            │ (static)            │                     │          │           │
     ├───────────────────────────────────────────┼─────────────────────┼─────────────────────┼─────────────────────┼─────────────────────┼─────────────────────┼─────────────────────┼──────────┼───────────┤
-    │ Focus by key (key not present) and        │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Focus by key (key not present) and        │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ unfocus in 10 element map                 │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key not present) and        │ 7364                │ 2864                │ 974                 │ 6865                │ 3365                │ 974                 │ 970      │ 11224     │
+    │ Focus by key (key not present) and        │ 7371                │ 2871                │ 981                 │ 6872                │ 3372                │ 981                 │ 977      │ 11231     │
     │ unfocus in 100 element map                │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key not present) and        │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key not present) and        │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ unfocus in 101 element map                │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key not present) and        │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key not present) and        │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ unfocus in 1000 element map               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key not present) and        │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key not present) and        │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ unfocus in 10000 element map              │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key present) and unfocus    │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Focus by key (key present) and unfocus    │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ in 10 element map                         │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key present) and unfocus    │ 7364                │ 2864                │ 974                 │ 6865                │ 3365                │ 974                 │ 970      │ 11224     │
+    │ Focus by key (key present) and unfocus    │ 7371                │ 2871                │ 981                 │ 6872                │ 3372                │ 981                 │ 977      │ 11231     │
     │ in 100 element map                        │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key present) and unfocus    │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key present) and unfocus    │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ in 101 element map                        │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key present) and unfocus    │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key present) and unfocus    │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ in 1000 element map                       │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus by key (key present) and unfocus    │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus by key (key present) and unfocus    │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ in 10000 element map                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus up and down in 10 element map       │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
-    │ Focus up and down in 100 element map      │ 7364                │ 2864                │ 974                 │ 6865                │ 3365                │ 974                 │ 970      │ 11224     │
-    │ Focus up and down in 101 element map      │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Focus up and down in 1000 element map     │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Focus up and down in 10000 element map    │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Focus left and right in a map with 10     │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Focus up and down in 10 element map       │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
+    │ Focus up and down in 100 element map      │ 7371                │ 2871                │ 981                 │ 6872                │ 3372                │ 981                 │ 977      │ 11231     │
+    │ Focus up and down in 101 element map      │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Focus up and down in 1000 element map     │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Focus up and down in 10000 element map    │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Focus left and right in a map with 10     │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ rows                                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus left and right in a map with 100    │ 7364                │ 2864                │ 974                 │ 6865                │ 3365                │ 974                 │ 970      │ 11224     │
+    │ Focus left and right in a map with 100    │ 7371                │ 2871                │ 981                 │ 6872                │ 3372                │ 981                 │ 977      │ 11231     │
     │ rows                                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus left and right in a map with 101    │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus left and right in a map with 101    │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ rows                                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus left and right in a map with 1000   │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus left and right in a map with 1000   │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ rows                                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Focus left and right in a map with 10000  │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
+    │ Focus left and right in a map with 10000  │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
     │ rows                                      │                     │                     │                     │                     │                     │                     │          │           │
-    │ Page up and down in 10 element map        │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
-    │ Page up and down in 100 element map       │ 7364                │ 2864                │ 974                 │ 6865                │ 3365                │ 974                 │ 970      │ 11224     │
-    │ Page up and down in 101 element map       │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Page up and down in 1000 element map      │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Page up and down in 10000 element map     │ 7435                │ 2890                │ 981                 │ 6931                │ 3396                │ 981                 │ 977      │ 11333     │
-    │ Scroll 1-wide window from 0 to 9 and      │  334                │  289                │ 280                 │  330                │  295                │ 280                 │ 276      │   432     │
+    │ Page up and down in 10 element map        │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
+    │ Page up and down in 100 element map       │ 7371                │ 2871                │ 981                 │ 6872                │ 3372                │ 981                 │ 977      │ 11231     │
+    │ Page up and down in 101 element map       │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Page up and down in 1000 element map      │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Page up and down in 10000 element map     │ 7442                │ 2897                │ 988                 │ 6938                │ 3403                │ 988                 │ 984      │ 11340     │
+    │ Scroll 1-wide window from 0 to 9 and      │  340                │  295                │ 286                 │  336                │  301                │ 286                 │ 282      │   438     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  973                │  523                │ 343                 │  924                │  574                │ 343                 │ 339      │  1413     │
+    │ Scroll 10-wide window from 0 to 9 and     │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 1-wide window from 0 to 9 and      │  334                │  289                │ 280                 │  330                │  295                │ 280                 │ 276      │   432     │
+    │ Scroll 1-wide window from 0 to 9 and      │  340                │  295                │ 286                 │  336                │  301                │ 286                 │ 282      │   438     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  973                │  523                │ 343                 │  924                │  574                │ 343                 │ 339      │  1413     │
+    │ Scroll 10-wide window from 0 to 9 and     │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 100-wide window from 0 to 9 and    │ 7363                │ 2863                │ 973                 │ 6864                │ 3364                │ 973                 │ 969      │ 11223     │
+    │ Scroll 100-wide window from 0 to 9 and    │ 7369                │ 2869                │ 979                 │ 6870                │ 3370                │ 979                 │ 975      │ 11229     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 100        │  973                │  523                │ 343                 │  924                │  574                │ 343                 │ 339      │  1413     │
+    │ Apply 4 filters and clear with 100        │  980                │  530                │ 350                 │  931                │  581                │ 350                 │ 346      │  1420     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 101        │  973                │  523                │ 343                 │  924                │  574                │ 343                 │ 339      │  1413     │
+    │ Apply 4 filters and clear with 101        │  980                │  530                │ 350                 │  931                │  581                │ 350                 │ 346      │  1420     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │  973                │  523                │ 343                 │  924                │  574                │ 343                 │ 339      │  1413     │
+    │ Apply 4 filters and clear with 1000       │  980                │  530                │ 350                 │  931                │  581                │ 350                 │ 346      │  1420     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │ 3813                │ 1563                │ 623                 │ 3564                │ 1814                │ 623                 │ 619      │  5773     │
+    │ Apply 4 filters and clear with 1000       │ 3820                │ 1570                │ 630                 │ 3571                │ 1821                │ 630                 │ 626      │  5780     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 3813                │ 1563                │ 623                 │ 3564                │ 1814                │ 623                 │ 619      │  5773     │
+    │ Apply 4 filters and clear with 10000      │ 3820                │ 1570                │ 630                 │ 3571                │ 1821                │ 630                 │ 626      │  5780     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 7363                │ 2863                │ 973                 │ 6864                │ 3364                │ 973                 │ 969      │ 11223     │
+    │ Apply 4 filters and clear with 10000      │ 7370                │ 2870                │ 980                 │ 6871                │ 3371                │ 980                 │ 976      │ 11230     │
     │ element map using 100 window              │                     │                     │                     │                     │                     │                     │          │           │
-    │ Invert ordering of 10 element map         │  975                │  525                │ 345                 │  926                │  576                │ 345                 │ 341      │  1415     │
-    │ Invert ordering of 100 element map        │ 7365                │ 2865                │ 975                 │ 6866                │ 3366                │ 975                 │ 971      │ 11225     │
-    │ Invert ordering of 101 element map        │ 7436                │ 2891                │ 982                 │ 6932                │ 3397                │ 982                 │ 978      │ 11334     │
-    │ Invert ordering of 1000 element map       │ 7436                │ 2891                │ 982                 │ 6932                │ 3397                │ 982                 │ 978      │ 11334     │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Invert ordering of 10 element map         │  982                │  532                │ 352                 │  933                │  583                │ 352                 │ 348      │  1422     │
+    │ Invert ordering of 100 element map        │ 7372                │ 2872                │ 982                 │ 6873                │ 3373                │ 982                 │ 978      │ 11232     │
+    │ Invert ordering of 101 element map        │ 7443                │ 2898                │ 989                 │ 6939                │ 3404                │ 989                 │ 985      │ 11341     │
+    │ Invert ordering of 1000 element map       │ 7443                │ 2898                │ 989                 │ 6939                │ 3404                │ 989                 │ 985      │ 11341     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 10 rows and a window of 10, then     │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 100 rows and a window of 10, then    │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 10000 rows and a window of 10, then  │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 10 rows and a window of 10, then     │                     │                     │                     │                     │                     │                     │          │           │
     │ change all cells in it.                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 100 rows and a window of 10, then    │                     │                     │                     │                     │                     │                     │          │           │
     │ change all cells in it.                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Randomly select a row out of a table      │  974                │  524                │ 344                 │  925                │  575                │ 344                 │ 340      │  1414     │
+    │ Randomly select a row out of a table      │  981                │  531                │ 351                 │  932                │  582                │ 351                 │ 347      │  1421     │
     │ with 10000 rows and a window of 10, then  │                     │                     │                     │                     │                     │                     │          │           │
     │ change all cells in it.                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 10        │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 1 items in a 10        │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 10        │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 5 items in a 10        │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 11        │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 1 items in a 11        │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 11        │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 5 items in a 11        │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 100       │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 1 items in a 100       │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 100       │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 5 items in a 100       │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 1000      │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 1 items in a 1000      │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 1000      │  972                │  522                │ 342                 │  923                │  573                │ 342                 │ 338      │  1412     │
+    │ Perform 10 sets of 5 items in a 1000      │  979                │  529                │ 349                 │  930                │  580                │ 349                 │ 345      │  1419     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 10 items in a 1000     │ 7362                │ 2862                │ 972                 │ 6863                │ 3363                │ 972                 │ 968      │ 11222     │
+    │ Perform 10 sets of 10 items in a 1000     │ 7369                │ 2869                │ 979                 │ 6870                │ 3370                │ 979                 │ 975      │ 11229     │
     │ element map with 100-wide window          │                     │                     │                     │                     │                     │                     │          │           │
     └───────────────────────────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴──────────┴───────────┘
 
@@ -287,32 +287,32 @@ let%expect_test "" =
     │ Page up and down in 101 element map       │     0               │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ Page up and down in 1000 element map      │     0               │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ Page up and down in 10000 element map     │     0               │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
-    │ Scroll 1-wide window from 0 to 9 and      │  1292               │  252                │  28                 │   892               │  332                │  28                 │  28      │  1180     │
+    │ Scroll 1-wide window from 0 to 9 and      │  1287               │  247                │  23                 │   887               │  327                │  23                 │  23      │  1175     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  1596               │  556                │ 204                 │  1196               │  636                │ 204                 │ 204      │  2124     │
+    │ Scroll 10-wide window from 0 to 9 and     │  1591               │  551                │ 199                 │  1191               │  631                │ 199                 │ 199      │  2119     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 1-wide window from 0 to 9 and      │  1292               │  252                │  28                 │   892               │  332                │  28                 │  28      │  1180     │
+    │ Scroll 1-wide window from 0 to 9 and      │  1287               │  247                │  23                 │   887               │  327                │  23                 │  23      │  1175     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  1596               │  556                │ 204                 │  1196               │  636                │ 204                 │ 204      │  2124     │
+    │ Scroll 10-wide window from 0 to 9 and     │  1591               │  551                │ 199                 │  1191               │  631                │ 199                 │ 199      │  2119     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 100-wide window from 0 to 9 and    │  1596               │  556                │ 204                 │  1196               │  636                │ 204                 │ 204      │  2124     │
+    │ Scroll 100-wide window from 0 to 9 and    │  1591               │  551                │ 199                 │  1191               │  631                │ 199                 │ 199      │  2119     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 100        │  2995               │  655                │ 151                 │  2095               │  835                │ 151                 │ 151      │  2743     │
+    │ Apply 4 filters and clear with 100        │  3019               │  679                │ 175                 │  2119               │  859                │ 175                 │ 175      │  2767     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 101        │  2995               │  655                │ 151                 │  2095               │  835                │ 151                 │ 151      │  2743     │
+    │ Apply 4 filters and clear with 101        │  3019               │  679                │ 175                 │  2119               │  859                │ 175                 │ 175      │  2767     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │  2995               │  655                │ 151                 │  2095               │  835                │ 151                 │ 151      │  2743     │
+    │ Apply 4 filters and clear with 1000       │  3019               │  679                │ 175                 │  2119               │  859                │ 175                 │ 175      │  2767     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │ 15635               │ 2895                │ 151                 │ 10735               │ 3875                │ 151                 │ 151      │ 14263     │
+    │ Apply 4 filters and clear with 1000       │ 15659               │ 2919                │ 175                 │ 10759               │ 3899                │ 175                 │ 175      │ 14287     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 15635               │ 2895                │ 151                 │ 10735               │ 3875                │ 151                 │ 151      │ 14263     │
+    │ Apply 4 filters and clear with 10000      │ 15659               │ 2919                │ 175                 │ 10759               │ 3899                │ 175                 │ 175      │ 14287     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 31435               │ 5695                │ 151                 │ 21535               │ 7675                │ 151                 │ 151      │ 28663     │
+    │ Apply 4 filters and clear with 10000      │ 31459               │ 5719                │ 175                 │ 21559               │ 7699                │ 175                 │ 175      │ 28687     │
     │ element map using 100 window              │                     │                     │                     │                     │                     │                     │          │           │
-    │ Invert ordering of 10 element map         │    34               │   34                │  34                 │    34               │   34                │  34                 │  34      │    34     │
-    │ Invert ordering of 100 element map        │    34               │   34                │  34                 │    34               │   34                │  34                 │  34      │    34     │
-    │ Invert ordering of 101 element map        │    34               │   34                │  34                 │    34               │   34                │  34                 │  34      │    34     │
-    │ Invert ordering of 1000 element map       │    34               │   34                │  34                 │    34               │   34                │  34                 │  34      │    34     │
+    │ Invert ordering of 10 element map         │    40               │   40                │  40                 │    40               │   40                │  40                 │  40      │    40     │
+    │ Invert ordering of 100 element map        │    40               │   40                │  40                 │    40               │   40                │  40                 │  40      │    40     │
+    │ Invert ordering of 101 element map        │    40               │   40                │  40                 │    40               │   40                │  40                 │  40      │    40     │
+    │ Invert ordering of 1000 element map       │    40               │   40                │  40                 │    40               │   40                │  40                 │  40      │    40     │
     │ Randomly select a row out of a table      │     0               │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ with 10 rows and a window of 10, then     │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │
@@ -396,32 +396,32 @@ let%expect_test "" =
     │ Page up and down in 101 element map       │   160               │   160               │  162                │   160               │   160               │  162                │  160     │   160     │
     │ Page up and down in 1000 element map      │   160               │   160               │  162                │   160               │   160               │  162                │  160     │   160     │
     │ Page up and down in 10000 element map     │   160               │   160               │  162                │   160               │   160               │  162                │  160     │   160     │
-    │ Scroll 1-wide window from 0 to 9 and      │  2341               │  1621               │ 1366                │  2261               │  1701               │ 1366                │ 1366     │  3631     │
+    │ Scroll 1-wide window from 0 to 9 and      │  2288               │  1568               │ 1313                │  2208               │  1648               │ 1313                │ 1313     │  3578     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  2357               │  1637               │ 1382                │  2277               │  1717               │ 1382                │ 1382     │  3647     │
+    │ Scroll 10-wide window from 0 to 9 and     │  2304               │  1584               │ 1329                │  2224               │  1664               │ 1329                │ 1329     │  3594     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 1-wide window from 0 to 9 and      │  2341               │  1621               │ 1366                │  2261               │  1701               │ 1366                │ 1366     │  3631     │
+    │ Scroll 1-wide window from 0 to 9 and      │  2288               │  1568               │ 1313                │  2208               │  1648               │ 1313                │ 1313     │  3578     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  2357               │  1637               │ 1382                │  2277               │  1717               │ 1382                │ 1382     │  3647     │
+    │ Scroll 10-wide window from 0 to 9 and     │  2304               │  1584               │ 1329                │  2224               │  1664               │ 1329                │ 1329     │  3594     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 100-wide window from 0 to 9 and    │  2357               │  1637               │ 1382                │  2277               │  1717               │ 1382                │ 1382     │  3647     │
+    │ Scroll 100-wide window from 0 to 9 and    │  2304               │  1584               │ 1329                │  2224               │  1664               │ 1329                │ 1329     │  3594     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 100        │  2972               │  1352               │  682                │  2792               │  1532               │  682                │  682     │  4602     │
+    │ Apply 4 filters and clear with 100        │  3000               │  1380               │  710                │  2820               │  1560               │  710                │  710     │  4630     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 101        │  2972               │  1352               │  682                │  2792               │  1532               │  682                │  682     │  4602     │
+    │ Apply 4 filters and clear with 101        │  3000               │  1380               │  710                │  2820               │  1560               │  710                │  710     │  4630     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │  2972               │  1352               │  682                │  2792               │  1532               │  682                │  682     │  4602     │
+    │ Apply 4 filters and clear with 1000       │  3000               │  1380               │  710                │  2820               │  1560               │  710                │  710     │  4630     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │ 14172               │  5352               │ 1642                │ 13192               │  6332               │ 1642                │ 1642     │ 21882     │
+    │ Apply 4 filters and clear with 1000       │ 14200               │  5380               │ 1670                │ 13220               │  6360               │ 1670                │ 1670     │ 21910     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 14172               │  5352               │ 1642                │ 13192               │  6332               │ 1642                │ 1642     │ 21882     │
+    │ Apply 4 filters and clear with 10000      │ 14200               │  5380               │ 1670                │ 13220               │  6360               │ 1670                │ 1670     │ 21910     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 28172               │ 10352               │ 2842                │ 26192               │ 12332               │ 2842                │ 2842     │ 43482     │
+    │ Apply 4 filters and clear with 10000      │ 28200               │ 10380               │ 2870                │ 26220               │ 12360               │ 2870                │ 2870     │ 43510     │
     │ element map using 100 window              │                     │                     │                     │                     │                     │                     │          │           │
-    │ Invert ordering of 10 element map         │   122               │   122               │  141                │   122               │   122               │  141                │  141     │   396     │
-    │ Invert ordering of 100 element map        │   482               │   482               │  591                │   482               │   482               │  591                │  591     │  3006     │
-    │ Invert ordering of 101 element map        │   486               │   486               │  596                │   486               │   486               │  596                │  596     │  3035     │
-    │ Invert ordering of 1000 element map       │   486               │   486               │  596                │   486               │   486               │  596                │  596     │  3035     │
+    │ Invert ordering of 10 element map         │   129               │   129               │  148                │   129               │   129               │  148                │  148     │   403     │
+    │ Invert ordering of 100 element map        │   489               │   489               │  598                │   489               │   489               │  598                │  598     │  3013     │
+    │ Invert ordering of 101 element map        │   493               │   493               │  603                │   493               │   493               │  603                │  603     │  3042     │
+    │ Invert ordering of 1000 element map       │   493               │   493               │  603                │   493               │   493               │  603                │  603     │  3042     │
     │ Randomly select a row out of a table      │     0               │     0               │    0                │     0               │     0               │    0                │    0     │     0     │
     │ with 10 rows and a window of 10, then     │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │
@@ -440,23 +440,23 @@ let%expect_test "" =
     │ Randomly select a row out of a table      │     0               │     0               │    0                │     0               │     0               │    0                │    0     │     0     │
     │ with 10000 rows and a window of 10, then  │                     │                     │                     │                     │                     │                     │          │           │
     │ change all cells in it.                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 10        │  1099               │  1004               │  823                │  1194               │  1099               │  823                │  823     │  2223     │
+    │ Perform 10 sets of 1 items in a 10        │  1079               │   984               │  803                │  1174               │  1079               │  803                │  803     │  2203     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 10        │  1855               │  1580               │ 1003                │  2130               │  1855               │ 1003                │ 1003     │  4347     │
+    │ Perform 10 sets of 5 items in a 10        │  1835               │  1560               │  983                │  2110               │  1835               │  983                │  983     │  4327     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 11        │  1099               │  1004               │  823                │  1194               │  1099               │  823                │  823     │  2223     │
+    │ Perform 10 sets of 1 items in a 11        │  1079               │   984               │  803                │  1174               │  1079               │  803                │  803     │  2203     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 11        │  1855               │  1580               │ 1003                │  2130               │  1855               │ 1003                │ 1003     │  4347     │
+    │ Perform 10 sets of 5 items in a 11        │  1835               │  1560               │  983                │  2110               │  1835               │  983                │  983     │  4327     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 100       │  1099               │  1004               │  823                │  1194               │  1099               │  823                │  823     │  2223     │
+    │ Perform 10 sets of 1 items in a 100       │  1079               │   984               │  803                │  1174               │  1079               │  803                │  803     │  2203     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 100       │  1855               │  1580               │ 1003                │  2130               │  1855               │ 1003                │ 1003     │  4347     │
+    │ Perform 10 sets of 5 items in a 100       │  1835               │  1560               │  983                │  2110               │  1835               │  983                │  983     │  4327     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 1 items in a 1000      │  1099               │  1004               │  823                │  1194               │  1099               │  823                │  823     │  2223     │
+    │ Perform 10 sets of 1 items in a 1000      │  1079               │   984               │  803                │  1174               │  1079               │  803                │  803     │  2203     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 5 items in a 1000      │  1855               │  1580               │ 1003                │  2130               │  1855               │ 1003                │ 1003     │  4347     │
+    │ Perform 10 sets of 5 items in a 1000      │  1835               │  1560               │  983                │  2110               │  1835               │  983                │  983     │  4327     │
     │ element map with 10-wide window           │                     │                     │                     │                     │                     │                     │          │           │
-    │ Perform 10 sets of 10 items in a 1000     │  4690               │  3740               │ 1678                │  5640               │  4690               │ 1678                │ 1678     │ 12312     │
+    │ Perform 10 sets of 10 items in a 1000     │  4670               │  3720               │ 1658                │  5620               │  4670               │ 1658                │ 1658     │ 12292     │
     │ element map with 100-wide window          │                     │                     │                     │                     │                     │                     │          │           │
     └───────────────────────────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┴──────────┴───────────┘
 
@@ -505,32 +505,32 @@ let%expect_test "" =
     │ Page up and down in 101 element map       │    0                │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ Page up and down in 1000 element map      │    0                │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ Page up and down in 10000 element map     │    0                │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
-    │ Scroll 1-wide window from 0 to 9 and      │  532                │  452                │ 129                 │  1092               │  532                │ 129                 │ 129      │  1875     │
+    │ Scroll 1-wide window from 0 to 9 and      │  528                │  448                │ 125                 │  1088               │  528                │ 125                 │ 125      │  1871     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  242                │  242                │ 136                 │   242               │  242                │ 136                 │ 136      │   772     │
+    │ Scroll 10-wide window from 0 to 9 and     │  238                │  238                │ 132                 │   238               │  238                │ 132                 │ 132      │   768     │
     │ back in 100 element map                   │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 1-wide window from 0 to 9 and      │  534                │  454                │ 130                 │  1094               │  534                │ 130                 │ 130      │  1882     │
+    │ Scroll 1-wide window from 0 to 9 and      │  530                │  450                │ 126                 │  1090               │  530                │ 126                 │ 126      │  1878     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 10-wide window from 0 to 9 and     │  244                │  244                │ 137                 │   244               │  244                │ 137                 │ 137      │   779     │
+    │ Scroll 10-wide window from 0 to 9 and     │  240                │  240                │ 133                 │   240               │  240                │ 133                 │ 133      │   775     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Scroll 100-wide window from 0 to 9 and    │   64                │   64                │  47                 │    64               │   64                │  47                 │  47      │   149     │
+    │ Scroll 100-wide window from 0 to 9 and    │   60                │   60                │  43                 │    60               │   60                │  43                 │  43      │   145     │
     │ back in 1000 element map                  │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 100        │  833                │  653                │ 149                 │  2093               │  833                │ 149                 │ 149      │  2741     │
+    │ Apply 4 filters and clear with 100        │  857                │  677                │ 173                 │  2117               │  857                │ 173                 │ 173      │  2765     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 101        │  833                │  653                │ 149                 │  2093               │  833                │ 149                 │ 149      │  2741     │
+    │ Apply 4 filters and clear with 101        │  857                │  677                │ 173                 │  2117               │  857                │ 173                 │ 173      │  2765     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │  833                │  653                │ 149                 │  2093               │  833                │ 149                 │ 149      │  2741     │
+    │ Apply 4 filters and clear with 1000       │  857                │  677                │ 173                 │  2117               │  857                │ 173                 │ 173      │  2765     │
     │ element map using 10 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 1000       │ 3873                │ 2893                │ 149                 │ 10733               │ 3873                │ 149                 │ 149      │ 14261     │
+    │ Apply 4 filters and clear with 1000       │ 3897                │ 2917                │ 173                 │ 10757               │ 3897                │ 173                 │ 173      │ 14285     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 3873                │ 2893                │ 149                 │ 10733               │ 3873                │ 149                 │ 149      │ 14261     │
+    │ Apply 4 filters and clear with 10000      │ 3897                │ 2917                │ 173                 │ 10757               │ 3897                │ 173                 │ 173      │ 14285     │
     │ element map using 50 window               │                     │                     │                     │                     │                     │                     │          │           │
-    │ Apply 4 filters and clear with 10000      │ 7673                │ 5693                │ 149                 │ 21533               │ 7673                │ 149                 │ 149      │ 28661     │
+    │ Apply 4 filters and clear with 10000      │ 7697                │ 5717                │ 173                 │ 21557               │ 7697                │ 173                 │ 173      │ 28685     │
     │ element map using 100 window              │                     │                     │                     │                     │                     │                     │          │           │
-    │ Invert ordering of 10 element map         │   32                │   32                │  32                 │    32               │   32                │  32                 │  32      │    32     │
-    │ Invert ordering of 100 element map        │   32                │   32                │  32                 │    32               │   32                │  32                 │  32      │    32     │
-    │ Invert ordering of 101 element map        │   32                │   32                │  32                 │    32               │   32                │  32                 │  32      │    32     │
-    │ Invert ordering of 1000 element map       │   32                │   32                │  32                 │    32               │   32                │  32                 │  32      │    32     │
+    │ Invert ordering of 10 element map         │   38                │   38                │  38                 │    38               │   38                │  38                 │  38      │    38     │
+    │ Invert ordering of 100 element map        │   38                │   38                │  38                 │    38               │   38                │  38                 │  38      │    38     │
+    │ Invert ordering of 101 element map        │   38                │   38                │  38                 │    38               │   38                │  38                 │  38      │    38     │
+    │ Invert ordering of 1000 element map       │   38                │   38                │  38                 │    38               │   38                │  38                 │  38      │    38     │
     │ Randomly select a row out of a table      │    0                │    0                │   0                 │     0               │    0                │   0                 │   0      │     0     │
     │ with 10 rows and a window of 10, then     │                     │                     │                     │                     │                     │                     │          │           │
     │ change one cell in it.                    │                     │                     │                     │                     │                     │                     │          │           │

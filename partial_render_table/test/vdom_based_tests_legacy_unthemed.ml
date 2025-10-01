@@ -919,6 +919,7 @@ let%expect_test "table body is not recomputed more often than necessary" =
                ; order = ()
                ; key_range = All_rows
                ; rank_range = All_rows
+               ; widen_range_by = 0, 0
                })
             graph
         in

@@ -16,16 +16,16 @@ let%expect_test ("JavaScript" [@tags "no-wasm"]) =
     ┌─────────────────────────────────────┬──────────────────────────┬───────────────────────────┬─────────────────────────┬─────────────────────────┬──────────────────────────┬────────────────────────┐
     │                                     │ dynamic cells: first col │ dynamic cells: middle col │ dynamic cells: last col │ dynamic cols: first col │ dynamic cols: middle col │ dynamic cols: last col │
     ├─────────────────────────────────────┼──────────────────────────┼───────────────────────────┼─────────────────────────┼─────────────────────────┼──────────────────────────┼────────────────────────┤
-    │ Update col dep 2 times: 10 rows     │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 100 rows    │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 101 rows    │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 1000 rows   │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 10000 rows  │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 10 times: 10 rows    │  550                     │  550                      │  550                    │ 395                     │ 395                      │ 395                    │
-    │ Update col dep 10 times: 100 rows   │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 101 rows   │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 1000 rows  │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 10000 rows │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
+    │ Update col dep 2 times: 10 rows     │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 100 rows    │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 101 rows    │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 1000 rows   │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 10000 rows  │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 10 times: 10 rows    │  556                     │  556                      │  556                    │ 401                     │ 401                      │ 401                    │
+    │ Update col dep 10 times: 100 rows   │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 101 rows   │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 1000 rows  │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 10000 rows │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Created ======
@@ -37,11 +37,11 @@ let%expect_test ("JavaScript" [@tags "no-wasm"]) =
     │ Update col dep 2 times: 101 rows    │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
     │ Update col dep 2 times: 1000 rows   │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
     │ Update col dep 2 times: 10000 rows  │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
-    │ Update col dep 10 times: 10 rows    │  297                     │  297                      │  297                    │ 162                     │ 162                      │ 162                    │
-    │ Update col dep 10 times: 100 rows   │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 101 rows   │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 1000 rows  │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 10000 rows │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
+    │ Update col dep 10 times: 10 rows    │  292                     │  292                      │  292                    │ 157                     │ 157                      │ 157                    │
+    │ Update col dep 10 times: 100 rows   │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 101 rows   │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 1000 rows  │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 10000 rows │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Recomputed ======
@@ -53,11 +53,11 @@ let%expect_test ("JavaScript" [@tags "no-wasm"]) =
     │ Update col dep 2 times: 101 rows    │   42                     │   54                      │   66                    │   57                    │   57                     │   57                   │
     │ Update col dep 2 times: 1000 rows   │   42                     │   54                      │   66                    │   57                    │   57                     │   57                   │
     │ Update col dep 2 times: 10000 rows  │   42                     │   54                      │   66                    │   57                    │   57                     │   57                   │
-    │ Update col dep 10 times: 10 rows    │ 1399                     │ 1506                      │ 1614                    │ 1078                    │ 1078                     │ 1078                   │
-    │ Update col dep 10 times: 100 rows   │ 7040                     │ 7148                      │ 7256                    │ 3806                    │ 3806                     │ 3806                   │
-    │ Update col dep 10 times: 101 rows   │ 7040                     │ 7148                      │ 7256                    │ 3806                    │ 3806                     │ 3806                   │
-    │ Update col dep 10 times: 1000 rows  │ 7040                     │ 7148                      │ 7256                    │ 3806                    │ 3806                     │ 3806                   │
-    │ Update col dep 10 times: 10000 rows │ 7040                     │ 7148                      │ 7256                    │ 3806                    │ 3806                     │ 3806                   │
+    │ Update col dep 10 times: 10 rows    │ 1394                     │ 1501                      │ 1609                    │ 1073                    │ 1073                     │ 1073                   │
+    │ Update col dep 10 times: 100 rows   │ 7035                     │ 7143                      │ 7251                    │ 3801                    │ 3801                     │ 3801                   │
+    │ Update col dep 10 times: 101 rows   │ 7035                     │ 7143                      │ 7251                    │ 3801                    │ 3801                     │ 3801                   │
+    │ Update col dep 10 times: 1000 rows  │ 7035                     │ 7143                      │ 7251                    │ 3801                    │ 3801                     │ 3801                   │
+    │ Update col dep 10 times: 10000 rows │ 7035                     │ 7143                      │ 7251                    │ 3801                    │ 3801                     │ 3801                   │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Invalidated ======
@@ -69,11 +69,11 @@ let%expect_test ("JavaScript" [@tags "no-wasm"]) =
     │ Update col dep 2 times: 101 rows    │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
     │ Update col dep 2 times: 1000 rows   │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
     │ Update col dep 2 times: 10000 rows  │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
-    │ Update col dep 10 times: 10 rows    │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 100 rows   │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 101 rows   │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 1000 rows  │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 10000 rows │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
+    │ Update col dep 10 times: 10 rows    │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 100 rows   │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 101 rows   │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 1000 rows  │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 10000 rows │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
     |}]
 ;;
@@ -89,16 +89,16 @@ let%expect_test ("WASM" [@tags "wasm-only"]) =
     ┌─────────────────────────────────────┬──────────────────────────┬───────────────────────────┬─────────────────────────┬─────────────────────────┬──────────────────────────┬────────────────────────┐
     │                                     │ dynamic cells: first col │ dynamic cells: middle col │ dynamic cells: last col │ dynamic cols: first col │ dynamic cols: middle col │ dynamic cols: last col │
     ├─────────────────────────────────────┼──────────────────────────┼───────────────────────────┼─────────────────────────┼─────────────────────────┼──────────────────────────┼────────────────────────┤
-    │ Update col dep 2 times: 10 rows     │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 100 rows    │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 101 rows    │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 1000 rows   │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 2 times: 10000 rows  │  363                     │  363                      │  363                    │ 316                     │ 316                      │ 316                    │
-    │ Update col dep 10 times: 10 rows    │  550                     │  550                      │  550                    │ 395                     │ 395                      │ 395                    │
-    │ Update col dep 10 times: 100 rows   │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 101 rows   │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 1000 rows  │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
-    │ Update col dep 10 times: 10000 rows │ 1852                     │ 1852                      │ 1852                    │ 953                     │ 953                      │ 953                    │
+    │ Update col dep 2 times: 10 rows     │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 100 rows    │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 101 rows    │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 1000 rows   │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 2 times: 10000 rows  │  370                     │  370                      │  370                    │ 323                     │ 323                      │ 323                    │
+    │ Update col dep 10 times: 10 rows    │  556                     │  556                      │  556                    │ 401                     │ 401                      │ 401                    │
+    │ Update col dep 10 times: 100 rows   │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 101 rows   │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 1000 rows  │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
+    │ Update col dep 10 times: 10000 rows │ 1858                     │ 1858                      │ 1858                    │ 959                     │ 959                      │ 959                    │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Created ======
@@ -110,11 +110,11 @@ let%expect_test ("WASM" [@tags "wasm-only"]) =
     │ Update col dep 2 times: 101 rows    │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
     │ Update col dep 2 times: 1000 rows   │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
     │ Update col dep 2 times: 10000 rows  │    0                     │    0                      │    0                    │   1                     │   1                      │   1                    │
-    │ Update col dep 10 times: 10 rows    │  297                     │  297                      │  297                    │ 162                     │ 162                      │ 162                    │
-    │ Update col dep 10 times: 100 rows   │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 101 rows   │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 1000 rows  │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
-    │ Update col dep 10 times: 10000 rows │ 2095                     │ 2095                      │ 2095                    │ 968                     │ 968                      │ 968                    │
+    │ Update col dep 10 times: 10 rows    │  292                     │  292                      │  292                    │ 157                     │ 157                      │ 157                    │
+    │ Update col dep 10 times: 100 rows   │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 101 rows   │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 1000 rows  │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
+    │ Update col dep 10 times: 10000 rows │ 2090                     │ 2090                      │ 2090                    │ 963                     │ 963                      │ 963                    │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Recomputed ======
@@ -126,11 +126,11 @@ let%expect_test ("WASM" [@tags "wasm-only"]) =
     │ Update col dep 2 times: 101 rows    │   42                     │   54                      │   66                    │   58                    │   58                     │   58                   │
     │ Update col dep 2 times: 1000 rows   │   42                     │   54                      │   66                    │   58                    │   58                     │   58                   │
     │ Update col dep 2 times: 10000 rows  │   42                     │   54                      │   66                    │   58                    │   58                     │   58                   │
-    │ Update col dep 10 times: 10 rows    │ 1399                     │ 1506                      │ 1614                    │ 1087                    │ 1087                     │ 1087                   │
-    │ Update col dep 10 times: 100 rows   │ 7040                     │ 7148                      │ 7256                    │ 3815                    │ 3815                     │ 3815                   │
-    │ Update col dep 10 times: 101 rows   │ 7040                     │ 7148                      │ 7256                    │ 3815                    │ 3815                     │ 3815                   │
-    │ Update col dep 10 times: 1000 rows  │ 7040                     │ 7148                      │ 7256                    │ 3815                    │ 3815                     │ 3815                   │
-    │ Update col dep 10 times: 10000 rows │ 7040                     │ 7148                      │ 7256                    │ 3815                    │ 3815                     │ 3815                   │
+    │ Update col dep 10 times: 10 rows    │ 1394                     │ 1501                      │ 1609                    │ 1082                    │ 1082                     │ 1082                   │
+    │ Update col dep 10 times: 100 rows   │ 7035                     │ 7143                      │ 7251                    │ 3810                    │ 3810                     │ 3810                   │
+    │ Update col dep 10 times: 101 rows   │ 7035                     │ 7143                      │ 7251                    │ 3810                    │ 3810                     │ 3810                   │
+    │ Update col dep 10 times: 1000 rows  │ 7035                     │ 7143                      │ 7251                    │ 3810                    │ 3810                     │ 3810                   │
+    │ Update col dep 10 times: 10000 rows │ 7035                     │ 7143                      │ 7251                    │ 3810                    │ 3810                     │ 3810                   │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
 
     ====== Nodes Invalidated ======
@@ -142,11 +142,11 @@ let%expect_test ("WASM" [@tags "wasm-only"]) =
     │ Update col dep 2 times: 101 rows    │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
     │ Update col dep 2 times: 1000 rows   │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
     │ Update col dep 2 times: 10000 rows  │  0                       │  0                        │  0                      │  1                      │  1                       │  1                     │
-    │ Update col dep 10 times: 10 rows    │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 100 rows   │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 101 rows   │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 1000 rows  │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
-    │ Update col dep 10 times: 10000 rows │ 39                       │ 39                        │ 39                      │ 48                      │ 48                       │ 48                     │
+    │ Update col dep 10 times: 10 rows    │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 100 rows   │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 101 rows   │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 1000 rows  │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
+    │ Update col dep 10 times: 10000 rows │ 35                       │ 35                        │ 35                      │ 44                      │ 44                       │ 44                     │
     └─────────────────────────────────────┴──────────────────────────┴───────────────────────────┴─────────────────────────┴─────────────────────────┴──────────────────────────┴────────────────────────┘
     |}]
 ;;

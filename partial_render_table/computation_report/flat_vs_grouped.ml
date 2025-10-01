@@ -107,8 +107,8 @@ let%expect_test "Flat -> Grouped" =
     │ Apply 4 filters and clear with 100 element map using 10 window                           │ +158 (11%)          │ -15 (4%)               │ .                  │ .                         │
     │ Apply 4 filters and clear with 101 element map using 10 window                           │ +158 (11%)          │ -15 (4%)               │ .                  │ .                         │
     │ Apply 4 filters and clear with 1000 element map using 10 window                          │ +158 (11%)          │ -15 (4%)               │ .                  │ .                         │
-    │ Apply 4 filters and clear with 1000 element map using 50 window                          │ +838 (15%)          │ -15 (2%)               │ .                  │ .                         │
-    │ Apply 4 filters and clear with 10000 element map using 50 window                         │ +838 (15%)          │ -15 (2%)               │ .                  │ .                         │
+    │ Apply 4 filters and clear with 1000 element map using 50 window                          │ +838 (14%)          │ -15 (2%)               │ .                  │ .                         │
+    │ Apply 4 filters and clear with 10000 element map using 50 window                         │ +838 (14%)          │ -15 (2%)               │ .                  │ .                         │
     │ Apply 4 filters and clear with 10000 element map using 100 window                        │ +1_688 (15%)        │ -15 (1%)               │ .                  │ .                         │
     │ Invert ordering of 10 element map                                                        │ +158 (11%)          │ -15 (4%)               │ .                  │ .                         │
     │ Invert ordering of 100 element map                                                       │ +1_688 (15%)        │ -15 (1%)               │ .                  │ .                         │
@@ -261,13 +261,13 @@ let%expect_test "Flat -> Grouped" =
     │ Randomly select a row out of a table with 10000 rows and a window of 10, then change     │ .                   │ .                      │ .                  │ .                         │
     │ all cells in it.                                                                         │                     │                        │                    │                           │
     │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ +489 (11%)          │ .                      │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ +489 (11%)          │ .                      │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ +489 (11%)          │ .                      │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ +489 (11%)          │ .                      │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window                   │ +1_704 (14%)        │ .                      │ .                  │ .                         │
     └──────────────────────────────────────────────────────────────────────────────────────────┴─────────────────────┴────────────────────────┴────────────────────┴───────────────────────────┘
 
@@ -304,7 +304,7 @@ let%expect_test "Flat -> Grouped" =
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map                            │ +106 (14%)          │ .                      │ .                  │ .                         │
     │ Scroll 1-wide window from 0 to 9 and back in 1000 element map                            │ +292 (16%)          │ .                      │ .                  │ .                         │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map                           │ +107 (14%)          │ .                      │ .                  │ .                         │
-    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map                          │ +17 (11%)           │ .                      │ .                  │ .                         │
+    │ Scroll 100-wide window from 0 to 9 and back in 1000 element map                          │ +17 (12%)           │ .                      │ .                  │ .                         │
     │ Apply 4 filters and clear with 100 element map using 10 window                           │ +432 (16%)          │ .                      │ .                  │ .                         │
     │ Apply 4 filters and clear with 101 element map using 10 window                           │ +432 (16%)          │ .                      │ .                  │ .                         │
     │ Apply 4 filters and clear with 1000 element map using 10 window                          │ +432 (16%)          │ .                      │ .                  │ .                         │

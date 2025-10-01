@@ -55,6 +55,37 @@ val both : ('a, 'view1) t -> ('b, 'view2) t -> ('a * 'b, 'view1 * 'view2) t
     form. *)
 val all : ('a, 'view) t list -> ('a list, 'view list) t
 
+module Heterogeneous_list : sig
+  type 'a t =
+    | [] : unit t
+    | ( :: ) : 'a * 'b t -> ('a * 'b) t
+end
+
+module Form_list : sig
+  type ('a, 'view) form = ('a, 'view) t
+
+  type ('a, 'view) t =
+    | [] : (unit, unit) t
+    | ( :: ) :
+        ('a, 'view) form * ('a_rest, 'view_rest) t
+        -> ('a * 'a_rest, 'view * 'view_rest) t
+end
+
+(** Combines a heterogeneous list of forms into another that produces all values from the
+    inputs in a heterogeneous list.
+
+    Example:
+
+    {[
+      let [ (int : int); (string : string); (float : float) ] =
+        let form = Form.combine [ int_form; string_form; float_form ] in
+        Form.value form |> ok_exn
+      ;;
+    ]} *)
+val combine
+  :  ('a, 'view) Form_list.t
+  -> ('a Heterogeneous_list.t, 'view Heterogeneous_list.t) t
+
 (** Combines a map of forms into another that produces all values from the inputs in map
     form. *)
 val all_map

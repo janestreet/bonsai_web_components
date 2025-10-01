@@ -357,6 +357,7 @@ module Typed = struct
 
     let of_original_components
       ?(encoding_behavior : Uri_parsing.Percent_encoding_behavior.t = Correct)
+      ?trailing_slash_behavior
       (original : Components.t)
       =
       let split_path =
@@ -366,7 +367,7 @@ module Typed = struct
           (match encoding_behavior with
            | Legacy_incorrect ->
              String.split ~on:'/' path |> List.map ~f:parse_unicode_slashes
-           | Correct -> decode_path path)
+           | Correct -> decode_path ?trailing_slash_behavior path)
       in
       { Uri_parsing.Components.path = split_path
       ; query = original.query
@@ -398,6 +399,7 @@ module Typed = struct
 
     let of_non_typed_parser
       ?encoding_behavior
+      ?trailing_slash_behavior
       ~(parse_exn : Original_components.t -> 'a)
       ~(unparse : 'a -> Original_components.t)
       ()
@@ -407,7 +409,10 @@ module Typed = struct
           parse_exn (Components.to_original_components ?encoding_behavior components)
         in
         let unparse result =
-          Components.of_original_components ?encoding_behavior (unparse result)
+          Components.of_original_components
+            ?encoding_behavior
+            ?trailing_slash_behavior
+            (unparse result)
         in
         { Projection.parse_exn; unparse }
       in
@@ -419,6 +424,7 @@ module Typed = struct
     (type a)
     (parser : a Uri_parsing.Versioned_parser.t)
     ?encoding_behavior
+    ?trailing_slash_behavior
     ~(fallback : Exn.t -> Original_components.t -> a)
     ~on_fallback_raises
     ()
@@ -431,7 +437,10 @@ module Typed = struct
     let parse_exn (components : Original_components.t) =
       try
         let typed_components =
-          Components.of_original_components ?encoding_behavior components
+          Components.of_original_components
+            ?encoding_behavior
+            ?trailing_slash_behavior
+            components
         in
         let result : a Uri_parsing.Parse_result.t =
           projection.parse_exn typed_components
@@ -461,12 +470,21 @@ module Typed = struct
     ?(navigation = `Ignore)
     ?on_fallback_raises
     ?encoding_behavior
+    ?trailing_slash_behavior
     (module T : T with type t = a)
     (parser : a Uri_parsing.Versioned_parser.t)
     ~(fallback : Exn.t -> Original_components.t -> a)
     : a url_var
     =
-    let projection = make' parser ?encoding_behavior ~fallback ~on_fallback_raises () in
+    let projection =
+      make'
+        parser
+        ?encoding_behavior
+        ?trailing_slash_behavior
+        ~fallback
+        ~on_fallback_raises
+        ()
+    in
     let module S = struct
       include T
 
@@ -492,10 +510,17 @@ module Typed = struct
     (type a)
     ?on_fallback_raises
     ?encoding_behavior
+    ?trailing_slash_behavior
     (parser : a Uri_parsing.Versioned_parser.t)
     ~(fallback : Exn.t -> Original_components.t -> a)
     =
-    make' parser ?encoding_behavior ~fallback ~on_fallback_raises ()
+    make'
+      parser
+      ?encoding_behavior
+      ?trailing_slash_behavior
+      ~fallback
+      ~on_fallback_raises
+      ()
   ;;
 
   module Value_parser = Uri_parsing.Value_parser

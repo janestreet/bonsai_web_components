@@ -101,6 +101,56 @@ let all forms =
   { value; view; set }
 ;;
 
+module Heterogeneous_list = struct
+  type 'a t =
+    | [] : unit t
+    | ( :: ) : 'a * 'b t -> ('a * 'b) t
+
+  let cons a b = a :: b
+  let empty = []
+end
+
+module Form_list = struct
+  type ('a, 'view) form = ('a, 'view) t
+
+  type ('a, 'view) t =
+    | [] : (unit, unit) t
+    | ( :: ) :
+        ('a, 'view) form * ('a_rest, 'view_rest) t
+        -> ('a * 'a_rest, 'view * 'view_rest) t
+end
+
+let combine forms =
+  let rec get_values : type a b. (a, b) Form_list.t -> a Heterogeneous_list.t Or_error.t
+    = function
+    | [] -> Ok Heterogeneous_list.empty
+    | form :: remaining ->
+      let value = value form in
+      let remaining = get_values remaining in
+      Or_error.both value remaining
+      |> Or_error.map ~f:(fun (value, remaining) ->
+        Heterogeneous_list.cons value remaining)
+  in
+  let rec get_views : type a b. (a, b) Form_list.t -> b Heterogeneous_list.t = function
+    | [] -> Heterogeneous_list.empty
+    | form :: remaining -> view form :: get_views remaining
+  in
+  let rec set_all
+    : type a b. a Heterogeneous_list.t -> (a, b) Form_list.t -> unit Effect.t
+    =
+    fun values forms ->
+    match values, forms with
+    | [], [] -> Effect.return ()
+    | value :: remaining_values, form :: remaining_forms ->
+      let%bind.Effect () = set form value in
+      set_all remaining_values remaining_forms
+  in
+  let value = get_values forms in
+  let view = get_views forms in
+  let set values = set_all values forms in
+  { value; view; set }
+;;
+
 let all_map (type k cmp) (forms : (k, _, cmp) Map.t) =
   let comparator = Map.comparator_s forms in
   let module C = (val comparator) in
