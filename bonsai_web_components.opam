@@ -48,7 +48,7 @@ depends: [
   "gen_js_api"               {= "1.1.2+ox"}
   "js_of_ocaml"              {= "6.0.1+ox"}
   "js_of_ocaml-ppx"          {= "6.0.1+ox"}
-  "re"                       {>= "1.8.0"}
+  "re"                       {= "1.14.0+ox"}
   "uri"                      {>= "3.0.0"}
 ]
 available: arch != "arm32" & arch != "x86_32"
