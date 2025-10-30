@@ -239,12 +239,7 @@ let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navig
       if not is_current_page then set ~how:`Replace t next_page)
 ;;
 
-let create_exn'
-  (type a)
-  ?(navigation = `Ignore)
-  (module S : S with type t = a)
-  ~on_bad_uri
-  =
+let create_exn' (type a) ~navigation (module S : S with type t = a) ~on_bad_uri =
   match am_running_how with
   | `Browser | `Browser_test | `Browser_benchmark ->
     let module Uri_routing = struct
@@ -467,7 +462,7 @@ module Typed = struct
 
   let make
     (type a)
-    ?(navigation = `Ignore)
+    ~navigation
     ?on_fallback_raises
     ?encoding_behavior
     ?trailing_slash_behavior

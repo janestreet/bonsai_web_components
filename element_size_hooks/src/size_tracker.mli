@@ -8,6 +8,8 @@ module Dimension : sig
     ; height : float
     }
   [@@deriving compare, equal, sexp_of]
+
+  val zero : t
 end
 
 module Dimensions : sig
@@ -25,6 +27,8 @@ module Dimensions : sig
     ; content_box : Dimension.t
     }
   [@@deriving compare, equal, sexp_of]
+
+  val zero : t
 end
 
 (** When attached to a Vdom node, this attribute will monitor the size of this node, and

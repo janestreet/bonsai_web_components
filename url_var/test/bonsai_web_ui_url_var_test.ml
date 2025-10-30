@@ -460,6 +460,7 @@ let%expect_test "Typed API should allow for creation in tests if it has a fallba
        ~fallback:(fun _ _ -> { Url.int = 1 })
        ~encoding_behavior:Correct
        versioned_parser
+       ~navigation:`Ignore
    with
    | _ -> ()
    | exception Failure message -> failwith message);
@@ -490,6 +491,7 @@ let%expect_test "Typed API should NOT allow for creation in tests if it is missi
        ~fallback:(fun _ _ -> failwith "This should be printed!")
        ~encoding_behavior:Correct
        versioned_parser
+       ~navigation:`Ignore
    with
    | _ -> failwith "Should not allow for creating if fallback is invalid"
    | exception Failure message -> print_endline message);
@@ -518,6 +520,7 @@ let%expect_test "Typed API should allow for setting value within tests" =
       ~fallback:(fun _ _ -> Url.{ int = 1 })
       ~encoding_behavior:Correct
       versioned_parser
+      ~navigation:`Ignore
   in
   Url_var.update ~how:`Push url_var ~f:(fun _ -> Url.{ int = 4 });
   [%expect {| ("Pushing to history" (new_location ((int 4)))) |}];

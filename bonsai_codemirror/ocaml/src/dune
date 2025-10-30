@@ -2,7 +2,7 @@
  (name codemirror_ocaml)
  (public_name
    bonsai_web_components.codemirror_ocaml_with_janestreet_extensions)
- (libraries core codemirror_bindings js_of_ocaml)
+ (libraries codemirror_bindings core js_of_ocaml)
  (js_of_ocaml
   (javascript_files ./syntax_highlighting.js))
  (preprocess

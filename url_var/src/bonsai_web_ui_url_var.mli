@@ -156,7 +156,7 @@ module Typed : sig
       Unfortunately the halting problem remains unsolved, so we only have reasonably naive
       limit on the number of redirects before redirects stop. *)
   val make
-    :  ?navigation:[ `Ignore | `Intercept ]
+    :  navigation:[ `Ignore | `Intercept ]
     -> ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
     -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
@@ -196,7 +196,7 @@ end
     new URL does not parse, the page will reload normally.
     https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept *)
 val create_exn'
-  :  ?navigation:[ `Ignore | `Intercept ]
+  :  navigation:[ `Ignore | `Intercept ]
   -> (module S with type t = 'a)
   -> on_bad_uri:[ `Default_state of 'a | `Raise ]
   -> 'a t

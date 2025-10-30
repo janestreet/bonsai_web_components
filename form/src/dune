@@ -9,8 +9,7 @@
    bonsai_web.ui_form_view bonsai_web_ui_freeform_multiselect
    bonsai_web_ui_multi_select bonsai_web_ui_query_box
    bonsai_web_ui_reorderable_list bonsai_web_ui_typeahead core
-   virtual_dom.css_gen fuzzy_match.match incr_map js_of_ocaml
-   core_kernel.nonempty_list profunctor record_builder
-   ppx_typed_fields.typed_field_map ppx_typed_fields.typed_fields_lib
-   ppx_typed_fields.typed_variants_lib virtual_dom.ui_effect
-   virtual_dom.input_widgets virtual_dom.keyboard))
+   virtual_dom.css_gen fuzzy_match.match incr_map js_of_ocaml profunctor
+   record_builder ppx_typed_fields.typed_field_map
+   ppx_typed_fields.typed_fields_lib ppx_typed_fields.typed_variants_lib
+   virtual_dom.ui_effect virtual_dom.input_widgets virtual_dom.keyboard))
