@@ -1,36 +1,6 @@
 open! Core
 open! Bonsai_web
 
-(** [byo_toplayer] contains pure vdom tooltips, and stateful Bonsai popovers and modals:
-    UI elements that appear in the browser top layer, on top of everything else in your
-    web UI.
-
-    You might want to use it through [Skyline], [Workflow_ui], or
-    [Bonsai_web_ui_toplayer].
-
-    The [Vdom.Attr.t]s produced by these computations will position the popover/modal/etc
-    relative to the DOM node where the attr is attached.
-
-    The main difference between popovers and modals is that modals "block" the page
-    content under them. For instance:
-    - Moving your mouse outside of a modal should not trigger `hover` on any elements not
-      in that modal.
-    - Clicking outside of a modal will close only that modal, and click events will not
-      propagate.
-
-    All default stylings can be overriden through the [for_toplayer] methods of the
-    [View.Theme.t].
-
-    These implementations retain their state when closed, including whether any nested
-    elements are open. You might want to wrap their contents in a
-    [Bonsai.with_model_resetter'], and use an [on_deactivate] lifecycle hook to clear
-    state, or a [Bonsai.scope_model] if the popover/modal is keyed by one of multiple
-    inputs.
-
-    Toplayer elements will not show up in non-JSDom tests by default, because they are
-    portalled outside of the app root. You should use [bonsai_web_ui_toplayer_test] as a
-    helper library in your testing, or test with JSDom. *)
-
 module Position : sig
   type t =
     | Auto

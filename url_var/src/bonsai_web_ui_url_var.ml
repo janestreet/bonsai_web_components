@@ -241,7 +241,7 @@ let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navig
 
 let create_exn'
   (type a)
-  ?(navigation = `Ignore)
+  ?(navigation = `Intercept)
   (module S : S with type t = a)
   ~on_bad_uri
   =
@@ -467,7 +467,7 @@ module Typed = struct
 
   let make
     (type a)
-    ?(navigation = `Ignore)
+    ?(navigation = `Intercept)
     ?on_fallback_raises
     ?encoding_behavior
     ?trailing_slash_behavior

@@ -2,13 +2,6 @@
 
 open Core
 
-(** This module is the implementation of table sorting that powers the Basic PRT, and the
-    Workflow UI table.
-
-    Importantly, it is only one of many possible ways to implement sorting: PRT's expert
-    API does not enforce any particular sort implementation. For example, this module
-    doesn't allow custom directions beyond [`Asc] and [`Desc]. *)
-
 module Sort_kind : sig
   type ('key, 'data) sort := 'key * 'data -> 'key * 'data -> int
 

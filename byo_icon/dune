@@ -1,0 +1,7 @@
+(library
+ (name byo_icon)
+ (public_name bonsai_web_components.byo_icon)
+ (libraries am_running_how_js bonsai_web byo_bonsai_prelude core
+   virtual_dom.css_gen)
+ (preprocess
+  (pps ppx_jane)))
