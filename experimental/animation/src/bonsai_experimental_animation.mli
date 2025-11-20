@@ -38,9 +38,9 @@ module Interpolatable : sig
   val int : int t
 end
 
-(* Smooths out the value of ['a] as it changes inside its containing Value.t.
-   When the ['a] changes, the [interpolate] method is used to in-between the
-   value to the new value.  *)
+(* Smooths out the value of ['a] as it changes inside its containing Value.t. When the
+   ['a] changes, the [interpolate] method is used to in-between the value to the new
+   value. *)
 val smooth
   :  ?sexp_of_model:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)

@@ -48,8 +48,8 @@ let real_implementation
   Map.to_alist map |> List.map ~f:(fun ((_score, key), data) -> key, data)
 ;;
 
-(* This is just like the real implementation, but with an extra transformation
-   through [Bonsai.assoc], to check that the map comparator is well-behaved. *)
+(* This is just like the real implementation, but with an extra transformation through
+   [Bonsai.assoc], to check that the map comparator is well-behaved. *)
 let real_implementation2
   ~preprocess
   ~score

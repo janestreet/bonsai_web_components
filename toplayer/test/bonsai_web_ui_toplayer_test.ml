@@ -353,8 +353,8 @@ module Helper = struct
       | Node_helpers.Element
           { children = [ Element { children = [ content ]; _ }; _ ]; _ } -> content
       | Element _ ->
-        (* This test has the added benefit of adding a check on the [Popover_dom]
-                   changing unexpectedly. *)
+        (* This test has the added benefit of adding a check on the [Popover_dom] changing
+           unexpectedly. *)
         failwith
           "modal structure malformed! This test is likely out of date with the current \
            implementation of [Popover_dom]."
@@ -369,8 +369,8 @@ module Helper = struct
   ;;
 
   (* Virtual popovers being opened / closed is controlled by Bonsai computations, which
-       are active / inactive independently of vdom. Therefore, we can always just pull them
-       from the Var that backs portalling. *)
+     are active / inactive independently of vdom. Therefore, we can always just pull them
+     from the Var that backs portalling. *)
   let extract_virtual root_vdom root_helper =
     let positioning =
       let%map.Option hook_inputs =
@@ -385,10 +385,10 @@ module Helper = struct
       ; match_anchor_side_length = hook_inputs.match_anchor_side_length
       }
     in
-    (* We could probably factor something out for structural tests of modals /
-         popovers, but:
-          - We expect modals not to have arrows
-          - The DOM implementations of modals and popovers may diverse someday *)
+    (* We could probably factor something out for structural tests of modals / popovers,
+       but:
+       - We expect modals not to have arrows
+       - The DOM implementations of modals and popovers may diverse someday *)
     let content, arrow =
       match root_helper with
       | Element
@@ -402,8 +402,8 @@ module Helper = struct
       | Element { children = [ Element { children = [ content ]; _ }; _ ]; _ } ->
         content, None
       | Element _ ->
-        (* This test has the added benefit of adding a check on the [Popover_dom]
-                 changing unexpectedly. *)
+        (* This test has the added benefit of adding a check on the [Popover_dom] changing
+           unexpectedly. *)
         failwith
           "popover structure malformed! This test is likely out of date with the current \
            implementation of [Popover_dom]."

@@ -97,8 +97,8 @@ module Hook = struct
         let f ~key:_ = function
           | `Both (tracker, dimension_group) -> Some (tracker dimension_group)
           | `Left _ ->
-            (* Some trackers might not have changes, so they don't need to
-               generate an event *)
+            (* Some trackers might not have changes, so they don't need to generate an
+               event *)
             None
           | `Right _ -> assert false
         in

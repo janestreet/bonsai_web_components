@@ -74,7 +74,7 @@ let create_from_independent_series' ~min ~equal series =
              | None -> x
              | Some earliest_x -> min x earliest_x))
     in
-    (* This loop will make an array (in chronological order) of:
+    (*=This loop will make an array (in chronological order) of:
        {[ (x-value * (float option array)) ]}
 
        With points at the union of all series' xs.

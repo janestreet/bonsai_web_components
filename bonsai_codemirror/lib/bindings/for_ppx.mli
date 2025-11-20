@@ -430,8 +430,8 @@ module State : sig
     val field : t -> 'a State_field.t -> 'a option [@@js.call "field"]
     val update : t -> (Transaction_spec.t list[@js.variadic]) -> Transaction.t [@@js.call]
 
-    (* Codemirror also accepts a string instead of a Text.t, but that seems
-       unnecessary to duplicate in the ocaml API *)
+    (* Codemirror also accepts a string instead of a Text.t, but that seems unnecessary to
+       duplicate in the ocaml API *)
     val replace_selection : t -> Text.Text.t -> Transaction_spec.t [@@js.call]
 
     val change_by_range
@@ -725,11 +725,12 @@ module View : sig
   [@@js.scope "EditorView"]
 
   module Plugin_value : sig
-    (* [custom_state] isn't a field that appears in the official CodeMirror API; it's
-       just here to provide an interface for any extra data a user would want to store
-       in a plugin value. This shouldn't cause any issues, since PluginValue
-       is just an interface and not a class/it's meant to potentially have extra fields
-       (e.g. as in their example - https://codemirror.net/examples/zebra/#:~:text=decorations%3A%20DecorationSet). *)
+    (* [custom_state] isn't a field that appears in the official CodeMirror API; it's just
+       here to provide an interface for any extra data a user would want to store in a
+       plugin value. This shouldn't cause any issues, since PluginValue is just an
+       interface and not a class/it's meant to potentially have extra fields (e.g. as in
+       their example -
+       https://codemirror.net/examples/zebra/#:~:text=decorations%3A%20DecorationSet). *)
     type 'v t =
       { update : (View_update.t -> unit) option
       ; destroy : (unit -> unit) option
@@ -1003,9 +1004,9 @@ module Autocomplete : sig
 
     val of_sync_fun : (CompletionContext.t -> CompletionResult.t) -> t [@@js.cast]
 
-    (* Note: technically the CompletionResult.t within the Promise should also be an option
-       since the promise can return null. It caused something to break when I tried it,
-       though
+    (* Note: technically the CompletionResult.t within the Promise should also be an
+       option since the promise can return null. It caused something to break when I tried
+       it, though
     *)
     val of_promise_fun
       :  (CompletionContext.t -> (CompletionResult.t, 'e) Promise.t option)

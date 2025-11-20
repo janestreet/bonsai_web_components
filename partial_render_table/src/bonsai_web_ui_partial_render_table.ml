@@ -81,10 +81,10 @@ module Expert = struct
         ~apply_action:
           (fun
             (_ : _ Bonsai.Apply_action_context.t) model (column_id, `Px_float width) ->
-          (* While checking for float equality is usually not a good idea,
-               this is meant to handle the specific case when a column has
-               "display:none", in which case the width will be exactly 0.0, so
-               there is no concern about float rounding errors. *)
+          (* While checking for float equality is usually not a good idea, this is meant
+             to handle the specific case when a column has "display:none", in which case
+             the width will be exactly 0.0, so there is no concern about float rounding
+             errors. *)
           Map.update model column_id ~f:(fun prev ->
             if Float.equal width 0.0
             then (
@@ -186,9 +186,10 @@ module Expert = struct
         ~default_model:(Map.empty (module Column_cmp))
     in
     let column_widths_for_reporting, set_column_width_for_reporting =
-      (* This "for_reporting" map is kept separately so that the [resize_column_widths_to_fit] can
-         keep the primary [column_widths] value for explicitly set column widths,
-         while this tracker maintains all the currently-known sizes. *)
+      (* This "for_reporting" map is kept separately so that the
+         [resize_column_widths_to_fit] can keep the primary [column_widths] value for
+         explicitly set column widths, while this tracker maintains all the
+         currently-known sizes. *)
       column_width_tracker
         ?round_column_width
         graph
@@ -214,23 +215,23 @@ module Expert = struct
     in
     let range_without_preload =
       (* The goal of this value is to track the index range of the rows that would be
-         visible in the table if the table were full.  Usually this would be as easy as
-         looking at the table_body_visible_rect, but we also account for the header occluding
-         some of the first rows of the table.  For that, we need to look at the client-rects for
-         the body and the header and subtract their overlap. *)
+         visible in the table if the table were full. Usually this would be as easy as
+         looking at the table_body_visible_rect, but we also account for the header
+         occluding some of the first rows of the table. For that, we need to look at the
+         client-rects for the body and the header and subtract their overlap. *)
       let%arr table_body_visible_rect
       and table_body_client_rect
       and header_client_rect
-        (* We need to know about resize_column_widths_to_fit because the sticky header takes up 0 height in
-           the table container, so it doesn't technically occlude anything initially. *)
+        (* We need to know about resize_column_widths_to_fit because the sticky header
+           takes up 0 height in the table container, so it doesn't technically occlude
+           anything initially. *)
       and resize_column_widths_to_fit
       and header_height_px in
       fun (`Px row_height_px) ->
         let row_height_px = Float.of_int row_height_px in
         match table_body_visible_rect, table_body_client_rect, header_client_rect with
         | Some { min_y = body_min_y; max_y = body_max_y; _ }, _, None ->
-          (* if we don't have the header-height yet, just assume that there's
-             no overlap. *)
+          (* if we don't have the header-height yet, just assume that there's no overlap. *)
           let low = body_min_y /. row_height_px in
           let high = (body_max_y -. row_height_px +. 2.) /. row_height_px in
           Some (Float.(to_int (round_nearest low)), Float.(to_int (round_nearest high)))
@@ -242,15 +243,16 @@ module Expert = struct
               Float.min header_height_px (header_visible_bottom -. table_absolute_top)
             in
             match resize_column_widths_to_fit with
-            (* resize_column_widths_to_fit:false shifts the top of the header down in position
-               due to the attr that calculates visible client rect being on an element that only
-               contains the header *)
+            (* resize_column_widths_to_fit:false shifts the top of the header down in
+               position due to the attr that calculates visible client rect being on an
+               element that only contains the header *)
             | false -> header_offset, 0.
             (* When resize_column_widths_to_fit:true, the header is in the same container
-               as the body. That container is where the visible client rect attr is attached,
-               so the client rect also considers the header as part of what is visible. Due
-               to this, we have to subtract the header height from the bottom of the rect,
-               as we're reducing the visible body height and not its position.
+               as the body. That container is where the visible client rect attr is
+               attached, so the client rect also considers the header as part of what is
+               visible. Due to this, we have to subtract the header height from the bottom
+               of the rect, as we're reducing the visible body height and not its
+               position.
             *)
             | true -> 0., header_offset *. -1.
           in
@@ -274,14 +276,13 @@ module Expert = struct
       and (`Px row_height_px) = row_height in
       fun index ->
         let range_start, range_end =
-          (* [range_without_preload] can be [None] if the number of rows in
-             the table shrinks such that the table becomes invisible. By
-             providing a small index, we ensure that the padding around the
-             table does not force the page to remain large enough for the
-             existing scroll position. With the padding removed, the browser
-             should automatically reduce the range of the scrollbar, and
-             possibly bringing the table back in view, which would quickly
-             correct this value to something more useful. *)
+          (* [range_without_preload] can be [None] if the number of rows in the table
+             shrinks such that the table becomes invisible. By providing a small index, we
+             ensure that the padding around the table does not force the page to remain
+             large enough for the existing scroll position. With the padding removed, the
+             browser should automatically reduce the range of the scrollbar, and possibly
+             bringing the table back in view, which would quickly correct this value to
+             something more useful. *)
           range_without_preload (`Px row_height_px) |> Option.value ~default:(0, 1)
         in
         let row_height_px = Float.of_int row_height_px in
@@ -295,11 +296,12 @@ module Expert = struct
                attr that calculates visible client rect being on an element that only
                contains the header *)
             | false -> header_height_px
-            (* When resize_column_widths_to_fit:true, the header is in the same container as the body. That
-               container is where the visible client rect attr is attached, so the client
-               rect also considers the header as part of what is visible. Due to this, we
-               have to subtract the header height from the bottom of the rect, as we're
-               reducing the visible body height and not its position.
+            (* When resize_column_widths_to_fit:true, the header is in the same container
+               as the body. That container is where the visible client rect attr is
+               attached, so the client rect also considers the header as part of what is
+               visible. Due to this, we have to subtract the header height from the bottom
+               of the rect, as we're reducing the visible body height and not its
+               position.
             *)
             | true -> 0.
           in
@@ -308,13 +310,14 @@ module Expert = struct
         let to_bottom =
           let header_offset =
             match resize_column_widths_to_fit with
-            (* In resize_column_widths_to_fit:true, the header is in the same container as the body, so we
-               need to account for the headers height in row offset calculations *)
+            (* In resize_column_widths_to_fit:true, the header is in the same container as
+               the body, so we need to account for the headers height in row offset
+               calculations *)
             | true -> header_height_px
             | false -> 0.
           in
-          (* scroll to the bottom of this row means scrolling to the top of
-             a one-pixel element just below this row *)
+          (* scroll to the bottom of this row means scrolling to the top of a one-pixel
+             element just below this row *)
           (row_height_px *. Float.of_int (index + 1)) +. header_offset
         in
         let y_px =
@@ -359,8 +362,8 @@ module Expert = struct
           (* It's crucial that we use [column_widths_for_reporting] because it's set in
              both [resize_column_widths_to_fit] AND in the non-resizing version.
              [resize_column_widths_to_fit] does _not_ set [column_widths] whenever the
-             width of the columns changes based on its content, only when the user manually
-             resizes the columns
+             width of the columns changes based on its content, only when the user
+             manually resizes the columns
           *)
         and leaves in
         fun column_id ->
@@ -429,9 +432,9 @@ module Expert = struct
                | None -> Effect.Ignore
                | Some y_px ->
                  (* We know that column start is not to the left of the left bound, and we
-                    know that column end is within the right bound as well, which means that
-                    column start is within the visible bounds. This will not scroll vertically,
-                    which is the desired behavior *)
+                    know that column end is within the right bound as well, which means
+                    that column start is within the visible bounds. This will not scroll
+                    vertically, which is the desired behavior *)
                  scroll_me ~y_px ~x_px:column_start))
     in
     let scroll_to =
@@ -449,9 +452,9 @@ module Expert = struct
       fun (`Px old_row_height_px) (`Px new_row_height_px) ->
         match range_without_preload (`Px old_row_height_px), table_body_visible_rect with
         | None, None | None, Some _ ->
-          (* If there are no rows visible [range_without_preload] will return
-             [None]. In this case we should do nothing because the scroll
-             position is outside the tables jurisdiction. *)
+          (* If there are no rows visible [range_without_preload] will return [None]. In
+             this case we should do nothing because the scroll position is outside the
+             tables jurisdiction. *)
           Effect.Ignore
         | Some _, None ->
           (* [range_without_preload] is expected to return a range only if the
@@ -466,8 +469,8 @@ module Expert = struct
           let old_row_height_px, new_row_height_px =
             Float.of_int old_row_height_px, Float.of_int new_row_height_px
           in
-          (* If some rows of the table are visible, we scroll such that the top
-             visible row remains in the same position in the viewport. *)
+          (* If some rows of the table are visible, we scroll such that the top visible
+             row remains in the same position in the viewport. *)
           let old_y_px = old_row_height_px *. Float.of_int range_start in
           let new_y_px = new_row_height_px *. Float.of_int range_start in
           let y_px =
@@ -491,9 +494,9 @@ module Expert = struct
           |> Effect.ignore_m
     in
     let%sub () =
-      (* If [row_height] changes, we want scrolling to follow the visible set
-         of rows to their new location. To do this, we calculate the new
-         position of the current top row, and then scroll their immediately. *)
+      (* If [row_height] changes, we want scrolling to follow the visible set of rows to
+         their new location. To do this, we calculate the new position of the current top
+         row, and then scroll their immediately. *)
       let callback =
         let%arr keep_top_row_in_position in
         fun prev_row_height new_row_height ->
@@ -519,10 +522,10 @@ module Expert = struct
           graph
       in
       let%arr prev_row_height and row_height and range_without_preload in
-      (* If the [row_height] just changed, then we will be scrolling to a new
-         position that will leave [range_without_preload] unchanged. Thus, we
-         should intentionally _not_ account for the new change in row_height
-         yet, since otherwise we will get flickering in the UI. *)
+      (* If the [row_height] just changed, then we will be scrolling to a new position
+         that will leave [range_without_preload] unchanged. Thus, we should intentionally
+         _not_ account for the new change in row_height yet, since otherwise we will get
+         flickering in the UI. *)
       let range =
         match prev_row_height with
         | Some prev_row_height -> range_without_preload prev_row_height
@@ -610,8 +613,8 @@ module Expert = struct
       and row_count in
       let low = Int.max 0 (low - preload_rows) in
       let low =
-        (* always fetch a range starting at an even index in order to make
-           css-selecting on even and odd rows work. *)
+        (* always fetch a range starting at an even index in order to make css-selecting
+           on even and odd rows work. *)
         low - (low % 2)
       in
       let high = Int.min row_count (high + preload_rows) in

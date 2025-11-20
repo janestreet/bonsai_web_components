@@ -222,8 +222,8 @@ module Record_builder :
     [Form.t Bonsai.t], and typically take a [local_ Bonsai.graph]. *)
 module Dynamic : sig
   (* Sets a ['a t] to a default value the first time it is displayed on a page.
-     [with_default] does not set the model a second time if the form is removed
-     from the page and then re-added. *)
+     [with_default] does not set the model a second time if the form is removed from the
+     page and then re-added. *)
   val with_default : 'a Bonsai.t -> 'a t Bonsai.t -> local_ Bonsai.graph -> 'a t Bonsai.t
 
   (* Like [with_default], but an effect is provided to produce the default value. *)
@@ -234,8 +234,8 @@ module Dynamic : sig
     -> 'a t Bonsai.t
 
   (* Like [with_default_from_effect], but the effect produces an optional value. The
-     default is only set in the [Some] case. If the response is [None], the effect will
-     be re-dispatched again on re-activate. *)
+     default is only set in the [Some] case. If the response is [None], the effect will be
+     re-dispatched again on re-activate. *)
   val with_default_from_optional_effect
     :  'a option Effect.t Bonsai.t
     -> 'a t Bonsai.t

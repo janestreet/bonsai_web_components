@@ -48,8 +48,8 @@ module Themed = struct
   ;;
 end
 
-(* These styles make the table functional and interactive;
-   they are applied regardless of theme. *)
+(* These styles make the table functional and interactive; they are applied regardless of
+   theme. *)
 module Functional_style =
   [%css
   stylesheet
@@ -114,10 +114,10 @@ module Functional_style =
       }
     |}]
 
-(* This function takes a vdom node and if it's an element, it adds extra attrs, classes, key,
-   and style info to it, but if it's not an element, it wraps that node in a div that has those
-   attributes.  This can be useful if you get a vdom node from the
-   user of this API, and want to avoid excessive node wrapping. *)
+(* This function takes a vdom node and if it's an element, it adds extra attrs, classes,
+   key, and style info to it, but if it's not an element, it wraps that node in a div that
+   has those attributes. This can be useful if you get a vdom node from the user of this
+   API, and want to avoid excessive node wrapping. *)
 let set_or_wrap ~attrs =
   let open Vdom.Node in
   function
@@ -143,8 +143,8 @@ module Header_label = struct
     Vdom.Node.div ~attrs [ contents ]
   ;;
 
-  (* As an externally exposed component with no prior style overrides,
-     we don't allow opting out of theming to keep user code simpler. *)
+  (* As an externally exposed component with no prior style overrides, we don't allow
+     opting out of theming to keep user code simpler. *)
   let wrap_with_icon
     ?(extra_attrs = [])
     ?(sort_indicator_attrs = [])
@@ -283,8 +283,8 @@ module Header = struct
     | true -> Vdom.Node.thead ~attrs header_rows
   ;;
 
-  (* Fun fact: the header is the only part of partial_render_table that is displayed
-     as an actual HTML table!.... unless you're using the table_view *)
+  (* Fun fact: the header is the only part of partial_render_table that is displayed as an
+     actual HTML table!.... unless you're using the table_view *)
   let view
     (themed_attrs : Themed.t)
     ~set_header_client_rect
@@ -302,7 +302,7 @@ end
 module Cell = struct
   module Col_styles = struct
     (* First index is for the set_or_wrap node, the second index is for the inner wrapper
-    for the resize_column_widths_to_fit variant *)
+       for the resize_column_widths_to_fit variant *)
     type t = Vdom.Attr.t list * Vdom.Attr.t list
 
     (* Css_gen is really slow, so we need to re-use the results of all these functions
@@ -355,9 +355,9 @@ module Cell = struct
                 match resize_column_widths_to_fit with
                 | false ->
                   let width_styles =
-                    (* We use the previous width even when hidden, so that the rendering engine has
-                   less work to do if re-adding a column. Columns that are not currently visible
-                   are hidden via `display: None`. *)
+                    (* We use the previous width even when hidden, so that the rendering
+                       engine has less work to do if re-adding a column. Columns that are
+                       not currently visible are hidden via `display: None`. *)
                     let w =
                       match Map.find col_widths column_id with
                       | None | Some (Hidden { prev_width_px = None }) -> "0.00px"
@@ -410,8 +410,8 @@ module Cell = struct
          content in a div. This is because table cells (div with dislay:table-cell OR td)
          treat the height value as a min-height value, and seem to just ignore max-height
 
-         This wrapping does incur a performance hit. Using chrome profiler,
-         animation frame times were:
+         This wrapping does incur a performance hit. Using chrome profiler, animation
+         frame times were:
 
          With wrapped div: 19-22ms on average, with spikes to 30-32ms and huge (rarer)
          spikes to ~45ms
@@ -526,12 +526,12 @@ module Body = struct
       Vdom.Attr.style
         (Css_gen.concat
            [ Css_gen.create ~field:"display" ~value:"table-row-group"
-             (* This field is required so that the bottom border element can be
-                  positioned properly *)
+             (* This field is required so that the bottom border element can be positioned
+                properly *)
            ; Css_gen.create ~field:"position" ~value:"relative"
            ])
     in
-    (* Because borders don't get collapsed, we only set the top[1] and right borders of
+    (*=Because borders don't get collapsed, we only set the top[1] and right borders of
        each row. This makes it difficult to highlight borders of focused rows.
 
        For every row except for the last, we can use the "next sibling" selector to set the

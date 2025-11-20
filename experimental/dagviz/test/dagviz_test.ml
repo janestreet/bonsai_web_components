@@ -113,8 +113,7 @@ let curr_id = Bonsai.return Id.Count.zero
 let%expect_test "Linked list graph" =
   let open Dummy_nodes in
   let edges = [ a ==> b; b ==> c; c ==> d ] |> Edge.Set.of_list in
-  (*
-     {v
+  (* {v
          a
          |
          b
@@ -198,8 +197,7 @@ let%expect_test "Linked list graph" =
 let%expect_test "Dominator reorganizing." =
   let open Dummy_nodes in
   let edges = [ a ==> c; b ==> c; c ==> d ] |> Edge.Set.of_list in
-  (*
-     {v
+  (* {v
          A   B
           \ /
            C
@@ -283,8 +281,7 @@ let%expect_test "Dominator reorganizing." =
   let edges = Set.add edges (e ==> a) |> Fn.flip Set.add (e ==> b) in
   let nodes = map_with_ids [ a; b; c; d; e ] in
   Bonsai.Expert.Var.set dag_var { edges; nodes };
-  (*
-     {v
+  (* {v
            E
           / \
          A   B
@@ -376,11 +373,11 @@ let%expect_test "Dominator reorganizing." =
 let%expect_test "Missing node in node map from edges is treated as a redirect" =
   let open Dummy_nodes in
   let edges = [ a ==> b; b ==> c ] |> Edge.Set.of_list in
-  (* B is not present in the map.  *)
+  (* B is not present in the map. *)
   let nodes = map_with_ids [ a; c ] in
   let dag = Bonsai.return { edges; nodes } in
   let handle = create_handle ~dag ~curr_id in
-  (* The node where [B] would've been is empty.*)
+  (* The node where [B] would've been is empty. *)
   Handle.show handle;
   [%expect
     {|
@@ -447,8 +444,7 @@ let%expect_test "Missing node in node map from edges is treated as a redirect" =
 let%expect_test "Tree-like DAG" =
   let open Dummy_nodes in
   let edges = [ a ==> b; a ==> c; a ==> d; d ==> e ] |> Edge.Set.of_list in
-  (*
-     {v
+  (* {v
           A
          /|\
         B C D
@@ -534,14 +530,13 @@ let%expect_test "Tree-like DAG" =
             E
      v}
 
-
      only two of them are shown, namely A-D and D-E. The reason for this is that this test
      suite needs to manually set the position that each node would appear in the browser
      in order for the edges to be rendered. However, after topologically sorting, there is
      a topological gap between A-B and A-C. The reason for this is that redirect edges
-     with id's generated using [count] were inserted between A-B and A-C. Since the ID's and
-     structure number of redirect nodes can change, hardcoding the generated id could lead
-     to brittle tests.
+     with id's generated using [count] were inserted between A-B and A-C. Since the ID's
+     and structure number of redirect nodes can change, hardcoding the generated id could
+     lead to brittle tests.
   *)
   set_positions ~handle ~ids:[ a; b; c; d; e ];
   Handle.show_diff handle;
@@ -575,13 +570,10 @@ let%expect_test "Tree-like DAG" =
 let%expect_test "Cycle" =
   let open Dummy_nodes in
   let edges = [ a ==> b; a ==> c; a ==> d; d ==> a ] |> Edge.Set.of_list in
-  (*
-     {v
+  (* {v
           A <--\
          /|\   |
         B C D -/
-
-
      v}
   *)
   let nodes = map_with_ids [ a; b; c; d ] in
@@ -733,7 +725,7 @@ let%expect_test "redirect nodes" =
     |}];
   (* For reasons similar to the test case above, (not knowing the id's of generated
      redirect nodes to set their positions), this test case does not show all of the edges
-     that would be created in a browser environment.  *)
+     that would be created in a browser environment. *)
   set_positions ~handle ~ids:[ a; b; c; d; e; f; g ];
   Handle.show_diff handle;
   [%expect
@@ -770,8 +762,7 @@ let%expect_test "redirect nodes" =
 let%expect_test "Disjoint DAGs" =
   let open Dummy_nodes in
   let edges = [ a ==> b; c ==> d; e ==> f ] |> Edge.Set.of_list in
-  (*
-     {v
+  (* {v
         A  C  E  G
         |  |  |
         B  D  F

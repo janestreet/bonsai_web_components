@@ -311,9 +311,8 @@ module Checkbox = struct
             ([ Vdom.Attr.style (Css_gen.margin_left (`Px 0))
              ; Vdom.Attr.type_ "checkbox"
              ; Vdom.Attr.on_click (fun evt ->
-                 (* try to get the actual state of the checkbox, but if
-                    that doesn't work, assume that clicking on the
-                    element toggled the state. *)
+                 (* try to get the actual state of the checkbox, but if that doesn't work,
+                    assume that clicking on the element toggled the state. *)
                  let checked =
                    let open Option.Let_syntax in
                    let open Js_of_ocaml in
@@ -593,9 +592,9 @@ module Dropdown = struct
       match value_not_in_options_behavior with
       | `Allow | `Error_out ->
         true
-        (* In this case, the user either will get an error, or will get the illegal
-           value as the result of the form. In either case, we don't want to select an
-           item from the list if that's not what the component returns. *)
+        (* In this case, the user either will get an error, or will get the illegal value
+           as the result of the form. In either case, we don't want to select an item from
+           the list if that's not what the component returns. *)
       | `Use_default_value ->
         (* In this scenario, we want to resort to the default value instead *)
         false
@@ -886,6 +885,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ~sexp_of
     ~equal
     ~all_options
@@ -897,6 +897,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
+        ?unboxed
         ~sexp_of
         ~equal
         ~all_options
@@ -915,6 +916,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ~sexp_of
     ~equal
     ~all_options
@@ -927,6 +929,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
+        ?unboxed
         ~sexp_of
         ~equal
         ~all_options
@@ -942,6 +945,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ?split
     m
     ~all_options
@@ -954,6 +958,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
+        ?unboxed
         ?split
         m
         ~extra_attrs
@@ -974,6 +979,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ?split
     (module M : Comparator.S with type t = a and type comparator_witness = cmp)
     ~all_options
@@ -987,6 +993,7 @@ module Typeahead = struct
         ?to_string
         ?to_option_description
         ?handle_unknown_option
+        ?unboxed
         ?split
         (module M)
         ~all_options
@@ -1693,8 +1700,8 @@ module Multiple = struct
             if not (Seqnum_for_list.equal my_seqnum most_recent_seqnum)
             then
               (* if the lists aren't the same length and the seqnums aren't the same, it's
-               because another setter happened after this one, so we shouldn't do anything
-               here, and let the next setter do its thing. *)
+                 because another setter happened after this one, so we shouldn't do
+                 anything here, and let the next setter do its thing. *)
               ()
             else (
               let setters_applied =
@@ -1707,10 +1714,10 @@ module Multiple = struct
                   context
                   (Ui_effect.Many setters_applied)
               | Error `Unequal_lengths ->
-                (* If the lists aren't the same size, then another call to [set] modified the
-               length.  Because the seqnum for the action matches the current seqnum, we
-               know we're the last in the sequence, so we can update the length _again_
-               and try the whole transaction again. *)
+                (* If the lists aren't the same size, then another call to [set] modified
+                   the length. Because the seqnum for the action matches the current
+                   seqnum, we know we're the last in the sequence, so we can update the
+                   length _again_ and try the whole transaction again. *)
                 Bonsai.Apply_action_context.schedule_event
                   context
                   (let%bind.Effect new_seqnum = get_next_seqnum in
@@ -2204,7 +2211,7 @@ module File_select = struct
         (* [value_prop] is a trick that enforces the browser input is cleared when an
            empty value is set into the form: if we ever change from a non-empty map to an
            empty one, then we also set value to "", which clears the form. Otherwise, we
-           let the form be uncontrolled while a file is selected.*)
+           let the form be uncontrolled while a file is selected. *)
         let value_prop =
           if Map.is_empty state then Vdom.Attr.value_prop "" else Vdom.Attr.empty
         in
@@ -2369,9 +2376,8 @@ module Query_box = struct
         graph
     in
     let%arr last_selected_value and set_last_selected_value and query and view in
-    (* It's important that we make the value [None] if the textbox has text in
-       it so that people don't get the impression that the textbox represents
-       the current form value. *)
+    (* It's important that we make the value [None] if the textbox has text in it so that
+       people don't get the impression that the textbox represents the current form value. *)
     let value = if String.is_empty query then last_selected_value else None in
     form_expert_create ~value:(Ok value) ~view ~set:set_last_selected_value
   ;;

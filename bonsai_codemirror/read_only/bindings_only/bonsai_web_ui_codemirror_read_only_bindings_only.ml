@@ -48,9 +48,9 @@ let print_full_document_extension () =
         view_state
         printing_parameter
         (Js_of_ocaml.Js.bool new_value);
-      (* The `requestMeasure` function schedules a layout measurement event for the current
-         view.
-         See: https://github.com/codemirror/view/blob/main/src/domobserver.ts#L152
+      (* The `requestMeasure` function schedules a layout measurement event for the
+         current view. See:
+         https://github.com/codemirror/view/blob/main/src/domobserver.ts#L152
 
          Codemirror automatically calls this function whenever the view might change, such
          as when scrolling or resizing the viewport. Since printing works by modifying the

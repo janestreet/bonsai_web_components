@@ -144,9 +144,9 @@ let create
           model
         | Active (_, _, items, max_visible_items) ->
           let suggestion_list_state =
-            (* We normalize which item is focused in case the list has changed
-                 since the last action. Normalization just means setting the
-                 focused key to the closest thing that actually exists. *)
+            (* We normalize which item is focused in case the list has changed since the
+               last action. Normalization just means setting the focused key to the
+               closest thing that actually exists. *)
             match model.suggestion_list_state with
             | Focused key ->
               select_key
@@ -269,11 +269,11 @@ let create
       let length = ref 0 in
       let items = ref items in
       let result = ref (Map.empty (module Key)) in
-      (* We alternate between taking something larger and smaller than the
-         focused key until we have taken [max_visible_items] or have exhausted
-         the source list. This is probably not done in the most efficient
-         manner, but it's O(max_visible_items * log(number_of_items)), which is
-         probably acceptable if [max_visible_items] is small. *)
+      (* We alternate between taking something larger and smaller than the focused key
+         until we have taken [max_visible_items] or have exhausted the source list. This
+         is probably not done in the most efficient manner, but it's O(max_visible_items *
+         log(number_of_items)), which is probably acceptable if [max_visible_items] is
+         small. *)
       let visible_items = min max_visible_items (Map.length !items) in
       let offset = min offset visible_items in
       let add_element_from_side side =
@@ -286,11 +286,11 @@ let create
         | None -> false
       in
       while !length < visible_items do
-        (* An invariant of this loop is that we will always increment [length]
-           every iteration, thus guaranteeing the termination of the loop. This
-           is guaranteed because [visible_items] is defined to be at most the
-           length of the map of items being pulled from, which ensures that we
-           won't run out of items collect until we have met the desired length. *)
+        (* An invariant of this loop is that we will always increment [length] every
+           iteration, thus guaranteeing the termination of the loop. This is guaranteed
+           because [visible_items] is defined to be at most the length of the map of items
+           being pulled from, which ensures that we won't run out of items collect until
+           we have met the desired length. *)
         if !length <= offset
         then (
           if not (add_element_from_side `Less_or_equal_to)
@@ -401,9 +401,9 @@ let create
          | Closed -> blur_input
          | First_item | Focused _ -> inject Action.Close_suggestions)
       | Enter ->
-        (* The text in the input field might have changed between the last stabilize
-           and this keydown event, so we need to force a stabilize to ensure we select
-           the correct key. *)
+        (* The text in the input field might have changed between the last stabilize and
+           this keydown event, so we need to force a stabilize to ensure we select the
+           correct key. *)
         (match focused_key_potentially_stale with
          (* NOTE: We match on the stale value so that we have the chance of being able
             to prevent default. *)
@@ -478,11 +478,11 @@ let create
     Attr.on_blur
       (let open Js_of_ocaml in
        fun (ev : Dom_html.focusEvent Js.t) ->
-         (* Blurring usually means that we want to close the suggestion list.
-            However, if we are blurring the text input in order to focus the
-            list of items (or vice versa), we want to keep the list open. Thus,
-            we check whether the relatedTarget of the event is one of those two
-            elements, in which case we don't close the list. *)
+         (* Blurring usually means that we want to close the suggestion list. However, if
+            we are blurring the text input in order to focus the list of items (or vice
+            versa), we want to keep the list open. Thus, we check whether the
+            relatedTarget of the event is one of those two elements, in which case we
+            don't close the list. *)
          match Js.Opt.to_option ev##.relatedTarget with
          | Some related_target ->
            let id = Js.to_string related_target##.id in
@@ -632,16 +632,15 @@ module Collate_map_with_score = struct
           Uniform_array.set array !index (key, data, preprocess ~key ~data);
           incr index)
       in
-      (* We keep track of an arbitrary number of queries. Each
-         time the query changes, we discard any queries for which the new query
-         is not merely a refinement of. In other words, we maintain the
-         invariant that each item in this list of queries is strictly more
-         general than the previous one. *)
+      (* We keep track of an arbitrary number of queries. Each time the query changes, we
+         discard any queries for which the new query is not merely a refinement of. In
+         other words, we maintain the invariant that each item in this list of queries is
+         strictly more general than the previous one. *)
       let previous_queries = ref [] in
-      (* In addition, we also keep track of the index (from the back of the
-         list of queries, rather than the front, but this doesn't matter
-         because we never use the index to get an element out of the list)
-         of the first query that eliminated an item from the set of result. *)
+      (* In addition, we also keep track of the index (from the back of the list of
+         queries, rather than the front, but this doesn't matter because we never use the
+         index to get an element out of the list) of the first query that eliminated an
+         item from the set of result. *)
       let filtered_out_at_index = Array.create ~len Int.max_value in
       let%map.Ui_incr query in
       let rec trim_queries qs =
@@ -656,10 +655,10 @@ module Collate_map_with_score = struct
         ~init:empty_result
         ~f:(fun index acc (key, data, preprocessed) ->
           let score =
-            (* If the item was already filtered out by a previous query, we can
-               keep filtering it out. If instead it was filtered out by a query
-               that have since discarded (or, possibly, it was never filtered
-               out), then we need to re-evaluate the score. *)
+            (* If the item was already filtered out by a previous query, we can keep
+               filtering it out. If instead it was filtered out by a query that have since
+               discarded (or, possibly, it was never filtered out), then we need to
+               re-evaluate the score. *)
             if filtered_out_at_index.(index) < num_queries
             then 0
             else (
@@ -671,12 +670,11 @@ module Collate_map_with_score = struct
           if score = 0
           then acc
           else (
-            (* The first component of the key compares equivalently to the pair
-               (score, index), but faster, since it is only an integer. Note
-               that the map comparator doesn't need to inspect the key itself,
-               since [index] already captures that ordering. Thus, this whole
-               computation remains fast even if the input map comparator is
-               extremely slow. *)
+            (* The first component of the key compares equivalently to the pair (score,
+               index), but faster, since it is only an integer. Note that the map
+               comparator doesn't need to inspect the key itself, since [index] already
+               captures that ordering. Thus, this whole computation remains fast even if
+               the input map comparator is extremely slow. *)
             let new_key = score, key in
             Map.add_exn acc ~key:new_key ~data:(to_result preprocessed ~key ~data))))
   ;;
@@ -708,14 +706,13 @@ let stringable
   ~filter_strategy
   ~on_select
   (input : (k, string, cmp) Map.t Bonsai.t)
-  (* [filter_strategy] is not a [Value.t]; it would be easy to make it one by
-     using [match%sub] here, but then the model would not be shared between the
-     two branches, which is potentially confusing. If make both key modules be
-     [Scored_key], then we could move the branch into [f] where the filtering
-     actually happens; this would have the downside of causing the
-     [Fuzzy_match] case to pay the cost of the extra data in the key. Since we
-     don't expect this parameter to be changed at runtime, it is probably not
-     worth the cost to make the parameter dynamic. *)
+  (* [filter_strategy] is not a [Value.t]; it would be easy to make it one by using
+     [match%sub] here, but then the model would not be shared between the two branches,
+     which is potentially confusing. If make both key modules be [Scored_key], then we
+     could move the branch into [f] where the filtering actually happens; this would have
+     the downside of causing the [Fuzzy_match] case to pay the cost of the extra data in
+     the key. Since we don't expect this parameter to be changed at runtime, it is
+     probably not worth the cost to make the parameter dynamic. *)
   (local_ graph)
   =
   let modify_input_on_select ~get_key (local_ _graph) =

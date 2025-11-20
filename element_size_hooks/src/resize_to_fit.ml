@@ -31,7 +31,7 @@ module T = struct
     type t =
       { mutable observer : ResizeObserver.resizeObserver Js.t option
           (* [my_dims] and [parent_dims] are in their local dimensionality and are
-         calculated prior to the transformation taking effect. *)
+             calculated prior to the transformation taking effect. *)
       ; mutable my_dims : Dims.t
       ; mutable parent_dims : Dims.t
       ; mutable behavior : Behavior.t
@@ -45,14 +45,13 @@ module T = struct
     | Shrink_to_avoid_overflow -> Float.min v 1.0
   ;;
 
-  (* [width: max-content] is useful for behaviors that can shrink because
-     they won't attempt to collapse the content in other ways (like by folding text
-     across multiple lines).  If you've got shrinking, you probably don't want two
-     compression options fighting each other.
+  (* [width: max-content] is useful for behaviors that can shrink because they won't
+     attempt to collapse the content in other ways (like by folding text across multiple
+     lines). If you've got shrinking, you probably don't want two compression options
+     fighting each other.
 
-     [width: fit-content] is useful in the "only grows" scenario because when growing,
-     it has no effect, but when it would otherwise be shrunk, it'll try to compress
-     itself. *)
+     [width: fit-content] is useful in the "only grows" scenario because when growing, it
+     has no effect, but when it would otherwise be shrunk, it'll try to compress itself. *)
   let set_width_property ~(state : State.t) =
     match state.behavior with
     | Grow_to_fill -> state.me##.style##.width := Js.string "fit-content"
@@ -60,9 +59,9 @@ module T = struct
       state.me##.style##.width := Js.string "max-content"
   ;;
 
-  (* [adjust] actually changes the transform on the target element.
-     If any of the dimensions have a component that is at-or-below 0,
-     we set the scale to "1.0", which functionally resets the scaling. *)
+  (* [adjust] actually changes the transform on the target element. If any of the
+     dimensions have a component that is at-or-below 0, we set the scale to "1.0", which
+     functionally resets the scaling. *)
   let adjust ~(state : State.t) =
     let set_scale scale =
       state.me##.style##.transform
@@ -129,8 +128,8 @@ module T = struct
       ; behavior = input
       }
     in
-    (* setting the [width] property on init (before it has been added to the
-       dom) is important to get an accurate first read. *)
+    (* setting the [width] property on init (before it has been added to the dom) is
+       important to get an accurate first read. *)
     set_width_property ~state;
     state
   ;;
@@ -167,9 +166,8 @@ let attr ?(behavior = Behavior.Shrink_to_avoid_overflow) () =
         Css_gen.(
           (* scale from the top left instead of the center *)
           create ~field:"transform-origin" ~value:"left top"
-          (* [display:inline] and [position:relative] is funky, avoid it by
-             using inline-block, which should also not negatively impact block
-             layout. *)
+          (* [display:inline] and [position:relative] is funky, avoid it by using
+             inline-block, which should also not negatively impact block layout. *)
           @> display `Inline_block
           @> margin ~top:(`Px 0) ~bottom:(`Px 0) ~left:(`Px 0) ~right:(`Px 0) ()
           (* use [position: relative] to keep it from impacting flow. *)

@@ -4,8 +4,9 @@ open! Bonsai_web_test
 open Bonsai.Let_syntax
 module Typeahead = Bonsai_web_ui_typeahead.Typeahead
 
-let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
+let shared_computation ?(to_string = Bonsai.return Data.to_string) ?unboxed () =
   Typeahead.create
+    ?unboxed
     ~sexp_of:[%sexp_of: Data.t]
     ~equal:[%equal: Data.t]
     ~all_options:(Bonsai.return Data.all)
@@ -15,8 +16,8 @@ let shared_computation ?(to_string = Bonsai.return Data.to_string) () =
       Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
 ;;
 
-let view_computation ?to_string () (local_ graph) =
-  let%sub { view; _ } = shared_computation ?to_string () graph in
+let view_computation ?to_string ?unboxed () (local_ graph) =
+  let%sub { view; _ } = shared_computation ?to_string ?unboxed () graph in
   view
 ;;
 
@@ -36,6 +37,65 @@ let%expect_test "Initial typeahead state" =
   [%expect
     {|
     <div>
+      <input type="text"
+             list="bonsai_path_replaced_in_test"
+             placeholder="Select a value"
+             value=""
+             #value=""
+             @on_blur
+             @on_change
+             @on_focus
+             @on_input/>
+      <datalist id="bonsai_path_replaced_in_test">
+        <option value="Option A"> Option A </option>
+        <option value="Option B"> Option B </option>
+        <option value="Option C"> Option C </option>
+      </datalist>
+    </div>
+    |}]
+;;
+
+let%expect_test "Boxed vs. Unboxed typeahead" =
+  let handle =
+    Handle.create (Result_spec.vdom Fn.id) (fun (local_ graph) ->
+      view_computation () graph
+      |> Bonsai.map ~f:(fun view ->
+        Vdom.Node.div [ Vdom.Node.p [ Vdom.Node.text "Hello" ]; view ]))
+  in
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <p> Hello </p>
+      <div>
+        <input type="text"
+               list="bonsai_path_replaced_in_test"
+               placeholder="Select a value"
+               value=""
+               #value=""
+               @on_blur
+               @on_change
+               @on_focus
+               @on_input/>
+        <datalist id="bonsai_path_replaced_in_test">
+          <option value="Option A"> Option A </option>
+          <option value="Option B"> Option B </option>
+          <option value="Option C"> Option C </option>
+        </datalist>
+      </div>
+    </div>
+    |}];
+  let handle =
+    Handle.create (Result_spec.vdom Fn.id) (fun (local_ graph) ->
+      view_computation ~unboxed:() () graph
+      |> Bonsai.map ~f:(fun view ->
+        Vdom.Node.div [ Vdom.Node.p [ Vdom.Node.text "Hello" ]; view ]))
+  in
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <p> Hello </p>
       <input type="text"
              list="bonsai_path_replaced_in_test"
              placeholder="Select a value"
@@ -157,8 +217,8 @@ let%expect_test "Attrs are NOT merged when \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead__inline_class_hash_8af956ec84))
-     (second (typeahead__inline_class_hash_e2f39863be)))
+     (first (typeahead__inline_class_hash_7f529bf95e))
+     (second (typeahead__inline_class_hash_f7ba1ace23)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -375,9 +435,9 @@ let%expect_test "empty string clears the selection" =
 
 (* This behaviour exists for two reasons:
    1. It's the legacy behaviour and it would be a bit tricky to figure out whether any
-   apps rely on it.
+      apps rely on it.
    2. It can be useful in niche scenarios when there is data being populated from the
-   server that may not match the set of options presented to the user.
+      server that may not match the set of options presented to the user.
 
    Adding a flag to configure what to do when a value not in [all_options] is set seems
    reasonable, and easy enough to do if someone ever asks for it. *)

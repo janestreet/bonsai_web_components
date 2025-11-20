@@ -115,8 +115,8 @@ module Variant : sig
     -> 'a Form.t Bonsai.t
 
   (* Like [make], but the dropdown/radio button list will have an extra option that parses
-     to [None] with the other options parsing to [Some (* same result as
-     with [Variant.make] *)]*)
+     to [None] with the other options parsing to
+     [Some (* same result as with [Variant.make] *)] *)
   val make_optional
     :  ?picker:[ `Dropdown | `Radio of [ `Horizontal | `Vertical ] ]
     -> ?picker_attr:Vdom.Attr.t Bonsai.t

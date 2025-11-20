@@ -251,8 +251,8 @@ module Dynamic = struct
   let with_default_from_optional_effect effect form (local_ graph) =
     let effect =
       let%arr effect in
-      (* Returning [Effect.never] means that the subsequent [Form.set] will just
-         never occur, which is what we'd like to happen when a none value is produced. *)
+      (* Returning [Effect.never] means that the subsequent [Form.set] will just never
+         occur, which is what we'd like to happen when a none value is produced. *)
       match%bind.Effect effect with
       | None -> Effect.never
       | Some a -> Effect.return a

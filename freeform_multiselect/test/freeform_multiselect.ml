@@ -47,8 +47,8 @@ let%expect_test "Select two elements" =
   Handle.recompute_view handle;
   input_value handle "this is yet another thing";
   Handle.show_diff handle;
-  (* Expected change: Selected options should disappear from <datalist> and appear as pills
-     in a div that is rendered below datalist. *)
+  (* Expected change: Selected options should disappear from <datalist> and appear as
+     pills in a div that is rendered below datalist. *)
   [%expect
     {|
       <div>

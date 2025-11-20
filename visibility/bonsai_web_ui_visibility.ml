@@ -3,7 +3,7 @@ open! Bonsai_web
 open! Bonsai.Let_syntax
 open Js_of_ocaml
 
-(* This Id is used to identify instances of hooks.  This is so that a state-machine can
+(* This Id is used to identify instances of hooks. This is so that a state-machine can
    keep all the visibility information for instances separate from one another. *)
 module Id = Unique_id.Int63 ()
 
@@ -22,8 +22,8 @@ module T = struct
   module Input = struct
     type t = Action.t -> unit Effect.t [@@deriving sexp_of]
 
-    (* Always schedule both because we don't want one consumer to be able to
-       block another from receiving an action. *)
+    (* Always schedule both because we don't want one consumer to be able to block another
+       from receiving an action. *)
     let combine left right action = Effect.Many [ left action; right action ]
   end
 
@@ -203,9 +203,9 @@ let only_when_visible' ?visible_attr ?hidden_attr c (local_ graph) =
   in
   let vdom_and_other =
     match%sub Bonsai.both state prev_vdom with
-    (* Always render the component at least once, so even in the None case,
-       we render it; this will grab the vdom for the next frame, in which we'll
-       probably fall through to the other branch. *)
+    (* Always render the component at least once, so even in the None case, we render it;
+       this will grab the vdom for the next frame, in which we'll probably fall through to
+       the other branch. *)
     | _, None | Visible, _ ->
       let%sub vdom, other = c graph in
       let () =

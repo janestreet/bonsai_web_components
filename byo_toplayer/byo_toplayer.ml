@@ -8,8 +8,8 @@ module Offset = Offset
 module Anchor = Anchor
 module Match_anchor_side = Match_anchor_side
 
-(* In Chrome, adding children to the DOM root results in a whole-document style recalculation,
-   which is expensive. *)
+(* In Chrome, adding children to the DOM root results in a whole-document style
+   recalculation, which is expensive. *)
 let resolve_toplayer_root_at_graph_construction (local_ (_graph : Bonsai.graph)) =
   Byo_portal.ensure_global_toplayer_root_mounted ()
 ;;
@@ -104,15 +104,14 @@ module Autoclose = struct
     ]
   ;;
 
-  (* [event.target] for click events is where the click ended, not where it began.
-     So if you mouse down inside of a popover, drag your mouse to outside of it,
-     and release, that will register as a "click outside", and potentially close the
-     popover.
+  (* [event.target] for click events is where the click ended, not where it began. So if
+     you mouse down inside of a popover, drag your mouse to outside of it, and release,
+     that will register as a "click outside", and potentially close the popover.
 
      We could work around this by closing on mousedown, but this is not what users expect.
 
-     Instead, if the mousedown immediately before a click was inside of the popover,
-     the click will not close that popover. *)
+     Instead, if the mousedown immediately before a click was inside of the popover, the
+     click will not close that popover. *)
   let monitor_mousedown ~root_id graph =
     let last_mousedown_was_inside, set_last_mousedown_was_inside =
       Bonsai.state `Initial graph
@@ -178,10 +177,11 @@ module Autoclose = struct
               (match%bind.Effect peek_last_mousedown with
                | Inactive | Active `Inside_self ->
                  (* If the click "started" inside the popover, we disregard it because
-                 clicking inside, then dragging outside and releasing shouldn't close. *)
+                    clicking inside, then dragging outside and releasing shouldn't close. *)
                  Effect.Ignore
                | Active `Initial ->
-                 (* If we don't have an initial mousedown saved, fall back to the click target. *)
+                 (* If we don't have an initial mousedown saved, fall back to the click
+                    target. *)
                  f ~target:click_event_target
                | Active (`Clicked_on mousedown_target) -> f ~target:mousedown_target)
           in

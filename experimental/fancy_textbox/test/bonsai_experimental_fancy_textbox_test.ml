@@ -27,8 +27,8 @@ let%expect_test "fancy textbox with no highlighting" =
 ;;
 
 let%expect_test "multi-line string, no highlighting" =
-  (* Of note are the "spacer" <span>s, and the fact that the 
-     whitepsace is represented literally. *)
+  (* Of note are the "spacer" <span>s, and the fact that the whitepsace is represented
+     literally. *)
   run_test
     ~text:"\n\nfoo\nbar\n\n"
     ~process:(fun s -> [ s, Fancy.Decoration.create () ])
@@ -73,8 +73,8 @@ let%expect_test "tokenization" =
 ;;
 
 let%expect_test "bad tokenization" =
-  (* In this test, we provide decorations for "baz" when it should have been "bar".
-     The behavior of the component should be:
+  (* In this test, we provide decorations for "baz" when it should have been "bar". The
+     behavior of the component should be:
      - produce an error
      - ignore the bad decoration, and emit "bar" undecorated *)
   run_test
@@ -99,9 +99,9 @@ let%expect_test "bad tokenization" =
 ;;
 
 let%expect_test "missing final token" =
-  (* If the decorations don't cover all of the text, emit the remaining text 
-     without decorations.  Maybe this should be considered an "error", but I 
-     think it's mostly fine tbh *)
+  (* If the decorations don't cover all of the text, emit the remaining text without
+     decorations. Maybe this should be considered an "error", but I think it's mostly fine
+     tbh *)
   run_test
     ~text:"foo\nbar"
     ~process:(fun _ -> [ "foo", Fancy.Decoration.create ~color:(`Name "red") () ])

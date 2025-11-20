@@ -235,9 +235,9 @@ let create ~x_label ~per_series_info
       then { model with x_label }
       else (
         (* Every time the [model_y_labels] changes, we want to remember the visibility
-           status of all the series labels we know about so far.  This will help in the
+           status of all the series labels we know about so far. This will help in the
            case where we toggle visibility on series A, flip to a graph which does not
-           have that series, and then flip back to the original graph.  Without
+           have that series, and then flip back to the original graph. Without
            remembering, the visibility status of series A revert back to the default
            status. *)
         let past_series_visibility =

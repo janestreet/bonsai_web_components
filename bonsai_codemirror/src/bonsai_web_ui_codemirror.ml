@@ -133,7 +133,7 @@ module Codemirror_widget = struct
                   (match am_running_how with
                    | `Node_jsdom_test | `Browser_test ->
                      (* We don't include regular node tests, because Codemirror widgets
-                        only run in JSDom.  *)
+                        only run in JSDom. *)
                      if !should_log_in_tests
                      then
                        print_endline
@@ -164,13 +164,13 @@ module Codemirror_widget = struct
     : element Js.t
     =
     widget_state.inject := inject;
-    (* All updating should be taken care of directly through the editors internal
-       updating functions. We only set the state here whenever we know that the model
-       has been reset *)
+    (* All updating should be taken care of directly through the editors internal updating
+       functions. We only set the state here whenever we know that the model has been
+       reset *)
     if Path_and_generation.distinct old_path_and_generation new_path_and_generation
     then (
-      (* We have to re-add [send_transaction] to the state if we've reset the
-         model as resetting will remove it.
+      (* We have to re-add [send_transaction] to the state if we've reset the model as
+         resetting will remove it.
 
          I tried resetting the models so that they would keep the old [send_transaction]
          but reset everything else, but for some reason that prevented the codemirror
@@ -245,16 +245,15 @@ let of_initial_state ?name initial_state (local_ graph) =
           | Send_transaction transaction ->
             (match Map.min_elt model.send_transaction with
              | None ->
-               (* If the map of transaction-dispatching functions is empty, that
-                 means that this transaction would get ignored. Thus, we make a
-                 new editor_view to apply the transaction to, and then throw away
-                 immediately afterward. *)
+               (* If the map of transaction-dispatching functions is empty, that means
+                  that this transaction would get ignored. Thus, we make a new editor_view
+                  to apply the transaction to, and then throw away immediately afterward. *)
                let editor_state = State.Transaction.state (transaction model.state) in
                { model with state = editor_state }
              | Some (_, { Editor_changer.send_transaction; modify_editor_view = _; _ }) ->
-               (* We're choosing an arbitrary element because the dispatch function set
-                  on the view during creation will keep all of the states in sync so long
-                  as we send the transaction to one element *)
+               (* We're choosing an arbitrary element because the dispatch function set on
+                  the view during creation will keep all of the states in sync so long as
+                  we send the transaction to one element *)
                (try send_transaction transaction with
                 | error ->
                   eprint_s
@@ -262,11 +261,11 @@ let of_initial_state ?name initial_state (local_ graph) =
                model)
           | Set_state get_state ->
             (* The only time state gets set is when we set it from within the [dispatch]
-               function. The user of this library is not allowed to call [Set_state].
-               This means that this state value is only really useful when the user wants
-               to maintain state between two instances of the same widget, which is
-               doable through the previous state value being pased to a new instance of
-               the widget the next time it is called
+               function. The user of this library is not allowed to call [Set_state]. This
+               means that this state value is only really useful when the user wants to
+               maintain state between two instances of the same widget, which is doable
+               through the previous state value being pased to a new instance of the
+               widget the next time it is called
             *)
             let state = get_state () in
             if not (phys_equal model.state state) then { model with state } else model
@@ -401,7 +400,8 @@ let get_state_from_result_or_model result (model : Some_model.t) =
 let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions (local_ graph) =
   (* In order to get the state to load initially, we have to create the state and then
      recompute the state by applying the extensions. This makes more sense than the other
-     version, as that version requires extension t obe applied twice, which is a bit strange *)
+     version, as that version requires extension t obe applied twice, which is a bit
+     strange *)
   let default_model =
     { Some_model.send_transaction = Widget_instantiation_id.Map.empty; state = None }
   in
@@ -423,19 +423,18 @@ let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions (local_ 
           | Send_transaction transaction ->
             (match Map.min_elt model.send_transaction with
              | None ->
-               (* If the map of transaction-dispatching functions is empty, that
-                  means that this transaction would get ignored. Thus, we make a
-                  new editor_view to apply the transaction to, and then throw away
-                  immediately afterward. *)
+               (* If the map of transaction-dispatching functions is empty, that means
+                  that this transaction would get ignored. Thus, we make a new editor_view
+                  to apply the transaction to, and then throw away immediately afterward. *)
                (match get_state_from_result_or_model result model with
                 | None -> model
                 | Some state ->
                   let editor_state = State.Transaction.state (transaction state) in
                   { model with state = Some editor_state })
              | Some (_, { Editor_changer.send_transaction; modify_editor_view = _; _ }) ->
-               (* We're choosing an arbitrary element because the dispatch function set
-                  on the view during creation will keep all of the states in sync so long
-                  as we send the transaction to one element *)
+               (* We're choosing an arbitrary element because the dispatch function set on
+                  the view during creation will keep all of the states in sync so long as
+                  we send the transaction to one element *)
                (try send_transaction transaction with
                 | error ->
                   eprint_s
@@ -443,11 +442,11 @@ let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions (local_ 
                model)
           | Set_state get_state ->
             (* The only time state gets set is when we set it from within the [dispatch]
-               function. The user of this library is not allowed to call [Set_state].
-               This means that this state value is only really useful when the user wants
-               to maintain state between two instances of the same widget, which is
-               doable through the previous state value being pased to a new instance of
-               the widget the next time it is called *)
+               function. The user of this library is not allowed to call [Set_state]. This
+               means that this state value is only really useful when the user wants to
+               maintain state between two instances of the same widget, which is doable
+               through the previous state value being pased to a new instance of the
+               widget the next time it is called *)
             let state = get_state () in
             (match get_state_from_result_or_model result model with
              | None -> { model with state = Some state }
@@ -469,8 +468,8 @@ let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions (local_ 
         model)
       ~f:(fun model inject (local_ graph) ->
         let () =
-          (* Using the inject function for some reason was causing the wrapped version to not
-             actually reset *)
+          (* Using the inject function for some reason was causing the wrapped version to
+             not actually reset *)
           Bonsai.Edge.lifecycle
             ~on_deactivate:
               (let%arr inject in

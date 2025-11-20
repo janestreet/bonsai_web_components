@@ -3,7 +3,8 @@ open! Bonsai_web
 open! Bonsai_web_test
 module Form = Bonsai_web_ui_form.With_manual_view
 
-(* NOTE: This test case solely shows what happens when we set different form colors in [Form.Toggle.]. *)
+(* NOTE: This test case solely shows what happens when we set different form colors in
+   [Form.Toggle.]. *)
 
 let form ?colors (local_ graph) =
   Form.Elements.Toggle.bool ?colors ~default:false () graph

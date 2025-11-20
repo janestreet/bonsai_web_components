@@ -39,8 +39,8 @@ type t =
   ; e : string
   }
 
-(* This is a "natural option sorting" comparison function that
-   always sorts Nones to the bottom *)
+(* This is a "natural option sorting" comparison function that always sorts Nones to the
+   bottom *)
 let special_compare_option how compare_inner a b =
   match a, b with
   | None, None -> 0

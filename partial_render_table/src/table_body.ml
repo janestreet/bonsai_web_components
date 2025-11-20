@@ -31,8 +31,8 @@ end
 *)
 let return_none_1 _ = None
 
-(* Defining the function out here so that is_row_focused doesn't trigger recomputes whenever
-    Row_focused changes and we are not in cell focused mode
+(* Defining the function out here so that is_row_focused doesn't trigger recomputes
+   whenever Row_focused changes and we are not in cell focused mode
 *)
 let return_false_1 _ = false
 

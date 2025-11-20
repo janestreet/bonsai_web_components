@@ -365,6 +365,7 @@ module Typeahead : sig
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+    -> ?unboxed:unit
     -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
@@ -377,6 +378,7 @@ module Typeahead : sig
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+    -> ?unboxed:unit
     -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
@@ -390,6 +392,7 @@ module Typeahead : sig
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+    -> ?unboxed:unit
     -> ?split:(string -> string list)
     -> ('a, 'cmp) Comparator.Module.t
     -> all_options:'a list Bonsai.t
@@ -403,6 +406,7 @@ module Typeahead : sig
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+    -> ?unboxed:unit
     -> ?split:(string -> string list)
     -> ('a, _) Comparator.Module.t
     -> all_options:'a list Bonsai.t
@@ -845,9 +849,9 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
-       the last of the duplicates will be the only one that show up in the list
-       of suggestions. *)
+       (* If there are duplicate items in [all_options] (according to the comparator), the
+          last of the duplicates will be the only one that show up in the list of
+          suggestions. *)
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
@@ -863,9 +867,9 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
-       (* If there are duplicate items in [all_options] (according to the comparator),
-       the last of the duplicates will be the only one that show up in the list
-       of suggestions. *)
+       (* If there are duplicate items in [all_options] (according to the comparator), the
+          last of the duplicates will be the only one that show up in the list of
+          suggestions. *)
     -> all_options:'a list Bonsai.t
     -> local_ Bonsai.graph
     -> ('a option, Vdom.Node.t) Form.t Bonsai.t

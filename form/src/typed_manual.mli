@@ -177,7 +177,7 @@ module Variant : sig
     -> ('a, 'view) Form.t Bonsai.t
 
   (* Like [make], but the picker will have an extra option that parses to [None] with the
-     other options parsing to [Some (* same result as with [Variant.make] *)]*)
+     other options parsing to [Some (* same result as with [Variant.make] *)] *)
   val make_optional
     :  (module S_opt
           with type Typed_variant.derived_on = 'a

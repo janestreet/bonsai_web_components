@@ -2881,9 +2881,9 @@ module%test [@name "regressions"] _ = struct
     Handle.show handle
   ;;
 
-  (* Grammar validation should not fail when a type variable appears inside
-       the body type expression of a recursion expression, e.g.,
-       ... (Recursive (Tycon r ((Tyvar a))) ...) ... *)
+  (* Grammar validation should not fail when a type variable appears inside the body type
+     expression of a recursion expression, e.g., ... (Recursive (Tycon r ((Tyvar a))) ...)
+     ... *)
   let%expect_test "tyvar inside recursion body" =
     test
       (module struct
@@ -2975,9 +2975,9 @@ module%test [@name "regressions"] _ = struct
       |}]
   ;;
 
-  (* Grammar validation should not fail when an earlier-defined type constructor
-       appears inside the body type expression of a recursion expression, e.g.,
-       ... (Recursive (Tycon l ((Tycon t ()))) ...) ... *)
+  (* Grammar validation should not fail when an earlier-defined type constructor appears
+     inside the body type expression of a recursion expression, e.g., ... (Recursive
+     (Tycon l ((Tycon t ()))) ...) ... *)
   let%expect_test "tycon inside recursion body" =
     test
       (module struct
@@ -3052,8 +3052,7 @@ module%test [@name "regressions"] _ = struct
       |}]
   ;;
 
-  (* This test shows a case where a type can refer to another type
-       of the same base name. *)
+  (* This test shows a case where a type can refer to another type of the same base name. *)
   let%expect_test "tycon inside recursion body with same base name" =
     test
       (module struct
@@ -3104,7 +3103,7 @@ module%test [@name "regressions"] _ = struct
   ;;
 
   (* This test shows a case where a recursive type can transitively depend on another type
-       of the same name where no explicit namespace qualification happens in the definition. *)
+     of the same name where no explicit namespace qualification happens in the definition. *)
   let%expect_test "tycon inside recursion body with same explicitly qualified name" =
     test
       (module struct
@@ -3157,8 +3156,8 @@ module%test [@name "regressions"] _ = struct
       |}]
   ;;
 
-  (* This test shows a case where a type can transitively depend on another type
-       which has the same name in (essentially) the same scope. *)
+  (* This test shows a case where a type can transitively depend on another type which has
+     the same name in (essentially) the same scope. *)
   let%expect_test "tycon inside recursion body with same fully qualified name" =
     test
       (module struct
@@ -3210,11 +3209,11 @@ module%test [@name "regressions"] _ = struct
   ;;
 
   (* This regression test contains a grammar which contains a recursive call that would
-       overwrite the value of the Tyvar "a" in the environment to be (Tyvar "a"). Interpreting
-       this grammar incorrectly would lead to an infinite recursion (look up "a", which
-       results in looking up "a", ad infinitum).
+     overwrite the value of the Tyvar "a" in the environment to be (Tyvar "a").
+     Interpreting this grammar incorrectly would lead to an infinite recursion (look up
+     "a", which results in looking up "a", ad infinitum).
 
-       Instead, we should interpret the type variables in their original environment. *)
+     Instead, we should interpret the type variables in their original environment. *)
   let%expect_test "silly list with recursive type" =
     let module T = struct
       type 'a t' =

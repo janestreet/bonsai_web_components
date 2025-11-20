@@ -35,18 +35,17 @@ module Array = struct
   ;;
 end
 
-(* We need to collect a bunch of info related to positioning for each item.
-   This type is only used internally in the list component, so we could have
-   kept all these fields in a large tuple and avoided defining a new type.
-   However, there are enough fields that keeping them all in a tuple is
-   confusing. *)
+(* We need to collect a bunch of info related to positioning for each item. This type is
+   only used internally in the list component, so we could have kept all these fields in a
+   large tuple and avoided defining a new type. However, there are enough fields that
+   keeping them all in a tuple is confusing. *)
 type 'a item_positioning_info =
   { data : 'a
   ; index : int
   ; y_position : int
   ; adjusted_idx : int
       (* Had to name this adjusted_idx because the compiler thought that I was referring
-         to the model_info_at_index object when trying to destructure*)
+         to the model_info_at_index object when trying to destructure *)
   ; adjusted_y_position : int
   ; size : int
   ; is_dragged_item : bool
@@ -71,16 +70,15 @@ type ('k, 'cmp) comparator =
 (* The implementation of this function is nuanced, so it deserves a high-level
    explanation.
 
-   Each item in the list is a draggable item and has a corresponding drop
-   target at its position. Dragging an item from one position to another causes
-   the items between to shift up or down to make room.
+   Each item in the list is a draggable item and has a corresponding drop target at its
+   position. Dragging an item from one position to another causes the items between to
+   shift up or down to make room.
 
-   Dragging an item from outside the list into the list is special. Dropping it
-   in an items target causes that item and everything below it to shift
-   downward out of the way. Since dropping the new item on the bottom item's
-   target only places it in the second-to-bottom position, we have to add
-   a special "extra target" to the list to enable appending new items to the
-   bottom. *)
+   Dragging an item from outside the list into the list is special. Dropping it in an
+   items target causes that item and everything below it to shift downward out of the way.
+   Since dropping the new item on the bottom item's target only places it in the
+   second-to-bottom position, we have to add a special "extra target" to the list to
+   enable appending new items to the bottom. *)
 let list
   (type src cmp)
   (key : (src, cmp) comparator)

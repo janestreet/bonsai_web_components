@@ -14,9 +14,9 @@ let input ~placeholder:placeholder_ ~value:value_ ~extra_attr ~id:id_ ~on_input:
           @ type_ "text"
           @ create "list" id_
           @ placeholder placeholder_
-          (* Both Attr.value and Attr.string_property value must be set. The former only affects
-             initial control state while the latter affects the control state whilst the form is
-             being used. *)
+          (* Both Attr.value and Attr.string_property value must be set. The former only
+             affects initial control state while the latter affects the control state
+             whilst the form is being used. *)
           @ value value_
           @ value_prop value_
           @ on_change (fun _ input -> on_input_ input))
@@ -60,8 +60,8 @@ let input
   ~selected_options
   ~inject_selected_options
   ~on_set_change
-  (* This state is held internally to force the typeahead to clear the text contents
-     of the input field when an option is selected. *)
+  (* This state is held internally to force the typeahead to clear the text contents of
+     the input field when an option is selected. *)
   (local_ graph)
   =
   let select, inject_select =

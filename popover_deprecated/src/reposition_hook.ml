@@ -23,11 +23,11 @@ include Vdom.Attr.Hooks.Make (struct
       let element_width = element##.clientWidth in
       (* What if it's off screen to the top, bottom, or right?
 
-         These are more tricky I think, especially if you fall out at the
-         bottom, generally the document will just become scrollable. But I'm thinking
-         we may want to do something like store the [direction] and then only shift
-         along the orthognal axis (i.e. if you're [Top]/[Bottom] we reflow along left to
-         right, and vice versa for [Left]/[Right].)
+         These are more tricky I think, especially if you fall out at the bottom,
+         generally the document will just become scrollable. But I'm thinking we may want
+         to do something like store the [direction] and then only shift along the
+         orthognal axis (i.e. if you're [Top]/[Bottom] we reflow along left to right, and
+         vice versa for [Left]/[Right].)
 
          Or maybe, we only push the element down if it overflows at the top, but not up? *)
       let offset =
@@ -62,15 +62,15 @@ include Vdom.Attr.Hooks.Make (struct
         in
         state.anim_frame_id <- Some next_frame_anim_id
       in
-      (* Unset the elements inline opacity value set before; we don't set it to
-         [100%] since we want it to respect values set e.g. via a CSS stylesheet. *)
+      (* Unset the elements inline opacity value set before; we don't set it to [100%]
+         since we want it to respect values set e.g. via a CSS stylesheet. *)
       element##.style##.opacity := Js.string "";
       loop ()
     ;;
 
     let init () element =
-      (* Hide the element before we fully re-flow it, to prevent it from jumping around
-         on the first paint. *)
+      (* Hide the element before we fully re-flow it, to prevent it from jumping around on
+         the first paint. *)
       element##.style##.opacity := Js.string "0";
       { State.anim_frame_id = None; current_transform = 0 }
     ;;

@@ -26,17 +26,17 @@ module Scroll_tracker = struct
   end
 
   let observe child parent ~(state : State.t) =
-    (* We take the whole state here so that we can mutate the callback in it and
-       witness the change in the observer *)
+    (* We take the whole state here so that we can mutate the callback in it and witness
+       the change in the observer *)
     let on_resize_observed _entries _observer =
-      (* You might be wondering why size-changes would trigger when a scrollbar
-         is added; after all, aren't scrollbars added to an element in order to
-         keep its size the same?
+      (* You might be wondering why size-changes would trigger when a scrollbar is added;
+         after all, aren't scrollbars added to an element in order to keep its size the
+         same?
 
-         However, the demo of this hook shows that the size does in fact change,
-         and if you add a log statement here
+         However, the demo of this hook shows that the size does in fact change, and if
+         you add a log statement here
          {[
-           Js_of_ocaml.Console.console##log entries;
+           Js_of_ocaml.Console.console##log entries
          ]} *)
       let open Option.Let_syntax in
       let (_ : unit option) =
@@ -90,7 +90,7 @@ module Scroll_tracker = struct
          events could be triggered by either the child or the parent resizing. We could
          only listed to the parent except in cases where the scrollbar itself doesn't
          change the size of the parent - specific known weaknesses of this approach are
-         OSX with scrollbars only on scroll, and [scrollbar-gutter: stable].*)
+         OSX with scrollbars only on scroll, and [scrollbar-gutter: stable]. *)
       state.observer <- Some (observe ~state element parentNode)
     in
     ()

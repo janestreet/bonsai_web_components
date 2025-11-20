@@ -1833,7 +1833,7 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                @on_input/>
       </div>
       |}];
-    (* typing a start and end time where start > end does not return an [Error.t]*)
+    (* typing a start and end time where start > end does not return an [Error.t] *)
     Handle.input_text
       handle
       ~get_vdom:Form.view
@@ -2194,7 +2194,7 @@ let%expect_test "setting into a time range, with bounds check disabled" =
       </div>
       |}];
     (* setting form to a start and end time where start > end does not return
-    [Effect.Ignore]*)
+       [Effect.Ignore] *)
     Handle.do_actions handle [ eleven_am, ten_am ];
     Handle.show handle;
     expect_diff
@@ -2322,8 +2322,8 @@ let%expect_test "using the same component twice" =
   in
   Handle.do_actions handle [ "a", "b" ];
   Handle.show handle;
-  (* The real bug on display here is that two nodes have the same [key].
-     This crashes the vdom library. *)
+  (* The real bug on display here is that two nodes have the same [key]. This crashes the
+     vdom library. *)
   [%expect
     {|
     (Ok (b b))
@@ -5223,8 +5223,8 @@ let%expect_test "difference between with_default and with_default_always" =
     with_default: (Ok 10)
     with_default_always: (Ok 15)
     |}];
-  (* Observe that neither version updates form to match the new default value
-     of 20, since they both only update the default on activate or model reset. *)
+  (* Observe that neither version updates form to match the new default value of 20, since
+     they both only update the default on activate or model reset. *)
   show_both ();
   [%expect
     {|

@@ -100,8 +100,8 @@ let%expect_test "Attrs are NOT merged when  \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead_multi__inline_class_hash_9a2857faa9))
-     (second (typeahead_multi__inline_class_hash_682aa43e9a)))
+     (first (typeahead_multi__inline_class_hash_52cff10e9d))
+     (second (typeahead_multi__inline_class_hash_5ff6e36a37)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -241,8 +241,8 @@ let%expect_test "Select two elements" =
   Handle.recompute_view handle;
   input_value handle Data.Option_C;
   Handle.show_diff handle;
-  (* Expected change: Selected options should disappear from <datalist> and appear as pills
-     in a div that is rendered below datalist. *)
+  (* Expected change: Selected options should disappear from <datalist> and appear as
+     pills in a div that is rendered below datalist. *)
   [%expect
     {|
       <div>

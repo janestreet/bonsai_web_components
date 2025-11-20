@@ -99,9 +99,9 @@ module Order = struct
     | Add_sort (id, cycle_behavior) ->
       (* For multi-column sorting:
          1. Sort columns are added to the end of the list, because users expect to click
-         the most significant sort first.
+            the most significant sort first.
          2. Flipping the direction of an already sorted column will void all of the
-         lower-priority sorts. *)
+            lower-priority sorts. *)
       if List.Assoc.mem t ~equal id
       then (
         let keep = List.take_while t ~f:(fun (id', _dir) -> not (equal id id')) in

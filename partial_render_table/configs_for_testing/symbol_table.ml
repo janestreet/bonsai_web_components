@@ -86,9 +86,9 @@ module Scenarios = struct
     }
   ;;
 
-  (* It doesn't make a lot of sense to have a really large number of columns for left/right
-       focus benchmarks, so we just do it within the same size table as everything else which
-       seems more realistic. *)
+  (* It doesn't make a lot of sense to have a really large number of columns for
+     left/right focus benchmarks, so we just do it within the same size table as
+     everything else which seems more realistic. *)
   let focus_left_and_right ~num_rows =
     let starting_map = Row.init_rows num_rows in
     { Scenario.initial = Input.create starting_map
@@ -199,8 +199,8 @@ module Scenarios = struct
   ;;
 
   (* [set_map] sets performs [num_sets * batch_size] map sets in total, with stabilization
-       happening every [batch_size] changes. [window_size] specifies the size of the window,
-       and the sets wrap around it. *)
+     happening every [batch_size] changes. [window_size] specifies the size of the window,
+     and the sets wrap around it. *)
   let set_map ~size ~num_sets ~batch_size ~window_size =
     let starting_map = Row.init_rows size in
     { Scenario.initial = Input.create ~rank_range:(To (window_size - 1)) starting_map

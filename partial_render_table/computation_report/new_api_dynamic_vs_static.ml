@@ -6,7 +6,7 @@ module Report = Bonsai_web_test.Computation_report
 let title = "static - dynamic"
 
 (* This test compares dynamic columns to static ones in the new API. We would expect the
-   results to be negative, since static should perform better than dynamic.  *)
+   results to be negative, since static should perform better than dynamic. *)
 
 let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only

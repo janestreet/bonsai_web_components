@@ -5,9 +5,9 @@ module Report = Bonsai_web_test.Computation_report
 
 let title = "new - old"
 
-(* This test compares the old vs new API for dynamic cells and columns.
-   Ideally, we'd like these numbers to be negative or zero, since that means the new API
-   requires fewer incremental nodes than the old one. *)
+(* This test compares the old vs new API for dynamic cells and columns. Ideally, we'd like
+   these numbers to be negative or zero, since that means the new API requires fewer
+   incremental nodes than the old one. *)
 
 let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only

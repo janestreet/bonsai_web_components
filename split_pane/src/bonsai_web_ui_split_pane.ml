@@ -384,7 +384,7 @@ module State = struct
       (match Float.O.(container_size_px < sep) with
        | true ->
          (* If the container is really small, don't bother doing anything to avoid
-           divisions with small denominators *)
+            divisions with small denominators *)
          t
        | false ->
          let min_size, max_size =
@@ -643,9 +643,8 @@ let create_from_parameters
   =
   let state, inject_action = state_machine ~parameters graph in
   let size_change_attr =
-    (* compute this attr separately in order to be precise about its dependencies
-       (only depending on inject_action) so that the tracker isn't being continuously
-       recreated *)
+    (* compute this attr separately in order to be precise about its dependencies (only
+       depending on inject_action) so that the tracker isn't being continuously recreated *)
     let%arr inject_action in
     Size_tracker.on_change (fun { border_box = { width; height }; content_box = _ } ->
       inject_action

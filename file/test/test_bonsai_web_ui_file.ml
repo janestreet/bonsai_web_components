@@ -8,12 +8,11 @@ module Test_data = For_testing.Test_data
    JavaScript APIs. That's because:
 
    1. nodejs does not support the HTML APIs we need (File and FileReader). Although there
-   are npm packages we could use which purport to provide a compatible interface:
-   https://www.npmjs.com/package/file-api
-   https://www.npmjs.com/package/filereader
+      are npm packages we could use which purport to provide a compatible interface:
+      https://www.npmjs.com/package/file-api https://www.npmjs.com/package/filereader
 
    2. Reading files in javascript is asynchronous, which does not play nicely with
-   ppx_expect.
+      ppx_expect.
 *)
 
 module Read_state = struct

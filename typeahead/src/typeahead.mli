@@ -28,6 +28,9 @@ end
     [to_option_description] if provided will render the description provided below the
     option.
 
+    [unboxed] will emit the typeahead (and its associated datalist) as a [fragment] (to be
+    embedded in a parent node) rather than as a self-contained [div].
+
     Note that [set_selected] does not enforce that the given value is present in
     [all_options]. Setting a value not in [all_options] will successfully set the
     typeahead to that value. *)
@@ -40,6 +43,7 @@ val create
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
   -> ?attr_merge_behavior:Attr_merge_behavior.t
+  -> ?unboxed:unit
   -> sexp_of:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> all_options:'a list Bonsai.t
@@ -55,6 +59,7 @@ val create_multi
   -> ?to_string:('a -> string) Bonsai.t
   -> ?to_option_description:('a -> string) Bonsai.t
   -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+  -> ?unboxed:unit
   -> ?split:(string -> string list)
   -> ?attr_merge_behavior:Attr_merge_behavior.t
   -> ('a, 'cmp) Comparator.Module.t
@@ -72,6 +77,7 @@ module Private : sig
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
       -> ?attr_merge_behavior:Attr_merge_behavior.t
+      -> ?unboxed:unit
       -> sexp_of:('a -> Sexp.t)
       -> equal:('a -> 'a -> bool)
       -> all_options:'a list Bonsai.t
@@ -87,6 +93,7 @@ module Private : sig
       -> ?to_string:('a -> string) Bonsai.t
       -> ?to_option_description:('a -> string) Bonsai.t
       -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
+      -> ?unboxed:unit
       -> ?split:(string -> string list)
       -> ?attr_merge_behavior:Attr_merge_behavior.t
       -> ('a, 'cmp) Comparator.Module.t

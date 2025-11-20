@@ -224,10 +224,10 @@ module Dynamic_columns_shared (Extra : Extra) = struct
   let instantiate_cells t _comparator map (local_ graph) =
     Bonsai.Incr.compute (Bonsai.both t map) graph ~f:(fun both ->
       let%pattern_bind.Ui_incr t, map = both in
-      (* Why is this bind here ok?  Well, there is an alternative that involves
-           Incr_map.mapi' which closes over visible_leaves as an incremental, but even
-           in that scenario, if the set of visible_leaves changes, we're recomputing the
-           whole world anyway, so it doesn't buy us anything vs this bind. *)
+      (* Why is this bind here ok? Well, there is an alternative that involves
+         Incr_map.mapi' which closes over visible_leaves as an incremental, but even in
+         that scenario, if the set of visible_leaves changes, we're recomputing the whole
+         world anyway, so it doesn't buy us anything vs this bind. *)
       let%bind.Ui_incr visible_leaves = Ui_incr.map t ~f:visible_leaves in
       Ui_incr.Map.map map ~f:(fun (key, data) -> key, visible_leaves ~key ~data))
   ;;

@@ -182,8 +182,8 @@ let%expect_test "drop onto empty list" =
   [%expect {| |}];
   dnd_action handle Finish_drag;
   Handle.show_diff handle;
-  (* As expected, dropping an element on a non-existent target does not add the
-     item to the list. *)
+  (* As expected, dropping an element on a non-existent target does not add the item to
+     the list. *)
   [%expect
     {|
     (drag (source 0) (target 10))
@@ -463,12 +463,12 @@ let%expect_test "removing an item should shift the rank of everything else" =
     adding window event listener
     ()
     |}];
-  (* The result sexp shows the mapping from the item's key to its rank in the
-     output order. Note that removing the 0 item makes the rank of the 1 item
-     change from 1 to 0, as it should.
+  (* The result sexp shows the mapping from the item's key to its rank in the output
+     order. Note that removing the 0 item makes the rank of the 1 item change from 1 to 0,
+     as it should.
 
-     In other words, removing an item from the ranking should cause any items
-     below it to shift upward in the ranking by one. *)
+     In other words, removing an item from the ranking should cause any items below it to
+     shift upward in the ranking by one. *)
   Handle.do_actions handle [ [ Set 0; Set 1 ] ];
   Handle.show handle;
   [%expect {| ((0 0) (1 1)) |}];

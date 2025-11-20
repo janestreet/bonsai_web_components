@@ -105,9 +105,9 @@ module Expert = struct
     in
     let pre_content =
       (* <pre> nodes have some really weird rules about when they remove whitespace from
-         the start and end of the string.  We add some invisible '.' characters to fill
-         prevent them from removing any whitespace, which ensures that the textbox
-         and <pre> elements line up *)
+         the start and end of the string. We add some invisible '.' characters to fill
+         prevent them from removing any whitespace, which ensures that the textbox and
+         <pre> elements line up *)
       let should_prepend =
         match String.lsplit2 ~on:'\n' text with
         | Some (first_line, _) -> String.for_all first_line ~f:Char.is_whitespace
@@ -131,9 +131,8 @@ module Expert = struct
 end
 
 module Decoration = struct
-  (* Currently we only support changing the color of text.
-     For monospace fonts, we could also allow changing the
-     font weight and italics. *)
+  (* Currently we only support changing the color of text. For monospace fonts, we could
+     also allow changing the font weight and italics. *)
   type t = { color : Css_gen.Color.t option } [@@deriving sexp_of]
 
   let create ?color () = { color }
@@ -147,16 +146,16 @@ end
 module Substring : sig
   (* [Core.Substring] is a module for strings that are cheaply slicable.
 
-     By comparison, [String.sub s ~pos ~len] makes a _copy_ of [s] between
-     the regions [pos] and [len], while [Substring.sub s ~pos ~len] will contain
-     a _pointer_ to s, along with its offset and length.
+     By comparison, [String.sub s ~pos ~len] makes a _copy_ of [s] between the regions
+     [pos] and [len], while [Substring.sub s ~pos ~len] will contain a _pointer_ to s,
+     along with its offset and length.
 
-     This distinction is important for the fancy-textbox because with [String.t]
-     repeated calls to [split_pred] would allocate O(n^2) memory, but with
-     [Substring.t], it only allocates O(n).
+     This distinction is important for the fancy-textbox because with [String.t] repeated
+     calls to [split_pred] would allocate O(n^2) memory, but with [Substring.t], it only
+     allocates O(n).
 
-     I'm shadowing the [Core.Substring] module here in order to only expose the
-     functions that are useful in this file. *)
+     I'm shadowing the [Core.Substring] module here in order to only expose the functions
+     that are useful in this file. *)
 
   type t
 
@@ -175,7 +174,7 @@ end = struct
   type t = Substring.t
 
   let of_string s =
-    (* Initial creation of substring does require a full copy*)
+    (* Initial creation of substring does require a full copy *)
     Substring.create (Bytes.of_string s)
   ;;
 
@@ -231,29 +230,29 @@ let create_error ~i ~prefix ~text ~decoration =
         (decoration : Decoration.t)]
 ;;
 
-(* Translates a list of decorated strings into a list of vdom nodes.
-   Used in the non-expert `create` function. *)
+(* Translates a list of decorated strings into a list of vdom nodes. Used in the
+   non-expert `create` function. *)
 let lower ~text ~decorated =
   let decorated =
-    (* remove all "whitespace-only" decorated regions and remove
-       whitespace from the start and end of decorated regions *)
+    (* remove all "whitespace-only" decorated regions and remove whitespace from the start
+       and end of decorated regions *)
     List.filter_map decorated ~f:(fun (s, a) ->
       match String.strip s with
       | "" -> None
       | s -> Some (s, a))
   in
   let accumulated, decorated =
-    (* fold through the list of decorated regions, generating vdom nodes for
-       each decorated region.*)
+    (* fold through the list of decorated regions, generating vdom nodes for each
+       decorated region. *)
     List.fold_map
       decorated
       (* The accumulator is a pair, containing
          1. The remaining raw text to process
          2. The character offset into the currently parsed string
 
-         It's wrapped in an [Or_error.t] because the user could provide
-         decorated regions that don't overlap with the actual source text,
-         so we need to stop parsing at that point. *)
+         It's wrapped in an [Or_error.t] because the user could provide decorated regions
+         that don't overlap with the actual source text, so we need to stop parsing at
+         that point. *)
       ~init:(Ok (Substring.of_string text, 0))
       ~f:(fun text (decorated_text, decoration) ->
         match text with
@@ -269,7 +268,8 @@ let lower ~text ~decorated =
           let i = i + String.length leading_whitespace in
           (match Substring.is_prefix text ~prefix:decorated_text with
            | false ->
-             (* if the decorated text doesn't match what we're expecting, then return an error *)
+             (* if the decorated text doesn't match what we're expecting, then return an
+                error *)
              ( Error
                  ( create_error
                      ~i

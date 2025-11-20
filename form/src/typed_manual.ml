@@ -419,8 +419,8 @@ module Variant = struct
     let set value =
       let constructor = M.Typed_variant.which value in
       let open Ui_effect.Let_syntax in
-      (* sequence this so that the result of evaluating the picker is visible
-         when setting the innermost form *)
+      (* sequence this so that the result of evaluating the picker is visible when setting
+         the innermost form *)
       let%bind () = set_picker_value constructor in
       match%bind.Effect get_inner_form with
       | Active (Ok inner) -> Form.set inner value

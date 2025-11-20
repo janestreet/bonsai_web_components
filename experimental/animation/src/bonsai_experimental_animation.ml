@@ -227,7 +227,7 @@ let make
       (match%sub before_or_after with
        | After -> Bonsai.return 1.0
        | Before ->
-         let cur_time = Bonsai.Clock.now graph in
+         let cur_time = Bonsai.Clock.Expert.now graph in
          let%arr start_time and end_time and cur_time in
          let range_delta = Time_ns.abs_diff end_time start_time in
          let cur_delta = Time_ns.abs_diff cur_time start_time in

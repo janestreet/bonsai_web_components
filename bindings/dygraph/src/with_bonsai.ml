@@ -2,14 +2,13 @@ open Core
 open Import
 module Mutable_state_tracker = Bonsai_web_ui_low_level_vdom.Mutable_state_tracker
 
-(* This top-level side-effect installs the CSS for dygraphs.
-   We need it in this file because if the side-effect lives
-   in an otherwise-empty file, or in a file that only contains
-   module aliases, then the dead-code-eliminator will remove
-   the file (including your side-effect).
+(* This top-level side-effect installs the CSS for dygraphs. We need it in this file
+   because if the side-effect lives in an otherwise-empty file, or in a file that only
+   contains module aliases, then the dead-code-eliminator will remove the file (including
+   your side-effect).
 
-   By putting it here, anyone that uses the With_bonsai module
-   will force the side-effect to be evaluated. *)
+   By putting it here, anyone that uses the With_bonsai module will force the side-effect
+   to be evaluated. *)
 let () = Css.install_css ()
 
 module Legend_model = struct
@@ -20,20 +19,18 @@ let id = Type_equal.Id.create ~name:"dygraph" [%sexp_of: opaque]
 
 (* Defaults come from Dygraph's documentation:
 
-   https://dygraphs.com/options.html#height
-   https://dygraphs.com/options.html#width
+   https://dygraphs.com/options.html#height https://dygraphs.com/options.html#width
 *)
 let default_width = 480
 let default_height = 320
 
 let widget ?with_graph ?on_zoom data options ~graph_tracker =
-  (* This function tells the graph to resize itself to fit its contents.  This is
-     required because at the point when the graph is created, the element [el]
-     (created down below in [init]) hasn't yet been attached to the Dom, so it
-     initially detects that it's size should be 0x0.  When requestAnimationFrame
-     completes, according to the semantics of Bonsai_web, our graph has been
-     successfully inserted into the Dom, so we can trigger another resize and
-     it'll compute the correct size. *)
+  (* This function tells the graph to resize itself to fit its contents. This is required
+     because at the point when the graph is created, the element [el] (created down below
+     in [init]) hasn't yet been attached to the Dom, so it initially detects that it's
+     size should be 0x0. When requestAnimationFrame completes, according to the semantics
+     of Bonsai_web, our graph has been successfully inserted into the Dom, so we can
+     trigger another resize and it'll compute the correct size. *)
   let resize_when_inserted_into_the_dom graph _time = Graph.resize graph in
   let override_zoom_callback ~graph options =
     match on_zoom with
@@ -49,9 +46,8 @@ let widget ?with_graph ?on_zoom data options ~graph_tracker =
       Options.merge options ~prefer:our_options
   in
   let resize_if_width_or_height_changed graph ~old_options ~options =
-    (* Updating the width and height via [updateOptions] does not work.
-       We need to detect when the width/height change and call
-       [Graph.resize_explicit].
+    (* Updating the width and height via [updateOptions] does not work. We need to detect
+       when the width/height change and call [Graph.resize_explicit].
        https://dygraphs.com/jsdoc/symbols/Dygraph.html#resize *)
     let old_width = Options.width old_options in
     let old_height = Options.height old_options in
@@ -80,8 +76,8 @@ let widget ?with_graph ?on_zoom data options ~graph_tracker =
       graph_tracker.Mutable_state_tracker.unsafe_destroy graph_tracker_id;
       (* Free resources allocated by the graph *)
       Graph.destroy graph;
-      (* If for some reason the animation-frame never fired and we're already
-         being removed, go ahead and cancel the callback. *)
+      (* If for some reason the animation-frame never fired and we're already being
+         removed, go ahead and cancel the callback. *)
       Dom_html.window##cancelAnimationFrame animation_id)
     ~init:(fun () ->
       let el = Dom_html.createDiv Dom_html.document in
@@ -160,12 +156,12 @@ let create_default_legend ~x_label ~per_series_info =
 
 let format_legend inject_legend_data options data =
   let caller's_legend_formatter = Option.bind options ~f:Options.legendFormatter in
-  (* we call the legendFormatter option set on [options] in case the caller is relying
-     on it for side effects. *)
+  (* we call the legendFormatter option set on [options] in case the caller is relying on
+     it for side effects. *)
   Option.iter caller's_legend_formatter ~f:(fun f -> ignore (f data : string));
   Vdom.Effect.Expert.handle_non_dom_event_exn (inject_legend_data data);
-  (* we are pointing the legend managed by dygraph to a hidden div (see
-     [create_options]) so this should be invisible. *)
+  (* we are pointing the legend managed by dygraph to a hidden div (see [create_options])
+     so this should be invisible. *)
   "this should not be visible"
 ;;
 
@@ -184,7 +180,7 @@ let visibility ~legend_model ~num_series =
     if visibility_len < num_series
     then (
       (* Dygraphs has a bug where it will throw an error if the length of [visibility] is
-         ever less than the number of series in the data.  To work around this, we pad
+         ever less than the number of series in the data. To work around this, we pad
          [visibility] with trues. *)
       let padding = List.init (num_series - visibility_len) ~f:(Fn.const true) in
       visibility_from_legend @ padding)

@@ -532,8 +532,7 @@ let%expect_test "resize-column" =
       ~should_print_styles:true
       (Test.Component.default ~resize_column_widths_to_fit:(Bonsai.return true) ())
   in
-  (*
-     Size changed hook shouldn't do anything for the autosize view
+  (* Size changed hook shouldn't do anything for the autosize view
   *)
   let resize = resize_via_size_changed_hook in
   Handle.recompute_view_until_stable test.handle;
@@ -597,8 +596,8 @@ let%expect_test "resize-column" =
 ;;
 
 let%expect_test "big table" =
-  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk
-     centered at 50 *)
+  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk centered
+     at 50 *)
   let test =
     Test.create
       ~map:big_map

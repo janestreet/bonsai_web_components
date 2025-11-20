@@ -268,15 +268,14 @@ let%expect_test "keybindings and filtering behavior" =
         </div>
       </div>
     |}];
-  (* Filtering down to a focused item, and then removing the filter should
-     have no effect on the selection, since it isn't based in the an integer
-     index. *)
+  (* Filtering down to a focused item, and then removing the filter should have no effect
+     on the selection, since it isn't based in the an integer index. *)
   input_text handle "o";
   input_text handle "";
   Handle.show_diff handle;
   [%expect {| |}];
-  (* Filtering such that the focused item gets removed should set the focused
-     item to its nearest neighbor, even if the removed item comes back into the map. *)
+  (* Filtering such that the focused item gets removed should set the focused item to its
+     nearest neighbor, even if the removed item comes back into the map. *)
   input_text handle "a";
   input_text handle "";
   Handle.show handle;
@@ -506,8 +505,8 @@ let%expect_test "partial-rendering" =
     </div>
     |}];
   input_text handle "";
-  (* Even after unfiltering the list of fruits, "watermelon" remains focused,
-     and the list is offset to ensure that it is visible. *)
+  (* Even after unfiltering the list of fruits, "watermelon" remains focused, and the list
+     is offset to ensure that it is visible. *)
   Handle.show handle;
   [%expect
     {|
@@ -855,7 +854,8 @@ let%expect_test "The element containing all the items should be focusable withou
       <input/>
     </div>
     |}];
-  (* However, blurring the input without focusing something else *will* close the list of items. *)
+  (* However, blurring the input without focusing something else *will* close the list of
+     items. *)
   blur handle "input";
   Handle.show handle;
   [%expect
@@ -887,7 +887,8 @@ let%expect_test "The element containing all the items should be focusable withou
       <input/>
     </div>
     |}];
-  (* Also, blurring the item container to focus the input will also not close the list of items. *)
+  (* Also, blurring the item container to focus the input will also not close the list of
+     items. *)
   blur ~related_target:"input" handle "[data-test=query-box-item-container]";
   Handle.show handle;
   [%expect
@@ -905,7 +906,8 @@ let%expect_test "The element containing all the items should be focusable withou
       <input/>
     </div>
     |}];
-  (* But blurring the item container without focusing something else *will* close the list of items. *)
+  (* But blurring the item container without focusing something else *will* close the list
+     of items. *)
   blur handle "[data-test=query-box-item-container]";
   Handle.show handle;
   [%expect

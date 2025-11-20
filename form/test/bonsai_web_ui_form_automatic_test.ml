@@ -5111,13 +5111,12 @@ let%expect_test "both button and on-submit are disabled when the form doesn't va
       </table>
     </form>
     |}];
-  (* This form submission does nothing.  Well, it does prevent-default and
+  (* This form submission does nothing. Well, it does prevent-default and
      stop-propagation, but the callback certainly doesn't fire. *)
   Handle.submit_form handle ~get_vdom ~selector:"form";
   Handle.recompute_view handle;
   [%expect {| |}];
-  (* Once we put a valid number in, the form will be clickable, and
-     submittable *)
+  (* Once we put a valid number in, the form will be clickable, and submittable *)
   Handle.input_text handle ~get_vdom ~selector:"input" ~text:"123";
   Handle.recompute_view handle;
   Handle.submit_form handle ~get_vdom ~selector:"form";
@@ -6284,8 +6283,8 @@ let%expect_test "difference between with_default and with_default_always" =
     with_default: (Ok 10)
     with_default_always: (Ok 15)
     |}];
-  (* Observe that neither version updates form to match the new default value
-     of 20, since they both only update the default on activate or model reset. *)
+  (* Observe that neither version updates form to match the new default value of 20, since
+     they both only update the default on activate or model reset. *)
   show_both ();
   [%expect
     {|

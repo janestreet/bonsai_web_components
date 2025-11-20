@@ -558,8 +558,8 @@ let%expect_test "resize-column" =
 ;;
 
 let%expect_test "big table" =
-  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk
-     centered at 50 *)
+  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk centered
+     at 50 *)
   let test =
     Test.create ~map:big_map ~visible_range:(50, 50) (Test.Component.default ())
   in
