@@ -243,26 +243,29 @@ module Action = struct
   [@@deriving quickcheck, sexp]
 end
 
-let%quick_test _ =
-  fun (actions : Action.t list) ->
-  let query_var = Bonsai.Expert.Var.create "" in
-  let input_var = Bonsai.Expert.Var.create String.Map.empty in
-  let c =
-    fuzzy_search_component
-      (Bonsai.Expert.Var.value input_var)
-      (Bonsai.Expert.Var.value query_var)
+let%expect_test _ =
+  let%quick_test prop (actions : Action.t list) =
+    let query_var = Bonsai.Expert.Var.create "" in
+    let input_var = Bonsai.Expert.Var.create String.Map.empty in
+    let c =
+      fuzzy_search_component
+        (Bonsai.Expert.Var.value input_var)
+        (Bonsai.Expert.Var.value query_var)
+    in
+    let handle =
+      Handle.create
+        (Result_spec.sexp
+           (module struct
+             type t = (string * string) list [@@deriving sexp_of]
+           end))
+        c
+    in
+    List.iter actions ~f:(function
+      | Set (key, data) -> Bonsai.Expert.Var.update input_var ~f:(Map.set ~key ~data)
+      | Remove key ->
+        Bonsai.Expert.Var.update input_var ~f:(fun map -> Map.remove map key)
+      | Set_query query -> Bonsai.Expert.Var.set query_var query
+      | Show -> Handle.recompute_view handle)
   in
-  let handle =
-    Handle.create
-      (Result_spec.sexp
-         (module struct
-           type t = (string * string) list [@@deriving sexp_of]
-         end))
-      c
-  in
-  List.iter actions ~f:(function
-    | Set (key, data) -> Bonsai.Expert.Var.update input_var ~f:(Map.set ~key ~data)
-    | Remove key -> Bonsai.Expert.Var.update input_var ~f:(fun map -> Map.remove map key)
-    | Set_query query -> Bonsai.Expert.Var.set query_var query
-    | Show -> Handle.recompute_view handle)
+  ()
 ;;

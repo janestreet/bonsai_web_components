@@ -39,6 +39,7 @@ module Styling = Bonsai_web_ui_toplayer_styling
 module Position = Byo_toplayer.Position
 module Alignment = Byo_toplayer.Alignment
 module Offset = Byo_toplayer.Offset
+module Restore_focus_on_close = Byo_toplayer.Restore_focus_on_close
 
 (** A utility for creating tooltip/popover arrows. You probably want the same colors for
     the arrow and the tooltip / popover. [attrs] should not include padding or size, since
@@ -412,6 +413,7 @@ module Modal : sig
     -> ?lock_body_scroll:bool Bonsai.t
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
+    -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
     -> content:
          (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> local_ Bonsai.graph
@@ -445,6 +447,7 @@ module Modal : sig
     -> ?lock_body_scroll:bool Bonsai.t
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
+    -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
     -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> local_ Bonsai.graph
     -> unit

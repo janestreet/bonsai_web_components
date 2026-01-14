@@ -129,6 +129,7 @@ let list
     in
     let () =
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Int.t]
         ~equal:[%equal: Int.t]
         min_index
@@ -613,7 +614,12 @@ let sync_with_set
            Set.fold new_ ~init:Reversed_list.[] ~f:(fun acc key -> add key :: acc)
            |> Reversed_list.rev)
   in
-  Bonsai.Edge.on_change' ~equal:[%equal: Set.M(Key).t] input ~callback graph;
+  Bonsai.Edge.on_change'
+    ~trigger:`After_display
+    ~equal:[%equal: Set.M(Key).t]
+    input
+    ~callback
+    graph;
   Bonsai.return ()
 ;;
 

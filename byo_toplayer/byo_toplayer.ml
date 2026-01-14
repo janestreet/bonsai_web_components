@@ -7,6 +7,7 @@ module Alignment = Alignment
 module Offset = Offset
 module Anchor = Anchor
 module Match_anchor_side = Match_anchor_side
+module Restore_focus_on_close = Byo_toplayer_private_vdom.Restore_focus_on_close
 
 (* In Chrome, adding children to the DOM root results in a whole-document style
    recalculation, which is expensive. *)
@@ -157,19 +158,20 @@ module Autoclose = struct
             match kind with
             | `Right_click ->
               (* The browser doesn't give you an API to detect "clicks outside", so we've
-                 attached an event listener to the window. It needs to run on [Capture], because
-                 otherwise, if [stop_propagation] is called on the trigger element, we will never
-                 detect a click outside.
+                 attached an event listener to the window. It needs to run on [Capture],
+                 because otherwise, if [stop_propagation] is called on the trigger
+                 element, we will never detect a click outside.
 
-                 However, if you click on the trigger element, the [Capture] window listener will
-                 schedule a "close" effect, and then the trigger element's [on_click] will schedule
-                 an "open" effect, and the popover will stay open. This is not what people expect.
+                 However, if you click on the trigger element, the [Capture] window
+                 listener will schedule a "close" effect, and then the trigger element's
+                 [on_click] will schedule an "open" effect, and the popover will stay
+                 open. This is not what people expect.
 
-                 To counteract this, we [bonk] the close effect, so that it will necessarily run
-                 after the open effect.
+                 To counteract this, we [bonk] the close effect, so that it will
+                 necessarily run after the open effect.
 
-                 A [bonk] isn't needed for [`Click], because the [peek] used there accomplishes
-                 the same result of moving the [close] after the [open].
+                 A [bonk] isn't needed for [`Click], because the [peek] used there
+                 accomplishes the same result of moving the [close] after the [open].
               *)
               (* We use [click_event_target], because you can't drag on a right click. *)
               bonk (f ~target:click_event_target)
@@ -523,6 +525,8 @@ module Modal = struct
     ?lock_body_scroll
     ?overflow_auto_wrapper
     ?(focus_on_open = Bonsai.return true)
+    ?(restore_focus_on_close =
+      Bonsai.return (Restore_focus_on_close.Yes { prevent_scroll = false }))
     ~content
     (local_ graph)
     =
@@ -532,6 +536,7 @@ module Modal = struct
         let%arr lock_body_scroll = Bonsai.transpose_opt lock_body_scroll
         and overflow_auto_wrapper = Bonsai.transpose_opt overflow_auto_wrapper
         and focus_on_open
+        and restore_focus_on_close
         and attrs
         and autoclose
         and content = content graph in
@@ -539,6 +544,7 @@ module Modal = struct
           ~modal_attrs:(focus_on_open_attr focus_on_open :: autoclose :: attrs)
           ?lock_body_scroll
           ?overflow_auto_wrapper
+          ~restore_focus_on_close
           content)
       graph
   ;;
@@ -551,6 +557,7 @@ module Modal = struct
     ?lock_body_scroll
     ?overflow_auto_wrapper
     ?focus_on_open
+    ?restore_focus_on_close
     ~content
     (local_ graph)
     =
@@ -570,6 +577,7 @@ module Modal = struct
           ?lock_body_scroll
           ?overflow_auto_wrapper
           ?focus_on_open
+          ?restore_focus_on_close
           ~content:(content ~close:controls.close)
           graph;
         return ()

@@ -2045,7 +2045,7 @@ module Range = struct
 end
 
 module Radio_buttons = struct
-  let list
+  let list_opt
     (type t)
     ?(style = Bonsai.return Selectable_style.Native)
     ?(extra_container_attrs = Bonsai.return [])
@@ -2089,14 +2089,37 @@ module Radio_buttons = struct
           ~name:path
           all
     in
+    Basic_stateful.make
+      (Bonsai.state_opt ?default_model:init ~sexp_of_model:[%sexp_of: E.t] ~equal:E.equal)
+      ~view
+      graph
+  ;;
+
+  let list
+    (type t)
+    ?style
+    ?extra_container_attrs
+    ?extra_button_attrs
+    ?init
+    ?to_string
+    (module E : Model with type t = t)
+    ~equal
+    ~layout
+    all
+    (local_ graph)
+    =
     let%map.Bonsai form =
-      Basic_stateful.make
-        (Bonsai.state_opt
-           ?default_model:init
-           ~sexp_of_model:[%sexp_of: E.t]
-           ~equal:E.equal)
-        ~view
-        graph
+      list_opt
+        ?style
+        ?extra_container_attrs
+        ?extra_button_attrs
+        ?init
+        ?to_string
+        (module E : Model with type t = t)
+        ~equal
+        ~layout
+        all
+        (local_ graph)
     in
     optional_to_required form
   ;;

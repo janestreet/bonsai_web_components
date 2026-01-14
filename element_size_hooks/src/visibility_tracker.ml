@@ -92,7 +92,7 @@ module T = struct
                    let entry = Js.array_get entries i in
                    Js.Optdef.iter entry process
                  done;
-                 (* [InteractionObserver]'s callback only runs when the target element's
+                 (*=[InteractionObserver]'s callback only runs when the target element's
                     visibility has crossed one or more thresholds. This isn't ideal for the
                     purposes of this tracker, because the element might have moved, but
                     the same percentage of it is still visible. Also, a set of thresholds

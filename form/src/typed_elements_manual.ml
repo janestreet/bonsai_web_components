@@ -10,6 +10,7 @@ module Optional = struct
     ?(some_label = "Some")
     ?(none_label = "None")
     ?extra_attrs
+    ?(initial_picker = `None)
     (form : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
     : local_ Bonsai.graph -> (a option, Vdom.Node.t * view option) Form.t Bonsai.t
     =
@@ -56,10 +57,25 @@ module Optional = struct
           let form_for_picker =
             Elements.Dropdown.enumerable
               ?extra_attrs
-              (module M.Typed_variant.Packed)
+              (module struct
+                include M.Typed_variant.Packed
+
+                let all =
+                  (* The order of [all] determines which variant is selected by default on
+                     form creation. *)
+                  match initial_picker with
+                  | `None ->
+                    (* [ None; Some ] *)
+                    all
+                  | `Some ->
+                    (* Reverse so that [all] becomes [ Some; None ], making [Some]
+                       prepopulated as the default option in the dropdown. *)
+                    List.rev all
+                ;;
+              end)
               ~to_string:(function
-              | { M.Typed_variant.Packed.f = T None } -> none_label
-              | { M.Typed_variant.Packed.f = T Some } -> some_label)
+                | { M.Typed_variant.Packed.f = T None } -> none_label
+                | { M.Typed_variant.Packed.f = T Some } -> some_label)
           ;;
 
           let finalize_view picker_view inner (local_ _graph) =

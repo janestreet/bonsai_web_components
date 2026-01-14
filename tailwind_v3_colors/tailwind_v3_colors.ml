@@ -46,7 +46,7 @@ module Stable = struct
         | `pink
         | `rose
         ]
-      [@@deriving bin_io, compare, enumerate, equal, sexp, sexp_grammar]
+      [@@deriving bin_io, compare, enumerate, equal, sexp, sexp_grammar, stable_witness]
     end
   end
 end

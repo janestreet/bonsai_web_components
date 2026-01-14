@@ -105,6 +105,7 @@ let codemirror ~language ~content (local_ graph) =
   in
   let () =
     Bonsai.Edge.on_change
+      ~trigger:`After_display
       ~sexp_of_model:[%sexp_of: String.t]
       ~equal:[%equal: String.t]
       content

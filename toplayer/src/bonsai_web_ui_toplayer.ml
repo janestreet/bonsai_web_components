@@ -9,6 +9,7 @@ module Offset = Offset
 module Anchor = Anchor
 module Close_on_click_outside = Close_on_click_outside
 module Match_anchor_side = Match_anchor_side
+module Restore_focus_on_close = Restore_focus_on_close
 
 let arrow_helper = Byo_toplayer.arrow_helper
 
@@ -361,6 +362,7 @@ module Modal = struct
     ?lock_body_scroll
     ?overflow_auto_wrapper
     ?focus_on_open
+    ?restore_focus_on_close
     ~content
     (local_ graph)
     =
@@ -375,6 +377,7 @@ module Modal = struct
       ?lock_body_scroll
       ?overflow_auto_wrapper
       ?focus_on_open
+      ?restore_focus_on_close
       ~content
       graph
   ;;
@@ -388,6 +391,7 @@ module Modal = struct
     ?lock_body_scroll
     ?overflow_auto_wrapper
     ?focus_on_open
+    ?restore_focus_on_close
     ~content
     (local_ graph)
     =
@@ -408,6 +412,7 @@ module Modal = struct
           ?lock_body_scroll
           ?overflow_auto_wrapper
           ?focus_on_open
+          ?restore_focus_on_close
           ~content:(content ~close:controls.close)
           graph;
         return ()

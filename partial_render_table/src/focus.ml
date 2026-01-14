@@ -612,6 +612,7 @@ module Cell_machine = struct
     in
     let () =
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Model.t * (Key.t * Column_id.t) option]
         ~equal:[%equal: Model.t * (Key.t * Column_id.t) option]
         (Bonsai.both current visually_focused)

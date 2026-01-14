@@ -346,6 +346,7 @@ module Dynamic = struct
       | Ok new_value -> f new_value
     in
     Bonsai.Edge.on_change
+      ~trigger:`After_display
       ~sexp_of_model:[%sexp_of: M_or_error.t]
       ~equal:[%equal: M_or_error.t]
       (value_to_watch >>| value)

@@ -295,9 +295,9 @@ let project_to_sexp
   Form.project form ~parse_exn:M.sexp_of_t ~unparse:M.t_of_sexp
 ;;
 
-let maybe_set_tooltip doc view =
+let maybe_set_tooltip ~tooltip_format_of_doc_string doc view =
   match doc with
-  | Some str -> Form.View.set_tooltip (Vdom.Node.text str) view
+  | Some str -> Form.View.set_tooltip (tooltip_format_of_doc_string str) view
   | None -> view
 ;;
 
@@ -379,6 +379,7 @@ let form
   ~on_set_error
   ~customizations
   ~allow_duplication_of_list_items
+  ~tooltip_format_of_doc_string
   (local_ graph)
   =
   let with_tag_form
@@ -565,7 +566,10 @@ let form
       let%arr forms and original_field_order in
       List.map original_field_order ~f:(fun field_name ->
         let form, `Required _, `Doc doc = Map.find_exn forms field_name in
-        { Form.View.field_view = form |> Form.view |> maybe_set_tooltip doc; field_name })
+        { Form.View.field_view =
+            form |> Form.view |> maybe_set_tooltip ~tooltip_format_of_doc_string doc
+        ; field_name
+        })
       |> Form.View.record
     in
     let set =
@@ -1393,6 +1397,7 @@ let form
 ;;
 
 let form'
+  ?(tooltip_format_of_doc_string = Vdom.Node.text)
   ?(on_set_error = Effect.print_s)
   ?allow_updates_when_focused
   ?(customizations = Customization.Defaults.Form.all ?allow_updates_when_focused ())
@@ -1409,6 +1414,7 @@ let form'
       ~on_set_error
       ~customizations
       ~allow_duplication_of_list_items
+      ~tooltip_format_of_doc_string
       graph
   in
   let%arr form and sexp_grammar in
@@ -1428,6 +1434,7 @@ let form'
 let form
   (type a)
   (module M : S with type t = a)
+  ?tooltip_format_of_doc_string
   ?allow_updates_when_focused
   ?on_set_error
   ?customizations
@@ -1438,6 +1445,7 @@ let form
   fun (local_ graph) ->
   let%map.Bonsai form =
     form'
+      ?tooltip_format_of_doc_string
       ?allow_updates_when_focused
       ?on_set_error
       ?customizations

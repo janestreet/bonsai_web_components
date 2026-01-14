@@ -647,6 +647,19 @@ module Radio_buttons : sig
     -> local_ Bonsai.graph
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
+  val list_opt
+    :  ?style:Selectable_style.t Bonsai.t
+    -> ?extra_container_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_button_attrs:(checked:bool -> Vdom.Attr.t list) Bonsai.t
+    -> ?init:'a
+    -> ?to_string:('a -> string)
+    -> (module Model with type t = 'a)
+    -> equal:('a -> 'a -> bool)
+    -> layout:[ `Vertical | `Horizontal ]
+    -> 'a list Bonsai.t
+    -> local_ Bonsai.graph
+    -> ('a option, Vdom.Node.t) Form.t Bonsai.t
+
   val enumerable
     :  ?style:Selectable_style.t Bonsai.t
     -> ?extra_container_attrs:Vdom.Attr.t list Bonsai.t

@@ -1631,7 +1631,7 @@ let%expect_test "sorting legacy renderer" =
       </div>
     |}];
   (* specialized reverse sort *)
-  (* for these items, nothing changes for the primary sort*)
+  (* for these items, nothing changes for the primary sort *)
   Handle.click_on test.handle ~selector:"th:nth-child(4) > div" ~get_vdom:test.get_vdom;
   Handle.show_diff test.handle;
   [%expect

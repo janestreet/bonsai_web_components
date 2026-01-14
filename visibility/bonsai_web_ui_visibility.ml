@@ -210,6 +210,7 @@ let only_when_visible' ?visible_attr ?hidden_attr c (local_ graph) =
       let%sub vdom, other = c graph in
       let () =
         Bonsai.Edge.on_change
+          ~trigger:`After_display
           ~sexp_of_model:[%sexp_of: Vdom_model.t]
           ~equal:[%equal: Vdom_model.t]
           vdom

@@ -590,8 +590,7 @@ let%expect_test "redirect nodes" =
     [ a ==> b; a ==> c; a ==> e; a ==> g; b ==> d; c ==> e; d ==> e; e ==> g; f ==> g ]
     |> Edge.Set.of_list
   in
-  (*
-     {v
+  (* {v
             a
          __/|\
         /   | |
@@ -606,8 +605,9 @@ let%expect_test "redirect nodes" =
      v}
   *)
   (* This test case showcases the creation of "redirect" nodes across different levels.
-     "redirect" nodes are nodes that help route the different edges. In this particular test case
-     there are two different redirect nodes created marked in the diagram with "R". *)
+     "redirect" nodes are nodes that help route the different edges. In this particular
+     test case there are two different redirect nodes created marked in the diagram with
+     "R". *)
   let nodes = map_with_ids [ a; b; c; d; e; f; g ] in
   let dag_var = Bonsai.Expert.Var.create { edges; nodes } in
   let dag = Bonsai.Expert.Var.value dag_var in

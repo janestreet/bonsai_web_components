@@ -217,6 +217,7 @@ let make
               | _ -> Effect.Ignore
           in
           Bonsai.Edge.on_change'
+            ~trigger:`After_display
             ~sexp_of_model:[%sexp_of: Bonsai.Clock.Before_or_after.t]
             ~equal:[%equal: Bonsai.Clock.Before_or_after.t]
             before_or_after
@@ -299,7 +300,7 @@ let smooth
       let%map animate and duration in
       fun new_ -> animate (`For duration) ~with_ new_
     in
-    Bonsai.Edge.on_change ?sexp_of_model ~equal v ~callback graph
+    Bonsai.Edge.on_change ~trigger:`After_display ?sexp_of_model ~equal v ~callback graph
   in
   value
 ;;

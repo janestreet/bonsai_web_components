@@ -369,7 +369,13 @@ let with_dynamic_extensions
                 ()
             ])
     in
-    Bonsai.Edge.on_change ?sexp_of_model:sexp_of ~equal value ~callback graph
+    Bonsai.Edge.on_change
+      ~trigger:`After_display
+      ?sexp_of_model:sexp_of
+      ~equal
+      value
+      ~callback
+      graph
   in
   cm
 ;;
@@ -512,6 +518,7 @@ let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions (local_ 
         in
         let () =
           Bonsai.Edge.on_change
+            ~trigger:`After_display
             ~equal:phys_equal
             ~callback:
               (let%arr inject in

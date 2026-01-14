@@ -271,6 +271,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
           | None | Some _ -> focus_elt ~id:(search_box_id new_focus ~id_prefix)
       in
       Bonsai.Edge.on_change'
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Key.t]
         ~equal:[%equal: Key.t]
         focus

@@ -289,6 +289,7 @@ module Read_on_change = struct
     in
     let () =
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: File.t]
         ~equal:[%equal: File.t]
         file

@@ -289,12 +289,11 @@ module Expert = struct
         let to_top =
           let header_offset =
             match resize_column_widths_to_fit with
-            (* scrolling this row to the top of the display involves
-             scrolling to a pixel that is actually [header_height] _above_
-             the target row. *)
-            (* resize_column_widths_to_fit:false shifts the top of the header down in position due to the
-               attr that calculates visible client rect being on an element that only
-               contains the header *)
+            (* scrolling this row to the top of the display involves scrolling to a pixel
+               that is actually [header_height] _above_ the target row. *)
+            (* resize_column_widths_to_fit:false shifts the top of the header down in
+               position due to the attr that calculates visible client rect being on an
+               element that only contains the header *)
             | false -> header_height_px
             (* When resize_column_widths_to_fit:true, the header is in the same container
                as the body. That container is where the visible client rect attr is
@@ -457,10 +456,9 @@ module Expert = struct
              tables jurisdiction. *)
           Effect.Ignore
         | Some _, None ->
-          (* [range_without_preload] is expected to return a range only if the
-             table body is partly visible, so this case is unexpected. We don't
-             do anything except print because we need to visible rect to do
-             anything correct. *)
+          (* [range_without_preload] is expected to return a range only if the table body
+             is partly visible, so this case is unexpected. We don't do anything except
+             print because we need to visible rect to do anything correct. *)
           Effect.print_s
             [%message
               [%here]
@@ -506,6 +504,7 @@ module Expert = struct
           | None -> Effect.Ignore
       in
       Bonsai.Edge.on_change'
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Row_height_model.t]
         ~equal:[%equal: Row_height_model.t]
         row_height
@@ -878,6 +877,7 @@ module Basic = struct
     in
     let () =
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: int * int]
         ~equal:[%equal: int * int]
         viewed_range

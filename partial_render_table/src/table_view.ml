@@ -129,16 +129,20 @@ let int_to_px_string px = Int.to_string px ^ "px"
 let float_to_px_string px = Virtual_dom.Dom_float.to_string_fixed 2 px ^ "px"
 
 module Header_label = struct
-  let wrap_clickable ~sortable ~handle_click contents =
+  let wrap_clickable ?test_selector ~sortable ~handle_click contents =
+    let test_selector =
+      Option.map test_selector ~f:Test_selector.attr |> Option.to_list
+    in
     let attrs =
-      if sortable
-      then
-        [ Functional_style.sortable_header_cell
-        ; handle_click
-        ; Vdom.Attr.role "button"
-        ; Vdom.Attr.tabindex 0
-        ]
-      else []
+      (if sortable
+       then
+         [ Functional_style.sortable_header_cell
+         ; handle_click
+         ; Vdom.Attr.role "button"
+         ; Vdom.Attr.tabindex 0
+         ]
+       else [])
+      @ test_selector
     in
     Vdom.Node.div ~attrs [ contents ]
   ;;
@@ -306,7 +310,7 @@ module Cell = struct
     type t = Vdom.Attr.t list * Vdom.Attr.t list
 
     (* Css_gen is really slow, so we need to re-use the results of all these functions
-       whenever possible.  The difference between non-cached and cached css is the
+       whenever possible. The difference between non-cached and cached css is the
        difference between 200ms stabilizations and 0.2ms stabiliations while scrolling.
 
        The reason that Css_gen is so slow is because apparently "sprintf" is _really_

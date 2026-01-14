@@ -405,8 +405,8 @@ let create
            this keydown event, so we need to force a stabilize to ensure we select the
            correct key. *)
         (match focused_key_potentially_stale with
-         (* NOTE: We match on the stale value so that we have the chance of being able
-            to prevent default. *)
+         (* NOTE: We match on the stale value so that we have the chance of being able to
+            prevent default. *)
          | None -> inject Open_suggestions
          | Some _ ->
            (match%bind.Effect focused_key with

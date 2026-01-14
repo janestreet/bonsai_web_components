@@ -40,6 +40,7 @@ let model_resetter_generation (local_ graph) =
   let generation = Bonsai.Incr.compute path ~f:find graph in
   let () =
     Bonsai.Edge.on_change
+      ~trigger:`After_display
       ~sexp_of_model:[%sexp_of: Unit.t]
       ~equal:[%equal: Unit.t]
       (Bonsai.return ())
