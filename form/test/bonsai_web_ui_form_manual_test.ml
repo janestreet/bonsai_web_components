@@ -1833,7 +1833,7 @@ let%expect_test "typing into a time range textbox, with bounds check disabled" =
                @on_input/>
       </div>
       |}];
-    (* typing a start and end time where start > end does not return an [Error.t]*)
+    (* typing a start and end time where start > end does not return an [Error.t] *)
     Handle.input_text
       handle
       ~get_vdom:Form.view
@@ -2194,7 +2194,7 @@ let%expect_test "setting into a time range, with bounds check disabled" =
       </div>
       |}];
     (* setting form to a start and end time where start > end does not return
-    [Effect.Ignore]*)
+       [Effect.Ignore] *)
     Handle.do_actions handle [ eleven_am, ten_am ];
     Handle.show handle;
     expect_diff
@@ -2322,8 +2322,8 @@ let%expect_test "using the same component twice" =
   in
   Handle.do_actions handle [ "a", "b" ];
   Handle.show handle;
-  (* The real bug on display here is that two nodes have the same [key].
-     This crashes the vdom library. *)
+  (* The real bug on display here is that two nodes have the same [key]. This crashes the
+     vdom library. *)
   [%expect
     {|
     (Ok (b b))
@@ -3308,6 +3308,145 @@ let%expect_test "horizontal radio buttons render with correct styles applied" =
         </label>
       </li>
     </ul>
+    |}]
+;;
+
+let%expect_test "clicking on radio buttons list_opt" =
+  let component =
+    Form.Elements.Radio_buttons.list_opt
+      ~to_string:Fn.id
+      (module String)
+      ~equal:[%equal: String.t]
+      ~layout:`Vertical
+      (Bonsai.return [ "first"; "second"; "third" ])
+  in
+  let handle = Handle.create (form_result_spec [%sexp_of: string option]) component in
+  Handle.show handle;
+  [%expect
+    {|
+    (Ok ())
+
+    ==============
+    <ul class="radio-button-container widget-radio-buttons"
+        style={
+          list-style: none;
+          margin-left: 0px;
+        }>
+      <li style={ display: block; }>
+        <label>
+          <input type="radio"
+                 name="bonsai_path_replaced_in_test"
+                 class="radio-button"
+                 #checked="false"
+                 @on_click/>
+          first
+        </label>
+      </li>
+      <li style={ display: block; }>
+        <label>
+          <input type="radio"
+                 name="bonsai_path_replaced_in_test"
+                 class="radio-button"
+                 #checked="false"
+                 @on_click/>
+          second
+        </label>
+      </li>
+      <li style={ display: block; }>
+        <label>
+          <input type="radio"
+                 name="bonsai_path_replaced_in_test"
+                 class="radio-button"
+                 #checked="false"
+                 @on_click/>
+          third
+        </label>
+      </li>
+    </ul>
+    |}];
+  Handle.click_on handle ~get_vdom:Form.view ~selector:"label:nth-child(1) input";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok ())
+    +|(Ok (first))
+
+      ==============
+      <ul class="radio-button-container widget-radio-buttons"
+          style={
+            list-style: none;
+            margin-left: 0px;
+          }>
+        <li style={ display: block; }>
+          <label>
+            <input type="radio"
+                   name="bonsai_path_replaced_in_test"
+                   class="radio-button"
+    -|             #checked="false"
+    +|             #checked="true"
+                   @on_click/>
+            first
+          </label>
+        </li>
+        <li style={ display: block; }>
+          <label>
+            <input type="radio"
+                   name="bonsai_path_replaced_in_test"
+                   class="radio-button"
+                   #checked="false"
+                   @on_click/>
+            second
+          </label>
+        </li>
+        <li style={ display: block; }>
+          <label>
+    |}];
+  Handle.click_on handle ~get_vdom:Form.view ~selector:"li:nth-child(2) input";
+  Handle.show_diff handle;
+  [%expect
+    {|
+    -|(Ok (first))
+    +|(Ok (second))
+
+      ==============
+      <ul class="radio-button-container widget-radio-buttons"
+          style={
+            list-style: none;
+            margin-left: 0px;
+          }>
+        <li style={ display: block; }>
+          <label>
+            <input type="radio"
+                   name="bonsai_path_replaced_in_test"
+                   class="radio-button"
+    -|             #checked="true"
+    +|             #checked="false"
+                   @on_click/>
+            first
+          </label>
+        </li>
+        <li style={ display: block; }>
+          <label>
+            <input type="radio"
+                   name="bonsai_path_replaced_in_test"
+                   class="radio-button"
+    -|             #checked="false"
+    +|             #checked="true"
+                   @on_click/>
+            second
+          </label>
+        </li>
+        <li style={ display: block; }>
+          <label>
+            <input type="radio"
+                   name="bonsai_path_replaced_in_test"
+                   class="radio-button"
+                   #checked="false"
+                   @on_click/>
+            third
+          </label>
+        </li>
+      </ul>
     |}]
 ;;
 
@@ -4746,6 +4885,73 @@ module%test Typed = struct
   end
 
   module%test Variant = struct
+    let bisimulate_none_some f =
+      let () = f `None ~expect_diff:(fun ~none ~some:_ -> none ()) in
+      let () = f `Some ~expect_diff:(fun ~none:_ ~some -> some ()) in
+      ()
+    ;;
+
+    let%expect_test "Optional.dropdown ~initial_picker:`Some defaults to Some and orders \
+                     picker [Some; None]"
+      =
+      bisimulate_none_some
+      @@ fun initial_picker ~expect_diff ->
+      let component =
+        Form.Elements.Optional.dropdown
+          ~some_label:"Set"
+          ~none_label:"Remove"
+          ~initial_picker
+          (fun graph ->
+             Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph)
+      in
+      let result_spec =
+        form_result_spec
+          [%sexp_of: int option]
+          ~filter_printed_attributes:(fun ~key:_ ~data:_ -> true)
+          ~censor_paths:true
+      in
+      let handle =
+        Handle.create result_spec (fun graph ->
+          let%arr form = component graph in
+          Form.map_view form ~f:(fun (picker, inner) ->
+            Vdom.Node.fragment [ picker; inner |> Option.value ~default:Vdom.Node.none ]))
+      in
+      Handle.show handle;
+      expect_diff
+        ~some:(fun () ->
+          [%expect
+            {|
+            (Error "Expected an integer")
+
+            ==============
+            <div>
+              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+                <option value="0" #selected="true"> Set </option>
+                <option value="1" #selected="false"> Remove </option>
+              </select>
+              <input @key=bonsai_path_replaced_in_test
+                     type="text"
+                     spellcheck="false"
+                     value:normalized=""
+                     @on_input/>
+            </div>
+            |}])
+        ~none:(fun () ->
+          [%expect
+            {|
+            (Ok ())
+
+            ==============
+            <div>
+              <select @key=bonsai_path_replaced_in_test class="widget-dropdown" @on_change>
+                <option value="0" #selected="true"> Remove </option>
+                <option value="1" #selected="false"> Set </option>
+              </select>
+              <Vdom.Node.none-widget> </Vdom.Node.none-widget>
+            </div>
+            |}])
+    ;;
+
     let%expect_test "basic variant - defaults to first option" =
       let module T = struct
         type t =
@@ -5211,8 +5417,8 @@ let%expect_test "difference between with_default and with_default_always" =
     with_default: (Ok 10)
     with_default_always: (Ok 15)
     |}];
-  (* Observe that neither version updates form to match the new default value
-     of 20, since they both only update the default on activate or model reset. *)
+  (* Observe that neither version updates form to match the new default value of 20, since
+     they both only update the default on activate or model reset. *)
   show_both ();
   [%expect
     {|

@@ -235,8 +235,8 @@ let%expect_test "stateful items" =
   dnd_action handle (Start_drag "1");
   dnd_action handle (Set_target (Some "(1 0)"));
   dnd_action handle Finish_drag;
-  (* Observe that the state of the item is maintained after moving the item
-     from one list to another one. *)
+  (* Observe that the state of the item is maintained after moving the item from one list
+     to another one. *)
   Handle.show handle;
   [%expect
     {|

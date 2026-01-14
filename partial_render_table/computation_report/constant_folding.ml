@@ -6,7 +6,7 @@ module Report = Bonsai_web_test.Computation_report
 let title = "foldable - not foldable"
 
 (* This test compares "full-power" vs constant-foldable structures. We expect the constant
-foldable ones to be significantly smaller, so these numbers should all be negative. *)
+   foldable ones to be significantly smaller, so these numbers should all be negative. *)
 
 let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only

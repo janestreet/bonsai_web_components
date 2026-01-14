@@ -183,12 +183,12 @@ module Style =
       }
     |}]
 
-(* These CSS rules are used to clear user-agent styles. We use :where
-   to decrease specificity (otherwise child elements would not be able to
-   easily set the same properties with their own classes)
+(* These CSS rules are used to clear user-agent styles. We use :where to decrease
+   specificity (otherwise child elements would not be able to easily set the same
+   properties with their own classes)
 
    We need to append the CSS because [ppx_css] does not mangle classes in the pseudo
-   selector*)
+   selector *)
 let () =
   let form = Style.For_referencing.form in
   Inline_css.Private.append

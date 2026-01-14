@@ -253,8 +253,8 @@ module Hook = struct
       Vdom.Attr.create_hook
         hook_name
         (Vdom.Attr.Hooks.unsafe_create
-         (* This function's API only allows creating this hook with one input value
-            at a time.*)
+         (* This function's API only allows creating this hook with one input value at a
+            time. *)
            ~combine_inputs:(fun _ i -> i)
            ~id
            ~extra:(input, input_id)

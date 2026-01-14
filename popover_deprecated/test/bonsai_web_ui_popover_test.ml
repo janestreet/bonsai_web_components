@@ -400,9 +400,9 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
              data-test="test-popover"
              class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
              custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-             global-click-listener=((capture <fun>))
-             global-contextmenu-listener=((capture <fun>))
-             global-keydown-listener=((capture <fun>))>
+             @on_click_global
+             @on_contextmenu_global
+             @on_keydown_global>
           <span> Popover content! </span>
         </div>
       </span>
@@ -475,9 +475,9 @@ let%expect_test "Nested popover" =
     +|  <div id="bonsai_path_replaced_in_test"
     +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    +|       global-click-listener=((capture <fun>))
-    +|       global-contextmenu-listener=((capture <fun>))
-    +|       global-keydown-listener=((capture <fun>))>
+    +|       @on_click_global
+    +|       @on_contextmenu_global
+    +|       @on_keydown_global>
     +|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
     +|      <div>
     +|        <button id="open-popover2" @on_click> open-popover2 </button>
@@ -499,9 +499,9 @@ let%expect_test "Nested popover" =
         <div id="bonsai_path_replaced_in_test"
              class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
              custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-             global-click-listener=((capture <fun>))
-             global-contextmenu-listener=((capture <fun>))
-             global-keydown-listener=((capture <fun>))>
+             @on_click_global
+             @on_contextmenu_global
+             @on_keydown_global>
     -|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
     +|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
             <div>
@@ -511,9 +511,9 @@ let%expect_test "Nested popover" =
     +|      <div id="bonsai_path_replaced_in_test"
     +|           class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     +|           custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    +|           global-click-listener=((capture <fun>))
-    +|           global-contextmenu-listener=((capture <fun>))
-    +|           global-keydown-listener=((capture <fun>))>
+    +|           @on_click_global
+    +|           @on_contextmenu_global
+    +|           @on_keydown_global>
     +|        <button id="close-popover2" @on_click> close-popover2 </button>
     +|      </div>
           </span>
@@ -534,9 +534,9 @@ let%expect_test "Nested popover" =
     -|  <div id="bonsai_path_replaced_in_test"
     -|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     -|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    -|       global-click-listener=((capture <fun>))
-    -|       global-contextmenu-listener=((capture <fun>))
-    -|       global-keydown-listener=((capture <fun>))>
+    -|       @on_click_global
+    -|       @on_contextmenu_global
+    -|       @on_keydown_global>
     -|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
     -|      <div>
     -|        <button id="open-popover2" @on_click> open-popover2 </button>
@@ -545,9 +545,9 @@ let%expect_test "Nested popover" =
     -|      <div id="bonsai_path_replaced_in_test"
     -|           class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     -|           custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    -|           global-click-listener=((capture <fun>))
-    -|           global-contextmenu-listener=((capture <fun>))
-    -|           global-keydown-listener=((capture <fun>))>
+    -|           @on_click_global
+    -|           @on_contextmenu_global
+    -|           @on_keydown_global>
     -|        <button id="close-popover2" @on_click> close-popover2 </button>
     -|      </div>
     -|    </span>
@@ -568,9 +568,9 @@ let%expect_test "Nested popover" =
     +|  <div id="bonsai_path_replaced_in_test"
     +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    +|       global-click-listener=((capture <fun>))
-    +|       global-contextmenu-listener=((capture <fun>))
-    +|       global-keydown-listener=((capture <fun>))>
+    +|       @on_click_global
+    +|       @on_contextmenu_global
+    +|       @on_keydown_global>
     +|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
     +|      <div>
     +|        <button id="open-popover2" @on_click> open-popover2 </button>
@@ -579,9 +579,9 @@ let%expect_test "Nested popover" =
     +|      <div id="bonsai_path_replaced_in_test"
     +|           class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     +|           custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    +|           global-click-listener=((capture <fun>))
-    +|           global-contextmenu-listener=((capture <fun>))
-    +|           global-keydown-listener=((capture <fun>))>
+    +|           @on_click_global
+    +|           @on_contextmenu_global
+    +|           @on_keydown_global>
     +|        <button id="close-popover2" @on_click> close-popover2 </button>
     +|      </div>
     +|    </span>
@@ -600,9 +600,9 @@ let%expect_test "Nested popover" =
         <div id="bonsai_path_replaced_in_test"
              class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
              custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-             global-click-listener=((capture <fun>))
-             global-contextmenu-listener=((capture <fun>))
-             global-keydown-listener=((capture <fun>))>
+             @on_click_global
+             @on_contextmenu_global
+             @on_keydown_global>
     -|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test tooltip_open_hash_replaced_in_test">
     +|    <span class="right_hash_replaced_in_test tooltip_container_hash_replaced_in_test">
             <div>
@@ -612,9 +612,9 @@ let%expect_test "Nested popover" =
     -|      <div id="bonsai_path_replaced_in_test"
     -|           class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
     -|           custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-    -|           global-click-listener=((capture <fun>))
-    -|           global-contextmenu-listener=((capture <fun>))
-    -|           global-keydown-listener=((capture <fun>))>
+    -|           @on_click_global
+    -|           @on_contextmenu_global
+    -|           @on_keydown_global>
     -|        <button id="close-popover2" @on_click> close-popover2 </button>
     -|      </div>
           </span>
@@ -714,9 +714,9 @@ module%test [@name "interactions with [with_model_resetter]"] _ = struct
       +|  <div id="bonsai_path_replaced_in_test"
       +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
       +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-      +|       global-click-listener=((capture <fun>))
-      +|       global-contextmenu-listener=((capture <fun>))
-      +|       global-keydown-listener=((capture <fun>))>
+      +|       @on_click_global
+      +|       @on_contextmenu_global
+      +|       @on_keydown_global>
       +|    <div>
       +|      <span> Popover! </span>
       +|      <button id="reset-popover" @on_click> reset-popover </button>
@@ -737,9 +737,9 @@ module%test [@name "interactions with [with_model_resetter]"] _ = struct
       -|  <div id="bonsai_path_replaced_in_test"
       -|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
       -|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-      -|       global-click-listener=((capture <fun>))
-      -|       global-contextmenu-listener=((capture <fun>))
-      -|       global-keydown-listener=((capture <fun>))>
+      -|       @on_click_global
+      -|       @on_contextmenu_global
+      -|       @on_keydown_global>
       -|    <div>
       -|      <span> Popover! </span>
       -|      <button id="reset-popover" @on_click> reset-popover </button>
@@ -774,9 +774,9 @@ module%test [@name "interactions with [with_model_resetter]"] _ = struct
       +|  <div id="bonsai_path_replaced_in_test"
       +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
       +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-      +|       global-click-listener=((capture <fun>))
-      +|       global-contextmenu-listener=((capture <fun>))
-      +|       global-keydown-listener=((capture <fun>))>
+      +|       @on_click_global
+      +|       @on_contextmenu_global
+      +|       @on_keydown_global>
       +|    <div>
       +|      <span> Popover! </span>
       +|      <button id="reset-popover" @on_click> reset-popover </button>
@@ -816,9 +816,9 @@ module%test [@name "interactions with [with_model_resetter]"] _ = struct
       +|  <div id="bonsai_path_replaced_in_test"
       +|       class="default_tooltip_styles_hash_replaced_in_test tooltip_hash_replaced_in_test"
       +|       custom-css-vars=((--fg_hash_replaced_in_test black)(--border_hash_replaced_in_test grey)(--bg_hash_replaced_in_test white))
-      +|       global-click-listener=((capture <fun>))
-      +|       global-contextmenu-listener=((capture <fun>))
-      +|       global-keydown-listener=((capture <fun>))>
+      +|       @on_click_global
+      +|       @on_contextmenu_global
+      +|       @on_keydown_global>
       +|    <div>
       +|      <span> Popover! </span>
       +|      <button id="reset-popover" @on_click> reset-popover </button>

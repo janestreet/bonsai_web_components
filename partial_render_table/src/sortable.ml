@@ -36,6 +36,7 @@ module Header = struct
   module Expert = struct
     let default_click_handler
       ?(multisort_columns_when = `Shift_click)
+      ?test_selector
       { order; inject; col_id_equal }
       ~column_id
       ~sortable
@@ -69,7 +70,11 @@ module Header = struct
             else Multi_sort { dir; index = index + 1 })
       in
       let header_node = f sort_state in
-      Table_view.Header_label.wrap_clickable ~sortable ~handle_click header_node
+      Table_view.Header_label.wrap_clickable
+        ?test_selector
+        ~sortable
+        ~handle_click
+        header_node
     ;;
   end
 

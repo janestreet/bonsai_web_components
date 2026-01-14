@@ -558,8 +558,8 @@ let%expect_test "resize-column" =
 ;;
 
 let%expect_test "big table" =
-  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk
-     centered at 50 *)
+  (* The PRT always renders [low-25, high+25], so 50,50 will render a big chunk centered
+     at 50 *)
   let test =
     Test.create ~map:big_map ~visible_range:(50, 50) (Test.Component.default ())
   in
@@ -1260,7 +1260,7 @@ let%expect_test "sorting legacy renderer" =
       </div>
     |}];
   (* specialized reverse sort *)
-  (* for these items, nothing changes for the primary sort*)
+  (* for these items, nothing changes for the primary sort *)
   Handle.click_on test.handle ~selector:"td:nth-child(4) > div" ~get_vdom:test.get_vdom;
   Handle.show_diff test.handle;
   [%expect

@@ -63,6 +63,9 @@ end
     type. For types which derive sexp and sexp_grammar, [on_set_error] should not be
     called, but it may for types with hand-rolled grammars or sexp functions.
 
+    [tooltip_format_of_doc_string] allows the user to provide a custom function for
+    parsing docstrings to allow for better rendering of tooltips.
+
     [customizations] is a list of customizations to use while generating the form (see
     above). Customizations are tried in the provided order, using the result of the first
     matching customization.
@@ -80,6 +83,7 @@ end
     the list. *)
 val form
   :  (module S with type t = 'a)
+  -> ?tooltip_format_of_doc_string:(string -> Vdom.Node.t)
   -> ?allow_updates_when_focused:[ `Always | `Never ]
   -> ?on_set_error:(Sexp.t -> unit Effect.t)
   -> ?customizations:form_transformer Customization.t list
@@ -92,7 +96,8 @@ val form
     produces a [Sexp.t Form.t]. This allows you to create a form that depends on a dynamic
     sexp grammar. *)
 val form'
-  :  ?on_set_error:(Sexp.t -> unit Effect.t)
+  :  ?tooltip_format_of_doc_string:(string -> Vdom.Node.t)
+  -> ?on_set_error:(Sexp.t -> unit Effect.t)
   -> ?allow_updates_when_focused:[ `Always | `Never ]
   -> ?customizations:form_transformer Customization.t list
   -> ?textbox_for_string:unit

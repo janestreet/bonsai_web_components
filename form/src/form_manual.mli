@@ -172,8 +172,8 @@ val fallback_to : ('a, 'view) t -> value:'a -> ('a, 'view) t
     [Form.t Bonsai.t], and typically take a [local_ Bonsai.graph]. *)
 module Dynamic : sig
   (* Sets a [('a, 'view) t] to a default value the first time it is displayed on a page.
-     [with_default] does not set the model a second time if the form is removed
-     from the page and then re-added. *)
+     [with_default] does not set the model a second time if the form is removed from the
+     page and then re-added. *)
   val with_default
     :  'a Bonsai.t
     -> ('a, 'view) t Bonsai.t
@@ -188,8 +188,8 @@ module Dynamic : sig
     -> ('a, 'view) t Bonsai.t
 
   (* Like [with_default_from_effect], but the effect produces an optional value. The
-     default is only set in the [Some] case. If the response is [None], the effect will
-     be re-dispatched again on re-activate. *)
+     default is only set in the [Some] case. If the response is [None], the effect will be
+     re-dispatched again on re-activate. *)
   val with_default_from_optional_effect
     :  'a option Effect.t Bonsai.t
     -> ('a, 'view) t Bonsai.t

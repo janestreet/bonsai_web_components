@@ -288,9 +288,9 @@ let project_to_sexp
   Form.project form ~parse_exn:M.sexp_of_t ~unparse:M.t_of_sexp
 ;;
 
-let maybe_set_tooltip doc view =
+let maybe_set_tooltip ~tooltip_format_of_doc_string doc view =
   match doc with
-  | Some str -> Form.View.set_tooltip (Vdom.Node.text str) view
+  | Some str -> Form.View.set_tooltip (tooltip_format_of_doc_string str) view
   | None -> view
 ;;
 
@@ -372,6 +372,7 @@ let form
   ~on_set_error
   ~customizations
   ~allow_duplication_of_list_items
+  ~tooltip_format_of_doc_string
   graph
   =
   let with_tag_form
@@ -525,10 +526,10 @@ let form
           (fun
             _
             field_and_doc
-            (* [args_form] is a [Sexp.t option Form.t] because we need the ability to include
-             or omit the sexp produced by that part of the form depending on if we want to
-             use the default value. [None] indicates that we should just use the default
-             value. *)
+            (* [args_form] is a [Sexp.t option Form.t] because we need the ability to
+               include or omit the sexp produced by that part of the form depending on if
+               we want to use the default value. [None] indicates that we should just use
+               the default value. *)
               graph
           ->
           let%sub field, doc = field_and_doc in
@@ -558,7 +559,10 @@ let form
       let%arr forms and original_field_order in
       List.map original_field_order ~f:(fun field_name ->
         let form, `Required _, `Doc doc = Map.find_exn forms field_name in
-        { Form.View.field_view = form |> Form.view |> maybe_set_tooltip doc; field_name })
+        { Form.View.field_view =
+            form |> Form.view |> maybe_set_tooltip ~tooltip_format_of_doc_string doc
+        ; field_name
+        })
       |> Form.View.record
     in
     let set =
@@ -655,8 +659,8 @@ let form
           (fun
             (_ : unit Bonsai.t)
             inject_outer
-            (* We can't use toggle here because we need to be able to set the value directly
-             as part of [Form.set] *)
+            (* We can't use toggle here because we need to be able to set the value
+               directly as part of [Form.set] *)
               graph
           ->
           let override, set_override =
@@ -965,8 +969,8 @@ let form
           Form.Expert.create ~value ~set ~view
         | Cons _ ->
           (* Tuples don't have labels, so we annotate their arguments with ordinals. The
-           special-case check for a singleton list is because we don't want to add an
-           ordinal to variants/fields that take a single argument. *)
+             special-case check for a singleton list is because we don't want to add an
+             ordinal to variants/fields that take a single argument. *)
           let%map.Bonsai value, set, views =
             annotate_with_ordinals ~grammar_form ~fields_grammar_form grammar graph
           in
@@ -1297,8 +1301,8 @@ let form
           grammar_form g graph
         | Tagged with_tag, _ -> with_tag_form with_tag graph
         | Variant { case_sensitivity = _; clauses = [] }, _ ->
-          (* There's no value that a form can produce for a variant type with no clauses. So,
-             we just produce a form that errors. *)
+          (* There's no value that a form can produce for a variant type with no clauses.
+             So, we just produce a form that errors. *)
           Bonsai.return
             (Form.return_error (Error.create_s [%message "no clauses in variant"]))
         | Variant _, _ -> error_hint (clauses_form grammar_and_environment) graph
@@ -1306,9 +1310,9 @@ let form
           Bonsai.return
             (Form.return_error (Error.create_s [%message "no grammars in union"]))
         (* This is a special form of union that's pretty easy to construct and used widely
-           in [Css_gen], which are often inputs into Bonsai components. Special casing this
-           case to have better support for those, but the general case below should still
-           probably be thought about. *)
+           in [Css_gen], which are often inputs into Bonsai components. Special casing
+           this case to have better support for those, but the general case below should
+           still probably be thought about. *)
         | ( Union
               [ Variant { case_sensitivity = sens_a; clauses = clauses_a }
               ; Variant { case_sensitivity = sens_b; clauses = clauses_b }
@@ -1379,6 +1383,7 @@ let form
 ;;
 
 let form'
+  ?(tooltip_format_of_doc_string = Vdom.Node.text)
   ?(on_set_error = Effect.print_s)
   ?allow_updates_when_focused
   ?(customizations = Customization.Defaults.Form.all ?allow_updates_when_focused ())
@@ -1395,6 +1400,7 @@ let form'
       ~on_set_error
       ~customizations
       ~allow_duplication_of_list_items
+      ~tooltip_format_of_doc_string
       graph
   in
   let%arr form and sexp_grammar in
@@ -1414,6 +1420,7 @@ let form'
 let form
   (type a)
   (module M : S with type t = a)
+  ?tooltip_format_of_doc_string
   ?allow_updates_when_focused
   ?on_set_error
   ?customizations
@@ -1424,6 +1431,7 @@ let form
   fun graph ->
   let%map.Bonsai form =
     form'
+      ?tooltip_format_of_doc_string
       ?allow_updates_when_focused
       ?on_set_error
       ?customizations

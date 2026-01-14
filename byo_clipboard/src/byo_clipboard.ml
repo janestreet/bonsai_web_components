@@ -12,7 +12,7 @@ let link_blob ~url ~title =
   [ Js_of_ocaml.File.blob_from_string ~contentType:"text/plain" url
   ; Js_of_ocaml.File.blob_from_string
       ~contentType:"text/html"
-      (* Note: the surrounding <div> is required for Windows support.  *)
+      (* Note: the surrounding <div> is required for Windows support. *)
       [%string "<div><a href=\"%{url}\">%{title}</a></div>"]
   ]
 ;;

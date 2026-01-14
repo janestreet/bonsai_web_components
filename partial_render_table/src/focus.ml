@@ -396,10 +396,9 @@ module Cell_machine = struct
              match (action : Action.t) with
              | Lock | Unlock -> current_focus, `No_change
              | Switch_from_index_to_key { key; index } ->
-               (* Before switching from index to key, we need to make sure that
-                  the focus is still at the that index. If it isn't, then we
-                  ignore the request to switch from index to key, since it is out
-                  of date. *)
+               (* Before switching from index to key, we need to make sure that the focus
+                  is still at the that index. If it isn't, then we ignore the request to
+                  switch from index to key, since it is out of date. *)
                (match current_focus with
                 | No_focused_cell -> No_focused_cell, `No_change
                 | Visible { row = At_index model_index; column }
@@ -467,8 +466,8 @@ module Cell_machine = struct
                        in
                        (match column_index with
                         | Some (i, _) ->
-                          (* List.nth_exn will throw if and only if the length of the list is 0,
-                             which the pattern match above guards against already.*)
+                          (* List.nth_exn will throw if and only if the length of the list
+                             is 0, which the pattern match above guards against already. *)
                           original_index, List.nth_exn columns (Int.max (i - 1) 0)
                         | None -> original_index, first_column)
                      | None -> range_start, first_column))
@@ -483,8 +482,8 @@ module Cell_machine = struct
                        in
                        (match column_index with
                         | Some (i, _) ->
-                          (* List.nth_exn will throw if and only if the length of the list is 0,
-                              which the pattern match above guards against already.*)
+                          (* List.nth_exn will throw if and only if the length of the list
+                             is 0, which the pattern match above guards against already. *)
                           ( original_index
                           , List.nth_exn
                               columns
@@ -580,11 +579,11 @@ module Cell_machine = struct
     in
     let current = Bonsai.cutoff ~equal:[%equal: Model.t] current in
     let statically_computed =
-      (* By depending on only [inject] (which is a constant), we can build the vast majority
-         of this record, leaving only the "focused" field left unset, which we quickly fix.
-         Doing it this way will mean that downstream consumers that only look at e.g. the "focus_up"
-         field, won't have cutoff issues caused by [inject Up] being called every time that
-         the model changes. *)
+      (* By depending on only [inject] (which is a constant), we can build the vast
+         majority of this record, leaving only the "focused" field left unset, which we
+         quickly fix. Doing it this way will mean that downstream consumers that only look
+         at e.g. the "focus_up" field, won't have cutoff issues caused by [inject Up]
+         being called every time that the model changes. *)
       let%arr inject in
       By_cell.Statically_computed.create inject
     in
@@ -611,6 +610,7 @@ module Cell_machine = struct
     in
     let () =
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Model.t * (Key.t * Column_id.t) option]
         ~equal:[%equal: Model.t * (Key.t * Column_id.t) option]
         (Bonsai.both current visually_focused)
@@ -618,9 +618,9 @@ module Cell_machine = struct
           (let%map inject in
            fun ( { Model.current_focus; locked = _; pending_select_id = _ }
                , visually_focused ) ->
-             (* If we ever notice that the state machine is focused at an index
-                for which there is an existing row, we can request that the state
-                machine switch over to being focused on the key at that index. *)
+             (* If we ever notice that the state machine is focused at an index for which
+                there is an existing row, we can request that the state machine switch
+                over to being focused on the key at that index. *)
              match current_focus with
              | Visible { row = At_index index; column = _ } ->
                (match visually_focused with

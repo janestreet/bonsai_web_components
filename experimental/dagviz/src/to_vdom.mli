@@ -24,12 +24,12 @@ module Make (Name : Types.Name) : sig
     }
   [@@deriving sexp_of, equal, compare]
 
-  (* Creates a DAG visualization. Since new ids could be minted/created while
-     introducing redirect nodes, in order to avoid side-effects a state-monad-like pattern
-     where every time that a new id is minted, the [curr_id] our count is incremented. If this
-     is the first place where new ids can be minted, it is safe to pass in Name.Count.zero. If
-     there are multiple DAGs, please give the first one a curr id of zero, and subsequent ones
-     and the [curr_id] returned by the previous call. e.g.:
+  (* Creates a DAG visualization. Since new ids could be minted/created while introducing
+     redirect nodes, in order to avoid side-effects a state-monad-like pattern where every
+     time that a new id is minted, the [curr_id] our count is incremented. If this is the
+     first place where new ids can be minted, it is safe to pass in Name.Count.zero. If
+     there are multiple DAGs, please give the first one a curr id of zero, and subsequent
+     ones and the [curr_id] returned by the previous call. e.g.:
 
      {[
        let%sub dag1, curr_id = create ~curr_id:Name.Count.zero ... in

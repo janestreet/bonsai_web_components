@@ -69,10 +69,10 @@ let render_icon ?size ?color ?stroke_width ?(attrs = []) (icon : t) =
       ; create "stroke-linecap" "round"
       ; create "stroke-linejoin" "round"
       ; create "fill" (fill_or_default icon color)
-      ; (* When using an icon inside a flexbox container, you almost certainly
-           want this so that the icon is not squished. *)
+      ; (* When using an icon inside a flexbox container, you almost certainly want this
+           so that the icon is not squished. *)
         Attr.style (Css_gen.create ~field:"flex-shrink" ~value:"0")
-      ; (* Some icons are wierdly clipped by 1px it this is not set.  *)
+      ; (* Some icons are wierdly clipped by 1px it this is not set. *)
         Attr.style (Css_gen.overflow `Visible)
       ; many attrs
       ]

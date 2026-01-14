@@ -125,8 +125,8 @@ module Record_builder = struct
       ~f:(Error.tag ~tag:(sprintf "in field %s" (Fieldslib.Field.name fieldslib_field)))
   ;;
 
-  (* This function "overrides" the [field] function inside of Record_builder
-     by adding a label *)
+  (* This function "overrides" the [field] function inside of Record_builder by adding a
+     label *)
   let field' t ~label_of_field fieldslib_field =
     let value = attach_fieldname_to_error t fieldslib_field in
     let with_label =

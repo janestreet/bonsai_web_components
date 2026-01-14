@@ -40,10 +40,10 @@ module Search = struct
         else if String.Caseless.is_substring value_string ~substring:needle
         then (
           match state with
-          (* Nothing -> partial -> partial-match*)
+          (* Nothing -> partial -> partial-match *)
           | Nothing_found -> Continue (Partial_match value)
-          (* Two partial matches means that we continue, but will only succeed if
-             finding an exact-match *)
+          (* Two partial matches means that we continue, but will only succeed if finding
+             an exact-match *)
           | Partial_match _ -> Continue Only_exact_matches_allowed
           (* If we are in the only-exact-matches state, don't change it *)
           | Only_exact_matches_allowed -> Continue Only_exact_matches_allowed)
@@ -91,9 +91,9 @@ let input
            @ [ Vdom.Attr.type_ "text"
              ; Vdom.Attr.create "list" id
              ; Vdom.Attr.placeholder placeholder
-               (* Both Attr.value and Attr.string_property value must be set. The former only affects
-                     initial control state while the latter affects the control state whilst the form is
-                     being used. *)
+               (* Both Attr.value and Attr.string_property value must be set. The former
+                  only affects initial control state while the latter affects the control
+                  state whilst the form is being used. *)
              ; Vdom.Attr.value value
              ; Vdom.Attr.on_focus (fun _ -> set_focused true)
              ; Vdom.Attr.on_blur (fun _ -> set_focused false)
@@ -103,10 +103,9 @@ let input
                  let maybe_t =
                    match input with
                    | "" ->
-                     (* Since [Search.find] is substring-based, if the input is the
-                             empty string, it'll match all of the options. In practice, this
-                             isn't what users expect: clearing the input ought to select
-                             nothing. *)
+                     (* Since [Search.find] is substring-based, if the input is the empty
+                        string, it'll match all of the options. In practice, this isn't
+                        what users expect: clearing the input ought to select nothing. *)
                      None
                    | nonempty_input ->
                      Search.find
@@ -161,6 +160,7 @@ let create_internal
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
   ?(attr_merge_behavior = Attr_merge_behavior.Merge)
+  ?unboxed
   ~sexp_of
   ~equal
   ~all_options
@@ -228,7 +228,9 @@ let create_internal
   in
   let view =
     let%arr input and datalist in
-    Vdom.Node.div [ input; datalist ]
+    match unboxed with
+    | None -> Vdom.Node.div [ input; datalist ]
+    | Some () -> Vdom.Node.fragment [ input; datalist ]
   in
   let set_selected =
     let%arr set_selected and set_current_input and to_string in
@@ -325,6 +327,7 @@ let create_multi_internal
   ?to_string
   ?to_option_description
   ?(handle_unknown_option = Bonsai.return (Fn.const None))
+  ?unboxed
   ?(split = List.return)
   ?(attr_merge_behavior = Attr_merge_behavior.Merge)
   (module M : Comparator.S
@@ -370,9 +373,9 @@ let create_multi_internal
       Effect.Many
         [ on_set_change selected_options; inject_selected_options selected_options ]
   in
-  (* This state is held internally to force the typeahead to clear the text contents
-     of the input field when an option is selected, and we give users access to the value
-     as well *)
+  (* This state is held internally to force the typeahead to clear the text contents of
+     the input field when an option is selected, and we give users access to the value as
+     well *)
   let current_input, inject_current_input =
     Bonsai.state "" ~sexp_of_model:[%sexp_of: String.t] ~equal:[%equal: String.t] graph
   in
@@ -433,16 +436,17 @@ let create_multi_internal
            fun option -> Set.mem remaining_options option)
         ()
   in
-  let%arr selected_options
-  and datalist
-  and inject_selected_options
-  and current_input
-  and input
-  and pills in
+  let view =
+    let%arr input and datalist and pills in
+    match unboxed with
+    | None -> Vdom.Node.div [ input; datalist; pills ]
+    | Some () -> Vdom.Node.fragment [ input; datalist; pills ]
+  in
+  let%arr selected_options and inject_selected_options and current_input and view in
   { selected = selected_options
   ; set_selected = inject_selected_options
   ; current_input
-  ; view = Vdom.Node.div [ input; datalist; pills ]
+  ; view
   }
 ;;
 

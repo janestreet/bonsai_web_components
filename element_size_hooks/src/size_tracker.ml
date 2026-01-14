@@ -16,7 +16,7 @@ module Dimension = struct
     let open Option.Let_syntax in
     let%map box = Js.array_get size_arr 0 |> Js.Optdef.to_option in
     (* This assumes writing-mode:horizontal.
-     https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize *)
+       https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize *)
     { width = Js.to_float box##.inlineSize; height = Js.to_float box##.blockSize }
   ;;
 end
@@ -41,8 +41,8 @@ module T = struct
   end
 
   let observe node ~(state : State.t) =
-    (* We take the whole state here so that we can mutate the callback in it and
-       witness the change in the observer *)
+    (* We take the whole state here so that we can mutate the callback in it and witness
+       the change in the observer *)
     let on_resize_observed entries _observer =
       let new_dimensions =
         let open Option.Let_syntax in
@@ -51,8 +51,8 @@ module T = struct
         let%map content_box = Dimension.of_size_array first_entry##.contentBoxSize in
         { Dimensions.border_box; content_box }
       in
-      (* According to the spec, which box we're observing changes to shouldn't impact
-         the dimensions that are returned; both the border box and content box dimensions
+      (* According to the spec, which box we're observing changes to shouldn't impact the
+         dimensions that are returned; both the border box and content box dimensions
          should always be present:
 
          https://www.w3.org/TR/resize-observer/#resize-observer-interface
@@ -107,9 +107,9 @@ module T = struct
     else (
       state.callback <- wrap_with_handle ~f:new_input;
       (* if the "size change" callback function changes, we should send it what we
-         currently think the size is, otherwise if the element never changes size,
-         the function would never get called, so whatever is ttracking the size would
-         always remain clueless... *)
+         currently think the size is, otherwise if the element never changes size, the
+         function would never get called, so whatever is ttracking the size would always
+         remain clueless... *)
       state.callback state.last_dimensions)
   ;;
 

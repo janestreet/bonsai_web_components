@@ -5,9 +5,9 @@ module Report = Bonsai_web_test.Computation_report
 
 let title = "grouped - flat"
 
-(* This test compares constant folding of configs with / without column grouping.
-   We would expect the results to be slightly lower, but not by a ton.
-   So the numbers should be positive, but not too huge.  *)
+(* This test compares constant folding of configs with / without column grouping. We would
+   expect the results to be slightly lower, but not by a ton. So the numbers should be
+   positive, but not too huge. *)
 
 let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only

@@ -10,8 +10,8 @@ let make' ?(attrs = []) ~set_url ~page_to_string page children =
                [ event##.ctrlKey; event##.shiftKey; event##.altKey; event##.metaKey ]
                ~f:Js_of_ocaml.Js.to_bool
           then
-            (* If any modifier key is pressed, let the browser handle it as a normal
-               <a>: Ctrl-Click opens in a new tab, etc *)
+            (* If any modifier key is pressed, let the browser handle it as a normal <a>:
+               Ctrl-Click opens in a new tab, etc *)
             Effect.Ignore
           else
             (* Otherwise perform an on-page navigation. *)

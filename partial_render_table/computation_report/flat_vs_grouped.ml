@@ -5,9 +5,9 @@ module Report = Bonsai_web_test.Computation_report
 
 let title = "Flat - Grouped"
 
-(* This test compares flat vs grouped column structures. We expect the grouped tests to
-   be a little slower / have a few more nodes than the flat ones, but not by a ton.
-   So these numbers will probably be positive, but shouldn't be too huge. *)
+(* This test compares flat vs grouped column structures. We expect the grouped tests to be
+   a little slower / have a few more nodes than the flat ones, but not by a ton. So these
+   numbers will probably be positive, but shouldn't be too huge. *)
 
 let test_startup pairs =
   Report.Startup.diff_pairs_incr_summary_only

@@ -131,6 +131,7 @@ let component (type a) ?(sexp_of = sexp_of_opaque) ~equal graph =
               | After -> inject (Action.Remove notification_id)
             in
             Bonsai.Edge.on_change
+              ~trigger:`After_display
               ~sexp_of_model:[%sexp_of: Bonsai.Clock.Before_or_after.t]
               ~equal:[%equal: Bonsai.Clock.Before_or_after.t]
               at

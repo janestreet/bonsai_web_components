@@ -100,6 +100,7 @@ let codemirror ~language ~content graph =
   in
   let () =
     Bonsai.Edge.on_change
+      ~trigger:`After_display
       ~sexp_of_model:[%sexp_of: String.t]
       ~equal:[%equal: String.t]
       content
@@ -173,9 +174,9 @@ let make_demo'
           (* If [make_demo (module M)] is called where [M.view] is a constant value, then
              we'll constant fold the entire `Html branch at compile time.
 
-             The [to_string_html] logic is expensive (and this lives within a match%sub which
-             defaults to not being visible), so we'd prefer to compute it when we actually
-             render it. *)
+             The [to_string_html] logic is expensive (and this lives within a match%sub
+             which defaults to not being visible), so we'd prefer to compute it when we
+             actually render it. *)
           (fun graph ->
             let html_codemirror =
               let content =

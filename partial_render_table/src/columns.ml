@@ -90,7 +90,7 @@ end
 module Expert = struct
   module Columns = struct
     (* The ordered set of column Ids is derived from the structure, but we need it for
-    both [headers] and [instantiate_cells], so we factor it out. *)
+       both [headers] and [instantiate_cells], so we factor it out. *)
     type ('column_id, 'column_id_cmp) t =
       | Static of ('column_id Column_structure.Static.t list * 'column_id list)
       | Dynamic of
@@ -192,7 +192,8 @@ module Expert = struct
     | Dynamic (cols, _, col_ids_map) ->
       let rec loop ~header_map ~initial_widths ~resizable = function
         | Column_structure.Dynamic.Leaf column_id ->
-          (* Should always exist, because we just traversed this same tree to get all the column ids. *)
+          (* Should always exist, because we just traversed this same tree to get all the
+             column ids. *)
           let header =
             Map.find header_map column_id
             |> Option.value
@@ -300,7 +301,7 @@ module Expert = struct
                   | None ->
                     let cell = apply_render_cell render_cell key col data graph in
                     (* This [add_exn] is safe, because we just checked that the col has
-                         not been seen. *)
+                       not been seen. *)
                     Map.add_exn seen ~key:col ~data:cell, cell)
               |> snd
               |> Bonsai.all

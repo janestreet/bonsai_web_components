@@ -81,6 +81,7 @@ module Header : sig
     val default_click_handler
       :  ?multisort_columns_when:
            [ `Shift_click | `Ctrl_click | `Shift_or_ctrl_click | `Disabled ]
+      -> ?test_selector:Test_selector.t
       -> 'col_id t
       -> column_id:'col_id
       -> sortable:bool

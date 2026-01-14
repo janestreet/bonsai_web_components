@@ -49,8 +49,8 @@ module Default_id = struct
 end
 
 module Make (Name : Name) = struct
-  (* This ugly recursive type / recursive module structure is
-     required in order to get sexp-deriving to work correctly *)
+  (* This ugly recursive type / recursive module structure is required in order to get
+     sexp-deriving to work correctly *)
 
   type kind =
     | Bindings of

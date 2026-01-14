@@ -121,7 +121,7 @@ end = struct
       |> Option.value_exn
            ~message:"Cannot drag until the component has initialised itself"
     in
-    (* setting the mouse pos to 0  *)
+    (* setting the mouse pos to 0 *)
     Handle.do_actions
       t.handle
       [ Drag_start
@@ -484,7 +484,7 @@ let%expect_test "Resizing is subject to constraints" =
         └───────┴───────┴───────┘
         |}];
       (* But then the constraint kicks in if we go more than that and it's no longer
-          possible to keep the split 50-50 *)
+         possible to keep the split 50-50 *)
       Test.set_container_size t 200.;
       Test.show_sizes t;
       [%expect

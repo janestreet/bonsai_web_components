@@ -133,8 +133,8 @@ module Typed : sig
   (** [make (module My_url) my_url_parser ~fallback] is a [My_url.t Url_var] that
       parses/unparses the current url into My_url.t, and when parsing fails it will return
 
-      If [navigation:`Intercept] is passed (default: `Ignore), the URL var will attempt to
-      intercept browser navigation events (e.g. clicking on links, running
+      If [navigation:`Intercept] is passed (default: `Intercept), the URL var will attempt
+      to intercept browser navigation events (e.g. clicking on links, running
       [Effect.open_url], etc), and update its value instead of reloading the page. If the
       new URL does not parse, the page will reload normally.
       https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept
@@ -156,7 +156,7 @@ module Typed : sig
       Unfortunately the halting problem remains unsolved, so we only have reasonably naive
       limit on the number of redirects before redirects stop. *)
   val make
-    :  navigation:[ `Ignore | `Intercept ]
+    :  ?navigation:[ `Ignore | `Intercept ]
     -> ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
     -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
@@ -190,13 +190,13 @@ end
 (** [create_exn'] is like [create_exn], but allows for raising if no fallback is
     available.
 
-    If [navigation:`Intercept] is passed (default: `Ignore), the URL var will attempt to
-    intercept browser navigation events (e.g. clicking on links, running
+    If [navigation:`Intercept] is passed (default: `Intercept), the URL var will attempt
+    to intercept browser navigation events (e.g. clicking on links, running
     [Effect.open_url], etc), and update its value instead of reloading the page. If the
     new URL does not parse, the page will reload normally.
     https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept *)
 val create_exn'
-  :  navigation:[ `Ignore | `Intercept ]
+  :  ?navigation:[ `Ignore | `Intercept ]
   -> (module S with type t = 'a)
   -> on_bad_uri:[ `Default_state of 'a | `Raise ]
   -> 'a t

@@ -77,7 +77,7 @@ module Gutter = struct
       ?element_class
       ()
       =
-      (* Ok not to unwrap parameters, because they will stay in the OCaml representation.*)
+      (* Ok not to unwrap parameters, because they will stay in the OCaml representation. *)
       let to_dom = Js.wrap_callback to_dom in
       let equal =
         Option.map equal ~f:(fun equal ->

@@ -40,9 +40,9 @@ module State_machine_model = struct
   type ('source_id, 'target_id) dragging =
     { source : 'source_id
     ; target : 'target_id option
-        (* If [has_moved] is false, then the mouse has been clicked, but we do
-       not yet consider the dragging to have started, so for all visual
-       purposes we are [Not_dragging]. *)
+        (* If [has_moved] is false, then the mouse has been clicked, but we do not yet
+           consider the dragging to have started, so for all visual purposes we are
+           [Not_dragging]. *)
     ; has_moved : bool
     ; offset : Position.t
     ; position : Position.t
@@ -316,25 +316,23 @@ let create_with_drop_position
              =
              Js.Unsafe.coerce event
            in
-           (* Why client coordinates and not page or screen coordinates. I've
-              tested with all three and client coordinates is clearly the
-              correct choice.
+           (* Why client coordinates and not page or screen coordinates. I've tested with
+              all three and client coordinates is clearly the correct choice.
 
-              - page: If you scroll while dragging, the dragged element moves
-                away from your mouse because the diff between start and end
-                positions gets larger even though the mouse is stationary on
-                the screen.
-              - screen: If you move the mouse while dragging (which can
-                happen if you use window management keyboard shortcuts), the
-                dragged element stays in the same position relative to the
-                browser window, since the mouse didn't move, but this is not
-                good because the mouse window has moved away from the mouse.
-              - client: Scrolling or moving the window does not pull the
-                dragged element away from the mouse.
+              - page: If you scroll while dragging, the dragged element moves away from
+                your mouse because the diff between start and end positions gets larger
+                even though the mouse is stationary on the screen.
+              - screen: If you move the mouse while dragging (which can happen if you use
+                window management keyboard shortcuts), the dragged element stays in the
+                same position relative to the browser window, since the mouse didn't move,
+                but this is not good because the mouse window has moved away from the
+                mouse.
+              - client: Scrolling or moving the window does not pull the dragged element
+                away from the mouse.
 
-              It makes sense that client coordinates is correct because the
-              dragged element itself uses fixed positioning, which is roughly
-              equivalent to client coordinates.  *)
+              It makes sense that client coordinates is correct because the dragged
+              element itself uses fixed positioning, which is roughly equivalent to client
+              coordinates. *)
            let position =
              { Position.x = event##.clientX |> Js.to_float |> Int.of_float
              ; y = event##.clientY |> Js.to_float |> Int.of_float

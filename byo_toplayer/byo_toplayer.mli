@@ -32,6 +32,13 @@ module Offset : sig
   val zero : t
 end
 
+module Restore_focus_on_close : sig
+  type t =
+    | No
+    | Yes of { prevent_scroll : bool }
+  [@@deriving sexp_of, compare, equal]
+end
+
 (** A utility for creating tooltip/popover arrows. You probably want the same colors for
     the arrow and the tooltip / popover. [attrs] should not include padding or size, since
     this is calculated from [arrow_len]. It also should not include positioning, because
@@ -85,7 +92,7 @@ val vdom_popover
   -> ?alignment:Alignment.t
   -> ?offset:Offset.t
   -> ?match_anchor_side_length:Match_anchor_side.t
-  -> ?restore_focus_on_close:bool
+  -> ?restore_focus_on_close:Restore_focus_on_close.t
   -> ?overflow_auto_wrapper:bool
   -> ?arrow:Vdom.Node.t
   -> Vdom.Node.t
@@ -340,6 +347,7 @@ module Modal : sig
     -> ?lock_body_scroll:bool Bonsai.t
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
+    -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
     -> content:(close:unit Effect.t Bonsai.t -> Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> Bonsai.graph
     -> Controls.t
@@ -370,6 +378,7 @@ module Modal : sig
     -> ?lock_body_scroll:bool Bonsai.t
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
+    -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
     -> content:(Bonsai.graph -> Vdom.Node.t Bonsai.t)
     -> Bonsai.graph
     -> unit

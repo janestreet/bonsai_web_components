@@ -256,8 +256,8 @@ module Dynamic = struct
   let with_default_from_optional_effect effect form graph =
     let effect =
       let%arr effect in
-      (* Returning [Effect.never] means that the subsequent [Form.set] will just
-         never occur, which is what we'd like to happen when a none value is produced. *)
+      (* Returning [Effect.never] means that the subsequent [Form.set] will just never
+         occur, which is what we'd like to happen when a none value is produced. *)
       match%bind.Effect effect with
       | None -> Effect.never
       | Some a -> Effect.return a
@@ -351,6 +351,7 @@ module Dynamic = struct
       | Ok new_value -> f new_value
     in
     Bonsai.Edge.on_change
+      ~trigger:`After_display
       ~sexp_of_model:[%sexp_of: M_or_error.t]
       ~equal:[%equal: M_or_error.t]
       (value_to_watch >>| value)

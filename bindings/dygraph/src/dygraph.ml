@@ -1,4 +1,4 @@
-(* With names like "Raw" and "Options", open Dygraph at your own peril.  Fully qualified
+(* With names like "Raw" and "Options", open Dygraph at your own peril. Fully qualified
    names are likely the way to go *)
 module Area = Area
 module Data = Data

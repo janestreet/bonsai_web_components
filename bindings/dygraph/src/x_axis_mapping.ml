@@ -57,10 +57,10 @@ let default_axis_label_formatter x gran opts =
   | `date d -> dygraphs_date_axis_label_formatter d gran opts |> Js.to_string
 ;;
 
-(* due to the floatness of the piecewise_linear math, timestamps come can out weird.  I
+(* due to the floatness of the piecewise_linear math, timestamps come can out weird. I
    can't imagine anyone needs more precision than ms (and if they do, they can't get it
-   anyways b/c of dates in javascript), so this rounding feels relatively
-   uncontroversial and makes the output look a lot better. *)
+   anyways b/c of dates in javascript), so this rounding feels relatively uncontroversial
+   and makes the output look a lot better. *)
 let round_time_nearest_ms time ~zone =
   let date, ofday = Time_ns.to_date_ofday time ~zone in
   let span = Time_ns.Ofday.to_span_since_start_of_day ofday in

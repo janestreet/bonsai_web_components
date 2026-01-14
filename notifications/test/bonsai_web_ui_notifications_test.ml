@@ -705,7 +705,7 @@ module%test [@name "generic notification test"] _ = struct
       |}];
     Handle.advance_clock_by handle (Time_ns.Span.of_sec 1.0);
     (* NOTE: Due to the implementation of the notifications API, there is a one frame
-         delay for the actual removal to occur. *)
+       delay for the actual removal to occur. *)
     Handle.show_diff handle;
     [%expect {| |}];
     Handle.show_diff handle;

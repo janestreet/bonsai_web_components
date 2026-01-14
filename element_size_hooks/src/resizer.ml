@@ -198,8 +198,8 @@ module T = struct
       }
     [@@deriving sexp_of]
 
-    (* Randomly pick the first, since it makes no sense to include two resizer
-       hooks on the same node *)
+    (* Randomly pick the first, since it makes no sense to include two resizer hooks on
+       the same node *)
     let combine first _second = first
   end
 
@@ -259,8 +259,8 @@ module T = struct
         let event : Js_of_ocaml.Dom_html.pointerEvent Js.t =
           Js_of_ocaml.Js.Unsafe.coerce event
         in
-        (* We use currentTarget to ensure it is the node we attached the event
-           listener to instead of a child node *)
+        (* We use currentTarget to ensure it is the node we attached the event listener to
+           instead of a child node *)
         let target = event##.currentTarget in
         let clientAxis =
           (match direction with
@@ -329,7 +329,7 @@ module T = struct
     then (
       Option.iter state.parent_node ~f:(Helpers.clear_size_attr old_direction);
       (* This might not work well if you try changing the direction while the user is
-       holding their mouse down/dragging, but that's an edge case *)
+         holding their mouse down/dragging, but that's an edge case *)
       Helpers.init_or_reset_state
         direction
         state

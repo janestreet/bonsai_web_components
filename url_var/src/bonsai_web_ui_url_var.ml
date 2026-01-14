@@ -233,13 +233,19 @@ let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navig
        Instead we can replace the current entry with a new one that carries a payload
        generated based on the parsed new URL.
 
-       See https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
+       See
+       https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
       let is_current_page = S.equal next_page (Bonsai.Expert.Var.get (get_var t)) in
       if not is_current_page then set ~how:`Replace t next_page)
 ;;
 
-let create_exn' (type a) ~navigation (module S : S with type t = a) ~on_bad_uri =
+let create_exn'
+  (type a)
+  ?(navigation = `Intercept)
+  (module S : S with type t = a)
+  ~on_bad_uri
+  =
   match am_running_how with
   | `Browser | `Browser_test | `Browser_benchmark ->
     let module Uri_routing = struct
@@ -462,7 +468,7 @@ module Typed = struct
 
   let make
     (type a)
-    ~navigation
+    ?(navigation = `Intercept)
     ?on_fallback_raises
     ?encoding_behavior
     ?trailing_slash_behavior
@@ -491,8 +497,8 @@ module Typed = struct
       match am_running_how with
       | `Browser | `Browser_benchmark | `Browser_test -> `Raise
       | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
-        (* Passing in some dummy values to [fallback] so that we can receive a default value
-           in tests *)
+        (* Passing in some dummy values to [fallback] so that we can receive a default
+           value in tests *)
         let default_value =
           fallback (Exn.create_s [%message "Dummy exception"]) Original_components.empty
         in

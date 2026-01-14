@@ -580,6 +580,7 @@ module Make (Name : Types.Name) = struct
         Fn.const update_position_tracker
       in
       Bonsai.Edge.on_change
+        ~trigger:`After_display
         ~sexp_of_model:[%sexp_of: Bulk_size_tracker.Dimensions.t Name.Map.t]
         ~equal:[%equal: Bulk_size_tracker.Dimensions.t Name.Map.t]
         sizes

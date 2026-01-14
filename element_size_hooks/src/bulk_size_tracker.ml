@@ -64,10 +64,9 @@ module Hook = struct
 
     module State = Unit
 
-    (* This module is necessary because we need to merge the map of actions
-       with the map of trackers to apply in them. The result will not be
-       polymorphic, but output module of Univ_map.Merge is expected to be
-       polymorphic. *)
+    (* This module is necessary because we need to merge the map of actions with the map
+       of trackers to apply in them. The result will not be polymorphic, but output module
+       of Univ_map.Merge is expected to be polymorphic. *)
     module Poly_unit_effect = struct
       type 'a t = unit Effect.t
 
@@ -93,8 +92,8 @@ module Hook = struct
         let f ~key:_ = function
           | `Both (tracker, dimension_group) -> Some (tracker dimension_group)
           | `Left _ ->
-            (* Some trackers might not have changes, so they don't need to
-               generate an event *)
+            (* Some trackers might not have changes, so they don't need to generate an
+               event *)
             None
           | `Right _ -> assert false
         in
@@ -138,10 +137,9 @@ module Hook = struct
 
     let on_mount = `Do_nothing
 
-    (* This update function is unsound if the injection function passed
-       to the hook ever changes. For the time being, this is fine
-       because the injection function is built by the component, and we know
-       that it never changes. *)
+    (* This update function is unsound if the injection function passed to the hook ever
+       changes. For the time being, this is fine because the injection function is built
+       by the component, and we know that it never changes. *)
     let update ~old_input:_ ~new_input:_ () _ = ()
 
     let destroy old_input _ element =

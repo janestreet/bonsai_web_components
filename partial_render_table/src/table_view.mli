@@ -21,7 +21,8 @@ end
 
 module Header_label : sig
   val wrap_clickable
-    :  sortable:bool
+    :  ?test_selector:Test_selector.t
+    -> sortable:bool
     -> handle_click:Vdom.Attr.t
     -> Vdom.Node.t
     -> Vdom.Node.t

@@ -380,6 +380,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ~sexp_of
     ~equal
     ~all_options
@@ -392,6 +393,7 @@ module Typeahead = struct
           ?to_string
           ?to_option_description
           ?handle_unknown_option
+          ?unboxed
           ~sexp_of
           ~equal
           ~all_options)
@@ -404,6 +406,7 @@ module Typeahead = struct
     ?to_string
     ?to_option_description
     ?handle_unknown_option
+    ?unboxed
     ~sexp_of
     ~equal
     ~all_options
@@ -416,6 +419,7 @@ module Typeahead = struct
           ?to_string
           ?to_option_description
           ?handle_unknown_option
+          ?unboxed
           ~sexp_of
           ~equal
           ~all_options)
@@ -725,10 +729,10 @@ module Multiple = struct
     let add_element_text = extract_add_element_text add_element_text graph in
     let%arr form and add_element_text in
     map_view form ~f:(fun { hd = { view = hd_view; _ }; tl; add_element = append } ->
-      (* [Remove_view Vdom.Node.none] works but leads to a not quite correct
-         result in the end, since the empty delete button becomes an empty <tr> that
-         takes up 2 pixels of height. It's not that big of a deal though, since people
-         should move to Form2 anyways eventually. *)
+      (* [Remove_view Vdom.Node.none] works but leads to a not quite correct result in the
+         end, since the empty delete button becomes an empty <tr> that takes up 2 pixels
+         of height. It's not that big of a deal though, since people should move to Form2
+         anyways eventually. *)
       let hd_view =
         View.list_item
           ~view:(view_item hd_view)

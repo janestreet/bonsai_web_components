@@ -61,7 +61,7 @@ let component' ~parent vdom graph =
     let%arr path in
     fun vdom -> apply_action ~path (Apply_patch vdom)
   in
-  Bonsai.Edge.on_change vdom ~equal:phys_equal ~callback graph
+  Bonsai.Edge.on_change ~trigger:`After_display vdom ~equal:phys_equal ~callback graph
 ;;
 
 let component ?(parent = Expert.global_toplayer_root) compute_vdom graph =

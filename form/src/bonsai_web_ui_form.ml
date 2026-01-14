@@ -1,6 +1,8 @@
 open! Core
 
-(** [With_manual_view] forms are now the recommended way to build forms in Bonsai. You get
+(** A library for building forms in Bonsai. *)
+
+(** [With_manual_view] forms are now the recommended API to use in this library. You get
     full control over how you'd like to combine them. Historically, [With_automatic_view]
     was the default, but they are quite restrictive and hard to customize, so we recommend
     choosing [With_manual_view] for new forms. *)

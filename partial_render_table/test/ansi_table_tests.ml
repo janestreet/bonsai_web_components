@@ -56,8 +56,8 @@ module Test = struct
     in
     let t = { handle; get_vdom; input_var = map; filter_var; get_num_filtered_rows } in
     if should_set_bounds then set_bounds t ~low:min_vis ~high:max_vis;
-    (* Because the component uses edge-triggering to propagate rank-range, we need to
-       run the view-computers twice. *)
+    (* Because the component uses edge-triggering to propagate rank-range, we need to run
+       the view-computers twice. *)
     if stabilize_height
     then (
       Handle.store_view handle;
@@ -417,8 +417,8 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
   Bonsai.Expert.Var.set a_before_b true;
   Handle.recompute_view_until_stable handle;
   Handle.show handle;
-  (* Notice that the order of the columns switched, but so has the sort order: column a
-     is now sorted ascending, and column b is no longer. This is a bug. *)
+  (* Notice that the order of the columns switched, but so has the sort order: column a is
+     now sorted ascending, and column b is no longer. This is a bug. *)
   [%expect
     {|
     ┌───┬─────┬─────┬───┐
@@ -1444,8 +1444,7 @@ let%expect_test "select index" =
     |}];
   Handle.do_actions test.handle [ Focus_index 110 ];
   Handle.show test.handle;
-  (* Focus an index off the end of the table (should be handled robustly by the
-     table). *)
+  (* Focus an index off the end of the table (should be handled robustly by the table). *)
   [%expect
     {|
     skipping scroll because target already in view
@@ -1575,10 +1574,10 @@ let%expect_test "page down and page up" =
     |}];
   Handle.do_actions test.handle [ Page_down ];
   Handle.show test.handle;
-  (* Page down at the bottom of the page moves focus off the page to an item
-     that isn't yet in the collated map. You can't actually tell this is
-     happening right here, but later in the test when the focused item becomes
-     visible, you can infer that this is what happened. *)
+  (* Page down at the bottom of the page moves focus off the page to an item that isn't
+     yet in the collated map. You can't actually tell this is happening right here, but
+     later in the test when the focused item becomes visible, you can infer that this is
+     what happened. *)
   [%expect
     {|
     scrolling to index 17 at 18.0px
@@ -1603,10 +1602,9 @@ let%expect_test "page down and page up" =
     |}];
   Handle.do_actions test.handle [ Page_down ];
   Handle.show test.handle;
-  (* Page down while the focused item is at an index instead of an existing
-     row. The focus should be moved further down into the table. Again, you'll
-     only see evidence of this later in the test when the focused row becomes
-     visible. *)
+  (* Page down while the focused item is at an index instead of an existing row. The focus
+     should be moved further down into the table. Again, you'll only see evidence of this
+     later in the test when the focused row becomes visible. *)
   [%expect
     {|
     scrolling to index 23 at 24.0px
@@ -1631,9 +1629,8 @@ let%expect_test "page down and page up" =
   Test.set_bounds test ~low:18 ~high:23;
   Handle.recompute_view test.handle;
   Handle.show test.handle;
-  (* The focused index is brought into view, demonstrating that the PRT has
-     properly kept track of focus even when the focused index didn't have a
-     corresponding row. *)
+  (* The focused index is brought into view, demonstrating that the PRT has properly kept
+     track of focus even when the focused index didn't have a corresponding row. *)
   [%expect
     {|
     ((focused (24)) (num_filtered_rows (99)))
@@ -1654,8 +1651,8 @@ let%expect_test "page down and page up" =
     └───┴──────┴─────┴────┴───────────┴─────┘
     |}];
   Handle.show test.handle;
-  (* The next frame, the table notices that the the focused row is now visible,
-     so it fires the focus changed event to notify users of the table. *)
+  (* The next frame, the table notices that the the focused row is now visible, so it
+     fires the focus changed event to notify users of the table. *)
   [%expect
     {|
     (focus_changed_to (24))
@@ -1708,9 +1705,8 @@ let%expect_test "page down and page up" =
     |}];
   Handle.do_actions test.handle [ Page_up ];
   Handle.show test.handle;
-  (* Page up jumps to the top of the page if it isn't already there. In this
-     case, it only jumped one row, which demonstrates that page up is showing
-     some restraint. *)
+  (* Page up jumps to the top of the page if it isn't already there. In this case, it only
+     jumped one row, which demonstrates that page up is showing some restraint. *)
   [%expect
     {|
     scrolling to index 18 at 18.0px
@@ -1782,8 +1778,8 @@ let%expect_test "page down and page up" =
   Test.set_bounds test ~low:5 ~high:10;
   Handle.recompute_view test.handle;
   Handle.show test.handle;
-  (* Bringing the viewport up to where focus is shows that it has progressed as
-     far as we expected. *)
+  (* Bringing the viewport up to where focus is shows that it has progressed as far as we
+     expected. *)
   [%expect
     {|
     ((focused (7)) (num_filtered_rows (99)))
@@ -1805,8 +1801,8 @@ let%expect_test "page down and page up" =
     └───┴──────┴─────┴────┴──────────┴─────┘
     |}];
   Handle.show test.handle;
-  (* One frame later, we also notice that the focused row exists, so we can
-     trigger the focus changed callback. *)
+  (* One frame later, we also notice that the focused row exists, so we can trigger the
+     focus changed callback. *)
   [%expect
     {|
     (focus_changed_to (7))
@@ -2584,7 +2580,7 @@ let%expect_test "directional jumping" =
     └───┴─────┴───────┴────┴──────────┴─────┘
     |}];
   (* We repeat this one, because the first time we ran it, we didn't start with a focused
-     state.*)
+     state. *)
   Handle.do_actions test.handle [ Focus_top ];
   Handle.show test.handle;
   [%expect
@@ -3068,8 +3064,7 @@ let%expect_test "focus down when presence says that all responses are None" =
     |}];
   Handle.do_actions test.handle [ Focus_down ];
   Handle.show test.handle;
-  (* notice that visual selection still works, but
-     "focused" remains "()", aka 'none' *)
+  (* notice that visual selection still works, but "focused" remains "()", aka 'none' *)
   [%expect
     {|
     scrolling to index 0 at 0.0px
@@ -3154,7 +3149,7 @@ module%test [@name "focus by key `key_rank` fallback"] _ = struct
       └───┴─────┴─────┘
       |}];
     Handle.do_actions test.handle [ Focus_row 150 ];
-    (* It doesn't focus immediately; we have to wait for the effect to complete.*)
+    (* It doesn't focus immediately; we have to wait for the effect to complete. *)
     Handle.show test.handle;
     [%expect
       {|
@@ -3274,7 +3269,7 @@ module%test [@name "focus by key `key_rank` fallback"] _ = struct
     Handle.advance_clock_by test.handle (Time_ns.Span.of_int_ms 10);
     Handle.recompute_view_until_stable test.handle;
     (* Focus should not have changed, because the pending `key_rank` effect should have
-         been "cancelled". *)
+       been "cancelled". *)
     Handle.show test.handle;
     [%expect
       {|
@@ -3657,10 +3652,9 @@ let%expect_test "what happens if the table body goes entirely off screen" =
   Handle.show_diff test.handle;
   [%expect {| |}];
   Handle.show test.handle;
-  (* This test does not fully demonstrate that we handle this situation
-     correctly, since it doesn't show how anything will affect the browser's
-     scroll position. However, it does demonstrate what happens, which is still
-     useful. *)
+  (* This test does not fully demonstrate that we handle this situation correctly, since
+     it doesn't show how anything will affect the browser's scroll position. However, it
+     does demonstrate what happens, which is still useful. *)
   [%expect
     {|
     ((focused ()) (num_filtered_rows (99)))

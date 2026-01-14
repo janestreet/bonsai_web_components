@@ -2,8 +2,8 @@ open! Core
 include module type of Custom_ojs_converter
 include module type of For_ppx
 
-(* These extra modules are just here to provide a more intuitive interface for the
-   raw CodeMirror bindings. *)
+(* These extra modules are just here to provide a more intuitive interface for the raw
+   CodeMirror bindings. *)
 
 module type State_effect_spec = sig
   type t
@@ -30,8 +30,8 @@ module State : sig
     include module type of Range_set_update_spec
 
     module Filter_spec : sig
-      (* Filters the ranges already in the set between [from] and [to_]. Only ranges
-           for which [f] returns true are kept. *)
+      (* Filters the ranges already in the set between [from] and [to_]. Only ranges for
+         which [f] returns true are kept. *)
       type 'v t =
         { f : from:int -> to_:int -> value:'v -> bool
         ; filter_from : int
