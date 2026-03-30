@@ -282,8 +282,10 @@ module Make (Item : Item) = struct
                 [ Attr.href "about:blank"
                 ; Attr.on_click (fun ev ->
                     match Bonsai_web.am_within_disabled_fieldset ev with
-                    | true -> Effect.Prevent_default
-                    | false -> Effect.Many [ inject action; Effect.Prevent_default ])
+                    | true -> Effect.Prevent_default [@alert "-deprecated"]
+                    | false ->
+                      Effect.Many
+                        [ inject action; (Effect.Prevent_default [@alert "-deprecated"]) ])
                 ; Attr.class_ class_
                 ]
             ]

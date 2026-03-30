@@ -5,7 +5,7 @@ type 'a t =
   ; before_rev : 'a list
   ; after : 'a list
   }
-[@@deriving fields ~getters, compare, equal, sexp]
+[@@deriving fields ~getters, compare ~localize, equal ~localize, sexp]
 
 let of_nonempty_list_exn full_list =
   { current_focus = List.hd_exn full_list

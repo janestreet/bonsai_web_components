@@ -1,0 +1,8 @@
+(library
+ (name bonsai_web_ui_toplayer_test)
+ (libraries bonsai_web bonsai_web_portal toplayer.portal bonsai_web_test
+   toplayer.floating_positioning toplayer.popover bonsai_web_ui_toplayer
+   capitalization core patdiff.expect_test_patdiff js_of_ocaml
+   virtual_dom.vdom_test_helpers)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai js_of_ocaml-ppx ppx_html)))

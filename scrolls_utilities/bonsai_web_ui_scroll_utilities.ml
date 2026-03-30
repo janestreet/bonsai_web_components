@@ -2,6 +2,16 @@ open! Core
 open! Bonsai_web
 open Js_of_ocaml
 
+module How_to_scroll = struct
+  type t =
+    [ `Minimal
+    | `To_bottom
+    | `To_top
+    | `To_center
+    ]
+  [@@deriving compare, enumerate, equal, sexp_of]
+end
+
 let is_browser =
   match Bonsai_web.am_running_how with
   | `Browser | `Browser_test | `Browser_benchmark -> true

@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_multi_select)
- (public_name bonsai_web_components.web_ui_multi_select)
+ (public_name bonsai_web_components.multi_select)
  (libraries textutils.ascii_table_kernel bonsai bonsai_web bonsai_web.proc
    core focus_ring js_of_ocaml virtual_dom.input_widgets virtual_dom.keyboard
    virtual_dom.layout virtual_dom)

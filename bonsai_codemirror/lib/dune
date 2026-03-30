@@ -2,9 +2,9 @@
  (name codemirror)
  (public_name bonsai_web_components.codemirror)
  (js_of_ocaml
-  (javascript_files ../../codemirror/for_ocaml_bindings.js))
+  (javascript_files ../../codemirror/lib/for_ocaml_bindings.js))
  (libraries codemirror_bindings)
  (preprocess
   (pps ppx_jane))
  (wasm_of_ocaml
-  (javascript_files ../../codemirror/for_ocaml_bindings.js)))
+  (javascript_files ../../codemirror/lib/for_ocaml_bindings.js)))

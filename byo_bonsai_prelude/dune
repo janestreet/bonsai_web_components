@@ -1,6 +1,0 @@
-(library
- (name byo_bonsai_prelude)
- (public_name bonsai_web_components.byo_bonsai_prelude)
- (libraries bonsai bonsai_web)
- (preprocess
-  (pps ppx_jane)))

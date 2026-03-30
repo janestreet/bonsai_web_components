@@ -290,7 +290,8 @@ module Stable = struct
         | Copy
         | Linkedin
         | Shield
-      [@@deriving compare, enumerate, equal, sexp, sexp_grammar, stable_witness]
+      [@@deriving
+        compare ~localize, enumerate, equal ~localize, sexp, sexp_grammar, stable_witness]
     end
 
     include T

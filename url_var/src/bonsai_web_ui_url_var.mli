@@ -231,6 +231,28 @@ module For_testing : sig
   (** [mock_required_browser_functionality_for_navigation_intercept] adds the necessary
       methods to [globalThis] so that [navigation:`Intercept] can be tested properly. This
       should be called at the start of every test so that handlers from previous tests are
-      released. *)
+      released. URL vars must be created or have their handlers reset *after* this
+      function is called. *)
   val mock_required_browser_functionality_for_navigation_intercept : unit -> unit
+
+  (** Resets the handlers on the given URL var. This is needed for [navigation:`Intercept]
+      to work on URL vars that are created before a call to
+      [mock_required_browser_functionality_for_navigation_intercept]. *)
+  val reset_handlers_for_navigation_intercept : 'a t -> unit
+
+  (** [set] behaves identically to [Bonsai_web_ui_url_var.set], except it does not print a
+      message when running in tests. The usual [how] parameter is not present here since
+      it only has an effect in the browser. Useful for setting up preconditions without
+      noisy output. *)
+  val set : 'a t -> 'a -> unit
+
+  (** Helper function that fully resets a URL var:
+      - Calls [mock_required_browser_functionality_for_navigation_intercept].
+      - Calls [reset_handlers_for_navigation_intercept].
+      - Silently sets the URL to [init].
+
+      This should be called at the start of every test if you're using
+      [navigation:`Intercept] and not calling the above functions directly. If you're not
+      using [navigation:`Intercept], this function is approximately equivalent to [set]. *)
+  val reset : 'a t -> init:'a -> unit
 end

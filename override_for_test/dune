@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_override_for_test)
+ (public_name bonsai_web_components.override_for_test)
+ (libraries am_running_how_js bonsai bonsai_web core js_of_ocaml)
+ (preprocess
+  (pps bonsai.ppx_bonsai ppx_jane ppx_css js_of_ocaml-ppx)))

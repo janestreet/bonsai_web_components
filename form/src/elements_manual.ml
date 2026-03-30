@@ -1594,10 +1594,12 @@ module Multiple = struct
       match Js_of_ocaml.Dom_html.Keyboard_code.of_event event with
       | Enter ->
         (match Option.try_with (fun () -> M.of_string state) with
-         | None -> Effect.Many [ Effect.Prevent_default; inject_invalid true ]
+         | None ->
+           Effect.Many
+             [ (Effect.Prevent_default [@alert "-deprecated"]); inject_invalid true ]
          | Some value ->
            Effect.Many
-             [ Effect.Prevent_default
+             [ (Effect.Prevent_default [@alert "-deprecated"])
              ; inject_selected_options (value :: selected_options)
              ; set_state ""
              ])

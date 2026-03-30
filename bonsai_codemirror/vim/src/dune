@@ -1,0 +1,14 @@
+(library
+ (name codemirror_vim)
+ (public_name bonsai_web_components.codemirror_vim)
+ (libraries codemirror core js_of_ocaml)
+ (js_of_ocaml
+  (javascript_files ../../../codemirror/vim/cm_adapter.js
+    ../../../codemirror/vim/block-cursor.js ../../../codemirror/vim/vim.js
+    ../../../codemirror/vim/index.js))
+ (preprocess
+  (pps ppx_jane))
+ (wasm_of_ocaml
+  (javascript_files ../../../codemirror/vim/cm_adapter.js
+    ../../../codemirror/vim/block-cursor.js ../../../codemirror/vim/vim.js
+    ../../../codemirror/vim/index.js)))

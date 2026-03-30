@@ -370,7 +370,14 @@ module Stable : sig
   module Hue : sig
     module V1 : sig
       type t = Hue.t
-      [@@deriving bin_io, compare, enumerate, equal, sexp, sexp_grammar, stable_witness]
+      [@@deriving
+        bin_io
+        , compare ~localize
+        , enumerate
+        , equal ~localize
+        , sexp
+        , sexp_grammar
+        , stable_witness]
     end
   end
 end

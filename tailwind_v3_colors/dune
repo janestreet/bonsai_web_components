@@ -3,4 +3,4 @@
  (public_name bonsai_web_components.tailwind_v3_colors)
  (libraries bin_prot core_kernel.enum)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane -compare-require-explicit-locality)))

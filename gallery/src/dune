@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_gallery)
- (public_name bonsai_web_components.web_ui_gallery)
+ (public_name bonsai_web_components.gallery)
  (preprocess
   (pps bonsai.ppx_bonsai ppx_css ppx_jane js_of_ocaml-ppx))
  (libraries bonsai.extra bonsai_web bonsai_web.proc bonsai_web_ui_codemirror

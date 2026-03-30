@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_vdom_node_reset)
+ (public_name bonsai_web_components.vdom_node_reset)
+ (libraries base core virtual_dom.css_gen virtual_dom)
+ (preprocess
+  (pps ppx_css ppx_jane)))

@@ -5,7 +5,7 @@ open! Core
     cause the focus to move to the end. There is always a focused element -- i.e. there is
     no [blur] operation. *)
 
-type 'a t [@@deriving compare, equal, sexp]
+type 'a t [@@deriving compare ~localize, equal ~localize, sexp]
 
 val of_nonempty_list_exn : 'a list -> 'a t
 val next : 'a t -> 'a t

@@ -15,6 +15,7 @@ type t = private
   ; send_transaction : (State.Editor_state.t -> State.Transaction.t) -> unit Effect.t
   ; execute_command : View.Command.t -> unit Effect.t
   ; focus : unit Effect.t
+  ; focus_with_cursor_at_end : unit Effect.t
   ; blur : unit Effect.t
   }
 [@@deriving fields ~getters]

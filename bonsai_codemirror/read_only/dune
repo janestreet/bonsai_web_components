@@ -1,9 +1,10 @@
 (library
  (name bonsai_web_ui_codemirror_read_only)
+ (public_name bonsai_web_components.bonsai_codemirror_read_only)
  (libraries bonsai_web_ui_codemirror_read_only_bindings_only)
  (js_of_ocaml
-  (javascript_files ../../codemirror/for_ocaml_bindings.js))
+  (javascript_files ../../codemirror/lib/for_ocaml_bindings.js))
  (preprocess
   (pps ppx_jane))
  (wasm_of_ocaml
-  (javascript_files ../../codemirror/for_ocaml_bindings.js)))
+  (javascript_files ../../codemirror/lib/for_ocaml_bindings.js)))

@@ -377,7 +377,9 @@ let create
     let open Vdom in
     let open Js_of_ocaml in
     fun ev ->
-      let with_prevent_default effect = Effect.Many [ effect; Effect.Prevent_default ] in
+      let with_prevent_default effect =
+        Effect.Many [ effect; (Effect.Prevent_default [@alert "-deprecated"]) ]
+      in
       let move_next = with_prevent_default (inject Move_next) in
       let move_prev = with_prevent_default (inject Move_prev) in
       let up, down =
@@ -553,7 +555,7 @@ let create
                  [ (if comparison
                     then inject Move_prev_with_fixed_offset
                     else inject Move_next_with_fixed_offset)
-                 ; Effect.Prevent_default
+                 ; (Effect.Prevent_default [@alert "-deprecated"])
                  ])
         ; on_blur
         ; container_position

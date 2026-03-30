@@ -1,6 +1,0 @@
-(library
- (name byo_portal)
- (public_name bonsai_web_components.portal)
- (preprocess
-  (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai))
- (libraries bonsai bonsai_web toplayer.portal core js_of_ocaml virtual_dom))

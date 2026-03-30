@@ -1,6 +1,15 @@
 open! Core
 open Bonsai_web
 
+(** The manual-view form type. For most use cases, consider hand-rolling forms with plain
+    Bonsai primitives ([Bonsai.state'], [let%arr], etc.) instead of using [Form.t]. The
+    [Form.t] abstraction can add needless indirection, and wraps all values in
+    [Or_error.t], which can often be skipped.
+
+    This library shines when you need automatic type-driven form generation (e.g.
+    [Typed.Record.make] for large records or [Typed.Variant.make] for variants) and don't
+    need fine-grained control over layout. *)
+
 type ('a, 'view) t =
   { value : 'a Or_error.t
   ; view : 'view

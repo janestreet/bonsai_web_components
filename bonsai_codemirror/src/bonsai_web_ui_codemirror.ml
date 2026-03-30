@@ -213,12 +213,39 @@ type t =
   ; send_transaction : (State.Editor_state.t -> State.Transaction.t) -> unit Effect.t
   ; execute_command : View.Command.t -> unit Effect.t
   ; focus : unit Effect.t
+  ; focus_with_cursor_at_end : unit Effect.t
   ; blur : unit Effect.t
   }
 [@@deriving fields ~getters]
 
 let text { state; _ } = state_text state
 let set_lines t new_lines = t.send_transaction (Transaction.set_lines new_lines)
+
+let create ~view ~state ~inject =
+  { view
+  ; state
+  ; send_transaction = (fun transaction -> inject (Action.Send_transaction transaction))
+  ; focus = inject (Action.Modify_editor_view View.Editor_view.focus)
+  ; focus_with_cursor_at_end =
+      Effect.Many
+        [ inject (Action.Modify_editor_view View.Editor_view.focus)
+        ; inject
+            (Action.Modify_editor_view
+               (fun view ->
+                 let (_ : bool) = Commands.cursor_doc_end view in
+                 ()))
+        ]
+  ; blur =
+      inject
+        (Action.Modify_editor_view
+           (fun editor_view -> (View.Editor_view.content_dom editor_view)##blur))
+  ; execute_command =
+      (fun command ->
+        inject
+          (Action.Modify_editor_view
+             (fun editor_view -> (ignore : bool -> unit) (command editor_view))))
+  }
+;;
 
 let of_initial_state ?name initial_state graph =
   let default_model =
@@ -318,20 +345,7 @@ let of_initial_state ?name initial_state graph =
         [ Vdom.Node.text (state_text state) ]
   in
   let%arr state and view and inject in
-  { view
-  ; state
-  ; send_transaction = (fun transaction -> inject (Send_transaction transaction))
-  ; focus = inject (Modify_editor_view View.Editor_view.focus)
-  ; blur =
-      inject
-        (Modify_editor_view
-           (fun editor_view -> (View.Editor_view.content_dom editor_view)##blur))
-  ; execute_command =
-      (fun command ->
-        inject
-          (Modify_editor_view
-             (fun editor_view -> (ignore : bool -> unit) (command editor_view))))
-  }
+  create ~view ~state ~inject
 ;;
 
 let with_dynamic_extensions
@@ -541,20 +555,7 @@ let with_dynamic_extensions' ~name ~(initial_text : string) ~extensions graph =
       graph
   in
   let%arr { view; state; inject } = wrapped_state in
-  { view
-  ; state
-  ; send_transaction = (fun transaction -> inject (Send_transaction transaction))
-  ; focus = inject (Modify_editor_view View.Editor_view.focus)
-  ; blur =
-      inject
-        (Modify_editor_view
-           (fun editor_view -> (View.Editor_view.content_dom editor_view)##blur))
-  ; execute_command =
-      (fun command ->
-        inject
-          (Modify_editor_view
-             (fun editor_view -> (ignore : bool -> unit) (command editor_view))))
-  }
+  create ~view ~state ~inject
 ;;
 
 module Private_for_tests = struct

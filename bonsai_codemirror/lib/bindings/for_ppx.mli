@@ -1057,6 +1057,8 @@ module Autocomplete : sig
   [@@js.global]
 
   val completion_keymap : View.Key_binding.t list [@@js.global]
+  val close_brackets : unit -> State.Extension.t [@@js.global]
+  val close_brackets_keymap : View.Key_binding.t list [@@js.global]
 end
 
 module Lint : sig
@@ -1161,6 +1163,7 @@ module Commands : sig
   val delete_line : View.Command.t [@@js.global]
   val cursor_matching_bracket : View.Command.t [@@js.global]
   val toggle_comment : View.Command.t [@@js.global]
+  val toggle_block_comment : View.Command.t [@@js.global]
 end
 
 module Gutter : sig

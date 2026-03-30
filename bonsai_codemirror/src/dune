@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_codemirror)
- (public_name bonsai_web_components.web_ui_codemirror)
+ (public_name bonsai_web_components.bonsai_codemirror)
  (libraries bonsai_web bonsai_web_ui_low_level_vdom codemirror core
    js_of_ocaml bonsai_concrete.ui_incr virtual_dom)
  (preprocess
