@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_partial_render_table_protocol)
- (public_name bonsai_web_components.web_ui_partial_render_table_protocol)
- (libraries byo_table_protocol)
+ (public_name bonsai_web_components.partial_render_table_protocol)
+ (libraries bonsai_kernel_table_protocol)
  (preprocess
   (pps ppx_jane)))

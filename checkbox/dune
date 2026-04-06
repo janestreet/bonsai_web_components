@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_checkbox)
+ (public_name bonsai_web_components.checkbox)
+ (libraries bonsai bonsai_web bonsai_web_override_for_test core js_of_ocaml)
+ (preprocess
+  (pps bonsai.ppx_bonsai ppx_jane ppx_css js_of_ocaml-ppx)))

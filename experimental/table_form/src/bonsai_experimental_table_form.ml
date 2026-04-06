@@ -79,7 +79,7 @@ let table_form
       Effect.Many
         [ set_map (Map.set map ~key:(Key.t_of_sexp (Sexp.of_string text)) ~data:())
         ; set_text ""
-        ; Vdom.Effect.Prevent_default
+        ; Vdom.(Effect.Prevent_default [@alert "-deprecated"])
         ]
     in
     let textbox =

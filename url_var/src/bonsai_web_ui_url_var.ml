@@ -121,6 +121,7 @@ type 'a t =
   | In_nodejs_test of
       { var : 'a Bonsai.Expert.Var.t
       ; sexp_of : 'a -> Sexp.t
+      ; navigation_info : (module S with type t = 'a) * [ `Ignore | `Intercept ]
       }
 
 let get_var = function
@@ -201,7 +202,7 @@ let listen_to_navigation_events ~parse_exn ~f =
            \            before creating the URL var."])
 ;;
 
-let set ?(how : [ `Push | `Replace ] option) t a =
+let set_internal ?(how : [ `Push | `Replace ] option) ~quiet t a =
   let var = get_var t in
   (* We need to make sure the bonsai var is set _before_ we update the history. Otherwise
      the [listen_to_navigation_events] callback will observe the new value before it's
@@ -215,29 +216,43 @@ let set ?(how : [ `Push | `Replace ] option) t a =
      | `Replace -> History.replace history a)
   | In_nodejs_test { sexp_of; _ } ->
     (* In tests, we don't interact with the [History] API and instead just log the value *)
-    (match how with
-     | `Push -> print_s [%message "Pushing to history" ~new_location:(sexp_of a : Sexp.t)]
-     | `Replace ->
-       print_s
-         [%message
-           "Replacing current location in history" ~new_location:(sexp_of a : Sexp.t)])
+    if not quiet
+    then (
+      match how with
+      | `Push ->
+        print_s [%message "Pushing to history" ~new_location:(sexp_of a : Sexp.t)]
+      | `Replace ->
+        print_s
+          [%message
+            "Replacing current location in history" ~new_location:(sexp_of a : Sexp.t)])
 ;;
+
+let set ?how t a = set_internal ?how ~quiet:false t a
 
 let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navigation t =
   match navigation with
   | `Ignore -> ()
   | `Intercept ->
-    (* At the point where we intercept a navigation event the URL / histroy has already
-       updated, so we don't want to duplicate the navigation entry.
+    let how =
+      match t with
+      | Browser _ ->
+        (* At the point where we intercept a navigation event the URL / histroy has
+           already updated, so we don't want to duplicate the navigation entry.
 
-       Instead we can replace the current entry with a new one that carries a payload
-       generated based on the parsed new URL.
+           Instead we can replace the current entry with a new one that carries a payload
+           generated based on the parsed new URL.
 
-       See
-       https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
+           See
+           https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#examples *)
+        `Replace
+      | In_nodejs_test _ ->
+        (* Outside of the browser, though, we're just pretending to update the history; no
+           prior navigation entry has been made. *)
+        `Push
+    in
     listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
       let is_current_page = S.equal next_page (Bonsai.Expert.Var.get (get_var t)) in
-      if not is_current_page then set ~how:`Replace t next_page)
+      if not is_current_page then set ~how t next_page)
 ;;
 
 let create_exn'
@@ -308,7 +323,11 @@ let create_exn'
        failwith error_message
      | `Default_state default ->
        let t =
-         In_nodejs_test { var = Bonsai.Expert.Var.create default; sexp_of = S.sexp_of_t }
+         In_nodejs_test
+           { var = Bonsai.Expert.Var.create default
+           ; sexp_of = S.sexp_of_t
+           ; navigation_info = (module S), navigation
+           }
        in
        maybe_add_navigation_listener ~navigation (module S) t;
        t)
@@ -579,10 +598,11 @@ module For_testing = struct
   end
 
   let mock_required_browser_functionality_for_navigation_intercept () =
-    let () =
-      Js_of_ocaml.Js.Unsafe.js_expr
+    let open Js_of_ocaml in
+    let f =
+      Js.Unsafe.js_expr
         {js|
-    (function() {
+    (function(mock_navigate) {
       const handlersForListener = {};
       const dispatchEvent = (event) => {
           (handlersForListener[event.type] || []).forEach(handler => {
@@ -619,6 +639,8 @@ module For_testing = struct
         dispatchEvent
       };
 
+      globalThis.open = mock_navigate;
+
       if (!globalThis.window) {
         globalThis.window = {}
       }
@@ -628,8 +650,41 @@ module For_testing = struct
       if (window) {
         window.navigation = globalThis.navigation;
       }
-    })()|js}
+    })|js}
+    in
+    let () =
+      Js.Unsafe.fun_call
+        f
+        [| Js.Unsafe.inject
+             (Js.wrap_callback (fun href target ->
+                Mock_navigation_for_url_var.mock_navigate
+                  ~href:(Js.to_string href)
+                  ~target:(Js.to_string target)
+                  ()))
+        |]
     in
     ()
+  ;;
+
+  (* This might look like it's leaking event listeners, but since we replace the
+     [navigation] object in
+     [mock_required_browser_functionality_for_navigation_intercept], the old event
+     listener should get garbage collected on its own. *)
+  let reset_handlers_for_navigation_intercept t =
+    match t with
+    | Browser _ ->
+      print_s
+        [%message
+          "[reset_handlers_for_navigation_intercept] should only be called in tests!"]
+    | In_nodejs_test { navigation_info = s, navigation; _ } ->
+      maybe_add_navigation_listener s ~navigation t
+  ;;
+
+  let set t a = set_internal ~quiet:true t a
+
+  let reset t ~init =
+    mock_required_browser_functionality_for_navigation_intercept ();
+    reset_handlers_for_navigation_intercept t;
+    set t init
   ;;
 end

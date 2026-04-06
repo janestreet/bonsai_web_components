@@ -8,10 +8,7 @@
 
 (rule
  (targets jane-web-style.css)
+ (alias default)
  (deps %{workspace_root}/lib/jane_web_style/src/css/style-4.css)
  (action
   (bash "cat %{deps} > %{targets}")))
-
-(alias
- (name default)
- (deps jane-web-style.css))

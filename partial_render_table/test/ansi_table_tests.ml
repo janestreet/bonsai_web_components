@@ -2599,6 +2599,101 @@ let%expect_test "directional jumping" =
     |}]
 ;;
 
+let%expect_test "directional jumping in row-focus table" =
+  let map =
+    List.range 1 20
+    |> List.map ~f:(fun i ->
+      i, { a = "hi"; b = Float.of_int (i / 2); c = "c"; d = Some 100; e = "e" })
+    |> Int.Map.of_alist_exn
+    |> Bonsai.Expert.Var.create
+  in
+  let test =
+    Test.create_with_var
+      ~map
+      ~visible_range:(5, 10)
+      ~stats:false
+      (Test.Component.default ())
+  in
+  Handle.do_actions test.handle [ Focus_index 8 ];
+  Handle.show test.handle;
+  [%expect
+    {|
+    skipping scroll because target already in view
+    (focus_changed_to (9))
+    ((focused (9)) (num_filtered_rows (19)))
+    ┌───┬─────┬─────┬────┬──────────┬─────┐
+    │ > │ #   │ key │ a  │ b        │ d   │
+    ├───┼─────┼─────┼────┼──────────┼─────┤
+    │   │ 0   │ 5   │ hi │ 2.000000 │ 100 │
+    │   │ 100 │ 6   │ hi │ 3.000000 │ 100 │
+    │   │ 200 │ 7   │ hi │ 3.000000 │ 100 │
+    │   │ 300 │ 8   │ hi │ 4.000000 │ 100 │
+    │ * │ 400 │ 9   │ hi │ 4.000000 │ 100 │
+    │   │ 500 │ 10  │ hi │ 5.000000 │ 100 │
+    │   │ 600 │ 11  │ hi │ 5.000000 │ 100 │
+    │   │ 700 │ 12  │ hi │ 6.000000 │ 100 │
+    └───┴─────┴─────┴────┴──────────┴─────┘
+    |}];
+  Handle.do_actions test.handle [ Focus_top ];
+  Handle.show test.handle;
+  [%expect
+    {|
+    scrolling to index 0 at 0.0px
+    (focus_changed_to ())
+    ((focused ()) (num_filtered_rows (19)))
+    ┌───┬─────┬─────┬────┬──────────┬─────┐
+    │ > │ #   │ key │ a  │ b        │ d   │
+    ├───┼─────┼─────┼────┼──────────┼─────┤
+    │   │ 0   │ 5   │ hi │ 2.000000 │ 100 │
+    │   │ 100 │ 6   │ hi │ 3.000000 │ 100 │
+    │   │ 200 │ 7   │ hi │ 3.000000 │ 100 │
+    │   │ 300 │ 8   │ hi │ 4.000000 │ 100 │
+    │   │ 400 │ 9   │ hi │ 4.000000 │ 100 │
+    │   │ 500 │ 10  │ hi │ 5.000000 │ 100 │
+    │   │ 600 │ 11  │ hi │ 5.000000 │ 100 │
+    │   │ 700 │ 12  │ hi │ 6.000000 │ 100 │
+    └───┴─────┴─────┴────┴──────────┴─────┘
+    |}];
+  Test.set_bounds test ~low:0 ~high:5;
+  Handle.recompute_view test.handle;
+  Handle.show test.handle;
+  [%expect
+    {|
+    ((focused (1)) (num_filtered_rows (19)))
+    ┌───┬──────┬─────┬────┬──────────┬─────┐
+    │ > │ #    │ key │ a  │ b        │ d   │
+    ├───┼──────┼─────┼────┼──────────┼─────┤
+    │ * │ -400 │ 1   │ hi │ 0.000000 │ 100 │
+    │   │ -300 │ 2   │ hi │ 1.000000 │ 100 │
+    │   │ -200 │ 3   │ hi │ 1.000000 │ 100 │
+    │   │ -100 │ 4   │ hi │ 2.000000 │ 100 │
+    │   │ 0    │ 5   │ hi │ 2.000000 │ 100 │
+    │   │ 100  │ 6   │ hi │ 3.000000 │ 100 │
+    │   │ 200  │ 7   │ hi │ 3.000000 │ 100 │
+    └───┴──────┴─────┴────┴──────────┴─────┘
+    |}];
+  Test.set_bounds test ~low:15 ~high:20;
+  Handle.recompute_view test.handle;
+  Handle.do_actions test.handle [ Focus_bottom ];
+  Handle.show test.handle;
+  [%expect
+    {|
+    (focus_changed_to (1))
+    skipping scroll because target already in view
+    (focus_changed_to (19))
+    ((focused (19)) (num_filtered_rows (19)))
+    ┌───┬─────┬─────┬────┬──────────┬─────┐
+    │ > │ #   │ key │ a  │ b        │ d   │
+    ├───┼─────┼─────┼────┼──────────┼─────┤
+    │   │ 0   │ 15  │ hi │ 7.000000 │ 100 │
+    │   │ 100 │ 16  │ hi │ 8.000000 │ 100 │
+    │   │ 200 │ 17  │ hi │ 8.000000 │ 100 │
+    │   │ 300 │ 18  │ hi │ 9.000000 │ 100 │
+    │ * │ 400 │ 19  │ hi │ 9.000000 │ 100 │
+    └───┴─────┴─────┴────┴──────────┴─────┘
+    |}]
+;;
+
 let%expect_test "directional jumping from unfocused" =
   let map =
     [ 1; 2; 3; 4 ]
@@ -3089,6 +3184,81 @@ let%expect_test "focus down when presence says that all responses are None" =
     │   │ 0   │ 0   │
     │ * │ 100 │ 1   │
     │   │ 200 │ 4   │
+    └───┴─────┴─────┘
+    |}]
+;;
+
+let%expect_test "widen_range_by adjusts rows_before and focus index" =
+  let presence ~focus ~collation:_ (local_ _graph) = focus in
+  let collate =
+    Bonsai.return
+      { Incr_map_collate.Collate_params.filter = ()
+      ; order = ()
+      ; key_range = All_rows
+      ; rank_range =
+          Between (Collate_params.Rank.From_start 5, Collate_params.Rank.From_start 5)
+      ; widen_range_by = 2, 1
+      }
+  in
+  let map =
+    List.range 0 10
+    |> List.map ~f:(fun i ->
+      i, { a = "hi"; b = Float.of_int i; c = "c"; d = None; e = "e" })
+    |> Int.Map.of_alist_exn
+  in
+  let test =
+    Test.create
+      ~stats:true
+      ~visible_range:(70, 90)
+      ~map
+      (Test.Component.expert_for_testing_compute_presence_and_key_rank
+         ~collate
+         ~presence
+         ~key_rank:(fun ~actual_key_rank (local_ _graph) -> actual_key_rank)
+         ())
+  in
+  Handle.show test.handle;
+  [%expect
+    {|
+    ((focused ()) (num_filtered_rows ()))
+    ┌────────────────┬───────┐
+    │ metric         │ value │
+    ├────────────────┼───────┤
+    │ rows-before    │ 3     │
+    │ rows-after     │ 4     │
+    │ num-filtered   │ 10    │
+    │ num-unfiltered │ 10    │
+    └────────────────┴───────┘
+    ┌───┬─────┬─────┐
+    │ > │ #   │ key │
+    ├───┼─────┼─────┤
+    │   │ 0   │ 3   │
+    │   │ 100 │ 4   │
+    │   │ 200 │ 5   │
+    │   │ 300 │ 6   │
+    └───┴─────┴─────┘
+    |}];
+  Handle.do_actions test.handle [ Focus_row 2 ];
+  Handle.show test.handle;
+  [%expect
+    {|
+    scrolling to index 2 at 20.0px
+    ((focused ()) (num_filtered_rows ()))
+    ┌────────────────┬───────┐
+    │ metric         │ value │
+    ├────────────────┼───────┤
+    │ rows-before    │ 3     │
+    │ rows-after     │ 4     │
+    │ num-filtered   │ 10    │
+    │ num-unfiltered │ 10    │
+    └────────────────┴───────┘
+    ┌───┬─────┬─────┐
+    │ > │ #   │ key │
+    ├───┼─────┼─────┤
+    │   │ 0   │ 3   │
+    │   │ 100 │ 4   │
+    │   │ 200 │ 5   │
+    │   │ 300 │ 6   │
     └───┴─────┴─────┘
     |}]
 ;;

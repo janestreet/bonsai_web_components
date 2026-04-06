@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_keyboard_shortcut)
+ (public_name bonsai_web_components.keyboard_shortcut)
+ (libraries bonsai bonsai_web core js_of_ocaml virtual_dom.keyboard)
+ (preprocess
+  (pps bonsai.ppx_bonsai ppx_jane js_of_ocaml-ppx)))

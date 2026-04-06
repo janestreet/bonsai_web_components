@@ -241,17 +241,20 @@ module Expert : sig
       | None : (unit, unit, 'k, 'c) t
       | By_row :
           { on_change : ('k option -> unit Effect.t) Bonsai.t
+          (** Called when focus changes. If you don't intend on doing anything here, pass
+              [fun _ -> Effect.Ignore] *)
+          ; compute_presence : 'k option Bonsai.t -> local_ Bonsai.graph -> 'p Bonsai.t
           (** Row-selection is not required to be inside the viewport, so the selected row
               can be offscreen such that it isn't given to the table component.
               [compute_presence] forces the user to consider if a row is considered
-              'focused' or not. *)
-          ; compute_presence : 'k option Bonsai.t -> local_ Bonsai.graph -> 'p Bonsai.t
+              'focused' or not. If this is not a concern, feel free to pass
+              [fun key _graph -> key] here *)
+          ; key_rank : ('k -> int option Effect.t) Bonsai.t
           (** A user might try to focus-by-key a row that has not been filtered out, but
               is not inside the viewport. In that case, [key_rank] will be used as a
               fallback to compute the desired index. If the effect returns `None`, the key
               does not correspond to a row under the current filter conditions, and the
               focus will be a no-op. *)
-          ; key_rank : ('k -> int option Effect.t) Bonsai.t
           }
           -> (('k, 'p) Focus_by_row.t, 'p, 'k, 'c) t
       | By_cell :

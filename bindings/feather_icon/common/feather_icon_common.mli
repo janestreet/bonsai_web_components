@@ -287,11 +287,18 @@ type t =
   | Copy
   | Linkedin
   | Shield
-[@@deriving compare, enumerate, equal, sexp_of, sexp_grammar]
+[@@deriving compare ~localize, enumerate, equal ~localize, sexp_of, sexp_grammar]
 
 module Stable : sig
   module V1 : sig
     type nonrec t = t
-    [@@deriving compare, enumerate, equal, sexp, bin_io, sexp_grammar, stable_witness]
+    [@@deriving
+      compare ~localize
+      , enumerate
+      , equal ~localize
+      , sexp
+      , bin_io
+      , sexp_grammar
+      , stable_witness]
   end
 end

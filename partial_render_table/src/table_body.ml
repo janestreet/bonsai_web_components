@@ -175,6 +175,16 @@ let rows
     graph
 ;;
 
+(** [Collated.num_before_range] does not take widening into account, so we need to adjust *)
+let num_before_range_widened collated =
+  let widened_before, _ = Collated.range_widened_by collated in
+  Collated.num_before_range collated - widened_before
+;;
+
+(** [Collated.num_after_range] already reflects the number of rows after the *widened*
+    window, so no adjustment is required here. *)
+let num_after_range_widened collated = Collated.num_after_range collated
+
 let component
   (type key data cmp col col_cmp kind)
   ~themed_attrs
@@ -200,8 +210,10 @@ let component
   let padding_top_and_bottom =
     let%arr collated
     and (`Px row_height) = row_height in
-    let padding_top = Collated.num_before_range collated * row_height in
-    let padding_bottom = Collated.num_after_range collated * row_height in
+    let rows_before = num_before_range_widened collated in
+    let rows_after = num_after_range_widened collated in
+    let padding_top = rows_before * row_height in
+    let padding_bottom = rows_after * row_height in
     padding_top, padding_bottom
   in
   let cells = assoc input graph in
@@ -243,6 +255,8 @@ let component
     let%arr cells and collated and visually_focused and headers in
     lazy
       (let column_names = Header_tree.column_names headers in
+       let rows_before = num_before_range_widened collated in
+       let rows_after = num_after_range_widened collated in
        { For_testing.column_names
        ; rows =
            List.map (Map.to_alist cells) ~f:(fun (id, (key, view)) ->
@@ -266,8 +280,8 @@ let component
                  { For_testing.view; cell_focused })
              in
              { For_testing.id; row_focused; cells })
-       ; rows_before = Collated.num_before_range collated
-       ; rows_after = Collated.num_after_range collated
+       ; rows_before
+       ; rows_after
        ; num_filtered = Collated.num_filtered_rows collated
        ; num_unfiltered = Collated.num_unfiltered_rows collated
        })

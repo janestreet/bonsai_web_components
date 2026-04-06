@@ -1,0 +1,6 @@
+(library
+ (name lucide)
+ (public_name bonsai_web_components.lucide)
+ (preprocess
+  (pps ppx_jane))
+ (libraries bonsai_web_icon core virtual_dom.css_gen virtual_dom))

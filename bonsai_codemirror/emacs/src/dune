@@ -1,0 +1,12 @@
+(library
+ (name codemirror_emacs)
+ (public_name bonsai_web_components.codemirror_emacs)
+ (libraries codemirror core js_of_ocaml)
+ (js_of_ocaml
+  (javascript_files ../../../codemirror/emacs/block-cursor.js
+    ../../../codemirror/emacs/index.js))
+ (preprocess
+  (pps ppx_jane))
+ (wasm_of_ocaml
+  (javascript_files ../../../codemirror/emacs/block-cursor.js
+    ../../../codemirror/emacs/index.js)))

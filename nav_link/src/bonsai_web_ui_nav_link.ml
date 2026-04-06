@@ -15,7 +15,7 @@ let make' ?(attrs = []) ~set_url ~page_to_string page children =
             Effect.Ignore
           else
             (* Otherwise perform an on-page navigation. *)
-            Effect.Many [ set_url page; Effect.Prevent_default ])
+            Effect.Many [ set_url page; (Effect.Prevent_default [@alert "-deprecated"]) ])
       ]
   in
   Vdom.Node.a ~attrs children

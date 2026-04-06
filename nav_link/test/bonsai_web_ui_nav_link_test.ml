@@ -82,18 +82,18 @@ let%expect_test "set_url triggered if clicking with no modifier" =
 
 let%expect_test "set_url not triggered if shift-clicking" =
   click_nav_link ~shift_key_down:true ();
-  [%expect {| |}];
+  [%expect {| Opening in new tab/window: /foo |}];
   return ()
 ;;
 
 let%expect_test "set_url not triggered if alt-clicking" =
   click_nav_link ~alt_key_down:true ();
-  [%expect {| |}];
+  [%expect {| Downloading: /foo |}];
   return ()
 ;;
 
 let%expect_test "set_url not triggered if ctrl-clicking" =
   click_nav_link ~ctrl_key_down:true ();
-  [%expect {| |}];
+  [%expect {| Opening in new tab/window: /foo |}];
   return ()
 ;;

@@ -86,7 +86,8 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
             [ Attr.many_without_merge
                 [ Attr.href "about:blank"
                 ; Attr.on_click (fun _ev ->
-                    Effect.Many [ inject action; Effect.Prevent_default ])
+                    Effect.Many
+                      [ inject action; (Effect.Prevent_default [@alert "-deprecated"]) ])
                 ]
             ]
           [ Node.text text ]

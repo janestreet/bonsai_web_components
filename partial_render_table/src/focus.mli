@@ -1,6 +1,7 @@
 open! Core
 open! Bonsai_web
 module Collated := Incr_map_collate.Collated
+module How_to_scroll = Bonsai_web_ui_scroll_utilities.How_to_scroll
 
 module By_cell : sig
   type ('k, 'col_id, 'presence) t
@@ -22,11 +23,22 @@ module By_cell : sig
   val unfocus : ('k, 'col_id, 'presence) t -> unit Effect.t
 
   (** [focus k] sets the focus to the `col_id cell in the row keyed by k. *)
-  val focus : ('k, 'col_id, 'presence) t -> 'k -> 'col_id -> unit Effect.t
+  val focus
+    :  ('k, 'col_id, 'presence) t
+    -> ?how:How_to_scroll.t (** See [How_to_scroll.t]. default: [`Minimal] *)
+    -> 'k
+    -> 'col_id
+    -> unit Effect.t
 
   (** [focus_index n] sets the focus to the `col_id cell in the nth row from the top of
       the entire table. The first row is 0, the second is 1, and so on. *)
-  val focus_index : ('k, 'col_id, 'presence) t -> int -> 'col_id -> unit Effect.t
+
+  val focus_index
+    :  ('k, 'col_id, 'presence) t
+    -> ?how:How_to_scroll.t (** See [How_to_scroll.t]. default: [`Minimal] *)
+    -> int
+    -> 'col_id
+    -> unit Effect.t
 
   type ('k, 'col_id) optional = ('k, 'col_id, ('k * 'col_id) option) t
 end
@@ -40,16 +52,28 @@ module By_row : sig
   val unlock_focus : ('k, 'presence) t -> unit Effect.t
   val focus_up : ('k, 'presence) t -> unit Effect.t
   val focus_down : ('k, 'presence) t -> unit Effect.t
+  val focus_top : ('k, 'presence) t -> unit Effect.t
+  val focus_bottom : ('k, 'presence) t -> unit Effect.t
   val page_up : ('k, 'presence) t -> unit Effect.t
   val page_down : ('k, 'presence) t -> unit Effect.t
   val unfocus : ('k, 'presence) t -> unit Effect.t
 
   (** [focus k] sets the focus to the row keyed by k. *)
-  val focus : ('k, 'presence) t -> 'k -> unit -> unit Effect.t
+  val focus
+    :  ('k, 'presence) t
+    -> ?how:How_to_scroll.t (** See [How_to_scroll.t]. default: [`Minimal] *)
+    -> 'k
+    -> unit
+    -> unit Effect.t
 
   (** [focus_index n] sets the focus to the nth row from the top of the entire table. The
       first row is 0, the second is 1, and so on. *)
-  val focus_index : ('k, 'presence) t -> int -> unit -> unit Effect.t
+  val focus_index
+    :  ('k, 'presence) t
+    -> ?how:How_to_scroll.t (** See [How_to_scroll.t]. default: [`Minimal] *)
+    -> int
+    -> unit
+    -> unit Effect.t
 
   type 'k optional = ('k, 'k option) t
 
@@ -96,7 +120,9 @@ val component
   -> collated:('key, 'data) Collated.t Bonsai.t
   -> leaves:'col_id Header_tree.leaf list Bonsai.t
   -> range:(int * int) Bonsai.t
-  -> scroll_to:([ `Row of int | `Cell of int * 'col_id ] -> unit Effect.t) Bonsai.t
+  -> scroll_to:
+       ([ `Row of int | `Cell of int * 'col_id ] -> how:How_to_scroll.t -> unit Effect.t)
+         Bonsai.t
   -> local_ Bonsai.graph
   -> ('kind, 'key, 'col_id) t Bonsai.t
 

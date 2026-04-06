@@ -270,17 +270,14 @@ module Test = struct
       | Unlock_focus -> Focus_control.unlock_focus focus
       | Focus_down -> Focus_control.focus_down focus
       | Focus_up -> Focus_control.focus_up focus
+      | Focus_top -> Focus_control.focus_top focus
+      | Focus_bottom -> Focus_control.focus_bottom focus
       | Page_up -> Focus_control.page_up focus
       | Page_down -> Focus_control.page_down focus
       | Focus_row k -> (Focus_control.focus focus) k ()
       | Focus_index index -> (Focus_control.focus_index focus) index ()
-      | Focus_cell _
-      | Focus_left
-      | Focus_right
-      | Focus_top
-      | Focus_bottom
-      | Focus_leftmost
-      | Focus_rightmost -> Effect.print_s [%message "Unsupported"]
+      | Focus_cell _ | Focus_left | Focus_right | Focus_leftmost | Focus_rightmost ->
+        Effect.print_s [%message "Unsupported"]
       | Set_column_width { column_id; width } ->
         (get_set_column_width t) ~column_id (`Px_float width)
     ;;

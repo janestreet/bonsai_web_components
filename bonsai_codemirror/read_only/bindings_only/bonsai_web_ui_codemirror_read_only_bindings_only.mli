@@ -36,6 +36,14 @@ module Theme : sig
     | Vscode_default
 end
 
+(** This extension forces the entire document to be rendered in the DOM, bypassing
+    CodeMirror's default viewport-based virtualization. This enables the browser's Ctrl+F
+    search to find text that is off-screen.
+
+    This extension can slow down CodeMirror, so it should only be used for read-only
+    editors. *)
+val print_full_document_extension : unit -> Codemirror.State.Extension.t
+
 val make
   :  ?extension:Codemirror.State.Extension.t
   -> ?line_numbers:bool

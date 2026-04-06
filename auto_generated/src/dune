@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_ui_auto_generated)
- (public_name bonsai_web_components.web_ui_auto_generated)
+ (public_name bonsai_web_components.auto_generated)
  (preprocess
   (pps bonsai.ppx_bonsai ppx_css ppx_jane))
  (libraries bonsai bonsai.extra bonsai_web bonsai_web_ui_form

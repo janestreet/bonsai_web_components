@@ -332,7 +332,7 @@ module Expert = struct
       let%arr get_y_px_of_row_index
       and midpoint_of_container_x, _ = midpoint_of_container
       and table_body_selector in
-      fun index ->
+      fun index ~how ->
         let y_px, _, _ = get_y_px_of_row_index index in
         match y_px with
         | Some y_px ->
@@ -344,7 +344,7 @@ module Expert = struct
             ~x_px:midpoint_of_container_x
             ~y_px
             ~selector:table_body_selector
-            `Minimal
+            how
           |> Effect.ignore_m
         | None ->
           print_in_tests (fun () -> "skipping scroll because target already in view")
@@ -388,7 +388,7 @@ module Expert = struct
       and get_y_px_of_row_index
       and table_body_visible_rect
       and table_body_selector in
-      fun ~row_index column_id ->
+      fun ~row_index column_id ~how ->
         match table_body_visible_rect with
         | None -> Effect.Ignore
         | Some rect ->
@@ -402,7 +402,7 @@ module Expert = struct
                  ~x_px
                  ~y_px
                  ~selector:table_body_selector
-                 `Minimal
+                 how
                |> Effect.ignore_m
              in
              let%bind.Effect () =

@@ -1,11 +1,22 @@
 open! Core
 
-(** A library for building forms in Bonsai. *)
+(** A library for building forms in Bonsai.
 
-(** [With_manual_view] forms are now the recommended API to use in this library. You get
-    full control over how you'd like to combine them. Historically, [With_automatic_view]
-    was the default, but they are quite restrictive and hard to customize, so we recommend
-    choosing [With_manual_view] for new forms. *)
+    For most forms, you're better off hand-rolling with plain Bonsai primitives
+    ([Bonsai.state], [let%arr], etc.) rather than using this library. Hand-rolled forms
+    are simpler, more flexible, and avoid the mandatory [Or_error.t] wrapping and
+    boilerplate of the [Form.t] type.
+
+    This library is most useful when you have a form that significantly benefits from
+    automatic type-driven generation (e.g. large records via [Typed.Record.make], or
+    variants via [Typed.Variant.make]) and you care less about precisely controlling the
+    form's layout. If you truly want an automatically generated form, consider using the
+    even easier [Bonsai_web_ui_auto_generated] library. *)
+
+(** If you do use this library, [With_manual_view] is the recommended API. You get full
+    control over how you'd like to combine views. Historically, [With_automatic_view] was
+    the default, but it is quite restrictive and hard to customize. *)
+
 module With_manual_view = struct
   include Form_manual
 

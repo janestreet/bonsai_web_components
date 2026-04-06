@@ -2,6 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
 module Collated = Incr_map_collate.Collated
+module How_to_scroll = Bonsai_web_ui_scroll_utilities.How_to_scroll
 
 (* This global counter is shared across all PRTs, but this is fine because we only use it
    for equality checking, so the bad case would be if:
@@ -45,9 +46,10 @@ module By_cell = struct
       | Rightmost
       | Page_up
       | Page_down
-      | Select of ('key * 'column_id)
-      | Select_index of (int * 'column_id)
-      | Select_index_from_pending of (int * 'column_id * Pending_select_id.t)
+      | Select of ('key * 'column_id * How_to_scroll.t)
+      | Select_index of (int * 'column_id * How_to_scroll.t)
+      | Select_index_from_pending of
+          (int * 'column_id * Pending_select_id.t * How_to_scroll.t)
       | Switch_from_index_to_key of
           { key : 'key
           ; index : int
@@ -72,8 +74,8 @@ module By_cell = struct
     ; focus_rightmost : unit Effect.t
     ; page_up : unit Effect.t
     ; page_down : unit Effect.t
-    ; focus : 'k -> 'column_id -> unit Effect.t
-    ; focus_index : int -> 'column_id -> unit Effect.t
+    ; focus : ?how:How_to_scroll.t -> 'k -> 'column_id -> unit Effect.t
+    ; focus_index : ?how:How_to_scroll.t -> int -> 'column_id -> unit Effect.t
     }
   [@@deriving fields ~getters]
 
@@ -117,8 +119,8 @@ module By_cell = struct
       ; focus_rightmost = inject Rightmost
       ; page_up = inject Page_up
       ; page_down = inject Page_down
-      ; focus = (fun k c -> inject (Select (k, c)))
-      ; focus_index = (fun k c -> inject (Select_index (k, c)))
+      ; focus = (fun ?(how = `Minimal) k c -> inject (Select (k, c, how)))
+      ; focus_index = (fun ?(how = `Minimal) k c -> inject (Select_index (k, c, how)))
       }
     ;;
 
@@ -139,6 +141,8 @@ module By_row = struct
   let unlock_focus = By_cell.unlock_focus
   let focus_up = By_cell.focus_up
   let focus_down = By_cell.focus_down
+  let focus_top = By_cell.focus_top
+  let focus_bottom = By_cell.focus_bottom
   let page_up = By_cell.page_up
   let page_down = By_cell.page_down
 
@@ -149,7 +153,11 @@ module By_row = struct
 
   module Expert = struct
     let keyless (t : ('k, 'presence) t) =
-      { t with focused = None; raw_focused = None; focus = (fun _ _ -> Effect.Ignore) }
+      { t with
+        focused = None
+      ; raw_focused = None
+      ; focus = (fun ?how:_ _ _ -> Effect.Ignore)
+      }
     ;;
   end
 end
@@ -206,7 +214,8 @@ module Cell_machine = struct
 
   let find_by collated ~f =
     with_return_option (fun { return } ->
-      let i = ref (Collated.num_before_range collated) in
+      let widened_before, _ = Collated.range_widened_by collated in
+      let i = ref (Collated.num_before_range collated - widened_before) in
       collated
       |> Collated.to_opaque_map
       |> Map.iter ~f:(fun (key, _) ->
@@ -243,7 +252,8 @@ module Cell_machine = struct
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(columns : column_id list Bonsai.t)
     ~(range : (int * int) Bonsai.t)
-    ~(scroll_to : (row_index:int -> column_id -> unit Effect.t) Bonsai.t)
+    ~(scroll_to :
+        (row_index:int -> column_id -> how:How_to_scroll.t -> unit Effect.t) Bonsai.t)
     :  local_ Bonsai.graph
     -> ((key, column_id, presence) By_cell.t, key, column_id) t Bonsai.t
     =
@@ -300,7 +310,7 @@ module Cell_machine = struct
         ; range : int * int
         ; on_change : (key * column_id) option -> unit Ui_effect.t
         ; key_rank : key -> int option Effect.t
-        ; scroll_to : row_index:int -> column_id -> unit Effect.t
+        ; scroll_to : row_index:int -> column_id -> how:How_to_scroll.t -> unit Effect.t
         }
     end
     in
@@ -336,12 +346,12 @@ module Cell_machine = struct
            { model with locked = false }
          | { locked = true; current_focus = _; pending_select_id = _ }, _ -> model
          | { locked = false; current_focus; pending_select_id }, _ ->
-           let scroll_to index column =
+           let scroll_to index column ~how_to_scroll =
              Bonsai.Apply_action_context.schedule_event
                context
-               (scroll_to ~row_index:index column)
+               (scroll_to ~row_index:index column ~how:how_to_scroll)
            in
-           let update_focus ~f =
+           let update_focus ?(how_to_scroll = `Minimal) f =
              let original_index_and_column =
                match (current_focus : Model.current_focus) with
                | No_focused_cell -> None
@@ -355,16 +365,9 @@ module Cell_machine = struct
              in
              let new_index, new_column = f original_index_and_column in
              let new_index =
-               Int.max
-                 0
-                 (Int.min
-                    new_index
-                    (Collated.num_before_range collated
-                     + Collated.num_after_range collated
-                     + Collated.length collated
-                     - 1))
+               Int.max 0 (Int.min new_index (Collated.num_filtered_rows collated - 1))
              in
-             scroll_to new_index new_column;
+             scroll_to new_index new_column ~how_to_scroll;
              let row =
                match find_by_index collated ~index:new_index with
                | Some triple -> Currently_selected_row.At_key triple
@@ -414,10 +417,10 @@ module Cell_machine = struct
                 | Visible ({ row = At_key _; column = _ } as current)
                 | Shadow ({ row = At_key _; column = _ } as current) ->
                   Visible current, `No_change)
-             | Select (key, column) ->
+             | Select (key, column, how_to_scroll) ->
                (match find_by_key ~key ~key_equal:Key.equal collated with
                 | Some ({ index; key = _ } as triple) ->
-                  scroll_to index column;
+                  scroll_to index column ~how_to_scroll;
                   Visible { row = At_key triple; column }, `Cancel
                 | None ->
                   let pending_select_id = Pending_select_id.create () in
@@ -429,38 +432,44 @@ module Cell_machine = struct
                        Bonsai.Apply_action_context.inject
                          context
                          (By_cell.Action.Select_index_from_pending
-                            (index, column, pending_select_id)));
+                            (index, column, pending_select_id, how_to_scroll)));
                   No_focused_cell, `Schedule pending_select_id)
              | Unfocus ->
                (match current_focus with
                 | No_focused_cell -> No_focused_cell, `Cancel
                 | Visible triple | Shadow triple -> Shadow triple, `Cancel)
-             | Select_index (new_index, new_column) ->
-               ( Visible (update_focus ~f:(fun _original_index -> new_index, new_column))
+             | Select_index (new_index, new_column, how_to_scroll) ->
+               ( Visible
+                   (update_focus
+                      (fun _original_index -> new_index, new_column)
+                      ~how_to_scroll)
                , `Cancel )
-             | Select_index_from_pending (new_index, new_column, result_select_id) ->
+             | Select_index_from_pending
+                 (new_index, new_column, result_select_id, how_to_scroll) ->
                (match pending_select_id with
                 | Some state_pending_id
                   when Pending_select_id.equal state_pending_id result_select_id ->
                   ( Visible
-                      (update_focus ~f:(fun _original_index -> new_index, new_column))
+                      (update_focus
+                         (fun _original_index -> new_index, new_column)
+                         ~how_to_scroll)
                   , `Cancel )
                 | _ -> current_focus, `No_change)
              | Down ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, column) -> original_index + 1, column
                      | None -> range_start, first_column))
                , `Cancel )
              | Up ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, column) -> original_index - 1, column
                      | None -> range_end, first_column))
                , `Cancel )
              | Left ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, original_column) ->
                        let column_index =
                          List.findi columns ~f:(fun _ column ->
@@ -476,7 +485,7 @@ module Cell_machine = struct
                , `Cancel )
              | Right ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, original_column) ->
                        let column_index =
                          List.findi columns ~f:(fun _ column ->
@@ -495,25 +504,25 @@ module Cell_machine = struct
                , `Cancel )
              | Bottom ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (_, column) -> Int.max_value_30_bits, column
                      | None -> Int.max_value_30_bits, first_column))
                , `Cancel )
              | Top ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (_, column) -> 0, column
                      | None -> 0, first_column))
                , `Cancel )
              | Leftmost ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, _) -> original_index, first_column
                      | None -> range_start, first_column))
                , `Cancel )
              | Rightmost ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      (* List.last_exn will never throw here, since we've already
                         pattern-matched on a column existing. *)
                      | Some (original_index, _) -> original_index, List.last_exn columns
@@ -521,7 +530,7 @@ module Cell_machine = struct
                , `Cancel )
              | Page_down ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, original_column) ->
                        let new_index =
                          if original_index < range_end
@@ -533,7 +542,7 @@ module Cell_machine = struct
                , `Cancel )
              | Page_up ->
                ( Visible
-                   (update_focus ~f:(function
+                   (update_focus (function
                      | Some (original_index, original_column) ->
                        let new_index =
                          if original_index > range_start
@@ -663,7 +672,7 @@ module Row_machine = struct
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(range : (int * int) Bonsai.t)
-    ~(scroll_to : (row_index:int -> unit Effect.t) Bonsai.t)
+    ~(scroll_to : (row_index:int -> how:How_to_scroll.t -> unit Effect.t) Bonsai.t)
     : local_ Bonsai.graph -> ((key, presence) By_row.t, key, _) t Bonsai.t
     =
     fun (local_ graph) ->
@@ -715,7 +724,11 @@ let component
     -> collated:(key, _) Collated.t Bonsai.t
     -> leaves:column_id Header_tree.leaf list Bonsai.t
     -> range:_
-    -> scroll_to:([ `Row of int | `Cell of int * column_id ] -> unit Effect.t) Bonsai.t
+    -> scroll_to:
+         ([ `Row of int | `Cell of int * column_id ]
+          -> how:How_to_scroll.t
+          -> unit Effect.t)
+           Bonsai.t
     -> local_ Bonsai.graph
     -> (kind, key, column_id) t Bonsai.t
   =

@@ -3,4 +3,4 @@
  (public_name bonsai_web_components.focus_ring)
  (libraries core)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane -compare-require-explicit-locality)))

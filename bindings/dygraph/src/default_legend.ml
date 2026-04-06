@@ -106,7 +106,8 @@ module Model = struct
             [ Vdom.Attr.many_without_merge
                 [ Attr.href "about:blank"
                 ; Attr.on_click (fun _ev ->
-                    Effect.Many [ action (); Effect.Prevent_default ])
+                    Effect.Many
+                      [ action (); (Effect.Prevent_default [@alert "-deprecated"]) ])
                 ; Attr.class_ class_
                 ]
             ]

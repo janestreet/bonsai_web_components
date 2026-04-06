@@ -139,7 +139,8 @@ let component
                    [ close
                    ; Effect.Stop_propagation
                      (* Prevents other listeners/from trigerring their events. *)
-                   ; Effect.Prevent_default
+                   ; (Effect.Prevent_default
+                     [@alert "-deprecated"])
                      (* Prevents non-event interactions like context menus from opening
                         and interactions with form elements + clicking on links. *)
                    ])
