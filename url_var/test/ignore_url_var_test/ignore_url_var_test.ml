@@ -1,6 +1,6 @@
 open! Core
 open! Uri_parsing
-module Url_var = Bonsai_web_ui_url_var
+module Url_var = Bonsai_web_url_var
 open! Uri_parsing_test.Test_util
 open Bonsai_web
 open Bonsai_web_test

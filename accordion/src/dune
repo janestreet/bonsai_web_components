@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_accordion)
+ (name bonsai_web_legacy_accordion)
  (public_name bonsai_web_components.accordion)
  (preprocess
   (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css))

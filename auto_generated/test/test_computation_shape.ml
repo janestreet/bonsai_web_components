@@ -3,7 +3,7 @@ open! Bonsai.Let_syntax
 open! Import
 open! Bonsai_web_test
 module Private = Bonsai.Private
-module Auto_generated = Bonsai_web_ui_auto_generated
+module Auto_generated = Bonsai_web_auto_generated
 
 let count_computation_nodes name c =
   let skeleton =

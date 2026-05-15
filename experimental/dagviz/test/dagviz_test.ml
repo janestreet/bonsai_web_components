@@ -94,7 +94,7 @@ let create_handle ~dag ~curr_id =
 let set_positions ~handle ~ids =
   let positions =
     List.map ids ~f:(fun id ->
-      { Bonsai_web_ui_element_size_hooks_testing.Position_tracker.selector =
+      { Bonsai_web_element_size_hooks_testing.Position_tracker.selector =
           [%string "[src-name='%{id#Id}']"]
       ; width = 1
       ; height = 1
@@ -102,7 +102,7 @@ let set_positions ~handle ~ids =
       ; left = 1
       })
   in
-  Bonsai_web_ui_element_size_hooks_testing.Position_tracker.change_positions
+  Bonsai_web_element_size_hooks_testing.Position_tracker.change_positions
     handle
     ~get_vdom:Fn.id
     positions

@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_nav_link)
+ (name bonsai_web_contrib_nav_link)
  (public_name bonsai_web_components.nav_link)
  (preprocess
   (pps js_of_ocaml-ppx))

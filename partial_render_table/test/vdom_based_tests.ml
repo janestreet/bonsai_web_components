@@ -2349,7 +2349,7 @@ let%expect_test "sorting default renderer" =
 ;;
 
 let%expect_test "removed columns still count toward the total table width" =
-  let module Table = Bonsai_web_ui_partial_render_table in
+  let module Table = Bonsai_web_partial_render_table in
   let module Column = Table.Basic.Columns.Dynamic_columns in
   let map = Bonsai.return (Int.Map.of_alist_exn [ 1, 1; 2, 2 ]) in
   let render_header str = Vdom.Node.text str in
@@ -2570,7 +2570,7 @@ let%expect_test "removed columns still count toward the total table width" =
 ;;
 
 let%expect_test "removed columns still count toward the total table width" =
-  let module Table = Bonsai_web_ui_partial_render_table in
+  let module Table = Bonsai_web_partial_render_table in
   let module Columns = Table.Basic.Columns.Dynamic_columns in
   let map = Bonsai.return (Int.Map.of_alist_exn (List.init 100 ~f:(fun i -> i, i))) in
   let column_a =
@@ -2807,7 +2807,7 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
 ;;
 
 let%expect_test "round_column_with actually rounds width" =
-  let module Table = Bonsai_web_ui_partial_render_table in
+  let module Table = Bonsai_web_partial_render_table in
   let module Column = Table.Basic.Columns.Dynamic_columns in
   let map = Bonsai.return (Int.Map.of_alist_exn [ 1, 1; 2, 2 ]) in
   let render_header str = Vdom.Node.text str in

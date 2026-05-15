@@ -1,7 +1,7 @@
 (library
- (name bonsai_web_ui_multi_select_test)
- (libraries bonsai_web bonsai_web.proc bonsai_web_test
-   bonsai_web_ui_multi_select core virtual_dom.ui_effect virtual_dom
+ (name bonsai_web_contrib_multi_select_test)
+ (libraries bonsai_web bonsai_web_contrib_multi_select bonsai_web.proc
+   bonsai_web_test core virtual_dom.ui_effect virtual_dom
    virtual_dom.vdom_test_helpers)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open Bonsai.Let_syntax
-module Prt = Bonsai_web_ui_partial_render_table
+module Prt = Bonsai_web_partial_render_table
 module Table = Prt.Basic
 module Row = Symbol_table.Row
 
@@ -27,11 +27,11 @@ let dynamic_cells ~input which_column : (int, Row.t, _) Table.Columns.t =
         then (
           let%arr data and input in
           let data_str = M.to_string (Field.get field data) in
-          {%html|<div>#{data_str} (%{input#Int})</div>|})
+          {%html.jsx|<div>#{data_str} (%{input#Int})</div>|})
         else (
           let%arr data in
           let data_str = M.to_string (Field.get field data) in
-          {%html|<div>#{data_str}</div>|}))
+          {%html.jsx|<div>#{data_str}</div>|}))
       ()
   in
   [ column_helper
@@ -70,10 +70,10 @@ let dynamic_cols ~input which_column : (int, Row.t, _) Table.Columns.t =
           if depend_on_input
           then (
             let data_str = M.to_string (Field.get field data) in
-            {%html|<div>#{data_str} (%{input#Int})</div>|})
+            {%html.jsx|<div>#{data_str} (%{input#Int})</div>|})
           else (
             let data_str = M.to_string (Field.get field data) in
-            {%html|<div>#{data_str}</div>|}))
+            {%html.jsx|<div>#{data_str}</div>|}))
         ()
     in
     [ column_helper

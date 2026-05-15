@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-module Styling = Bonsai_web_ui_partial_render_table_styling
+module Styling = Bonsai_web_partial_render_table_styling
 
 module Which_styling : sig
   type t =
@@ -31,7 +31,7 @@ module Header_label : sig
     :  ?extra_attrs:Vdom.Attr.t list
     -> ?sort_indicator_attrs:Vdom.Attr.t list
     -> Vdom.Node.t
-    -> Bonsai_web_ui_partial_render_table_protocol.Sort_state.t
+    -> Bonsai_web_partial_render_table_protocol.Sort_state.t
     -> Vdom.Node.t
 end
 
@@ -79,7 +79,7 @@ module Header : sig
   val view
     :  Themed.t
     -> set_header_client_rect:
-         (Bonsai_web_ui_element_size_hooks.Visibility_tracker.Bbox.t -> unit Ui_effect.t)
+         (Bonsai_web_element_size_hooks.Visibility_tracker.Bbox.t -> unit Ui_effect.t)
     -> resize_column_widths_to_fit:bool
     -> Header_row.t list
     -> t

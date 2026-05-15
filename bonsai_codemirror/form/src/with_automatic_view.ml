@@ -1,7 +1,7 @@
 open! Core
 open Bonsai.Let_syntax
-module Codemirror_ui = Bonsai_web_ui_codemirror
-module Form = Bonsai_web_ui_form.With_automatic_view
+module Codemirror_ui = Bonsai_web_codemirror
+module Form = Bonsai_web_form.With_automatic_view
 
 module Make_forms (M : sig
     type t
@@ -9,7 +9,7 @@ module Make_forms (M : sig
     val create_codemirror : name:string -> t -> Bonsai.graph -> Codemirror_ui.t Bonsai.t
   end) =
 struct
-  let string ?(name = "Bonsai_web_ui_codemirror_form") t graph =
+  let string ?(name = "Bonsai_web_codemirror_form") t graph =
     let path = Bonsai.path_id graph in
     let codemirror = M.create_codemirror ~name t graph in
     let%arr path and codemirror in

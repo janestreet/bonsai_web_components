@@ -1,4 +1,4 @@
-# `bonsai_web_ui_multi_select`
+# `bonsai_web_contrib_multi_select`
 
 This library provides a widget for selecting multiple items from list.
 

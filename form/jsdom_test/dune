@@ -1,6 +1,6 @@
 (library
- (name bonsai_web_ui_form_jsdom_test)
- (libraries async_kernel bonsai_web bonsai_web_test bonsai_web_ui_form core
+ (name bonsai_web_form_jsdom_test)
+ (libraries async_kernel bonsai_web bonsai_web_form bonsai_web_test core
    default_vdom_spec ppx_expect.config_types expect_test_helpers_core
    js_of_ocaml bonsai_web_test.jsdom virtual_dom.keyboard
    virtual_dom.vdom_test_helpers with)

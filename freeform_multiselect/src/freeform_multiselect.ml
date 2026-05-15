@@ -48,7 +48,7 @@ let pills ~selected_options ~on_set_change ~inject_selected_options =
   then Vdom.Node.none_deprecated [@alert "-deprecated"]
   else
     Vdom.Node.div
-      ~attrs:[ Vdom.Attr.class_ "bonsai-web-ui-freeform-multiselect-pills" ]
+      ~attrs:[ Vdom.Attr.class_ "bonsai-web-contrib-freeform-multiselect-pills" ]
       (Set.to_list selected_options |> List.map ~f:pill)
 ;;
 

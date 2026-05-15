@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_codemirror_read_only_bindings_only)
+ (name bonsai_web_codemirror_read_only_bindings_only)
  (public_name bonsai_web_components.bonsai_codemirror_read_only_bindings_only)
  (libraries bonsai_web.ui_view codemirror_bindings codemirror_ocaml
    codemirror_themes core gen_js_api js_of_ocaml virtual_dom.ui_effect

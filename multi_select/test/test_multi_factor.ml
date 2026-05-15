@@ -20,7 +20,7 @@ module Key = struct
   let name_plural = "foos"
 end
 
-module S = Bonsai_web_ui_multi_select.Multi_factor.Make (String) (Key)
+module S = Bonsai_web_contrib_multi_select.Multi_factor.Make (String) (Key)
 
 let default_all_keys = Key.(Set.of_list [ Foo; Bar; Baz ])
 
@@ -145,7 +145,7 @@ let%expect_test "initial model settings" =
           ~selection_status:
             (String.Map.singleton
                "baz1"
-               Bonsai_web_ui_multi_select.Selection_status.Unselected)
+               Bonsai_web_contrib_multi_select.Selection_status.Unselected)
           ~focused_item:"baz2"
           () )
     ]

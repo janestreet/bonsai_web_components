@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai_web_test
 open Bonsai.Let_syntax
-open Bonsai_web_ui_partial_render_table_configs_for_testing
+open Bonsai_web_partial_render_table_configs_for_testing
 
 let get_view ~resize_column_widths_to_fit ~num_rows config =
   let input =
@@ -192,7 +192,7 @@ let%expect_test "dyn cells with `visible`" =
                   </div>
                 </div>
               </div>
-    +|        <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+    +|        <div class="autosize_table_cell_wrapper_hash_replaced_in_test autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
     +|          <div class="table_view__inline_class_hash_replaced_in_test"
     +|               style={
     +|                 display: none;
@@ -209,7 +209,7 @@ let%expect_test "dyn cells with `visible`" =
     +|                 }> </div>
     +|          </div>
     +|        </div>
-              <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+              <div class="autosize_table_cell_wrapper_hash_replaced_in_test autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
                 <div class="table_view__inline_class_hash_replaced_in_test"
                      style={
                        height: 30px;
@@ -319,7 +319,7 @@ let%expect_test "duplicate col adds the another col, with the same view" =
                   </div>
                 </div>
               </div>
-    +|        <div class="autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
+    +|        <div class="autosize_table_cell_wrapper_hash_replaced_in_test autosize_table_cell_wrapper_hash_replaced_in_test table_view__inline_class_hash_replaced_in_test">
     +|          <div class="table_view__inline_class_hash_replaced_in_test"
     +|               style={
     +|                 height: 30px;

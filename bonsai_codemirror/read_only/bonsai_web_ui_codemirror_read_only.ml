@@ -1,1 +1,0 @@
-include Bonsai_web_ui_codemirror_read_only_bindings_only

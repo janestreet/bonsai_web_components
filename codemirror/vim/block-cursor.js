@@ -236,8 +236,8 @@ function getBase(view) {
   var rect = view.scrollDOM.getBoundingClientRect();
   var left = view.textDirection == View.Direction.LTR ? rect.left : rect.right - view.scrollDOM.clientWidth;
   return {
-    left: left - view.scrollDOM.scrollLeft,
-    top: rect.top - view.scrollDOM.scrollTop
+    left: left - view.scrollDOM.scrollLeft * view.scaleX,
+    top: rect.top - view.scrollDOM.scrollTop * view.scaleY
   };
 }
 
@@ -250,19 +250,25 @@ function measureCursor(cm, view, cursor, primary) {
   if (vim && (!vim.insertMode || cm.state.overwrite)) {
     fatCursor = true;
     if (vim.visualBlock && !primary) return null;
-    if (cursor.anchor < cursor.head) head--;
+
+    if (cursor.anchor < cursor.head) {
+      var _letter = head < view.state.doc.length && view.state.sliceDoc(head, head + 1);
+
+      if (_letter != "\n") head--;
+    }
+
     if (cm.state.overwrite) hCoeff = 0.2;else if (vim.status) hCoeff = 0.5;
   }
 
   if (fatCursor) {
     var _coordsForChar, _ref2;
 
-    var _letter = head < view.state.doc.length && view.state.sliceDoc(head, head + 1);
+    var _letter2 = head < view.state.doc.length && view.state.sliceDoc(head, head + 1);
 
-    if (_letter && /[\uDC00-\uDFFF]/.test(_letter) && head > 1) {
+    if (_letter2 && /[\uDC00-\uDFFF]/.test(_letter2) && head > 1) {
       // step back if cursor is on the second half of a surrogate pair
       head--;
-      _letter = view.state.sliceDoc(head, head + 1);
+      _letter2 = view.state.sliceDoc(head, head + 1);
     }
 
     var pos = view.coordsAtPos(head, 1);
@@ -270,6 +276,22 @@ function measureCursor(cm, view, cursor, primary) {
     var base = getBase(view);
     var domAtPos = view.domAtPos(head);
     var node = domAtPos ? domAtPos.node : view.contentDOM;
+
+    if (node instanceof Text && domAtPos.offset >= node.data.length) {
+      var _node$parentElement;
+
+      if ((_node$parentElement = node.parentElement) !== null && _node$parentElement !== void 0 && _node$parentElement.nextSibling) {
+        var _node$parentElement2;
+
+        node = (_node$parentElement2 = node.parentElement) === null || _node$parentElement2 === void 0 ? void 0 : _node$parentElement2.nextSibling;
+        domAtPos = {
+          node: node,
+          offset: 0
+        };
+      }
+
+      ;
+    }
 
     while (domAtPos && domAtPos.node instanceof HTMLElement) {
       node = domAtPos.node;
@@ -293,22 +315,22 @@ function measureCursor(cm, view, cursor, primary) {
       _left = charCoords.left;
     }
 
-    if (!_letter || _letter == "\n" || _letter == "\r") {
-      _letter = "\xa0";
-    } else if (_letter == "\t") {
-      _letter = "\xa0";
+    if (!_letter2 || _letter2 == "\n" || _letter2 == "\r") {
+      _letter2 = "\xa0";
+    } else if (_letter2 == "\t") {
+      _letter2 = "\xa0";
       var nextPos = view.coordsAtPos(head + 1, -1);
 
       if (nextPos) {
         _left = nextPos.left - (nextPos.left - pos.left) / parseInt(style.tabSize);
       }
-    } else if (/[\uD800-\uDBFF]/.test(_letter) && head < view.state.doc.length - 1) {
+    } else if (/[\uD800-\uDBFF]/.test(_letter2) && head < view.state.doc.length - 1) {
       // include the second half of a surrogate pair in cursor
-      _letter += view.state.sliceDoc(head + 1, head + 2);
+      _letter2 += view.state.sliceDoc(head + 1, head + 2);
     }
 
     var h = pos.bottom - pos.top;
-    return new Piece(_left - base.left, pos.top - base.top + h * (1 - hCoeff), h * hCoeff, style.fontFamily, style.fontSize, style.fontWeight, style.color, primary ? "cm-fat-cursor cm-cursor-primary" : "cm-fat-cursor cm-cursor-secondary", _letter, hCoeff != 1);
+    return new Piece((_left - base.left) / view.scaleX, (pos.top - base.top + h * (1 - hCoeff)) / view.scaleY, h * hCoeff / view.scaleY, style.fontFamily, style.fontSize, style.fontWeight, style.color, primary ? "cm-fat-cursor cm-cursor-primary" : "cm-fat-cursor cm-cursor-secondary", _letter2, hCoeff != 1);
   } else {
     return null;
   }

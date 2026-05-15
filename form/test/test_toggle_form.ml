@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open! Bonsai_web_test
-module Form = Bonsai_web_ui_form.With_manual_view
+module Form = Bonsai_web_form.With_manual_view
 
 (* NOTE: This test case solely shows what happens when we set different form colors in
    [Form.Toggle.]. *)
@@ -10,7 +10,7 @@ let form ?colors graph = Form.Elements.Toggle.bool ?colors ~default:false () gra
 
 let create_handle ?colors () =
   Handle.create
-    (Bonsai_web_ui_form_manual_test.form_result_spec [%sexp_of: bool])
+    (Bonsai_web_form_manual_test.form_result_spec [%sexp_of: bool])
     (fun graph -> form ?colors graph)
 ;;
 

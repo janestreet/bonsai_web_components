@@ -23,7 +23,7 @@ depends: [
   "core"
   "core_extended"
   "core_kernel"
-  "expect_test_helpers_core"
+  "expect_test_helpers_base"
   "fuzzy_match"
   "incr_map"
   "incremental"
@@ -53,7 +53,7 @@ depends: [
   "re"                       {>= "1.8.0"}
   "uri"                      {>= "3.0.0"}
 ]
-available: arch != "arm32" & arch != "x86_32"
+available: arch != "x86_32"
 synopsis: "Examples for bonsai_web, a library for building dynamic webapps, using Js_of_ocaml"
 description: "
 A collection of bonsai_web examples. Bonsai is a library for building

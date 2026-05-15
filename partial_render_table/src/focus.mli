@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 module Collated := Incr_map_collate.Collated
-module How_to_scroll = Bonsai_web_ui_scroll_utilities.How_to_scroll
+module How_to_scroll = Bonsai_web_scroll_utilities.How_to_scroll
 
 module By_cell : sig
   type ('k, 'col_id, 'presence) t

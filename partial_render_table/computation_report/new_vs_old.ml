@@ -1,5 +1,5 @@
 open! Core
-open Bonsai_web_ui_partial_render_table_configs_for_testing
+open Bonsai_web_partial_render_table_configs_for_testing
 module Config = All_apis_configs
 module Report = Bonsai_web_test.Computation_report
 

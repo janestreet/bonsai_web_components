@@ -1,14 +1,14 @@
 (library
- (name bonsai_web_ui_form)
+ (name bonsai_web_form)
  (public_name bonsai_web_components.form)
  (flags :standard -alert -private_bonsai_view_library)
  (preprocess
   (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css))
- (libraries bonsai bonsai.extra bonsai_web bonsai_web_ui_common_components
-   bonsai_web_ui_extendy bonsai_web_ui_file bonsai_web_ui_file_from_web_file
-   bonsai_web.ui_form_view bonsai_web_ui_freeform_multiselect
-   bonsai_web_ui_multi_select bonsai_web_ui_query_box
-   bonsai_web_ui_reorderable_list bonsai_web_ui_typeahead core
+ (libraries bonsai bonsai.extra bonsai_kernel_extendy bonsai_web
+   bonsai_web_contrib_freeform_multiselect bonsai_web_contrib_multi_select
+   bonsai_web_contrib_pills bonsai_web_contrib_query_box
+   bonsai_web_contrib_typeahead bonsai_web_file bonsai_web_file_from_web_file
+   bonsai_web.ui_form_view bonsai_web_reorderable_list core
    virtual_dom.css_gen fuzzy_match.match incr_map js_of_ocaml profunctor
    record_builder ppx_typed_fields.typed_field_map
    ppx_typed_fields.typed_fields_lib ppx_typed_fields.typed_variants_lib

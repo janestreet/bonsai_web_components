@@ -1,7 +1,7 @@
 open! Core
 open Bonsai_test
 open Bonsai.Let_syntax
-module Collate_map_with_score = Bonsai_web_ui_query_box.Collate_map_with_score
+module Collate_map_with_score = Bonsai_web_contrib_query_box.Collate_map_with_score
 
 let reference_implementation
   ~preprocess

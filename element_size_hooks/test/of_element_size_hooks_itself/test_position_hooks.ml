@@ -1,6 +1,6 @@
 open! Core
 open Bonsai_web
-open Bonsai_web_ui_element_size_hooks
+open Bonsai_web_element_size_hooks
 open Bonsai_web_test
 open Bonsai.Let_syntax
 
@@ -45,7 +45,7 @@ let%expect_test "position hook" =
            }> </div>
     </div>
     |}];
-  Bonsai_web_ui_element_size_hooks_testing.Position_tracker.change_positions
+  Bonsai_web_element_size_hooks_testing.Position_tracker.change_positions
     handle
     ~get_vdom:Fn.id
     [ { selector = "#a"; height = 1; width = 1; top = 1; left = 1 }

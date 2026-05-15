@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai_web_test
 open! Bonsai.Let_syntax
-module Form = Bonsai_web_ui_form.With_manual_view
+module Form = Bonsai_web_form.With_manual_view
 
 module Test_scenario = struct
   type t = string list list list [@@deriving quickcheck]
@@ -15,7 +15,7 @@ let%expect_test "many setters over many frames" =
   in
   let handle =
     Handle.create
-      (Bonsai_web_ui_form_manual_test.list_form_result_spec [%sexp_of: string])
+      (Bonsai_web_form_manual_test.list_form_result_spec [%sexp_of: string])
       component
   in
   let last_thing_that_got_set = ref [] in

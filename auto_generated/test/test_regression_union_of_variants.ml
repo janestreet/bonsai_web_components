@@ -2,7 +2,7 @@ open! Core
 open! Bonsai.Let_syntax
 open! Import
 open! Bonsai_web_test
-module Auto_generated = Bonsai_web_ui_auto_generated
+module Auto_generated = Bonsai_web_auto_generated
 
 module M = struct
   type t = Foo [@@deriving sexp]

@@ -162,14 +162,38 @@ function runHistoryCommand(cm, revert) {
   }
 }
 
-var keys = {};
-"Left|Right|Up|Down|Backspace|Delete".split("|").forEach(function (key) {
-  keys[key] = function (cm) {
+var keys = {
+  Left: function Left(cm) {
     return (0, _view.runScopeHandlers)(cm.cm6, {
-      key: key
+      key: "Left"
     }, "editor");
-  };
-});
+  },
+  Right: function Right(cm) {
+    return (0, _view.runScopeHandlers)(cm.cm6, {
+      key: "Right"
+    }, "editor");
+  },
+  Up: function Up(cm) {
+    return (0, _view.runScopeHandlers)(cm.cm6, {
+      key: "Up"
+    }, "editor");
+  },
+  Down: function Down(cm) {
+    return (0, _view.runScopeHandlers)(cm.cm6, {
+      key: "Down"
+    }, "editor");
+  },
+  Backspace: function Backspace(cm) {
+    return (0, _view.runScopeHandlers)(cm.cm6, {
+      key: "Backspace"
+    }, "editor");
+  },
+  Delete: function Delete(cm) {
+    return (0, _view.runScopeHandlers)(cm.cm6, {
+      key: "Delete"
+    }, "editor");
+  }
+};
 
 var CodeMirror = /*#__PURE__*/function () {
   function CodeMirror(cm6) {
@@ -599,6 +623,7 @@ var CodeMirror = /*#__PURE__*/function () {
       var cm = this;
       var last = null;
       var lastCM5Result = null;
+      var afterEmptyMatch = false;
       if (pos.ch == undefined) pos.ch = Number.MAX_VALUE;
 
       var firstOffset = _indexFromPos(cm.cm6.state.doc, pos);
@@ -642,7 +667,7 @@ var CodeMirror = /*#__PURE__*/function () {
         }
       }
 
-      return {
+      return Object.defineProperties({
         findNext: function findNext() {
           return this.find(false);
         },
@@ -653,10 +678,10 @@ var CodeMirror = /*#__PURE__*/function () {
           var doc = cm.cm6.state.doc;
 
           if (back) {
-            var endAt = last ? last.from == last.to ? last.to - 1 : last.from : firstOffset;
+            var endAt = last ? afterEmptyMatch ? last.to - 1 : last.from : firstOffset;
             last = prevMatchInRange(0, endAt);
           } else {
-            var startFrom = last ? last.from == last.to ? last.to + 1 : last.to : firstOffset;
+            var startFrom = last ? afterEmptyMatch ? last.to + 1 : last.to : firstOffset;
             last = nextMatch(startFrom);
           }
 
@@ -665,6 +690,7 @@ var CodeMirror = /*#__PURE__*/function () {
             to: _posFromIndex(doc, last.to),
             match: last.match
           };
+          afterEmptyMatch = last ? last.from == last.to : false;
           return last && last.match;
         },
         from: function from() {
@@ -693,7 +719,15 @@ var CodeMirror = /*#__PURE__*/function () {
             }
           }
         }
-      };
+      }, {
+        match: {
+          get: function get() {
+            return lastCM5Result && lastCM5Result.match;
+          },
+          configurable: true,
+          enumerable: true
+        }
+      });
     }
   }, {
     key: "findPosV",
@@ -1095,6 +1129,7 @@ _defineProperty(CodeMirror, "e_stop", function (e) {
 
 _defineProperty(CodeMirror, "lookupKey", function lookupKey(key, map, handle) {
   var result = CodeMirror.keys[key];
+  if (!result && /^Arrow/.test(key)) result = CodeMirror.keys[key.slice(5)];
   if (result) handle(result);
 });
 
@@ -1152,6 +1187,7 @@ function _openNotification(cm, template, options) {
 function showDialog(cm, dialog) {
   var oldDialog = cm.state.dialog;
   cm.state.dialog = dialog;
+  dialog.style.flex = "1";
 
   if (dialog && oldDialog !== dialog) {
     if (oldDialog && oldDialog.contains(document.activeElement)) cm.focus();
@@ -1211,7 +1247,7 @@ function _openDialog(me, template, callback, options) {
         return;
       }
 
-      if (e.keyCode == 13) callback(inp.value);
+      if (e.keyCode == 13) callback && callback(inp.value);
 
       if (e.keyCode == 27 || options.closeOnEnter !== false && e.keyCode == 13) {
         inp.blur();
@@ -1280,7 +1316,9 @@ function _scanForBracket(cm, where, dir, style, config) {
   return lineNo - dir == (dir > 0 ? cm.lastLine() : cm.firstLine()) ? false : null;
 }
 
-function findMatchingTag(cm, pos) {}
+function findMatchingTag(cm, pos) {
+  return null;
+}
 
 function findEnclosingTag(cm, pos) {
   var state = cm.cm6.state;

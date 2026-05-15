@@ -3,7 +3,7 @@ open! Bonsai_web
 module Form := Form_automatic
 
 (** The functions in this module can be hard to understand Please look at the examples in
-    lib/bonsai/examples/forms/typed.ml *)
+    lib/bonsai/old-examples/forms/typed.ml *)
 
 module Record : sig
   module type S = sig

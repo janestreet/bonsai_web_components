@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_extendy)
+ (name bonsai_kernel_extendy)
  (public_name bonsai_web_components.extendy)
  (libraries bonsai bonsai_web core incr_map)
  (preprocess

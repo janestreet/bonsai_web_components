@@ -1,7 +1,7 @@
 open! Core
 open Bonsai_web
 module Vdom = Virtual_dom.Vdom
-module Position := Bonsai_web_ui_element_size_hooks.Position_tracker.Position
+module Position := Bonsai_web_element_size_hooks.Position_tracker.Position
 
 (** [Make] will create a module for visualizing a Directed Acyclic Graph (DAG) as a Bonsai
     Vdom.Node.t Computation.t whose vertices are identified by [Name] *)

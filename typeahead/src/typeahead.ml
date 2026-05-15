@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open! Bonsai_web_ui_common_components
+open! Bonsai_web_contrib_pills
 
 module Attr_merge_behavior = struct
   type t =
@@ -321,6 +321,7 @@ let create_multi_internal
   (type comparator_witness t)
   ?(extra_attrs = Bonsai.return [])
   ?(extra_pills_container_attrs = Bonsai.return [])
+  ?extra_pill_attr
   ?pills_tab_behavior
   ?(placeholder = Bonsai.return "")
   ?(on_set_change = Bonsai.return (const Ui_effect.Ignore))
@@ -400,12 +401,13 @@ let create_multi_internal
       graph
   in
   let pills =
-    Pills.of_set
+    Bonsai_web_contrib_pills.of_set
       ~extra_container_attr:
         (let%arr extra_pills_container_attrs in
          Vdom.Attr.many
-           (Vdom.Attr.(class_ "bonsai-web-ui-typeahead-pills")
+           (Vdom.Attr.(class_ "bonsai-web-contrib-typeahead-pills")
             :: extra_pills_container_attrs))
+      ?extra_pill_attr
       ?tab_behavior:pills_tab_behavior
       ~to_string
       ~inject_selected_options

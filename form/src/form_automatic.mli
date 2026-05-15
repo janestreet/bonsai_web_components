@@ -4,8 +4,8 @@ module Form_view := View
 open Bonsai_web
 
 (** This is the legacy automatic-view form API. New code should not use this module. If
-    you need the forms library at all (see [Bonsai_web_ui_form] for guidance on when
-    that's appropriate), prefer [Bonsai_web_ui_form.With_manual_view] instead *)
+    you need the forms library at all (see [Bonsai_web_form] for guidance on when that's
+    appropriate), prefer [Bonsai_web_form.With_manual_view] instead *)
 
 type 'a t = ('a, Form_view.t) Form_manual.t
 

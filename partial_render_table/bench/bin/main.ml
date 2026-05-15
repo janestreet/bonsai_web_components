@@ -3,7 +3,7 @@ open! Bonsai_web
 open! Bonsai.Let_syntax
 open! Bonsai_bench
 open! Incr_map_collate
-open Bonsai_web_ui_partial_render_table_configs_for_testing
+open Bonsai_web_partial_render_table_configs_for_testing
 
 let startup =
   Bonsai_bench.compare_startup

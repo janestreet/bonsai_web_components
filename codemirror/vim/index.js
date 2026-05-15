@@ -36,7 +36,8 @@ var vimStyle = _view.EditorView.baseTheme({
   ".cm-vim-panel": {
     padding: "0px 10px",
     fontFamily: "monospace",
-    minHeight: "1.3em"
+    minHeight: "1.3em",
+    display: 'flex'
   },
   ".cm-vim-panel input": {
     border: "none",
@@ -111,7 +112,8 @@ var vimPlugin = function(use_system_clipboard) { return _view.ViewPlugin.fromCla
       }
     });
     this.dom = document.createElement("span");
-    this.dom.style.cssText = "position: absolute; right: 10px; top: 1px";
+    this.spacer = document.createElement("span");
+    this.spacer.style.flex = "1";
     this.statusButton = document.createElement("span");
 
     this.statusButton.onclick = function (e) {
@@ -213,6 +215,7 @@ var vimPlugin = function(use_system_clipboard) { return _view.ViewPlugin.fromCla
         if (vim.insertModeReturn) status += "(C-O)";
         this.statusButton.textContent = "--".concat(status, "--");
         dom.appendChild(this.statusButton);
+        dom.appendChild(this.spacer);
       }
 
       this.dom.textContent = vim.status;

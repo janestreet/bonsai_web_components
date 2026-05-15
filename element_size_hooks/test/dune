@@ -1,6 +1,6 @@
 (library
- (name bonsai_web_ui_element_size_hooks_testing)
+ (name bonsai_web_element_size_hooks_testing)
  (public_name bonsai_web_components.element_size_hooks_testing)
- (libraries bonsai_web bonsai_web_test bonsai_web_ui_element_size_hooks core)
+ (libraries bonsai_web bonsai_web_element_size_hooks bonsai_web_test core)
  (preprocess
   (pps ppx_jane)))

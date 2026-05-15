@@ -2,7 +2,7 @@ open! Core
 open Bonsai_web
 
 include module type of struct
-  include Bonsai_web_ui_form_view
+  include Bonsai_web_form_view
 end
 
 val empty : t

@@ -9,7 +9,7 @@ module Stable = struct
         [ `Asc
         | `Desc
         ]
-      [@@deriving sexp, bin_io, equal, compare]
+      [@@deriving sexp, bin_io, equal, compare, stable_witness]
 
       let%expect_test _ =
         print_endline [%bin_digest: t];
@@ -20,7 +20,8 @@ module Stable = struct
 
   module Order = struct
     module V1 = struct
-      type 'col_id t = ('col_id * Dir.V1.t) list [@@deriving sexp, bin_io, equal, compare]
+      type 'col_id t = ('col_id * Dir.V1.t) list
+      [@@deriving sexp, bin_io, equal, compare, stable_witness]
 
       let%expect_test _ =
         print_endline [%bin_digest: int t];
@@ -134,6 +135,20 @@ module Order = struct
         |> override
       in
       Custom_by_key_and_value { compare }
+  ;;
+
+  let to_compare_using_function t ~f : _ Incr_map_collate.Compare.t =
+    let cmps =
+      List.filter_map t ~f:(fun (col_id, dir) ->
+        let%map.Option cmp = f col_id in
+        match dir with
+        | `Asc -> cmp
+        | `Desc -> Comparable.reverse cmp)
+    in
+    match cmps with
+    | [] -> Unchanged
+    | cmps ->
+      Custom_by_key_and_value { compare = (fun a b -> Comparable.lexicographic cmps a b) }
   ;;
 
   let default = []

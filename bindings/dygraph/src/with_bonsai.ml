@@ -1,6 +1,6 @@
 open Core
 open Import
-module Mutable_state_tracker = Bonsai_web_ui_low_level_vdom.Mutable_state_tracker
+module Mutable_state_tracker = Bonsai_web_low_level_vdom.Mutable_state_tracker
 
 (* This top-level side-effect installs the CSS for dygraphs. We need it in this file
    because if the side-effect lives in an otherwise-empty file, or in a file that only

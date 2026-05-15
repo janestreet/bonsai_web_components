@@ -72,13 +72,19 @@ module Order : sig
     -> default_sort:('key, 'data) compare option
     -> ('key, 'data, 'row_cmp) Incr_map_collate.Compare.t
 
+  val to_compare_using_function
+    :  'col_id t
+    -> f:('col_id -> ('key, 'data) compare option)
+    -> ('key, 'data, 'row_cmp) Incr_map_collate.Compare.t
+
   val default : 'col_id t
 end
 
 module Stable : sig
   module Order : sig
     module V1 : sig
-      type nonrec 'col_id t = 'col_id Order.t [@@deriving sexp, bin_io, equal, compare]
+      type nonrec 'col_id t = 'col_id Order.t
+      [@@deriving sexp, bin_io, equal, compare, stable_witness]
     end
   end
 end
