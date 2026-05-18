@@ -2,7 +2,7 @@ open! Core
 open Bonsai_web
 open Bonsai_web_test
 open Bonsai.Let_syntax
-module Reorderable_list = Bonsai_web_ui_reorderable_list
+module Reorderable_list = Bonsai_web_reorderable_list
 
 let component render (local_ graph) =
   let%sub lists, dragged_element =
@@ -45,7 +45,7 @@ let create_handle component =
 ;;
 
 let dnd_action handle action =
-  Bonsai_web_ui_drag_and_drop_testing.run handle ~get_vdom:Fn.id ~name:"dnd" action
+  Bonsai_web_drag_and_drop_testing.run handle ~get_vdom:Fn.id ~name:"dnd" action
 ;;
 
 let%expect_test "simple usage" =

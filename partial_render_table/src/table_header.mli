@@ -16,7 +16,7 @@ val component
   -> set_column_width_for_reporting:
        (column_id:'column_id -> [ `Px_float of float ] -> unit Vdom.Effect.t) Bonsai.t
   -> set_header_client_rect:
-       (Bonsai_web_ui_element_size_hooks.Visibility_tracker.Bbox.t -> unit Vdom.Effect.t)
+       (Bonsai_web_element_size_hooks.Visibility_tracker.Bbox.t -> unit Vdom.Effect.t)
          Bonsai.t
   -> local_ Bonsai.graph
   -> Table_view.Header.t Bonsai.t

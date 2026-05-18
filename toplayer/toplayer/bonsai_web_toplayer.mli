@@ -388,7 +388,7 @@ module Modal : sig
     -> unit
 end
 
-module Private_for_bonsai_web_ui_toplayer : sig
+module Private_for_bonsai_web_themed_toplayer : sig
   val create_controls
     :  ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
     -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t

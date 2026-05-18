@@ -1,7 +1,7 @@
 open! Core
 open Bonsai_web
 module Attr = Vdom.Attr
-module Form = Bonsai_web_ui_form.With_automatic_view
+module Form = Bonsai_web_form.With_automatic_view
 module Node = Vdom.Node
 module Form_view = Form.View
 
@@ -258,7 +258,7 @@ let with_auto_generated_forms ~theme =
       class c =
         object (self)
           inherit M.c
-          method! theme_name = "Bonsai_web_ui_auto_generated"
+          method! theme_name = "Bonsai_web_auto_generated"
 
           method! form_tuple ~eval_context ~view_context ts =
             let header_is_inhabited = header_is_inhabited view_context in

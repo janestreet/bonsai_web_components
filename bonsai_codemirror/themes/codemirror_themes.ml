@@ -113,7 +113,7 @@ let vscode_default =
 
 module Stable = struct
   module V1 = struct
-    type t = Bonsai_web_ui_view.Expert.For_codemirror.Theme.t =
+    type t = Bonsai_web_legacy_view.Expert.For_codemirror.Theme.t =
       | Basic_dark
       | Basic_light
       | Gruvbox_dark

@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
 open! Bonsai_bench
-module Query_box = Bonsai_web_ui_query_box
+module Query_box = Bonsai_web_contrib_query_box
 
 let component ~possible_words (local_ graph) =
   Query_box.stringable

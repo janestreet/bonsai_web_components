@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open Bonsai.Let_syntax
-module Extendy = Bonsai_web_ui_extendy
+module Extendy = Bonsai_kernel_extendy
 module Selectable_style = Vdom_input_widgets.Selectable_style
 module Form = Form_manual
 
@@ -892,7 +892,7 @@ module Typeahead = struct
     (local_ graph)
     =
     let%sub { selected = value; view; set_selected = set; _ } =
-      Bonsai_web_ui_typeahead.Typeahead.create
+      Bonsai_web_contrib_typeahead.Typeahead.create
         ?placeholder
         ?to_string
         ?to_option_description
@@ -904,7 +904,7 @@ module Typeahead = struct
         ~extra_attrs
         graph
         ~attr_merge_behavior:
-          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
     in
     let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
@@ -941,6 +941,7 @@ module Typeahead = struct
   let set
     ?(extra_attrs = Bonsai.return [])
     ?extra_pills_container_attrs
+    ?extra_pill_attr
     ?placeholder
     ?to_string
     ?to_option_description
@@ -952,8 +953,9 @@ module Typeahead = struct
     (local_ graph)
     =
     let%sub { selected = value; view; set_selected = set; _ } =
-      Bonsai_web_ui_typeahead.Typeahead.create_multi
+      Bonsai_web_contrib_typeahead.Typeahead.create_multi
         ?extra_pills_container_attrs
+        ?extra_pill_attr
         ?placeholder
         ?to_string
         ?to_option_description
@@ -965,7 +967,7 @@ module Typeahead = struct
         ~all_options
         graph
         ~attr_merge_behavior:
-          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
     in
     let%arr value and view and set in
     form_expert_create ~value:(Ok value) ~view ~set
@@ -975,6 +977,7 @@ module Typeahead = struct
     (type a cmp)
     ?extra_attrs
     ?extra_pills_container_attrs
+    ?extra_pill_attr
     ?placeholder
     ?to_string
     ?to_option_description
@@ -989,6 +992,7 @@ module Typeahead = struct
       set
         ?extra_attrs
         ?extra_pills_container_attrs
+        ?extra_pill_attr
         ?placeholder
         ?to_string
         ?to_option_description
@@ -1495,7 +1499,7 @@ module Multiselect = struct
       ;;
     end
     in
-    let module Single_factor = Bonsai_web_ui_multi_select.Make (Item) in
+    let module Single_factor = Bonsai_web_contrib_multi_select.Make (Item) in
     let input_set = input_list >>| Item.Set.of_list in
     let extra_row_attrs ~is_focused =
       if is_focused
@@ -1527,7 +1531,7 @@ module Multiselect = struct
         (Single_factor.Action.Set_all_selection_statuses
            (Map.of_key_set
               set
-              ~f:(Fn.const Bonsai_web_ui_multi_select.Selection_status.Selected)))
+              ~f:(Fn.const Bonsai_web_contrib_multi_select.Selection_status.Selected)))
     in
     let on_keydown =
       Vdom.Attr.on_keydown
@@ -1605,7 +1609,7 @@ module Multiple = struct
       Bonsai.state "" ~sexp_of_model:[%sexp_of: String.t] ~equal:[%equal: String.t] graph
     in
     let pills =
-      Bonsai_web_ui_common_components.Pills.of_list
+      Bonsai_web_contrib_pills.of_list
         ~extra_container_attr:extra_pill_container_attr
         ~extra_pill_attr
         ~to_string:(Bonsai.return M.to_string)
@@ -1678,7 +1682,9 @@ module Multiple = struct
 
   module Seqnum_for_list = Bonsai_extra.Id_gen (Int63) ()
 
-  let list (type a view) (t : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+  let list'
+    (type a view)
+    (t : key:int Bonsai.t -> local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
     : local_ Bonsai.graph -> (a list, (a, view) t) Form.t Bonsai.t
     =
     fun (local_ graph) ->
@@ -1731,7 +1737,7 @@ module Multiple = struct
                             (list_of_values, new_seqnum))
                      ])))
         ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
-          let extendy = Extendy.component t graph in
+          let extendy = Extendy.component_with_key t graph in
           let bonk = Bonsai_extra.Effects.bonk graph in
           let get_next_seqnum, most_recent_seqnum =
             Seqnum_for_list.component' ~reset:`Bump graph
@@ -1775,6 +1781,12 @@ module Multiple = struct
           , most_recent_seqnum ))
     in
     form
+  ;;
+
+  let list (type a view) (t : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
+    : local_ Bonsai.graph -> (a list, (a, view) t) Form.t Bonsai.t
+    =
+    list' (fun ~key:_ (local_ graph) -> t graph)
   ;;
 
   let nonempty_list (type a view) (t : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
@@ -1852,6 +1864,7 @@ module Number = struct
     ?min
     ?max
     ?default
+    ?placeholder
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
@@ -1865,6 +1878,7 @@ module Number = struct
           ~attrs:extra_attrs
           ?min
           ?max
+          ?placeholder
           ~disabled:false
           ~step
           ~allow_updates_when_focused
@@ -1882,6 +1896,7 @@ module Number = struct
     ?min
     ?max
     ?default
+    ?placeholder
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
@@ -1893,6 +1908,7 @@ module Number = struct
         ?min
         ?max
         ?default
+        ?placeholder
         ~step
         ~allow_updates_when_focused
         ()
@@ -1908,6 +1924,7 @@ module Number = struct
     ?min
     ?max
     ?default
+    ?placeholder
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
@@ -1919,6 +1936,7 @@ module Number = struct
         ?min
         ?max
         ?default
+        ?placeholder
         ~step
         ~allow_updates_when_focused
         ()
@@ -1934,11 +1952,43 @@ module Number = struct
     |> Form.validate ~f:(validate_range ?min ?max)
   ;;
 
+  let int_opt
+    ?extra_attrs
+    ?min
+    ?max
+    ?default
+    ?placeholder
+    ~step
+    ?(allow_updates_when_focused = `Always)
+    ()
+    (local_ graph)
+    =
+    let int x = Option.map x ~f:Int.to_float in
+    let float_opt =
+      float_opt
+        ?extra_attrs
+        ?min:(int min)
+        ?max:(int max)
+        ?default:(int default)
+        ?placeholder
+        ~step:(Int.to_float step)
+        ~allow_updates_when_focused
+        ()
+        graph
+    in
+    let%arr float_opt in
+    Form.project
+      float_opt
+      ~parse_exn:(Option.map ~f:Int.of_float)
+      ~unparse:(Option.map ~f:Int.to_float)
+  ;;
+
   let int
     ?extra_attrs
     ?min
     ?max
     ?default
+    ?placeholder
     ~step
     ?(allow_updates_when_focused = `Always)
     ()
@@ -1951,6 +2001,7 @@ module Number = struct
         ?min:(int min)
         ?max:(int max)
         ?default:(int default)
+        ?placeholder
         ~step:(Int.to_float step)
         ~allow_updates_when_focused
         ()
@@ -2177,7 +2228,7 @@ end
 
 module File_select = struct
   module File = struct
-    type t = Bonsai_web_ui_file.t [@@deriving sexp_of]
+    type t = Bonsai_web_file.t [@@deriving sexp_of]
 
     let equal = phys_equal
   end
@@ -2202,7 +2253,7 @@ module File_select = struct
           ?accept
           ~extra_attrs:(extra_attrs @ [ value_prop ])
           ~on_input:(fun file ->
-            set_state (Option.map file ~f:Bonsai_web_ui_file_from_web_file.create))
+            set_state (Option.map file ~f:Bonsai_web_file_from_web_file.create))
           ()
     in
     let form =
@@ -2221,7 +2272,7 @@ module File_select = struct
               [%message
                 "WARNING: Attempted to set the value of a file select to a value other \
                  than [None]. This is prohibited by the browser and therefore ignored."
-                  ~filename:(Bonsai_web_ui_file.filename file : Filename.t)])
+                  ~filename:(Bonsai_web_file.filename file : Filename.t)])
     }
   ;;
 
@@ -2246,8 +2297,8 @@ module File_select = struct
           ~on_input:(fun files ->
             let files =
               List.map files ~f:(fun file ->
-                let file = Bonsai_web_ui_file_from_web_file.create file in
-                Bonsai_web_ui_file.filename file, file)
+                let file = Bonsai_web_file_from_web_file.create file in
+                Bonsai_web_file.filename file, file)
               |> Filename.Map.of_alist_exn
             in
             set_state files)
@@ -2288,7 +2339,7 @@ module Freeform_multiselect = struct
     (local_ graph)
     =
     let freeform_multiselect =
-      Bonsai_web_ui_freeform_multiselect.Freeform_multiselect.create
+      Bonsai_web_contrib_freeform_multiselect.Freeform_multiselect.create
         ?placeholder
         ?split
         ~extra_attr
@@ -2319,7 +2370,7 @@ module Rank = struct
     (local_ graph)
     =
     let%map.Bonsai value, view, inject =
-      Bonsai_web_ui_reorderable_list.with_inject
+      Bonsai_web_reorderable_list.with_inject
         key
         ?enable_debug_overlay
         ?extra_item_attrs
@@ -2382,7 +2433,7 @@ module Query_box = struct
         Vdom.Attr.combine extra_input_attr (Vdom.Attr.placeholder placeholder)
     in
     let%sub { query; view; _ } =
-      Bonsai_web_ui_query_box.create
+      Bonsai_web_contrib_query_box.create
         (module Key)
         ?initial_query
         ?max_visible_items

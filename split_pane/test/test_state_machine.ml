@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai_web_test
 open! Bonsai.Let_syntax
-module Split_pane = Bonsai_web_ui_split_pane
+module Split_pane = Bonsai_web_contrib_split_pane
 
 include struct
   open Split_pane

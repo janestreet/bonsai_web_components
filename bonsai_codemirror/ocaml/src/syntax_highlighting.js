@@ -217,7 +217,7 @@
 
     function tokenCommentCR(stream, state) {
       state.tokenize = tokenComment;
-      if (stream.match(/CR(-soon|-someday)? [a-z\-_]{2,}( for [a-z\-_]{2,})?:/)) {
+      if (stream.match(/CR(-soon|-someday)? [a-z\-_]{2,}( for \$?[a-z\-_]{2,})?:/)) {
         return 'atom';
       } else {
         stream.match('CR');

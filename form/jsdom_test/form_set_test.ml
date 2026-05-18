@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-module Form = Bonsai_web_ui_form.With_manual_view
+module Form = Bonsai_web_form.With_manual_view
 open Jsdom
 module Handle = Handle_experimental
 

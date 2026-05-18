@@ -4,7 +4,7 @@ open! Bonsai_web
 open Bonsai.Let_syntax
 
 let shared_computation =
-  Bonsai_web_ui_freeform_multiselect.Freeform_multiselect.create
+  Bonsai_web_contrib_freeform_multiselect.Freeform_multiselect.create
     ~placeholder:"Select a value"
     ~split:(String.split ~on:',')
     ()
@@ -58,7 +58,7 @@ let%expect_test "Select two elements" =
                value=""
                #value=""
                @on_change/>
-    +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
+    +|  <div class="bonsai-web-contrib-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
     +|  </div>
@@ -84,7 +84,7 @@ let%expect_test "Deselect an element" =
                value=""
                #value=""
                @on_change/>
-        <div class="bonsai-web-ui-freeform-multiselect-pills">
+        <div class="bonsai-web-contrib-freeform-multiselect-pills">
     -|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
           <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
         </div>
@@ -122,7 +122,7 @@ let%expect_test "set the elements" =
                value=""
                #value=""
                @on_change/>
-    +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
+    +|  <div class="bonsai-web-contrib-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
     +|  </div>
@@ -148,7 +148,7 @@ let%expect_test "input multiple elements" =
                value=""
                #value=""
                @on_change/>
-    +|  <div class="bonsai-web-ui-freeform-multiselect-pills">
+    +|  <div class="bonsai-web-contrib-freeform-multiselect-pills">
     +|    <span tabindex="0" data-value="this is a thing" @on_click @on_keyup> this is a thing × </span>
     +|    <span tabindex="0" data-value="this is yet another thing" @on_click @on_keyup> this is yet another thing × </span>
     +|  </div>

@@ -1,0 +1,24 @@
+open! Core
+open! Bonsai_web
+
+val of_list
+  :  ?extra_container_attr:Vdom.Attr.t Bonsai.t
+  -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
+  -> ?tab_behavior:[ `Prevent_tabbing | `Tab_with_index of int ] Bonsai.t
+       (** Defaults to [`Tab_with_index 0] *)
+  -> to_string:('a -> string) Bonsai.t
+  -> inject_selected_options:('a list -> unit Effect.t) Bonsai.t
+  -> 'a list Bonsai.t
+  -> local_ Bonsai.graph
+  -> Vdom.Node.t Bonsai.t
+
+val of_set
+  :  ?extra_container_attr:Vdom.Attr.t Bonsai.t
+  -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
+  -> ?tab_behavior:[ `Prevent_tabbing | `Tab_with_index of int ] Bonsai.t
+       (** Defaults to [`Tab_with_index 0] *)
+  -> to_string:('a -> string) Bonsai.t
+  -> inject_selected_options:(('a, 'cmp) Set.t -> unit Effect.t) Bonsai.t
+  -> ('a, 'cmp) Set.t Bonsai.t
+  -> local_ Bonsai.graph
+  -> Vdom.Node.t Bonsai.t

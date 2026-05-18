@@ -346,6 +346,7 @@ module Typeahead : sig
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -359,6 +360,7 @@ module Typeahead : sig
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -508,7 +510,8 @@ module Multiselect : sig
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string)
-    -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
+    -> ?default_selection_status:
+         Bonsai_web_contrib_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
@@ -518,7 +521,8 @@ module Multiselect : sig
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string)
-    -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
+    -> ?default_selection_status:
+         Bonsai_web_contrib_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, _) Comparator.Module.t
     -> 'a list Bonsai.t
@@ -679,7 +683,7 @@ module File_select : sig
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> Bonsai_web_ui_file.t option Form.t Bonsai.t
+    -> Bonsai_web_file.t option Form.t Bonsai.t
 
   (** A form where picking a file is mandatory. The form will be in an error state until a
       file is picked.
@@ -690,14 +694,14 @@ module File_select : sig
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> Bonsai_web_ui_file.t Form.t Bonsai.t
+    -> Bonsai_web_file.t Form.t Bonsai.t
 
   val multiple
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> Bonsai_web_ui_file.t Filename.Map.t Form.t Bonsai.t
+    -> Bonsai_web_file.t Filename.Map.t Form.t Bonsai.t
 end
 
 module Freeform_multiselect : sig
@@ -720,7 +724,7 @@ end
 
 module Rank : sig
   val list
-    :  ('a, 'b) Bonsai_web_ui_reorderable_list.comparator
+    :  ('a, 'b) Bonsai_web_reorderable_list.comparator
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t
@@ -742,12 +746,12 @@ module Query_box : sig
     :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
-    -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?suggestion_list_kind:Bonsai_web_contrib_query_box.Suggestion_list_kind.t Bonsai.t
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
@@ -761,12 +765,12 @@ module Query_box : sig
     :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
-    -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?suggestion_list_kind:Bonsai_web_contrib_query_box.Suggestion_list_kind.t Bonsai.t
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
@@ -784,7 +788,7 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
          (* If there are duplicate items in [all_options] (according to the comparator),
             the last of the duplicates will be the only one that show up in the list of
             suggestions. *)
@@ -800,7 +804,7 @@ module Query_box : sig
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?handle_unknown_option:(string -> 'a option) Bonsai.t
     -> (module Comparator.S with type t = 'a and type comparator_witness = 'cmp)
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
          (* If there are duplicate items in [all_options] (according to the comparator),
             the last of the duplicates will be the only one that show up in the list of
             suggestions. *)

@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open Bonsai_web_ui_partial_render_table_protocol
+open Bonsai_web_partial_render_table_protocol
 
 module type Basic = sig
   (** There are a few ways to specify the columns on a partial render, table, and they

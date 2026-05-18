@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-open Bonsai_web_ui_partial_render_table_protocol
+open Bonsai_web_partial_render_table_protocol
 
 (** This module allows you to create a state machine for column sorting order, get/update
     the current value, and create header labels via the [Header] submodule's utils. *)

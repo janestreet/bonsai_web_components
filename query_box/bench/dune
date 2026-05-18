@@ -1,7 +1,7 @@
 (executables
  (modes byte exe)
  (names main)
- (libraries bonsai_bench bonsai_web bonsai_web_ui_query_box core
+ (libraries bonsai_bench bonsai_web bonsai_web_contrib_query_box core
    core_bench.js)
  (preprocess
   (pps ppx_jane ppx_bench bonsai.ppx_bonsai)))

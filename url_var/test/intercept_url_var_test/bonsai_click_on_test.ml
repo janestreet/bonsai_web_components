@@ -2,7 +2,7 @@ open! Core
 open Bonsai_web
 open Bonsai.Let_syntax
 module Handle = Bonsai_web_test.Handle
-module Url_var = Bonsai_web_ui_url_var
+module Url_var = Bonsai_web_url_var
 
 module Page = struct
   type t =
@@ -27,14 +27,15 @@ let url_var =
 let anchor ?on_click ~href (local_ _graph) =
   match%arr Url_var.value url_var with
   | Page.Home ->
-    {%html|
+    {%html.jsx|
       <div>
-        I'm on the home page!
-        <a href=%{href} ?{on_click}>home page link</a>
+        #{" I'm on the home page! "}<a href=%{href} ?{on_click}
+          >#{"home page link"}</a
+        >
       </div>
     |}
-  | Other_page -> {%html|<div>I'm on another page!</div>|}
-  | Error -> {%html|<div>I'm on the error page!</div>|}
+  | Other_page -> {%html.jsx|<div>I'm on another page!</div>|}
+  | Error -> {%html.jsx|<div>I'm on the error page!</div>|}
 ;;
 
 let test_click_on_anchor ?ctrl_key_down ?on_click ~href () =
@@ -111,13 +112,15 @@ let%expect_test "clicking on <a> that prevents default" =
 let effect_open effect_open (local_ _graph) =
   match%arr Url_var.value url_var with
   | Page.Home ->
-    {%html|
+    {%html.jsx|
       <div>
-        I'm on the home page! <span on_click=%{effect_open}>home page link</span>
+        #{" I'm on the home page! "}<span on_click=%{effect_open}
+          >#{"home page link"}</span
+        >
       </div>
     |}
-  | Other_page -> {%html|<div>I'm on another page!</div>|}
-  | Error -> {%html|<div>I'm on the error page!</div>|}
+  | Other_page -> {%html.jsx|<div>I'm on another page!</div>|}
+  | Error -> {%html.jsx|<div>I'm on the error page!</div>|}
 ;;
 
 let test_click_on_effect_open ?in_ ?(on_click = fun _ -> Effect.Ignore) ~href () =

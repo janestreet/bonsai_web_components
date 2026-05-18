@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
 module Collated = Incr_map_collate.Collated
-module How_to_scroll = Bonsai_web_ui_scroll_utilities.How_to_scroll
+module How_to_scroll = Bonsai_web_scroll_utilities.How_to_scroll
 
 (* This global counter is shared across all PRTs, but this is fine because we only use it
    for equality checking, so the bad case would be if:

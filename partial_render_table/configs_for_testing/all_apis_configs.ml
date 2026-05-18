@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open Bonsai.Let_syntax
-module Prt = Bonsai_web_ui_partial_render_table
+module Prt = Bonsai_web_partial_render_table
 module Table = Prt.Expert
 module Row = Symbol_table.Row
 

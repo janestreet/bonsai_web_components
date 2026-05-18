@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_proc
 open! Bonsai_test
-module Mst = Bonsai_web_ui_low_level_vdom.Mutable_state_tracker
+module Mst = Bonsai_web_low_level_vdom.Mutable_state_tracker
 
 let%expect_test _ =
   let computation = Mst.component () in

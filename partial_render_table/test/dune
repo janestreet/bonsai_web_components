@@ -1,10 +1,10 @@
 (library
- (name bonsai_web_ui_partial_render_table_test)
- (libraries bonsai bonsai.bench_scenario bonsai_web bonsai_web_test
-   bonsai_web_ui_element_size_hooks bonsai_web_ui_partial_render_table
-   bonsai_web_ui_partial_render_table_ansi
-   bonsai_web_ui_partial_render_table_configs_for_testing
-   bonsai_web_ui_partial_render_table_protocol core
+ (name bonsai_web_partial_render_table_test)
+ (libraries bonsai bonsai.bench_scenario bonsai_web
+   bonsai_web_element_size_hooks bonsai_web_partial_render_table
+   bonsai_web_partial_render_table_ansi
+   bonsai_web_partial_render_table_configs_for_testing
+   bonsai_web_partial_render_table_protocol bonsai_web_test core
    patdiff.expect_test_patdiff incr_map.collate js_of_ocaml
    incr_map.erase_key virtual_dom.ui_effect virtual_dom.vdom_test_helpers)
  (preprocess

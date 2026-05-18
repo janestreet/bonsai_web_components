@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_contrib_pills)
+ (public_name bonsai_web_components.pills)
+ (libraries bonsai_web core js_of_ocaml virtual_dom.ui_effect)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai ppx_css)))

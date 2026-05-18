@@ -1,6 +1,6 @@
 open! Core
 open! Bonsai_web
-module Sort_kind := Bonsai_web_ui_partial_render_table_protocol.Sort_kind
+module Sort_kind := Bonsai_web_partial_render_table_protocol.Sort_kind
 
 module Indexed_column_id : sig
   type t [@@deriving equal, sexp]

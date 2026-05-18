@@ -388,6 +388,7 @@ module Typeahead : sig
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -402,6 +403,7 @@ module Typeahead : sig
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_pills_container_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?extra_pill_attr:Vdom.Attr.t Bonsai.t
     -> ?placeholder:string Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
     -> ?to_option_description:('a -> string) Bonsai.t
@@ -552,7 +554,8 @@ module Multiselect : sig
   val set
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string)
-    -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
+    -> ?default_selection_status:
+         Bonsai_web_contrib_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
@@ -562,7 +565,8 @@ module Multiselect : sig
   val list
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?to_string:('a -> string)
-    -> ?default_selection_status:Bonsai_web_ui_multi_select.Selection_status.t Bonsai.t
+    -> ?default_selection_status:
+         Bonsai_web_contrib_multi_select.Selection_status.t Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, _) Comparator.Module.t
     -> 'a list Bonsai.t
@@ -576,17 +580,31 @@ module Number : sig
     -> ?min:int
     -> ?max:int
     -> ?default:int
+    -> ?placeholder:string
     -> step:int
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
     -> local_ Bonsai.graph
     -> (int, Vdom.Node.t) Form.t Bonsai.t
 
+  val int_opt
+    :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
+    -> ?min:int
+    -> ?max:int
+    -> ?default:int
+    -> ?placeholder:string
+    -> step:int
+    -> ?allow_updates_when_focused:[ `Always | `Never ]
+    -> unit
+    -> local_ Bonsai.graph
+    -> (int option, Vdom.Node.t) Form.t Bonsai.t
+
   val float
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?min:float
     -> ?max:float
     -> ?default:float
+    -> ?placeholder:string
     -> step:float
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
@@ -598,6 +616,7 @@ module Number : sig
     -> ?min:float
     -> ?max:float
     -> ?default:float
+    -> ?placeholder:string
     -> step:float
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
@@ -717,6 +736,13 @@ module Multiple : sig
     -> local_ Bonsai.graph
     -> ('a list, ('a, 'view) t) Form.t Bonsai.t
 
+  (** Like [list'] but the form creating function also takes in a key uniquely identifying
+      how many forms have been created before (including removed ones). *)
+  val list'
+    :  (key:int Bonsai.t -> local_ Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
+    -> local_ Bonsai.graph
+    -> ('a list, ('a, 'view) t) Form.t Bonsai.t
+
   val nonempty_list
     :  (local_ Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
     -> local_ Bonsai.graph
@@ -752,7 +778,7 @@ module File_select : sig
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> (Bonsai_web_ui_file.t option, Vdom.Node.t) Form.t Bonsai.t
+    -> (Bonsai_web_file.t option, Vdom.Node.t) Form.t Bonsai.t
 
   (** A form where picking a file is mandatory. The form will be in an error state until a
       file is picked.
@@ -763,14 +789,14 @@ module File_select : sig
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> (Bonsai_web_ui_file.t, Vdom.Node.t) Form.t Bonsai.t
+    -> (Bonsai_web_file.t, Vdom.Node.t) Form.t Bonsai.t
 
   val multiple
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
     -> local_ Bonsai.graph
-    -> (Bonsai_web_ui_file.t Filename.Map.t, Vdom.Node.t) Form.t Bonsai.t
+    -> (Bonsai_web_file.t Filename.Map.t, Vdom.Node.t) Form.t Bonsai.t
 end
 
 module Freeform_multiselect : sig
@@ -793,7 +819,7 @@ end
 
 module Rank : sig
   val list
-    :  ('a, 'b) Bonsai_web_ui_reorderable_list.comparator
+    :  ('a, 'b) Bonsai_web_reorderable_list.comparator
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t
@@ -815,9 +841,9 @@ module Query_box : sig
     :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
-    -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?suggestion_list_kind:Bonsai_web_contrib_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?on_focus:Bonsai_web_contrib_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
@@ -835,9 +861,9 @@ module Query_box : sig
     :  (module Comparator.S with type comparator_witness = 'cmp and type t = 'k)
     -> ?initial_query:string
     -> ?max_visible_items:int Bonsai.t
-    -> ?suggestion_list_kind:Bonsai_web_ui_query_box.Suggestion_list_kind.t Bonsai.t
-    -> ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    -> ?suggestion_list_kind:Bonsai_web_contrib_query_box.Suggestion_list_kind.t Bonsai.t
+    -> ?on_focus:Bonsai_web_contrib_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> ?focused_item_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
@@ -852,8 +878,8 @@ module Query_box : sig
     -> ('k, Vdom.Node.t) Form.t Bonsai.t
 
   val single
-    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    :  ?on_focus:Bonsai_web_contrib_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t
@@ -870,8 +896,8 @@ module Query_box : sig
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   val single_opt
-    :  ?on_focus:Bonsai_web_ui_query_box.On_focus.t Bonsai.t
-    -> ?on_hover_item:Bonsai_web_ui_query_box.On_hover_item.t Bonsai.t
+    :  ?on_focus:Bonsai_web_contrib_query_box.On_focus.t Bonsai.t
+    -> ?on_hover_item:Bonsai_web_contrib_query_box.On_hover_item.t Bonsai.t
     -> ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
     -> ?to_string:('a -> string) Bonsai.t

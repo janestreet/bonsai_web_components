@@ -1,11 +1,10 @@
 (library
- (name bonsai_web_ui_partial_render_table)
+ (name bonsai_web_partial_render_table)
  (public_name bonsai_web_components.partial_render_table)
- (libraries bonsai.extra bonsai_web bonsai_web_ui_element_size_hooks
-   bonsai_web_ui_partial_render_table_protocol
-   bonsai_web.web_ui_partial_render_table_styling
-   bonsai_web_ui_scroll_utilities bonsai_web.ui_view core virtual_dom.css_gen
-   incr_map.collate incremental js_of_ocaml incr_map.erase_key
-   virtual_dom.ui_effect bonsai_concrete.ui_incr)
+ (libraries bonsai.extra bonsai_web bonsai_web_element_size_hooks
+   bonsai_web.ui_view bonsai_web_partial_render_table_protocol
+   bonsai_web.web_ui_partial_render_table_styling bonsai_web_scroll_utilities
+   core virtual_dom.css_gen incr_map.collate incremental js_of_ocaml
+   incr_map.erase_key virtual_dom.ui_effect bonsai_concrete.ui_incr)
  (preprocess
   (pps ppx_css js_of_ocaml-ppx ppx_jane ppx_pattern_bind bonsai.ppx_bonsai)))

@@ -5,7 +5,7 @@ open! Bonsai_web
 let handle () =
   let component (local_ graph) =
     let%map.Bonsai codemirror =
-      Bonsai_web_ui_codemirror.of_initial_state
+      Bonsai_web_codemirror.of_initial_state
         ~name:"editor"
         (Codemirror.State.Editor_state.create
            (Codemirror.State.Editor_state_config.create
@@ -13,7 +13,7 @@ let handle () =
               ()))
         graph
     in
-    Bonsai_web_ui_codemirror.view codemirror
+    Bonsai_web_codemirror.view codemirror
   in
   Handle.create (Result_spec.vdom Fn.id) component
 ;;

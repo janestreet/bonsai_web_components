@@ -122,12 +122,12 @@ let%expect_test "autosizing table initial HTML" =
     +|    <div>
     +|      <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -135,12 +135,12 @@ let%expect_test "autosizing table initial HTML" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
@@ -219,7 +219,7 @@ let%expect_test "column visibility" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
     +|                 display: none;
@@ -237,7 +237,7 @@ let%expect_test "column visibility" =
     +|                 }> </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
                        height: 1px;
@@ -265,7 +265,7 @@ let%expect_test "column visibility" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
     +|                 display: none;
@@ -283,7 +283,7 @@ let%expect_test "column visibility" =
     +|                 }> </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
                        height: 1px;
@@ -311,7 +311,7 @@ let%expect_test "column visibility" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
     +|                 display: none;
@@ -329,7 +329,7 @@ let%expect_test "column visibility" =
     +|                 }> </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class"
                      style={
                        height: 1px;
@@ -403,12 +403,12 @@ let%expect_test "stabilization of view range" =
         <div>
           <div @key=top_padding> </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -416,24 +416,24 @@ let%expect_test "stabilization of view range" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -441,12 +441,12 @@ let%expect_test "stabilization of view range" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
               </div>
@@ -474,12 +474,12 @@ let%expect_test "stabilization of view range" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
                 </div>
@@ -487,12 +487,12 @@ let%expect_test "stabilization of view range" =
             </div>
     -|      <div @key=bottom_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -500,12 +500,12 @@ let%expect_test "stabilization of view range" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
     +|          </div>
@@ -654,12 +654,12 @@ let%expect_test "big table" =
         <div>
           <div @key=top_padding> </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -667,24 +667,24 @@ let%expect_test "big table" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 25.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -692,12 +692,12 @@ let%expect_test "big table" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 26.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
@@ -729,13 +729,13 @@ let%expect_test "big table" =
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 55 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -743,26 +743,26 @@ let%expect_test "big table" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 25.000000 </div>
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 27.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
                 </div>
               </div>
             </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 56 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -770,25 +770,25 @@ let%expect_test "big table" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 26.000000 </div>
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 28.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 57 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -796,24 +796,24 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 28.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 58 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -821,24 +821,24 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 29.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 59 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -846,24 +846,24 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 29.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 60 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -871,24 +871,24 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 30.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 61 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -896,24 +896,24 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 30.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
     +|          </div>
     +|        </div>
     +|      </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 62 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -921,12 +921,12 @@ let%expect_test "big table" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 31.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
                 </div>
@@ -965,12 +965,12 @@ let%expect_test "typing into a column, leaving that column, and then coming back
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -979,19 +979,19 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 25.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
                 </div>
               </div>
             </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     |}];
   (* move out of bounds (really 99-25 through 100) *)
   Test.set_bounds test ~low:99 ~high:99;
@@ -1049,12 +1049,12 @@ let%expect_test "typing into a column, leaving that column, and then coming back
         <div>
           <div @key=top_padding> </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 51 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1062,24 +1062,24 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 25.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 52 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1087,12 +1087,12 @@ let%expect_test "typing into a column, leaving that column, and then coming back
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 26.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 100 </div>
               </div>
@@ -1261,12 +1261,12 @@ let%expect_test "sorting legacy renderer" =
         <div>
           <div @key=top_padding> </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1274,24 +1274,24 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1299,24 +1299,24 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1324,12 +1324,12 @@ let%expect_test "sorting legacy renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
               </div>
@@ -1419,12 +1419,12 @@ let%expect_test "sorting legacy renderer" =
           <div>
             <div @key=top_padding> </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -1432,24 +1432,24 @@ let%expect_test "sorting legacy renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -1457,7 +1457,7 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     === DIFF HUNK ===
                     <input @on_input/>
@@ -1465,24 +1465,24 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
                 </div>
               </div>
             </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -1490,12 +1490,12 @@ let%expect_test "sorting legacy renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
@@ -1543,12 +1543,12 @@ let%expect_test "sorting legacy renderer" =
           <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -1556,24 +1556,24 @@ let%expect_test "sorting legacy renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -1581,7 +1581,7 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     === DIFF HUNK ===
                     <input @on_input/>
@@ -1589,24 +1589,24 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
                 </div>
               </div>
             </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -1614,12 +1614,12 @@ let%expect_test "sorting legacy renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
@@ -1661,12 +1661,12 @@ let%expect_test "sorting legacy renderer" =
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -1701,12 +1701,12 @@ let%expect_test "sorting legacy renderer" =
           <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -1714,24 +1714,24 @@ let%expect_test "sorting legacy renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
     +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -1739,24 +1739,24 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
             </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -1764,24 +1764,24 @@ let%expect_test "sorting legacy renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
     -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -1789,7 +1789,7 @@ let%expect_test "sorting legacy renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     |}]
 ;;
@@ -1853,12 +1853,12 @@ let%expect_test "sorting default renderer" =
         <div>
           <div @key=top_padding> </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1866,24 +1866,24 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1891,24 +1891,24 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
               </div>
             </div>
           </div>
           <div class="body_row">
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click>
                   <input @on_input/>
@@ -1916,12 +1916,12 @@ let%expect_test "sorting default renderer" =
                 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
               </div>
             </div>
-            <div class="autosize_table_cell_wrapper table_view__inline_class">
+            <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
               <div class="table_view__inline_class">
                 <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
               </div>
@@ -2022,12 +2022,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -2035,24 +2035,24 @@ let%expect_test "sorting default renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2060,7 +2060,7 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     === DIFF HUNK ===
                     <input @on_input/>
@@ -2068,24 +2068,24 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
                 </div>
               </div>
             </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -2093,12 +2093,12 @@ let%expect_test "sorting default renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
@@ -2154,12 +2154,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -2167,24 +2167,24 @@ let%expect_test "sorting default renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2192,7 +2192,7 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     === DIFF HUNK ===
                     <input @on_input/>
@@ -2200,24 +2200,24 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> --- </div>
                 </div>
               </div>
             </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -2225,12 +2225,12 @@ let%expect_test "sorting default renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
@@ -2289,12 +2289,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
     |}];
@@ -2401,12 +2401,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -2414,24 +2414,24 @@ let%expect_test "sorting default renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
     +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2439,24 +2439,24 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
             </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -2464,24 +2464,24 @@ let%expect_test "sorting default renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
     -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2489,7 +2489,7 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     |}];
   (* Shift+clicking while disabled for multiselect *)
@@ -2529,12 +2529,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -2542,24 +2542,24 @@ let%expect_test "sorting default renderer" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
     +|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2567,24 +2567,24 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
                 </div>
               </div>
             </div>
     -|      <div class="body_row">
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click>
     -|              <input @on_input/>
@@ -2592,24 +2592,24 @@ let%expect_test "sorting default renderer" =
     -|            </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
     -|          </div>
     -|        </div>
-    -|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    -|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     -|          <div class="table_view__inline_class">
     -|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     -|          </div>
     -|        </div>
     -|      </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 4 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2617,7 +2617,7 @@ let%expect_test "sorting default renderer" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
     |}];
   (* Shift+clicking while enabled for multiselect: should select both *)
@@ -2788,12 +2788,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
     |}];
@@ -2829,12 +2829,12 @@ let%expect_test "sorting default renderer" =
           <div>
             <div @key=top_padding> </div>
             <div class="body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
     |}]
@@ -2876,12 +2876,12 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
             <div @key=top_padding> </div>
     -|      <div class="body_row">
     +|      <div class="body_row_focused body_row">
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 0 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click>
                     <input @on_input/>
@@ -2889,24 +2889,24 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
                   </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1.000000 </div>
                 </div>
               </div>
-              <div class="autosize_table_cell_wrapper table_view__inline_class">
+              <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
                 <div class="table_view__inline_class">
                   <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
                 </div>
               </div>
             </div>
     +|      <div class="body_row">
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 1 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click>
     +|              <input @on_input/>
@@ -2914,12 +2914,12 @@ let%expect_test "locking columns also disallows focus change due to clicks" =
     +|            </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2.000000 </div>
     +|          </div>
     +|        </div>
-    +|        <div class="autosize_table_cell_wrapper table_view__inline_class">
+    +|        <div class="autosize_table_cell_wrapper autosize_table_cell_wrapper table_view__inline_class">
     +|          <div class="table_view__inline_class">
     +|            <div class="autosize_wrapped_cell body_cell" @on_click> 2 </div>
     +|          </div>

@@ -1,10 +1,10 @@
 open! Core
 open Bonsai_web
-module Form := Bonsai_web_ui_form.With_automatic_view
+module Form := Bonsai_web_form.With_automatic_view
 
 (* Bonsai form input elements that use Codemirror as their input elements. Each module
    below provides different behaviour corresponding to the different options in
-   [Bonsai_web_ui_codemirror]. *)
+   [Bonsai_web_codemirror]. *)
 
 (* [Basic] forms accept a static list of extensions. *)
 module Basic : sig

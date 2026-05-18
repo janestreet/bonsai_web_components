@@ -1,7 +1,7 @@
 open! Core
 open Bonsai_web
 open! Uri_parsing
-module Url_var = Bonsai_web_ui_url_var
+module Url_var = Bonsai_web_url_var
 open! Uri_parsing_test.Test_util
 module Handle = Jsdom.Handle_experimental
 
@@ -120,6 +120,6 @@ let%expect_test "`Intercept can be bypassed with special-cased reload method" =
       parser_
       ~fallback:(fun _ _ -> Url.Catch_all)
   in
-  Handle.inject handle (fun () -> Bonsai_web_ui_url_var.reload_without_intercepting);
+  Handle.inject handle (fun () -> Bonsai_web_url_var.reload_without_intercepting);
   [%expect {| |}]
 ;;

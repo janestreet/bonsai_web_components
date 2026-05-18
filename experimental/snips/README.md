@@ -1,4 +1,4 @@
-# Bonsai_web_ui_snips
+# Bonsai_experimental_snips
 
 Snips is a library for building "top level" application layouts.
 

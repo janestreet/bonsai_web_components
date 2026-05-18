@@ -2,7 +2,7 @@ open! Core
 open! Bonsai_web_test
 open! Bonsai_web
 open Bonsai.Let_syntax
-module Typeahead = Bonsai_web_ui_typeahead.Typeahead
+module Typeahead = Bonsai_web_contrib_typeahead.Typeahead
 
 let shared_computation =
   Typeahead.create_multi
@@ -12,7 +12,7 @@ let shared_computation =
     ~to_string:(Bonsai.return Data.to_string)
     ~split:(String.split ~on:',')
     ~attr_merge_behavior:
-      Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+      Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
 ;;
 
 let shared_computation_no_tabbing =
@@ -24,7 +24,7 @@ let shared_computation_no_tabbing =
     ~to_string:(Bonsai.return Data.to_string)
     ~split:(String.split ~on:',')
     ~attr_merge_behavior:
-      Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+      Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
 ;;
 
 let view_computation (local_ graph) =
@@ -76,7 +76,7 @@ let%expect_test "Initial multi typeahead state" =
 ;;
 
 let%expect_test "Attrs are NOT merged when  \
-                 Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge \
+                 Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge \
                  is applied"
   =
   let component (local_ graph) =
@@ -90,7 +90,7 @@ let%expect_test "Attrs are NOT merged when  \
         ~extra_attrs:
           (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
         ~attr_merge_behavior:
-          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
         graph
     in
     view
@@ -100,8 +100,8 @@ let%expect_test "Attrs are NOT merged when  \
   [%expect
     {|
     ("WARNING: not combining classes"
-     (first (typeahead_multi__inline_class_hash_52cff10e9d))
-     (second (typeahead_multi__inline_class_hash_5ff6e36a37)))
+     (first (typeahead_multi__inline_class_hash_53949d24dc))
+     (second (typeahead_multi__inline_class_hash_5676b9110b)))
     <div>
       <input type="text"
              list="bonsai_path_replaced_in_test"
@@ -129,7 +129,8 @@ let%expect_test "Attrs are merged when `Merge is applied" =
         ~split:(String.split ~on:',')
         ~extra_attrs:
           (Bonsai.return [ [%css "display: flex;"]; [%css "justify-content: center;"] ])
-        ~attr_merge_behavior:Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Merge
+        ~attr_merge_behavior:
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Merge
         graph
     in
     view
@@ -166,7 +167,7 @@ let%expect_test "Focusing and un-focusing the input shows and hides the datalist
         ~to_string:(Bonsai.return Data.to_string)
         ~split:(String.split ~on:',')
         ~attr_merge_behavior:
-          Bonsai_web_ui_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
         graph
     in
     view
@@ -261,7 +262,7 @@ let%expect_test "Select two elements" =
     -|    <option value="Option C"> Option C </option>
     -|  </datalist>
     +|  </datalist>
-    +|  <div class="bonsai-web-ui-typeahead-pills">
+    +|  <div class="bonsai-web-contrib-typeahead-pills">
     +|    <span tabindex="0" data-value="Option B" @on_click @on_keyup> Option B × </span>
     +|    <span tabindex="0" data-value="Option C" @on_click @on_keyup> Option C × </span>
     +|  </div>
@@ -295,7 +296,7 @@ let%expect_test "Deselect an element" =
           <option value="Option A"> Option A </option>
     +|    <option value="Option B"> Option B </option>
         </datalist>
-        <div class="bonsai-web-ui-typeahead-pills">
+        <div class="bonsai-web-contrib-typeahead-pills">
     -|    <span tabindex="0" data-value="Option B" @on_click @on_keyup> Option B × </span>
           <span tabindex="0" data-value="Option C" @on_click @on_keyup> Option C × </span>
         </div>
@@ -339,7 +340,7 @@ let%expect_test "set the elements" =
           <option value="Option B"> Option B </option>
     -|    <option value="Option C"> Option C </option>
         </datalist>
-    +|  <div class="bonsai-web-ui-typeahead-pills">
+    +|  <div class="bonsai-web-contrib-typeahead-pills">
     +|    <span tabindex="0" data-value="Option C" @on_click @on_keyup> Option C × </span>
     +|  </div>
       </div>
@@ -393,7 +394,7 @@ let%expect_test "input multiple elements" =
     -|    <option value="Option B"> Option B </option>
           <option value="Option C"> Option C </option>
         </datalist>
-    +|  <div class="bonsai-web-ui-typeahead-pills">
+    +|  <div class="bonsai-web-contrib-typeahead-pills">
     +|    <span tabindex="0" data-value="Option A" @on_click @on_keyup> Option A × </span>
     +|    <span tabindex="0" data-value="Option B" @on_click @on_keyup> Option B × </span>
     +|  </div>
@@ -427,10 +428,52 @@ let%expect_test "input multiple elements without tabbing" =
     -|    <option value="Option B"> Option B </option>
           <option value="Option C"> Option C </option>
         </datalist>
-    +|  <div class="bonsai-web-ui-typeahead-pills">
+    +|  <div class="bonsai-web-contrib-typeahead-pills">
     +|    <span tabindex="-1" data-value="Option A" @on_click @on_keyup> Option A × </span>
     +|    <span tabindex="-1" data-value="Option B" @on_click @on_keyup> Option B × </span>
     +|  </div>
       </div>
+    |}]
+;;
+
+let%expect_test "extra_pill_attr is applied to pills" =
+  let component (local_ graph) =
+    let%sub { view; _ } =
+      Typeahead.Private.For_testing.create_multi_with_browser_behavior_in_test
+        (module Data)
+        ~all_options:(Bonsai.return Data.all)
+        ~placeholder:(Bonsai.return "Select a value")
+        ~to_string:(Bonsai.return Data.to_string)
+        ~extra_pill_attr:(Bonsai.return (Vdom.Attr.create "data-extra-pill" "true"))
+        ~split:(String.split ~on:',')
+        ~attr_merge_behavior:
+          Bonsai_web_contrib_typeahead.Typeahead.Attr_merge_behavior.Legacy_do_not_merge
+        graph
+    in
+    view
+  in
+  let handle = Handle.create (Result_spec.vdom Fn.id) component in
+  input_value handle Data.Option_A;
+  Handle.recompute_view handle;
+  input_value handle Data.Option_B;
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <input type="text"
+             list="bonsai_path_replaced_in_test"
+             placeholder="Select a value"
+             value=""
+             #value=""
+             @on_blur
+             @on_change
+             @on_focus
+             @on_input/>
+      <datalist> </datalist>
+      <div class="bonsai-web-contrib-typeahead-pills">
+        <span data-extra-pill="true" tabindex="0" data-value="Option A" @on_click @on_keyup> Option A × </span>
+        <span data-extra-pill="true" tabindex="0" data-value="Option B" @on_click @on_keyup> Option B × </span>
+      </div>
+    </div>
     |}]
 ;;

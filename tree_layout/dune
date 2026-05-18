@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_tree_layout)
+ (name bonsai_web_contrib_tree_layout)
  (public_name bonsai_web_components.tree_layout)
  (libraries bonsai_web core)
  (preprocess

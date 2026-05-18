@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_gauge)
+ (name bonsai_web_contrib_gauge)
  (public_name bonsai_web_components.gauge)
  (libraries bonsai_web core virtual_dom.css_gen tailwind_v3_colors
    virtual_dom.svg)

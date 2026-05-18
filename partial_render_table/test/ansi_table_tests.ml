@@ -4,8 +4,8 @@ open! Bonsai_web_test
 open! Incr_map_collate
 open! Bonsai.Let_syntax
 open Shared
-module Table = Bonsai_web_ui_partial_render_table
-open Bonsai_web_ui_partial_render_table_ansi
+module Table = Bonsai_web_partial_render_table
+open Bonsai_web_partial_render_table_ansi
 
 module Test = struct
   include Shared.Test

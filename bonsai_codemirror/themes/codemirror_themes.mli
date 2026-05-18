@@ -1,6 +1,6 @@
 open! Core
 
-type t = Bonsai_web_ui_view.Expert.For_codemirror.Theme.t =
+type t = Bonsai_web_legacy_view.Expert.For_codemirror.Theme.t =
   | Basic_dark
   | Basic_light
   | Gruvbox_dark

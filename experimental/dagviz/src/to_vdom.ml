@@ -2,8 +2,8 @@ open! Core
 open Bonsai_web
 module Vdom = Virtual_dom.Vdom
 open Vdom
-module Position_tracker = Bonsai_web_ui_element_size_hooks.Position_tracker
-module Bulk_size_tracker = Bonsai_web_ui_element_size_hooks.Bulk_size_tracker
+module Position_tracker = Bonsai_web_element_size_hooks.Position_tracker
+module Bulk_size_tracker = Bonsai_web_element_size_hooks.Bulk_size_tracker
 module Position = Position_tracker.Position
 
 module Make (Name : Types.Name) = struct

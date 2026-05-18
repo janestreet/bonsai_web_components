@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
-module Styling = Bonsai_web_ui_partial_render_table_styling
+module Styling = Bonsai_web_partial_render_table_styling
 
 module Which_styling = struct
   type t =
@@ -13,7 +13,7 @@ end
 module Themed = struct
   type t = Styling.Expert.t
 
-  module Prt_view = Bonsai_web_ui_view.For_components.Prt
+  module Prt_view = Bonsai_web_legacy_view.For_components.Prt
 
   let resolve ~resize_column_widths_to_fit which_styling (local_ graph) =
     let theme = View.Theme.current graph in
@@ -153,7 +153,7 @@ module Header_label = struct
     ?(extra_attrs = [])
     ?(sort_indicator_attrs = [])
     (label : Vdom.Node.t)
-    (sort_state : Bonsai_web_ui_partial_render_table_protocol.Sort_state.t)
+    (sort_state : Bonsai_web_partial_render_table_protocol.Sort_state.t)
     =
     match sort_state with
     | Not_sortable -> Vdom.Node.div [ Vdom.Node.span [ label ] ]
@@ -209,13 +209,13 @@ module Header = struct
       let on_change_tracker =
         match resize_column_widths_to_fit with
         | false ->
-          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change
+          Bonsai_web_element_size_hooks.Size_tracker.on_change
             (fun { border_box = { width; height = _ }; content_box = _ } ->
                set_column_width (`Px_float width))
         | true ->
           (* Set the reporting value so that users of the [Prt.Result.column_widths] field
              get the right results. *)
-          Bonsai_web_ui_element_size_hooks.Size_tracker.on_change
+          Bonsai_web_element_size_hooks.Size_tracker.on_change
             (fun { border_box = { width; height = _ }; content_box = _ } ->
                set_column_width_for_reporting (`Px_float width))
       in
@@ -276,7 +276,7 @@ module Header = struct
     =
     let attrs =
       [ themed_attrs.header
-      ; Bonsai_web_ui_element_size_hooks.Visibility_tracker.detect
+      ; Bonsai_web_element_size_hooks.Visibility_tracker.detect
           ()
           ~client_rect_changed:set_header_client_rect
       ; Functional_style.partial_render_table_header

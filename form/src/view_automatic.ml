@@ -1,6 +1,6 @@
 open! Core
 open Bonsai_web
-module Form_view = Bonsai_web_ui_form_view
+module Form_view = Bonsai_web_form_view
 include Form_view
 
 let sexp_to_pretty_string sexp_of_t t =

@@ -590,6 +590,6 @@ module Modal = struct
   ;;
 end
 
-module Private_for_bonsai_web_ui_toplayer = struct
+module Private_for_bonsai_web_themed_toplayer = struct
   let create_controls = Controls.create
 end

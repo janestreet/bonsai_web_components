@@ -1,5 +1,5 @@
 (library
- (name bonsai_web_ui_partial_render_table_protocol)
+ (name bonsai_web_partial_render_table_protocol)
  (public_name bonsai_web_components.partial_render_table_protocol)
  (libraries bonsai_kernel_table_protocol)
  (preprocess

@@ -1,3 +1,3 @@
 # Popover
 
-This library is deprecated, please use `Bonsai_web_ui_toplayer` instead.
+This library is deprecated, please use `Bonsai_web_themed_toplayer` instead.

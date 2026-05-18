@@ -1,6 +1,6 @@
 (library
- (name bonsai_web_ui_notifications_test)
- (libraries bonsai bonsai_test bonsai_web bonsai_web_test
-   bonsai_web_ui_notifications core)
+ (name bonsai_web_notifications_test)
+ (libraries bonsai bonsai_test bonsai_web bonsai_web_notifications
+   bonsai_web_test core)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

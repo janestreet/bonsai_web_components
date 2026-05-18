@@ -83,7 +83,7 @@ module Style =
       }
     |}]
 
-let filler = {%html|<span style="color: transparent">.</span>|}
+let filler = {%html.jsx|<span style="color: transparent">.</span>|}
 
 module Expert = struct
   let create
@@ -116,9 +116,9 @@ module Expert = struct
       let should_append = String.is_suffix text ~suffix:"\n" in
       let prepend = if should_prepend then Some filler else None
       and append = if should_append then Some filler else None in
-      {%html|<pre %{Style.pre}>?{prepend}*{process text}?{append}</pre>|}
+      {%html.jsx|<pre %{Style.pre}>?{prepend}*{process text}?{append}</pre>|}
     in
-    {%html|
+    {%html.jsx|
       <div
         %{Style.wrapper}
         %{Style.Variables.set_all ~caret_color}
@@ -280,7 +280,7 @@ let lower ~text ~decorated =
              , [] )
            | true ->
              let decorated =
-               {%html|<span %{Decoration.to_attr decoration}>#{ decorated_text }</span>|}
+               {%html.jsx|<span %{Decoration.to_attr decoration}>#{ decorated_text }</span>|}
              in
              let leading_whitespace =
                if String.is_empty leading_whitespace

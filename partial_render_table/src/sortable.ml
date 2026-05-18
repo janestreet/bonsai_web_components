@@ -1,7 +1,7 @@
 open! Core
 open! Bonsai_web
 open Bonsai.Let_syntax
-open Bonsai_web_ui_partial_render_table_protocol
+open Bonsai_web_partial_render_table_protocol
 
 type 'col_id t =
   { order : 'col_id Order.t
