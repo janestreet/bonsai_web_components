@@ -8,6 +8,24 @@ let create ?(use_system_clipboard = false) () : Codemirror.State.Extension.t =
     [| Js.Unsafe.inject (Js.bool use_system_clipboard) |]
 ;;
 
+let enter_insert_mode view =
+  (* The vim plugin doesn't expose the enterInsertMode action, so we have to do it this
+     way by simulating the keypress *)
+  let handle_key view key =
+    Js.Unsafe.fun_call
+      (Js.Unsafe.pure_js_expr
+         {|function(view, key) {
+           return view.cm.state.vimPlugin.handleKey({
+             key: key,
+             preventDefault: function() {},
+             stopPropagation: function() {}
+           }, view);
+         }|})
+      [| Js.Unsafe.inject view; Js.Unsafe.inject (Js.string key) |]
+  in
+  handle_key view "i"
+;;
+
 let keymap_to_args ~mode ~from ~to_ =
   let from_param = from |> Js.string |> Js.Unsafe.coerce in
   let to_param = to_ |> Js.string |> Js.Unsafe.coerce in

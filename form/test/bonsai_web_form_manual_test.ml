@@ -6496,7 +6496,7 @@ let%expect_test "a textbox customized with themes" =
                       ?key:(Option.map key ~f:(fun k -> [%string "%{k}-2"]))
                       ~attrs:
                         [ Vdom.Attr.on_input (fun _ s -> set_value s)
-                        ; Vdom.Attr.value_prop value
+                        ; Vdom.Attr.value value
                         ]
                       ()
                   ]

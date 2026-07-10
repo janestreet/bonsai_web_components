@@ -7,7 +7,7 @@ let override_for_test
   ?(override_content = fun () -> Vdom.Node.none)
   actual
   =
-  if Am_running_how_js.am_in_browser_like_api
+  if Am_running_how_js.(am_in_browser_like_api am_running_how)
   then actual
   else (
     let short_node_name =

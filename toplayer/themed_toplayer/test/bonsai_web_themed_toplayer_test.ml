@@ -284,7 +284,7 @@ module Helper = struct
         List.map virtual_popovers ~f:(fun x -> to_vdom ~verbose (`Virtual_popover x))
       in
       let modal_vdom = List.map modals ~f:(fun x -> to_vdom ~verbose (`Modal x)) in
-      {%html.jsx|
+      {%html|
         <html id="html-for-tests">
           <div
             id=%{Selectors.app_root_id}
@@ -565,7 +565,7 @@ module%test [@name "vdom output"] _ = struct
     let formatted_id =
       "toggle-" ^ Capitalization.apply_to_words Kebab_case (String.split ~on:' ' label)
     in
-    {%html.jsx|
+    {%html|
       <button id=%{formatted_id} on_click=%{fun _ -> on_click}>
         #{" Toggle popover "}%{formatted_id#String}
       </button>
@@ -576,7 +576,7 @@ module%test [@name "vdom output"] _ = struct
     let attr, { Controls.open_; close; is_open } =
       Popover.create
         ~overflow_auto_wrapper:(return false)
-        ~content:(fun ~close:_ _ -> return {%html.jsx|%{label#String}|})
+        ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
         graph
     in
     attr, toggle_button ~label open_ close is_open
@@ -586,7 +586,7 @@ module%test [@name "vdom output"] _ = struct
     let { Controls.open_; close; is_open } =
       Popover.create_virtual
         ~overflow_auto_wrapper:(return false)
-        ~content:(fun ~close:_ _ -> return {%html.jsx|%{label#String}|})
+        ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
         (Anchor.of_coordinate ~relative_to:`Viewport ~x:0. ~y:0. |> return)
         graph
     in
@@ -618,7 +618,7 @@ module%test [@name "vdom output"] _ = struct
     let id =
       [%string "%{prefix}-root"] |> String.filter ~f:(fun c -> not (Char.equal c ' '))
     in
-    {%html.jsx|
+    {%html|
       <div>
         <div id=%{id} *{anchored_attrs}></div>
         *{anchored_togglers} *{virtual_togglers}
@@ -669,7 +669,7 @@ module%test [@name "vdom output"] _ = struct
       and toggle_virtual1
       and toggle_virtual2
       and toggle_virtual3 in
-      {%html.jsx|
+      {%html|
         <div>
           <div
             class="anchored-root"
@@ -930,7 +930,7 @@ module%test [@name "vdom output"] _ = struct
     let { Controls.open_; close; is_open } =
       Modal.create
         ~overflow_auto_wrapper:(return false)
-        ~content:(fun ~close:_ _ -> return {%html.jsx|%{label#String}|})
+        ~content:(fun ~close:_ _ -> return {%html|%{label#String}|})
         graph
     in
     toggle_button ~label open_ close is_open
@@ -950,7 +950,7 @@ module%test [@name "vdom output"] _ = struct
     in
     let app_root =
       let%arr toggle_modal1 and toggle_modal2 and toggle_modal3 in
-      {%html.jsx|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
+      {%html|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
     in
     Helper.wrap_app_vdom app_root
   ;;
@@ -1048,7 +1048,7 @@ module%test [@name "vdom output"] _ = struct
         Modal.create
           ~overflow_auto_wrapper:(return false)
           ~lock_body_scroll:(Var.value lock_body_scroll)
-          ~content:(fun ~close:_ _ -> return {%html.jsx|Hi|})
+          ~content:(fun ~close:_ _ -> return {%html|Hi|})
           graph
       in
       let toggle =
@@ -1057,7 +1057,7 @@ module%test [@name "vdom output"] _ = struct
       in
       let app_root =
         let%arr toggle in
-        {%html.jsx|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
+        {%html|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
       in
       let result = Helper.get_toplayer_elements app_root in
       let modal_desc =
@@ -1099,7 +1099,7 @@ module%test [@name "vdom output"] _ = struct
               graph
           in
           let%arr open_ and close in
-          {%html.jsx|
+          {%html|
             <div>
               <button on_click=%{fun _ -> open_} id="open">Open</button
               ><button on_click=%{fun _ -> close} id="close">Close</button>
@@ -1622,7 +1622,7 @@ module%test [@name "tooltips"] _ = struct
   let%expect_test "description" =
     let handle =
       Handle.create (Result_spec.vdom Fn.id) (fun _ ->
-        return {%html.jsx|<div><p %{Tooltip.text "hello"}>Hello!</p></div>|})
+        return {%html|<div><p %{Tooltip.text "hello"}>Hello!</p></div>|})
     in
     Handle.show handle;
     [%expect

@@ -17,15 +17,30 @@ module Item = struct
     | Inert of 'item
     | Submenu of
         { key : string
+        ; disabled : bool
         ; item : 'item
         ; items : ('effect, 'item) t list
         }
 
-  let rec sexp_of_t sexp_of_a sexp_of_item : _ t -> Sexp.t = function
-    | Single { key; _ } -> Atom key
-    | Section { items; _ } -> List (List.map items ~f:(sexp_of_t sexp_of_a sexp_of_item))
-    | Inert item -> sexp_of_item item
-    | Submenu { key; _ } -> Atom (key ^ "...")
+  let sexp_of_t _sexp_of_effect sexp_of_item t =
+    let rec sexp_of_t = function
+      | Single { key; disabled; on_click = _; item } ->
+        [%message
+          "Single" (key : string) (disabled : bool) ~item:(sexp_of_item item : Sexp.t)]
+      | Section { title; items } ->
+        let items = List.map items ~f:sexp_of_t in
+        [%message "Section" (title : string option) (items : Sexp.t list)]
+      | Inert item -> List [ Atom "Inert"; sexp_of_item item ]
+      | Submenu { key; disabled; item; items } ->
+        let items = List.map items ~f:sexp_of_t in
+        [%message
+          "Submenu"
+            (key : string)
+            (disabled : bool)
+            ~item:(sexp_of_item item : Sexp.t)
+            (items : Sexp.t list)]
+    in
+    sexp_of_t t
   ;;
 
   let rec map_actions item ~f =
@@ -38,77 +53,91 @@ module Item = struct
       Submenu { submenu with items = List.map submenu.items ~f:(map_actions ~f) }
   ;;
 
-  let find_map
-    (items : ('effect, 'item) t list)
-    ~(f : ('effect, 'item) t option -> ('effect, 'item) t -> 'b option)
-    : 'b option
-    =
-    let rec loop items prev =
-      match items with
-      | (Single { disabled = true; _ } | Submenu { items = []; _ } | Inert _) :: rest ->
-        (* Skip disabled and inert items. *)
-        loop rest prev
-      | (Single { disabled = false; _ } as current) :: rest ->
-        (* Walk items in order *)
-        (match f prev current with
-         | Some value -> `Some value
-         | None -> loop rest (Some current))
-      | Section { items; _ } :: rest ->
-        (* Iterate any items inside a section first, then following items *)
-        (match loop items prev with
-         | `Some _ as some -> some
-         | `Last prev -> loop rest (Some prev)
-         | `Empty -> loop rest prev)
-      | (Submenu { items = _ :: _; _ } as current) :: rest ->
-        (* First visit the submenu item itself, then the remainder. *)
-        (match f prev current with
-         | Some value -> `Some value
-         | None -> loop rest (Some current))
-      | [] ->
-        (match prev with
-         | Some prev -> `Last prev
-         | None -> `Empty)
-    in
-    match loop items None with
-    | `Some value -> Some value
-    | `Empty | `Last _ -> None
+  let key = function
+    | Single { key; _ } | Submenu { key; _ } -> Some key
+    | Section _ | Inert _ -> None
   ;;
 
-  let rec find_submenu (items : ('effect, 'item) t list) (path : string list)
+  let selectable_key = function
+    | Single { disabled = false; key; _ }
+    | Submenu { disabled = false; items = _ :: _; key; _ } -> Some key
+    | Single { disabled = true; _ }
+    | Submenu { disabled = true; _ }
+    | Submenu { disabled = false; items = []; _ }
+    | Section _ | Inert _ -> None
+  ;;
+
+  let is_selectable t = Option.is_some (selectable_key t)
+  let selectable_item item = Option.some_if (is_selectable item) item
+
+  let find_map
+    (items : ('effect, 'item) t list)
+    ~(f : path:string list -> ('effect, 'item) t -> 'b option)
+    : 'b option
+    =
+    let rec loop ~path = function
+      | Section { items; title = _ } -> List.find_map items ~f:(loop ~path)
+      | Submenu { items; key; _ } as item ->
+        Option.first_some_thunk (f ~path item) (fun () ->
+          if is_selectable item
+          then List.find_map items ~f:(loop ~path:(path @ [ key ]))
+          else None)
+      | (Single _ | Inert _) as item -> f ~path item
+    in
+    List.find_map items ~f:(loop ~path:[])
+  ;;
+
+  let find_submenu (items : ('effect, 'item) t list) (target_path : string list)
     : ('effect, 'item) t list
     =
-    match path with
+    match target_path with
     | [] -> items
-    | key' :: path ->
-      let submenu_at_key =
-        find_map items ~f:(fun _ item ->
-          match item with
-          | Submenu { key; items; _ } when String.equal key key' -> Some items
-          | _ -> None)
-      in
-      (match submenu_at_key with
-       | Some menu -> find_submenu menu path
-       | None -> [])
+    | _ :: _ ->
+      find_map items ~f:(fun ~path item ->
+        match item with
+        | Submenu { key; items; _ }
+          when is_selectable item && List.equal String.equal (path @ [ key ]) target_path
+          -> Some items
+        | Single _ | Section _ | Inert _ | Submenu _ -> None)
+      |> Option.value ~default:[]
   ;;
 
   let first (items : ('effect, 'item) t list) : ('effect, 'item) t option =
-    find_map items ~f:(fun _ item ->
-      match item with
-      | Single _ | Submenu _ -> Some item
-      | Section _ | Inert _ -> None)
+    find_map items ~f:(fun ~path:_ item -> selectable_item item)
   ;;
 
   let rec last (items : ('effect, 'item) t list) : ('effect, 'item) t option =
-    match items with
-    | [] | [ (Single { disabled = true; _ } | Submenu { items = []; _ } | Inert _) ] ->
-      None
-    | [ (Single { disabled = false; _ } as item) ] -> Some item
-    | [ (Submenu { items = _ :: _; _ } as item) ] -> Some item
-    | [ Section { items; _ } ] -> last items
-    | first :: rest ->
-      (match last rest with
-       | None -> last [ first ]
-       | Some _ as item -> item)
+    List.find_map (List.rev items) ~f:(function
+      | Section { items; _ } -> last items
+      | item -> selectable_item item)
+  ;;
+
+  let next items ~after =
+    let seen_after = ref false in
+    find_map items ~f:(fun ~path item ->
+      match List.is_empty path, !seen_after with
+      | false, _ -> None
+      | true, true -> selectable_item item
+      | true, false ->
+        (match key item with
+         | Some key when String.equal key after -> seen_after := true
+         | Some _ | None -> ());
+        None)
+  ;;
+
+  let prev items ~before =
+    let prev_selectable = ref None in
+    find_map items ~f:(fun ~path item ->
+      match List.is_empty path with
+      | false -> None
+      | true ->
+        (match key item with
+         | Some key when String.equal key before -> !prev_selectable
+         | Some _ | None ->
+           (match selectable_item item with
+            | Some item -> prev_selectable := Some item
+            | None -> ());
+           None))
   ;;
 end
 
@@ -120,11 +149,12 @@ let current_and_path active =
 
 let find_active_item (menu : _ Item.t list) active =
   let find menu key' =
-    Item.find_map menu ~f:(fun _ item ->
-      match item with
-      | Single { key; _ } | Submenu { key; _ } ->
-        if String.equal key key' then Some item else None
-      | _ -> None)
+    Item.find_map menu ~f:(fun ~path item ->
+      match List.is_empty path with
+      | false -> None
+      | true ->
+        let%bind.Option selectable_key = Item.selectable_key item in
+        Option.some_if (String.equal selectable_key key') item)
   in
   match current_and_path active with
   | None -> None
@@ -135,40 +165,23 @@ let find_active_item (menu : _ Item.t list) active =
 ;;
 
 let find_first_item_key_in_menu menu =
-  match%bind.Option Item.first menu with
-  | Single { key; _ } | Submenu { key; _ } -> Some key
-  | Section _ | Inert _ -> None
+  let%bind.Option item = Item.first menu in
+  Item.key item
 ;;
 
 let find_last_item_key_in_menu menu =
-  match%bind.Option Item.last menu with
-  | Single { key; _ } | Submenu { key; _ } -> Some key
-  | Section _ | Inert _ -> None
+  let%bind.Option item = Item.last menu in
+  Item.key item
 ;;
 
 let find_next_item_key_in_menu menu current =
-  Item.find_map menu ~f:(fun prev item ->
-    let prev_is_current =
-      match prev with
-      | None | Some (Section _) | Some (Inert _) -> false
-      | Some (Single { key; _ } | Submenu { key; _ }) -> String.equal key current
-    in
-    match item with
-    | (Single { key; _ } | Submenu { key; _ }) when prev_is_current -> Some key
-    | _ -> None)
+  let%bind.Option item = Item.next menu ~after:current in
+  Item.key item
 ;;
 
 let find_prev_item_key_in_menu menu current =
-  Item.find_map menu ~f:(fun prev item ->
-    let item_is_current =
-      match item with
-      | Section _ -> false
-      | Inert _ -> false
-      | Single { key; _ } | Submenu { key; _ } -> String.equal key current
-    in
-    match prev with
-    | Some (Single { key; _ } | Submenu { key; _ }) when item_is_current -> Some key
-    | _ -> None)
+  let%bind.Option item = Item.prev menu ~before:current in
+  Item.key item
 ;;
 
 let apply_action' ctx menu active action =
@@ -256,3 +269,8 @@ let active_path { active; _ } = active
 let active_item { menu; active; _ } = Effect.of_sync_fun (find_active_item menu) active
 let set_active_path { inject; _ } path = inject (`Set path)
 let key_down { inject; _ } (key : key) = inject (key :> action)
+
+module For_testing = struct
+  let next = Item.next
+  let prev = Item.prev
+end

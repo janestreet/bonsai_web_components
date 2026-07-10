@@ -98,6 +98,22 @@ val vdom_popover
   -> Vdom.Node.t
   -> Vdom.Attr.t
 
+module Expert : sig
+  (** An attr to include in [vdom_popover]'s [popover_attrs]. Every time the popover
+      opens, if nothing inside it is already focused, the popover root will be focused.
+      This is the vdom-level equivalent of [Popover.always_open]'s [?focus_on_open]. *)
+  val focus_popover_on_open : Vdom.Attr.t
+
+  (** An alias for [Bonsai_web_portal.ensure_global_toplayer_root_mounted].
+
+      The Bonsai-level [Popover.*] / [Modal.*] functions call this for you at
+      graph-construction time. If you build popovers directly out of [vdom_popover], call
+      this yourself when constructing your graph: the toplayer root is otherwise created
+      lazily when the first popover opens, and appending it to the document root at that
+      point causes an expensive whole-document style recalculation. *)
+  val ensure_global_toplayer_root_mounted : unit -> unit
+end
+
 module Anchor : sig
   type t [@@deriving sexp_of]
 

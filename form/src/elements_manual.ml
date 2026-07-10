@@ -2214,7 +2214,7 @@ module File_select = struct
            then we also set value to "", which clears the form. Otherwise, we let the form
            be uncontrolled while a file is selected. *)
         let value_prop =
-          if Option.is_none state then Vdom.Attr.value_prop "" else Vdom.Attr.empty
+          if Option.is_none state then Vdom.Attr.value "" else Vdom.Attr.empty
         in
         Vdom_input_widgets.File_select.single
           ?accept
@@ -2256,7 +2256,7 @@ module File_select = struct
            empty one, then we also set value to "", which clears the form. Otherwise, we
            let the form be uncontrolled while a file is selected. *)
         let value_prop =
-          if Map.is_empty state then Vdom.Attr.value_prop "" else Vdom.Attr.empty
+          if Map.is_empty state then Vdom.Attr.value "" else Vdom.Attr.empty
         in
         Vdom_input_widgets.File_select.list
           ?accept

@@ -23,6 +23,7 @@ module State : sig
         state effects connected to real types. *)
     val define : (module State_effect_spec with type t = 'a) -> 'a State_effect_type.t
 
+    val append_config : Extension.t State_effect_type.t
     val reconfigure : Extension.t State_effect_type.t
   end
 

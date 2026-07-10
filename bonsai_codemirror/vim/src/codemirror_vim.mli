@@ -7,6 +7,9 @@ open! Core
     clipboard instead of vim's separate register clipboard. Defaults to [false]. *)
 val create : ?use_system_clipboard:bool -> unit -> Codemirror.State.Extension.t
 
+(** Enters Vim insert mode for a CodeMirror editor. *)
+val enter_insert_mode : Codemirror.View.Editor_view.t -> unit
+
 (** Defines a key mapping, e.g. map jj to Esc in insert mode. *)
 val map
   :  ?mode:[< `Insert | `Normal | `Visual > `Normal ]

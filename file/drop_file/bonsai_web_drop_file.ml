@@ -95,6 +95,8 @@ module Drop = struct
     }
 end
 
+let const_ignore () = Effect.Ignore
+
 let on_drop ?(here = Stdlib.Lexing.dummy_pos) ?mime_types ~f graph =
   let dom_refs_handle = Bonsai_web_low_level_vdom.Dom_ref.tracker graph in
   let dragging_over, set_dragging_over = Bonsai.state None graph in
@@ -108,18 +110,20 @@ let on_drop ?(here = Stdlib.Lexing.dummy_pos) ?mime_types ~f graph =
            [drop] events all need to explicitly be handled:
            https://html.spec.whatwg.org/multipage/dnd.html#event-drag *)
         Vdom.Attr.on_dragenter (fun e ->
-          (* We set to [copy], because uploading files to a web UI can't change them in
-             the OS. *)
-          e##.dataTransfer##.dropEffect := Js_of_ocaml.Js.string "copy";
-          (* The [dragging_over_state] check must happen synchronously!!! *)
-          let dragging_over = dragging_over_state ?mime_types e##.dataTransfer in
-          Effect.Many
-            [ (Effect.Prevent_default [@alert "-deprecated"])
-            ; set_dragging_over (Some dragging_over)
-            ])
+          Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
+            (* We set to [copy], because uploading files to a web UI can't change them in
+               the OS. *)
+            data_transfer##.dropEffect := Js_of_ocaml.Js.string "copy";
+            (* The [dragging_over_state] check must happen synchronously!!! *)
+            let dragging_over = dragging_over_state ?mime_types data_transfer in
+            Effect.Many
+              [ (Effect.Prevent_default [@alert "-deprecated"])
+              ; set_dragging_over (Some dragging_over)
+              ]))
       ; Vdom.Attr.on_dragover (fun e ->
-          e##.dataTransfer##.dropEffect := Js_of_ocaml.Js.string "copy";
-          Effect.Prevent_default [@alert "-deprecated"])
+          Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
+            data_transfer##.dropEffect := Js_of_ocaml.Js.string "copy";
+            Effect.Prevent_default [@alert "-deprecated"]))
       ; Vdom.Attr.on_dragleave (fun e ->
           match Js.Opt.to_option e##.relatedTarget with
           | None -> set_dragging_over None
@@ -143,11 +147,12 @@ let on_drop ?(here = Stdlib.Lexing.dummy_pos) ?mime_types ~f graph =
                then set_dragging_over None
                else Effect.Ignore))
       ; Vdom.Attr.on_drop (fun e ->
-          Effect.Many
-            [ (Effect.Prevent_default [@alert "-deprecated"])
-            ; get_files_guaranteed_present_exn ?mime_types e##.dataTransfer ~f
-            ; set_dragging_over None
-            ])
+          Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
+            Effect.Many
+              [ (Effect.Prevent_default [@alert "-deprecated"])
+              ; get_files_guaranteed_present_exn ?mime_types data_transfer ~f
+              ; set_dragging_over None
+              ]))
       ]
   in
   { Drop.drop_target; dragging_over }
@@ -155,7 +160,8 @@ let on_drop ?(here = Stdlib.Lexing.dummy_pos) ?mime_types ~f graph =
 
 let on_paste ?mime_types f =
   Vdom.Attr.on_paste (fun e ->
-    get_files_guaranteed_present_exn ?mime_types e##.clipboardData ~f)
+    Js.Opt.case e##.clipboardData const_ignore (fun clipboard_data ->
+      get_files_guaranteed_present_exn ?mime_types clipboard_data ~f))
 ;;
 
 let read_file (file : File.file Js.t) : bytes Or_error.t Effect.t =

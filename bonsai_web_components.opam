@@ -26,7 +26,6 @@ depends: [
   "expect_test_helpers_base"
   "fuzzy_match"
   "incr_map"
-  "incremental"
   "ocaml-embed-file"
   "ordinal_abbreviation"
   "patdiff"

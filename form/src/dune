@@ -4,7 +4,7 @@
  (flags :standard -alert -private_bonsai_view_library)
  (preprocess
   (pps js_of_ocaml-ppx ppx_jane bonsai.ppx_bonsai ppx_css))
- (libraries bonsai bonsai.extra bonsai_kernel_extendy bonsai_web
+ (libraries bonsai.extra bonsai_kernel_extendy bonsai_web
    bonsai_web_contrib_freeform_multiselect bonsai_web_contrib_multi_select
    bonsai_web_contrib_pills bonsai_web_contrib_query_box
    bonsai_web_contrib_typeahead bonsai_web_file bonsai_web_file_from_web_file

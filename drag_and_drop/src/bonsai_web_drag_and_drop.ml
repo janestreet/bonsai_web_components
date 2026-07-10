@@ -255,12 +255,6 @@ let create_with_drop_position
     fun ~id ->
       Vdom.Attr.many
         [ Vdom.Attr.on_pointerdown (fun event ->
-            let (event
-                  : < composedPath : 'a Js.js_array Js.t Js.meth ; Dom_html.pointerEvent >
-                      Js.t)
-              =
-              Js.Unsafe.coerce event
-            in
             let position =
               { Position.x = event##.clientX |> Js.to_float |> Int.of_float
               ; y = event##.clientY |> Js.to_float |> Int.of_float
@@ -279,6 +273,11 @@ let create_with_drop_position
             let path = Js.to_array event##composedPath |> Array.to_list in
             let target =
               List.find_map path ~f:(fun element ->
+                let (element : < dataset : 'a Js.opt Js.readonly_prop > Js.t) =
+                  (* [composedPath] is in [Js_of_ocaml.Dom] as an array of [Unsafe.any] so
+                     we have to unsafe coerce *)
+                  Js.Unsafe.coerce element
+                in
                 let%bind.Option dataset = Js.Opt.to_option element##.dataset in
                 let%map.Option drag_target =
                   Js.Opt.to_option
@@ -341,6 +340,11 @@ let create_with_drop_position
            let path = Js.to_array event##composedPath |> Array.to_list in
            let target =
              List.find_map path ~f:(fun element ->
+               let (element : < dataset : 'a Js.opt Js.readonly_prop > Js.t) =
+                 (* [composedPath] is in [Js_of_ocaml.Dom] as an array of [Unsafe.any] so
+                    we have to unsafe coerce *)
+                 Js.Unsafe.coerce element
+               in
                let%bind.Option dataset = Js.Opt.to_option element##.dataset in
                let%map.Option drag_target =
                  Js.Opt.to_option (Js.Unsafe.get dataset ("dragTarget" ^ universe_suffix))

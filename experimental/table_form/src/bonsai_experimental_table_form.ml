@@ -86,7 +86,7 @@ let table_form
       Vdom.Node.input
         ~attrs:
           [ Style.key_input_textbox
-          ; Vdom.Attr.value_prop text
+          ; Vdom.Attr.value text
           ; Vdom.Attr.placeholder "key for new row"
           ; Vdom.Attr.on_input (fun _ s -> set_text s)
           ; Vdom.Attr.on_keydown (fun evt ->

@@ -14,11 +14,13 @@ module Vdom_attr = struct
   let on_copy f = Vdom.Attr.on_copy f
   let on_cut f = Vdom.Attr.on_cut f
   let on_paste f = Vdom.Attr.on_paste f
+  let const_ignore () = Vdom.Effect.Ignore
 
   let intercept_copy_type type_ f =
     on_copy (fun event ->
-      event##.clipboardData##setData (Js.string type_) (Js.string (f ()));
-      event_stop_and_prevent)
+      Js.Opt.case event##.clipboardData const_ignore (fun clipboard_data ->
+        clipboard_data##setData (Js.string type_) (Js.string (f ()));
+        event_stop_and_prevent))
   ;;
 
   let intercept_copy_plain f =
@@ -27,9 +29,10 @@ module Vdom_attr = struct
 
   let intercept_cut_type type_ f =
     on_cut (fun event ->
-      let text, evt = f () in
-      event##.clipboardData##setData (Js.string type_) (Js.string text);
-      Vdom.Effect.Many [ evt; event_stop_and_prevent ])
+      Js.Opt.case event##.clipboardData const_ignore (fun clipboard_data ->
+        let text, evt = f () in
+        clipboard_data##setData (Js.string type_) (Js.string text);
+        Vdom.Effect.Many [ evt; event_stop_and_prevent ]))
   ;;
 
   let intercept_cut_plain f =
@@ -38,9 +41,10 @@ module Vdom_attr = struct
 
   let intercept_paste_type type_ f =
     on_paste (fun event ->
-      let text = Js.to_string (event##.clipboardData##getData (Js.string type_)) in
-      let event = f text in
-      Vdom.Effect.Many [ event; event_stop_and_prevent ])
+      Js.Opt.case event##.clipboardData const_ignore (fun clipboard_data ->
+        let text = Js.to_string (clipboard_data##getData (Js.string type_)) in
+        let event = f text in
+        Vdom.Effect.Many [ event; event_stop_and_prevent ]))
   ;;
 
   let intercept_paste_plain f =
@@ -48,22 +52,28 @@ module Vdom_attr = struct
   ;;
 
   let set_copy_content js_event map =
-    let cl = js_event##.clipboardData in
-    Map.iteri map ~f:(fun ~key:t ~data:d ->
-      let type_ = Datatype.to_string t in
-      cl##setData (Js.string type_) (Js.string d))
+    Js.Opt.case
+      js_event##.clipboardData
+      (fun () -> ())
+      (fun cl ->
+        Map.iteri map ~f:(fun ~key:t ~data:d ->
+          let type_ = Datatype.to_string t in
+          cl##setData (Js.string type_) (Js.string d)))
   ;;
 
   let get_paste_content js_event =
-    let cl = js_event##.clipboardData in
-    let types = cl##.types in
-    let len = types##.length in
-    List.init len ~f:(fun i -> Js.array_get types i)
-    |> List.map ~f:Js.Optdef.to_option
-    |> List.filter_opt
-    |> List.map ~f:(fun t -> Js.to_string t, cl##getData t)
-    |> List.map ~f:(fun (t, d) -> Datatype.of_string t, Js.to_string d)
-    |> Datatype.Map.of_alist_exn
+    Js.Opt.case
+      js_event##.clipboardData
+      (fun () -> Datatype.Map.empty)
+      (fun cl ->
+        let types = cl##.types in
+        let len = types##.length in
+        List.init len ~f:(fun i -> Js.array_get types i)
+        |> List.map ~f:Js.Optdef.to_option
+        |> List.filter_opt
+        |> List.map ~f:(fun t -> Js.to_string t, cl##getData t)
+        |> List.map ~f:(fun (t, d) -> Datatype.of_string t, Js.to_string d)
+        |> Datatype.Map.of_alist_exn)
   ;;
 
   let intercept_copy f =
