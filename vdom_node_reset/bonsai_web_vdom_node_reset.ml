@@ -114,6 +114,10 @@ module Reset_attrs = struct
     {%css|
       @layer base {
         cursor: pointer;
+
+        &:disabled {
+          cursor: default;
+        }
       }
     |}
   ;;

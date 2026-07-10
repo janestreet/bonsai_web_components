@@ -24,6 +24,7 @@ module State = struct
       State.State_effect.define ()
     ;;
 
+    let append_config = State.State_effect.append_config
     let reconfigure = State.State_effect.reconfigure
   end
 

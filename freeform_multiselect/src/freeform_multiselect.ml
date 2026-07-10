@@ -14,11 +14,11 @@ let input ~placeholder:placeholder_ ~value:value_ ~extra_attr ~id:id_ ~on_input:
           @ type_ "text"
           @ create "list" id_
           @ placeholder placeholder_
-          (* Both Attr.value and Attr.string_property value must be set. The former only
-             affects initial control state while the latter affects the control state
+          (* Both Attr.value_attr and Attr.string_property value must be set. The former
+             only affects initial control state while the latter affects the control state
              whilst the form is being used. *)
+          @ value_attr value_
           @ value value_
-          @ value_prop value_
           @ on_change (fun _ input -> on_input_ input))
       ]
     ()

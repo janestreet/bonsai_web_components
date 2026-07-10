@@ -124,6 +124,7 @@ module State : sig
     val value : t -> 'a [@@js.get]
     val is : t -> type_:'a State_effect_type.t -> bool [@@js.call]
     val define : unit -> 'a State_effect_type.t [@@js.global]
+    val append_config : Extension.t State_effect_type.t [@@js.global "appendConfig"]
     val reconfigure : Extension.t State_effect_type.t [@@js.global]
   end
   [@@js.scope "StateEffect"]
@@ -1553,6 +1554,8 @@ module Folding : sig
   [@@js.global]
 
   val fold_gutter : unit -> State.Extension.t [@@js.global]
+  val fold_effect : Fold.t State.State_effect_type.t [@@js.global "foldEffect"]
+  val fold_all : View.Command.t [@@js.global "foldAll"]
 end
 
 module Matchbrackets : sig

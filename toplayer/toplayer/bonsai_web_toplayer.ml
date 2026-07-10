@@ -35,6 +35,16 @@ let arrow_helper ~attrs ~arrow_len () =
 let tooltip = Bonsai_web_toplayer_private_vdom.tooltip
 let vdom_popover = Bonsai_web_toplayer_private_vdom.popover
 
+module Expert = struct
+  let focus_popover_on_open =
+    Bonsai_web_toplayer_private_vdom.For_bonsai_web_toplayer.focus_popover_on_open
+  ;;
+
+  let ensure_global_toplayer_root_mounted =
+    Bonsai_web_portal.ensure_global_toplayer_root_mounted
+  ;;
+end
+
 type mouse_event = Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml.Js.t
 
 let focus_on_open_attr = function

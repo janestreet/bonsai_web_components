@@ -230,6 +230,85 @@ module Test_read_on_change = struct
     [%expect {| ((bar.txt (Complete (Ok "hello world")))) |}]
   ;;
 
+  let%expect_test "create_single_opt resets the read state when the input becomes None" =
+    let t_var = Bonsai.Expert.Var.create None in
+    let computation = Read_on_change.create_single_opt (Bonsai.Expert.Var.value t_var) in
+    let handle =
+      Handle.create
+        (Result_spec.sexp
+           (module struct
+             type t = (Filename.t * Read_on_change.Status.t) option [@@deriving sexp_of]
+           end))
+        computation
+    in
+    let show_stable () =
+      Handle.recompute_view_until_stable handle;
+      Handle.show handle
+    in
+    let stream_data = Test_data.create_stream ~filename:"foo.txt" ~total_bytes:11 in
+    let file = For_testing.create stream_data in
+    Bonsai.Expert.Var.set t_var (Some file);
+    show_stable ();
+    [%expect {| ((foo.txt (In_progress ((loaded 0) (total 11))))) |}];
+    Test_data.feed_exn stream_data "hello";
+    show_stable ();
+    [%expect {| ((foo.txt (In_progress ((loaded 5) (total 11))))) |}];
+    Bonsai.Expert.Var.set t_var None;
+    Handle.show handle;
+    [%expect {| () |}];
+    show_stable ();
+    [%expect {| () |}];
+    print_s
+      [%sexp (Test_data.read_status stream_data : [ `Aborted | `Not_reading | `Reading ])];
+    [%expect {| Aborted |}];
+    let new_stream_data = Test_data.create_stream ~filename:"bar.txt" ~total_bytes:11 in
+    let new_file = For_testing.create new_stream_data in
+    Bonsai.Expert.Var.set t_var (Some new_file);
+    Handle.show handle;
+    [%expect {| ((bar.txt Starting)) |}];
+    show_stable ();
+    [%expect {| ((bar.txt (In_progress ((loaded 0) (total 11))))) |}];
+    Test_data.feed_exn new_stream_data "hello world";
+    Test_data.close new_stream_data;
+    show_stable ();
+    [%expect {| ((bar.txt (Complete (Ok "hello world")))) |}]
+  ;;
+
+  let%expect_test "create_single keeps the old filename until a new read starts" =
+    let t_var = Bonsai.Expert.Var.create None in
+    let computation (local_ graph) =
+      match%sub Bonsai.Expert.Var.value t_var with
+      | None -> return None
+      | Some file ->
+        let%arr result = Read_on_change.create_single file graph in
+        Some result
+    in
+    let handle =
+      Handle.create
+        (Result_spec.sexp
+           (module struct
+             type t = (Filename.t * Read_on_change.Status.t) option [@@deriving sexp_of]
+           end))
+        computation
+    in
+    let show_stable () =
+      Handle.recompute_view_until_stable handle;
+      Handle.show handle
+    in
+    let old_data = Test_data.create_static ~filename:"old.txt" ~contents:"old contents" in
+    let old_file = For_testing.create old_data in
+    Bonsai.Expert.Var.set t_var (Some old_file);
+    show_stable ();
+    [%expect {| ((old.txt (Complete (Ok "old contents")))) |}];
+    let new_data = Test_data.create_static ~filename:"new.txt" ~contents:"new contents" in
+    let new_file = For_testing.create new_data in
+    Bonsai.Expert.Var.set t_var (Some new_file);
+    Handle.show handle;
+    [%expect {| ((old.txt (Complete (Ok "old contents")))) |}];
+    show_stable ();
+    [%expect {| ((new.txt (Complete (Ok "new contents")))) |}]
+  ;;
+
   let%expect_test "create_multiple" =
     let ts_var = Bonsai.Expert.Var.create Filename.Map.empty in
     let computation = Read_on_change.create_multiple (Bonsai.Expert.Var.value ts_var) in

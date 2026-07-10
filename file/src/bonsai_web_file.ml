@@ -233,47 +233,54 @@ module Read_on_change = struct
     type t =
       | Before_first_read
       | Reading of
-          { file_read : File_read'.t
+          { filename : string
+          ; file_read : File_read'.t
           ; status : Status.t
           }
     [@@deriving equal, sexp]
 
-    let to_status = function
-      | Before_first_read -> Status.Starting
-      | Reading { status; _ } -> status
-    ;;
-
     module Action = struct
       type t =
-        | Start_read of File_read'.t
+        | Reset
+        | Start_read of
+            { filename : string
+            ; file_read : File_read'.t
+            }
         | Set_status of Status.t
       [@@deriving equal, sexp]
     end
 
     let apply_action context t (action : Action.t) =
+      let abort_previous () =
+        match t with
+        | Before_first_read -> ()
+        | Reading { filename = _old_filename; file_read = old_file_read; status = _ } ->
+          Bonsai.Apply_action_context.schedule_event
+            context
+            (File_read.abort old_file_read)
+      in
       match action with
-      | Start_read file_read ->
-        (match t with
-         | Before_first_read -> ()
-         | Reading { file_read = old_file_read; status = _ } ->
-           Bonsai.Apply_action_context.schedule_event
-             context
-             (File_read.abort old_file_read));
-        Reading { file_read; status = Starting }
+      | Reset ->
+        abort_previous ();
+        Before_first_read
+      | Start_read { filename; file_read } ->
+        abort_previous ();
+        Reading { filename; file_read; status = Starting }
       | Set_status status ->
         (match t with
          | Before_first_read -> t
-         | Reading { file_read; status = _ } -> Reading { file_read; status })
+         | Reading { filename; file_read; status = _ } ->
+           Reading { filename; file_read; status })
     ;;
 
     let abort_read_if_applicable t (local_ _graph) =
       match%sub t with
-      | Before_first_read -> Bonsai.return Ui_effect.Ignore
-      | Reading { file_read; status = _ } -> file_read >>| File_read.abort
+      | Before_first_read -> return Ui_effect.Ignore
+      | Reading { filename = _; file_read; status = _ } -> file_read >>| File_read.abort
     ;;
   end
 
-  let create_helper file (local_ graph) =
+  let create_single_opt file (local_ graph) =
     let state, inject =
       Bonsai.state_machine
         ~sexp_of_model:[%sexp_of: File_state.t]
@@ -290,61 +297,63 @@ module Read_on_change = struct
     let () =
       Bonsai.Edge.on_change
         ~trigger:`After_display
-        ~sexp_of_model:[%sexp_of: File.t]
-        ~equal:[%equal: File.t]
+        ~sexp_of_model:[%sexp_of: File.t option]
+        ~equal:[%equal: File.t option]
         file
         ~callback:
           (let%map inject in
-           fun file ->
+           function
+           | None -> inject Reset
+           | Some file ->
              let open Ui_effect.Let_syntax in
              let%bind file_read =
                read file ~on_progress:(fun progress ->
                  inject (Set_status (In_progress progress)))
              in
-             let%bind () = inject (Start_read file_read) in
-             match%bind File_read.result file_read with
-             | Error Aborted ->
-               (* Let the next read take over *)
-               return ()
-             | Error (Error e) -> inject (Set_status (Complete (Error e)))
-             | Ok contents -> inject (Set_status (Complete (Ok contents))))
+             let%bind () =
+               let filename = file.filename in
+               inject (Start_read { filename; file_read })
+             in
+             (match%bind File_read.result file_read with
+              | Error Aborted ->
+                (* Let the next read take over *)
+                return ()
+              | Error (Error e) -> inject (Set_status (Complete (Error e)))
+              | Ok contents -> inject (Set_status (Complete (Ok contents)))))
         graph
     in
-    state
-  ;;
-
-  let create_multiple files (local_ graph) =
-    let file_states =
-      (* In reality, I suspect that whenever the user changes their selection in a file
-         picker widget, the browser generates an entirely new set of File objects for us.
-         So I suspect it's not possible for [files] to change in such a way that some, but
-         not all, of the keys change. However, it's easy enough to support that, so we do.
-
-         The one thing we don't support is if a file disappears from the map and then
-         comes back. In that case, we've already told the file reader to abort the read
-         when it disappeared, so there is no way for us to recover. *)
-      Bonsai.assoc
-        (module Filename)
-        files
-        ~f:(fun _filename file (local_ graph) ->
-          let reading = create_helper file graph in
-          match%map reading with
-          | File_state.Before_first_read -> None
-          | Reading { status; file_read = _ } -> Some status)
-        graph
-    in
-    Bonsai.Incr.compute file_states ~f:(Ui_incr.Map.filter_map ~f:Fn.id) graph
+    let%arr state and file in
+    let%map.Option file in
+    match state with
+    | Before_first_read ->
+      (* We should try to minimize using [file.filename], since the filename can update
+         before the [Bonsai.Edge.on_change] fires above. This can trigger the filename to
+         change before the content is refreshed when a new file is uploaded. *)
+      file.filename, Status.Starting
+    | Reading { filename; status; _ } -> filename, status
   ;;
 
   let create_single file (local_ graph) =
-    let state = create_helper file graph in
-    let%arr file and state in
-    file.filename, File_state.to_status state
+    let%arr file
+    and filename_and_status = create_single_opt (file >>| Option.some) graph in
+    Option.value filename_and_status ~default:(file.filename, Starting)
   ;;
 
-  let create_single_opt file (local_ graph) =
-    match%sub file with
-    | None -> Bonsai.return None
-    | Some file -> Bonsai.map (create_single file graph) ~f:Option.some
+  let create_multiple files (local_ graph) =
+    (* In reality, I suspect that whenever the user changes their selection in a file
+       picker widget, the browser generates an entirely new set of File objects for us. So
+       I suspect it's not possible for [files] to change in such a way that some, but not
+       all, of the keys change. However, it's easy enough to support that, so we do.
+
+       The one thing we don't support is if a file disappears from the map and then comes
+       back. In that case, we've already told the file reader to abort the read when it
+       disappeared, so there is no way for us to recover. *)
+    Bonsai.assoc
+      (module Filename)
+      files
+      ~f:(fun _filename file (local_ graph) ->
+        let%arr _filename, status = create_single file graph in
+        status)
+      graph
   ;;
 end

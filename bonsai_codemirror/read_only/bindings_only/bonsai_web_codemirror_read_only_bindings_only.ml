@@ -3,7 +3,7 @@ open! Js_of_ocaml
 module Codemirror = Codemirror_bindings
 
 module Theme = struct
-  type t = Bonsai_web_legacy_view.Expert.For_codemirror.Theme.t =
+  type t = Codemirror_themes.t =
     | Basic_dark
     | Basic_light
     | Gruvbox_dark

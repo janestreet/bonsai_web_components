@@ -6,7 +6,7 @@
        File API to drive [t]. Note that the Web File API does not permit the reading of
        arbitrary files on the client computer's disk. Instead, one typically uses a file
        selector form to allow the user to specify a file to be read. See
-       [Bonsai_web_form.Elements.File_picker] for a convenient wrapper.
+       [Bonsai_web_form.Elements.File_select] for a convenient wrapper.
 
     2. For tests, one can also create a [t] which is driven manually using the
        [For_testing] module. *)

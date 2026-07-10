@@ -24,7 +24,7 @@ module Language : sig
 end
 
 module Theme : sig
-  type t =
+  type t = Codemirror_themes.t =
     | Basic_dark
     | Basic_light
     | Gruvbox_dark

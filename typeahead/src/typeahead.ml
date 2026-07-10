@@ -91,10 +91,10 @@ let input
            @ [ Vdom.Attr.type_ "text"
              ; Vdom.Attr.create "list" id
              ; Vdom.Attr.placeholder placeholder
-               (* Both Attr.value and Attr.string_property value must be set. The former
-                  only affects initial control state while the latter affects the control
-                  state whilst the form is being used. *)
-             ; Vdom.Attr.value value
+               (* Both Attr.value_attr and Attr.string_property value must be set. The
+                  former only affects initial control state while the latter affects the
+                  control state whilst the form is being used. *)
+             ; Vdom.Attr.value_attr value
              ; Vdom.Attr.on_focus (fun _ -> set_focused true)
              ; Vdom.Attr.on_blur (fun _ -> set_focused false)
              ; Vdom.Attr.string_property "value" value
@@ -129,7 +129,7 @@ let datalist ?filter_options_by ~id ~all_options ~to_string ~to_option_descripti
     (lazy
       (let option_of_t t =
          Vdom.Node.option
-           ~attrs:[ Vdom.Attr.value (to_string t) ]
+           ~attrs:[ Vdom.Attr.value_attr (to_string t) ]
            [ Vdom.Node.text (to_option_description t) ]
        in
        let all_options =
