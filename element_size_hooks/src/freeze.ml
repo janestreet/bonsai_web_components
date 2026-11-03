@@ -46,7 +46,7 @@ module T = struct
   let destroy { Input.reset; _ } () element = reset element
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let on_mount ~name ~set ~reset =
   Vdom.Attr.create_hook name (Hook.create { T.Input.set; reset })

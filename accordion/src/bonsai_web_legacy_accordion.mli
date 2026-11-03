@@ -18,7 +18,7 @@ val component
        (** default: [`Allow] *)
   -> starts_open:bool
   -> title:Vdom.Node.t Bonsai.t
-  -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  -> content:(Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t

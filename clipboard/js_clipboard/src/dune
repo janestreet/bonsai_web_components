@@ -2,5 +2,5 @@
  (name js_clipboard)
  (public_name bonsai_web_components.js_clipboard)
  (preprocess
-  (pps ppx_jane js_of_ocaml-ppx))
+  (pps ppx_jane js_of_ocaml-ppx -compare-require-explicit-locality))
  (libraries clipboard core js_of_ocaml virtual_dom.ui_effect virtual_dom))

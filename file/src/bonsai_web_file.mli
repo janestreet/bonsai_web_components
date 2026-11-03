@@ -95,17 +95,17 @@ module Read_on_change : sig
 
   val create_single
     :  t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (Filename.t * Status.t) Bonsai.t
 
   val create_single_opt
     :  t option Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (Filename.t * Status.t) option Bonsai.t
 
   val create_multiple
     :  t Filename.Map.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Status.t Filename.Map.t Bonsai.t
 end
 

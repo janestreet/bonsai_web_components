@@ -6,3 +6,8 @@
    bonsai_concrete.ui_incr)
  (preprocess
   (pps ppx_jane js_of_ocaml-ppx ppx_pattern_bind bonsai.ppx_bonsai)))
+
+(env
+ (_
+  (env-vars
+   (OCAMLPARAM w=-46,keywords=5.2,_))))

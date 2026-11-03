@@ -24,13 +24,15 @@ module Components = struct
   let to_path_and_query { path; query; fragment } =
     let uri = get_uri () in
     uri
-    |> Fn.flip Uri.with_path path
+    |> Fn.flip Uri.with_path (Base_path.prepend path)
     |> Fn.flip Uri.with_query (Map.to_alist query)
     |> Fn.flip Uri.with_fragment fragment
   ;;
 
   let of_uri uri =
-    let path = Uri.path uri |> String.chop_prefix_if_exists ~prefix:"/" in
+    let path =
+      Uri.path uri |> Base_path.remove_exn |> String.chop_prefix_if_exists ~prefix:"/"
+    in
     let query =
       uri
       |> Uri.query
@@ -46,6 +48,10 @@ end
 
 module type T = sig
   type t [@@deriving sexp, equal]
+end
+
+module type T_plain = sig
+  type t [@@deriving equal]
 end
 
 module type S = sig
@@ -71,7 +77,8 @@ module Literally_just_a_gigantic_sexp (M : S_via_sexp) : S with type t = M.t = s
   let unparse t =
     let uri = get_uri () in
     let param = Sexp.to_string ([%sexp_of: t] t) in
-    { Components.path = Uri.path uri
+    (* [to_path_and_query] re-adds the base path; keep it out of these components. *)
+    { Components.path = Base_path.remove_exn (Uri.path uri)
     ; query = String.Map.singleton query_param_name [ param ]
     ; fragment = Uri.fragment uri
     }
@@ -81,36 +88,12 @@ end
 module Original_components = Components
 
 let reload_without_intercepting =
-  let reload =
-    Js_of_ocaml.Js.Unsafe.js_expr
-      {js|
-    (function(on_finished) {
-      window.navigation.reload({
-        info: {
-          bypass_intercept: true
-        }
-      }).finished.then(on_finished);
-    })
-    |js}
-  in
-  Bonsai.Effect.Expert.of_fun ~f:(fun ~callback ~on_exn:_ ->
-    let wrapped_callback = Js_of_ocaml.Js.Unsafe.callback callback in
-    Js_of_ocaml.Js.Unsafe.fun_call
-      reload
-      [| Js_of_ocaml.Js.Unsafe.inject wrapped_callback |])
-;;
-
-let can_bypass_intercept =
-  let check_can_bypass =
-    Js_of_ocaml.Js.Unsafe.js_expr {js| ((event) => !!(event.info?.bypass_intercept)) |js}
-  in
-  fun event ->
-    let js_bool =
-      Js_of_ocaml.Js.Unsafe.fun_call
-        check_can_bypass
-        [| Js_of_ocaml.Js.Unsafe.inject event |]
-    in
-    Js_of_ocaml.Js.to_bool js_bool
+  let window = Effect.of_thunk Browser_expert.Global.window_exn in
+  Effect.bind window ~f:(fun window ->
+    Js_of_ocaml.Js.Optdef.case
+      (window##.navigation##reload ~options:Js_of_ocaml.Js.undefined)##.finished
+      (fun () -> Effect.return ())
+      (fun finished -> Effect.map (Effect.of_js_promise_exn finished) ~f:(fun _ -> ())))
 ;;
 
 type 'a t =
@@ -121,7 +104,9 @@ type 'a t =
   | In_nodejs_test of
       { var : 'a Bonsai.Expert.Var.t
       ; sexp_of : 'a -> Sexp.t
-      ; navigation_info : (module S with type t = 'a) * [ `Ignore | `Intercept ]
+      ; navigation_info :
+          (module S with type t = 'a)
+          * [ `Ignore | `Intercept of [ `Reset_scroll | `Preserve_scroll ] ]
       }
 
 let get_var = function
@@ -134,55 +119,80 @@ let get_global =
   fun () -> Js_of_ocaml.Js.Unsafe.fun_call get [||]
 ;;
 
-let listen_to_navigation_events_exn ~parse_exn ~f =
+let listen_to_navigation_events_exn ~scroll_policy ~parse_exn ~f =
   let open Js_of_ocaml in
   (* We have to retrieve this value fresh every time in case the user is mocking the
      browser implementation in tests multiple times
   *)
-  let navigation = (Js.Unsafe.coerce (get_global ()))##.navigation in
-  let (_ : _ Js.t) =
+  let (navigation : Browser_expert.Types.navigation Js.t) =
+    (Js.Unsafe.coerce (get_global ()))##.navigation
+  in
+  let () =
     navigation##addEventListener
-      (Js.string "navigate")
-      (Dom_html.handler (fun event ->
-         let can_intercept =
-           Js.to_bool event##.canIntercept
-           && (not (Js.Opt.test event##.downloadRequest))
-           && not (can_bypass_intercept event)
-         in
-         let try_intercept () =
-           let value =
-             Js.to_string event##.destination##.url
-             |> Uri.of_string
-             |> Original_components.of_uri
-             |> parse_exn
-           in
-           (match am_running_how with
-            | `Node_jsdom_test | `Node_test ->
-              Core.print_endline "Intercepted navigation event"
-            | _ -> ());
-           event##intercept
-             (Js.Unsafe.obj
-                [| ( "handler"
-                   , Js.Unsafe.inject
-                       (Js.wrap_callback (fun () ->
-                          f value;
-                          Js.undefined)) )
-                 ; "focusReset", Js.Unsafe.inject (Js.string "manual")
-                |])
-         in
-         if can_intercept
-         then (
-           try try_intercept () with
-           | _ -> ());
-         Js.bool true))
+      ~type_:(Js.string "navigate")
+      ~listener:
+        (Js.Opt.return
+           (Js.wrap_meth_callback (fun () ~(event : #Browser_expert.Types.event Js.t) ->
+              let event : Browser_expert.Types.navigate_event Js.t =
+                (* Assume that this is a navigation event *)
+                Js.Unsafe.coerce event
+              in
+              let can_intercept =
+                Js.to_bool event##.canIntercept
+                && (not (Js.Opt.test event##.downloadRequest))
+                && not
+                     (Js.strict_equals
+                        (event##.navigationType :> Js.js_string Js.t)
+                        (Browser_enums.Navigation_type.reload :> Js.js_string Js.t))
+              in
+              let try_intercept () =
+                let value =
+                  Js.to_string (Js.Unsafe.coerce event)##.destination##.url
+                  |> Uri.of_string
+                  |> Original_components.of_uri
+                  |> parse_exn
+                in
+                (match am_running_how with
+                 | `Node_jsdom_test | `Node_test ->
+                   Core.print_endline "Intercepted navigation event"
+                 | _ -> ());
+                event##intercept
+                  ~options:
+                    (Js.Optdef.return
+                       (object%js
+                          val mutable handler =
+                            Js.Optdef.return
+                              (Js.wrap_meth_callback (fun () ->
+                                 f value;
+                                 Browser_js_types.of_jsoo_promise
+                                   (Js_of_ocaml.Promise.resolve ())))
+
+                          val mutable focusReset =
+                            Js.Optdef.return Browser_enums.Navigation_focus_reset.manual
+
+                          val mutable scroll =
+                            match scroll_policy with
+                            | `Reset_scroll -> Js.Optdef.empty
+                            | `Preserve_scroll ->
+                              Js.Optdef.return
+                                Browser_enums.Navigation_scroll_behavior.manual
+
+                          val mutable commit = Js.Optdef.empty
+                       end))
+              in
+              if can_intercept
+              then (
+                try try_intercept () with
+                | _ -> ()))))
+      ~options:Js.Optdef.empty
   in
   ()
 ;;
 
-let listen_to_navigation_events ~parse_exn ~f =
+let listen_to_navigation_events ~scroll_policy ~parse_exn ~f =
   (* We wrap this call in a try-catch until the API is finalized as per
      https://html.spec.whatwg.org/#navigation-api *)
-  try listen_to_navigation_events_exn ~parse_exn ~f with
+  try listen_to_navigation_events_exn ~scroll_policy ~parse_exn ~f with
   | _ ->
     (match am_running_how with
      | `Browser
@@ -232,7 +242,7 @@ let set ?how t a = set_internal ?how ~quiet:false t a
 let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navigation t =
   match navigation with
   | `Ignore -> ()
-  | `Intercept ->
+  | `Intercept scroll_policy ->
     let how =
       match t with
       | Browser _ ->
@@ -250,14 +260,14 @@ let maybe_add_navigation_listener (type a) (module S : S with type t = a) ~navig
            prior navigation entry has been made. *)
         `Push
     in
-    listen_to_navigation_events ~parse_exn:S.parse_exn ~f:(fun next_page ->
+    listen_to_navigation_events ~scroll_policy ~parse_exn:S.parse_exn ~f:(fun next_page ->
       let is_current_page = S.equal next_page (Bonsai.Expert.Var.get (get_var t)) in
       if not is_current_page then set ~how t next_page)
 ;;
 
 let create_exn'
   (type a)
-  ?(navigation = `Intercept)
+  ?(navigation = `Intercept `Reset_scroll)
   (module S : S with type t = a)
   ~on_bad_uri
   =
@@ -485,9 +495,21 @@ module Typed = struct
     { Projection.parse_exn; unparse }
   ;;
 
+  let make_on_bad_uri ~fallback =
+    match am_running_how with
+    | `Browser | `Browser_benchmark | `Browser_test -> `Raise
+    | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
+      (* Passing in some dummy values to [fallback] so that we can receive a default value
+         in tests *)
+      let default_value =
+        fallback (Exn.create_s [%message "Dummy exception"]) Original_components.empty
+      in
+      `Default_state default_value
+  ;;
+
   let make
     (type a)
-    ?(navigation = `Intercept)
+    ?(navigation = `Intercept `Reset_scroll)
     ?on_fallback_raises
     ?encoding_behavior
     ?trailing_slash_behavior
@@ -512,17 +534,48 @@ module Typed = struct
       let unparse = projection.unparse
     end
     in
-    let on_bad_uri =
-      match am_running_how with
-      | `Browser | `Browser_benchmark | `Browser_test -> `Raise
-      | `Node | `Node_benchmark | `Node_test | `Node_jsdom_test ->
-        (* Passing in some dummy values to [fallback] so that we can receive a default
-           value in tests *)
-        let default_value =
-          fallback (Exn.create_s [%message "Dummy exception"]) Original_components.empty
-        in
-        `Default_state default_value
+    let on_bad_uri = make_on_bad_uri ~fallback in
+    create_exn' (module S) ~navigation ~on_bad_uri
+  ;;
+
+  let make_plain
+    (type a)
+    ?(navigation = `Intercept `Reset_scroll)
+    ?on_fallback_raises
+    ?encoding_behavior
+    ?trailing_slash_behavior
+    (module T : T_plain with type t = a)
+    (parser : a Uri_parsing.Versioned_parser.t)
+    ~(fallback : Exn.t -> Original_components.t -> a)
+    : a url_var
+    =
+    let projection =
+      make'
+        parser
+        ?encoding_behavior
+        ?trailing_slash_behavior
+        ~fallback
+        ~on_fallback_raises
+        ()
     in
+    let module S = struct
+      include T
+
+      let parse_exn = projection.parse_exn
+      let unparse = projection.unparse
+
+      include
+        Sexpable.Of_sexpable
+          (Original_components)
+          (struct
+            include T
+
+            let to_sexpable = unparse
+            let of_sexpable = parse_exn
+          end)
+    end
+    in
+    let on_bad_uri = make_on_bad_uri ~fallback in
     create_exn' (module S) ~navigation ~on_bad_uri
   ;;
 
@@ -558,6 +611,7 @@ module Typed = struct
 end
 
 module For_testing = struct
+  module Base_path = Base_path
   module Parse_result = Uri_parsing.Parse_result
 
   module Projection = struct
@@ -621,6 +675,7 @@ module For_testing = struct
         reload: (options) => {
           let event = {
             info: options?.info,
+            navigationType: "reload",
             canIntercept: true,
             downloadRequest: false,
             intercept: () => { throw new Error(); },
@@ -644,11 +699,13 @@ module For_testing = struct
       if (!globalThis.window) {
         globalThis.window = {}
       }
+
       globalThis.window.navigation = globalThis.navigation;
 
       // This is for JSDom
       if (window) {
         window.navigation = globalThis.navigation;
+        window.open = mock_navigate;
       }
     })|js}
     in
@@ -687,4 +744,7 @@ module For_testing = struct
     reset_handlers_for_navigation_intercept t;
     set t init
   ;;
+
+  let set_base_path_for_testing = Base_path.For_testing.set
+  let clear_base_path_for_testing = Base_path.For_testing.clear
 end

@@ -3,9 +3,9 @@ open Bonsai_web
 
 (** A textbox with suggested results, modeled off of Chrome's address bar.
 
-    - "Enter" invokes [on_select] with the focused suggestion. If the suggestion list is
-      closed, the callback is not invoked, because of course nothing is focused; instead
-      the suggestion list is opened.
+    - "Enter" or "Numpad Enter" invokes [on_select] with the focused suggestion. If the
+      suggestion list is closed, the callback is not invoked, because of course nothing is
+      focused; instead the suggestion list is opened.
     - "Clicking" on the suggestion list invokes [on_select].
     - "Escape" or unfocusing the text input closes the suggestion list
     - "Tab" and "Down Arrow" move the focused item down. If the suggestion list is closed,
@@ -130,11 +130,11 @@ val create
   -> ?ignore_tab_key:bool
        (** when [ignore_tab_key] is true, [Tab] will select a next focusable element on a
            page instead of selecting a next item in the drop down *)
-  -> f:(string Bonsai.t -> local_ Bonsai.graph -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
+  -> f:(string Bonsai.t -> Bonsai.graph @ local -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
        (** [on_select] is called when [enter] is hit, or an item is clicked. *)
   -> on_select:('k -> unit Effect.t) Bonsai.t
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'k t Bonsai.t
 
 module Filter_strategy : sig
@@ -166,6 +166,7 @@ val stringable
   -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_attr:Vdom.Attr.t Bonsai.t
+  -> ?on_blur:unit Ui_effect.t Bonsai.t
   -> ?to_view:('k -> string -> Vdom.Node.t)
        (** The value defaults to [None] which does nothing. This is so that the user can
            either reset/clear/modify the input text on blur. This only fires when focus
@@ -178,7 +179,7 @@ val stringable
   -> filter_strategy:Filter_strategy.t
   -> on_select:('k -> unit Effect.t) Bonsai.t
   -> ('k, string, 'cmp) Map.t Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'k t Bonsai.t
 
 module Collate_map_with_score : sig
@@ -228,6 +229,6 @@ module Collate_map_with_score : sig
     -> to_result:('preprocessed -> key:'k -> data:'v -> 'result)
     -> ('k, 'v, 'cmp) Map.t Bonsai.t
     -> 'query Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('k, 'result, 'cmp) Scored_key.Map.t Bonsai.t
 end

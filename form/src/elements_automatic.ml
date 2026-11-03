@@ -5,7 +5,7 @@ open Bonsai.Let_syntax
 module View = Private_view
 
 let path (local_ graph) =
-  let%map.Bonsai path_id = Bonsai.path_id graph in
+  let%arr.Bonsai path_id = Bonsai.path_id graph in
   path_id, Vdom.Attr.id path_id
 ;;
 
@@ -763,8 +763,8 @@ module Multiple = struct
     ?element_group_label
     ?add_element_text
     ?button_placement
-    (t : local_ Bonsai.graph -> a Form.t Bonsai.t)
-    : local_ Bonsai.graph -> a list Form.t Bonsai.t
+    (t : Bonsai.graph @ local -> a Form.t Bonsai.t)
+    : Bonsai.graph @ local -> a list Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let form = list t graph in
@@ -782,8 +782,8 @@ module Multiple = struct
     ?element_group_label
     ?add_element_text
     ?button_placement
-    (t : local_ Bonsai.graph -> a Form.t Bonsai.t)
-    : local_ Bonsai.graph -> a Nonempty_list.t Form.t Bonsai.t
+    (t : Bonsai.graph @ local -> a Form.t Bonsai.t)
+    : Bonsai.graph @ local -> a Nonempty_list.t Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let form = nonempty_list t graph in
@@ -1159,7 +1159,7 @@ module Optional = struct
     (type a)
     ?some_label
     ?none_label
-    (form : local_ Bonsai.graph -> a Form.t Bonsai.t)
+    (form : Bonsai.graph @ local -> a Form.t Bonsai.t)
     (local_ graph)
     =
     let form = dropdown ?some_label ?none_label form graph in

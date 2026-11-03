@@ -2861,6 +2861,7 @@ module%test [@name "Stabilization tests"] _ = struct
       {|
       stabilized
       stabilized
+      stabilized
       |}]
   ;;
 end

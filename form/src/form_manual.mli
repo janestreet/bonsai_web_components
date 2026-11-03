@@ -31,7 +31,7 @@ val return_settable
   :  ?sexp_of_model:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> 'a
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> ('a, unit) t Bonsai.t
 
 (** [return_error] produces a form that always fails validation. *)
@@ -186,14 +186,14 @@ module Dynamic : sig
   val with_default
     :  'a Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'view) t Bonsai.t
 
   (* Like [with_default], but an effect is provided to produce the default value. *)
   val with_default_from_effect
     :  'a Effect.t Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'view) t Bonsai.t
 
   (* Like [with_default_from_effect], but the effect produces an optional value. The
@@ -202,14 +202,14 @@ module Dynamic : sig
   val with_default_from_optional_effect
     :  'a option Effect.t Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'view) t Bonsai.t
 
   (* Sets a [('a, 'view) t] to an initial value every time it is (re)displayed on a page. *)
   val with_default_always
     :  'a Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'view) t Bonsai.t
 
   (** Adds a on_change handler to a [Form.t].
@@ -229,7 +229,7 @@ module Dynamic : sig
     -> equal:('a -> 'a -> bool)
     -> f:('a -> unit Ui_effect.t) Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> unit
 
   (** [on_change_proc] is a legacy Bonsai_proc API compliant version of [on_change]. It it
@@ -240,7 +240,7 @@ module Dynamic : sig
     -> equal:('a -> 'a -> bool)
     -> f:('a -> unit Ui_effect.t) Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> unit Bonsai.t
 
   (** Synchronizes a form with some external storage. The value from the store is used to
@@ -254,7 +254,7 @@ module Dynamic : sig
     -> store_value:'a option Bonsai.t
     -> store_set:('a -> unit Effect.t) Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> unit
 
   (** [sync_with_proc] is a legacy Bonsai_proc API compliant version of [sync_with]. It it
@@ -265,7 +265,7 @@ module Dynamic : sig
     -> store_value:'a option Bonsai.t
     -> store_set:('a -> unit Effect.t) Bonsai.t
     -> ('a, 'view) t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> unit Bonsai.t
 
   (** Unlike [validate] which requires the validation function to be available locally
@@ -290,7 +290,7 @@ module Dynamic : sig
     -> ?extend_view_with_error:('view -> Error.t -> 'view) Bonsai.t
     -> ('a, 'view) t Bonsai.t
     -> f:('a -> unit Or_error.t Effect.t) Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'view) t Bonsai.t
 
   (** This works the same as [validate_via_effect], but keeps track of the result and uses
@@ -308,6 +308,6 @@ module Dynamic : sig
     -> ('a, 'view) t Bonsai.t
     -> unparse:('b -> 'a)
     -> parse:('a -> 'b Or_error.t Effect.t) Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('b, 'view) t Bonsai.t
 end

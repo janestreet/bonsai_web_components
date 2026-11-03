@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View = Bonsai_web_legacy_view
 module Attr = Vdom.Attr
 module Form = Bonsai_web_form.With_automatic_view
 module Node = Vdom.Node

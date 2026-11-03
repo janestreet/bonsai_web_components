@@ -388,7 +388,7 @@ module Basic = struct
           ~attrs:
             [ Vdom.Attr.(
                 Style.notification
-                @ on_click (fun _ -> close)
+                @ on_click_js_of_ocaml (fun _ -> close)
                 @ notification_extra_attr
                 @ create
                     "data-notification-id"

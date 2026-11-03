@@ -9,7 +9,7 @@ val of_list
   -> to_string:('a -> string) Bonsai.t
   -> inject_selected_options:('a list -> unit Effect.t) Bonsai.t
   -> 'a list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> Vdom.Node.t Bonsai.t
 
 val of_set
@@ -20,5 +20,5 @@ val of_set
   -> to_string:('a -> string) Bonsai.t
   -> inject_selected_options:(('a, 'cmp) Set.t -> unit Effect.t) Bonsai.t
   -> ('a, 'cmp) Set.t Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> Vdom.Node.t Bonsai.t

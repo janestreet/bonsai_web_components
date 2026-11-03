@@ -15,7 +15,7 @@ module Themed : sig
   val resolve
     :  resize_column_widths_to_fit:bool Bonsai.t
     -> Which_styling.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> t Bonsai.t
 end
 

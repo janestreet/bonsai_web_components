@@ -168,14 +168,16 @@ module Kind = struct
     | By_row :
         { on_change : ('k option -> unit Effect.t) Bonsai.t
         ; compute_presence :
-            'k option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
+            'k option Bonsai.t -> Bonsai.graph @ local -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'presence) By_row.t, 'presence, 'k, 'column_id) t
     | By_cell :
         { on_change : (('k * 'column_id) option -> unit Effect.t) Bonsai.t
         ; compute_presence :
-            ('k * 'column_id) option Bonsai.t -> local_ Bonsai.graph -> 'presence Bonsai.t
+            ('k * 'column_id) option Bonsai.t
+            -> Bonsai.graph @ local
+            -> 'presence Bonsai.t
         ; key_rank : ('k -> int option Effect.t) Bonsai.t
         }
         -> (('k, 'column_id, 'presence) By_cell.t, 'presence, 'k, 'column_id) t
@@ -246,7 +248,7 @@ module Cell_machine = struct
     (key : (key, cmp) Comparator.Module.t)
     (column_id : (column_id, column_id_cmp) Comparator.Module.t)
     ~(compute_presence :
-        (key * column_id) option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
+        (key * column_id) option Bonsai.t -> Bonsai.graph @ local -> presence Bonsai.t)
     ~(on_change : ((key * column_id) option -> unit Effect.t) Bonsai.t)
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
@@ -254,7 +256,7 @@ module Cell_machine = struct
     ~(range : (int * int) Bonsai.t)
     ~(scroll_to :
         (row_index:int -> column_id -> how:How_to_scroll.t -> unit Effect.t) Bonsai.t)
-    :  local_ Bonsai.graph
+    :  Bonsai.graph @ local
     -> ((key, column_id, presence) By_cell.t, key, column_id) t Bonsai.t
     =
     fun (local_ graph) ->
@@ -626,7 +628,7 @@ module Cell_machine = struct
         ~equal:[%equal: Model.t * (Key.t * Column_id.t) option]
         (Bonsai.both current visually_focused)
         ~callback:
-          (let%map inject in
+          (let%arr inject in
            fun ( { Model.current_focus; locked = _; pending_select_id = _ }
                , visually_focused ) ->
              (* If we ever notice that the state machine is focused at an index for which
@@ -667,13 +669,13 @@ module Row_machine = struct
   let component
     (type key data cmp presence)
     (key : (key, cmp) Comparator.Module.t)
-    ~(compute_presence : key option Bonsai.t -> local_ Bonsai.graph -> presence Bonsai.t)
+    ~(compute_presence : key option Bonsai.t -> Bonsai.graph @ local -> presence Bonsai.t)
     ~(on_change : (key option -> unit Effect.t) Bonsai.t)
     ~(key_rank : (key -> int option Effect.t) Bonsai.t)
     ~(collated : (key, data) Incr_map_collate.Collated.t Bonsai.t)
     ~(range : (int * int) Bonsai.t)
     ~(scroll_to : (row_index:int -> how:How_to_scroll.t -> unit Effect.t) Bonsai.t)
-    : local_ Bonsai.graph -> ((key, presence) By_row.t, key, _) t Bonsai.t
+    : Bonsai.graph @ local -> ((key, presence) By_row.t, key, _) t Bonsai.t
     =
     fun (local_ graph) ->
     let compute_presence focus (local_ graph) =
@@ -729,7 +731,7 @@ let component
           -> how:How_to_scroll.t
           -> unit Effect.t)
            Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (kind, key, column_id) t Bonsai.t
   =
   fun kind ->
@@ -784,17 +786,17 @@ let get_on_cell_click
   | None -> Bonsai.return (fun _ _ -> Effect.Ignore)
   | By_row _ ->
     let focus =
-      let%map control = value in
+      let%arr control = value in
       By_row.focus control
     in
-    let%map focus in
+    let%arr focus in
     fun key _ -> focus key ()
   | By_cell _ ->
     let focus =
-      let%map control = value in
+      let%arr control = value in
       By_cell.focus control
     in
-    let%map focus in
+    let%arr focus in
     fun key column -> focus key column
 ;;
 
@@ -808,6 +810,6 @@ let get_focused_column
   | None -> Bonsai.return None
   | By_row _ -> Bonsai.return None
   | By_cell _ ->
-    let%map control = value in
+    let%arr control = value in
     By_cell.raw_focused control |> Option.map ~f:snd
 ;;

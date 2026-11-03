@@ -15,6 +15,13 @@ module Dom_html_element : sig
   val t_of_js : Ojs.t -> t
 end
 
+module Dom_node : sig
+  type t = Dom.node Js.t
+
+  val t_to_js : t -> Ojs.t
+  val t_of_js : Ojs.t -> t
+end
+
 module Callback : sig
   type 'a t = 'a Js.callback
 

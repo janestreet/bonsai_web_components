@@ -422,6 +422,8 @@ module State = struct
     | None -> t
   ;;
 
+  let is_usable_size size = Float.is_finite size && Float.O.(size > 0.)
+
   let change_container_size
     t
     ~container_dimensions
@@ -431,28 +433,40 @@ module State = struct
     ~initial_size
     ~on_container_resize
     =
-    let new_panel_and_size =
-      match t.container_dimensions with
-      | None -> initial_size
-      | Some prev ->
-        (match t.first_panel_px with
-         | None -> initial_size
-         | Some first_panel_px ->
-           let old_container_size_px =
-             Container_dimensions.for_direction prev ~direction
-           in
-           On_container_resize.to_new_size
-             on_container_resize
-             ~first_panel_px
-             ~old_container_size_px
-             ~separator_size_px)
+    let container_size_px =
+      Container_dimensions.for_direction container_dimensions ~direction
     in
-    { t with container_dimensions = Some container_dimensions }
-    |> update_size
-         ~panel_and_size:new_panel_and_size
-         ~direction
-         ~separator_size_px
-         ~constraints
+    (* Hidden or not-yet-laid-out containers can report zero. Retain the last usable
+       geometry instead of storing a zero denominator for the next proportional resize. *)
+    if not (is_usable_size container_size_px)
+    then t
+    else (
+      let new_panel_and_size =
+        match t.container_dimensions with
+        | None -> initial_size
+        | Some prev ->
+          (match t.first_panel_px with
+           | None -> initial_size
+           | Some first_panel_px ->
+             let old_container_size_px =
+               Container_dimensions.for_direction prev ~direction
+             in
+             (* Changing direction may select a previously zero-sized axis. *)
+             if not (is_usable_size old_container_size_px)
+             then initial_size
+             else
+               On_container_resize.to_new_size
+                 on_container_resize
+                 ~first_panel_px
+                 ~old_container_size_px
+                 ~separator_size_px)
+      in
+      { t with container_dimensions = Some container_dimensions }
+      |> update_size
+           ~panel_and_size:new_panel_and_size
+           ~direction
+           ~separator_size_px
+           ~constraints)
   ;;
 
   let update_size_during_drag
@@ -664,7 +678,7 @@ let create_from_parameters
       then Attr.empty
       else
         Attr.many
-          [ Attr.on_mousedown (fun mouse_event ->
+          [ Attr.on_mousedown_js_of_ocaml (fun mouse_event ->
               let separator =
                 mouse_event##.currentTarget |> js_opt_value_exn ~here:[%here]
               in
@@ -677,20 +691,26 @@ let create_from_parameters
           ; (* This is removed during dragging, but needed to capture clicks on the
                separator within one DOM frame (without any mouse move) as we won't have
                the global mouseup listener until after the vdom is applied next *)
-            Attr.on_mouseup (fun _ -> inject_action Action.Drag_cancelled)
+            Attr.on_mouseup_js_of_ocaml (fun _ -> inject_action Action.Drag_cancelled)
           ]
     in
     let global_listeners =
       if State.is_dragging state
       then
         Attr.many
-          [ Attr.Global_listeners.mousemove ~phase:Capture ~f:(fun mouse_event ->
-              let mouse_pos = get_mouse_pos ~mouse_event ~direction in
-              inject_action (Action.Drag_move { mouse_pos }))
-          ; Attr.Global_listeners.mouseup ~phase:Capture ~f:(fun mouse_event ->
-              let mouse_pos = get_mouse_pos ~mouse_event ~direction in
-              Effect.Many
-                [ inject_action (Action.Drag_end { mouse_pos }); on_drag_end panel_sizes ])
+          [ Attr.Global_listeners.mousemove_js_of_ocaml
+              ~phase:Capture
+              ~f:(fun mouse_event ->
+                let mouse_pos = get_mouse_pos ~mouse_event ~direction in
+                inject_action (Action.Drag_move { mouse_pos }))
+          ; Attr.Global_listeners.mouseup_js_of_ocaml
+              ~phase:Capture
+              ~f:(fun mouse_event ->
+                let mouse_pos = get_mouse_pos ~mouse_event ~direction in
+                Effect.Many
+                  [ inject_action (Action.Drag_end { mouse_pos })
+                  ; on_drag_end panel_sizes
+                  ])
           ]
       else Attr.empty
     in

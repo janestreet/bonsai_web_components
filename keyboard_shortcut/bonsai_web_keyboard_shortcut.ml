@@ -170,25 +170,27 @@ let get_event_handlers ~osx_behavior ~hint_trigger_keys ~listeners ~inject ~mode
   let keyup = handle_event ~kind:`Up in
   let on_keydown =
     match mode with
-    | `Local -> Vdom.Attr.on_keydown keydown
-    | `Global -> Vdom.Attr.Global_listeners.keydown ~phase:Bubbling ~f:keydown
+    | `Local -> Vdom.Attr.on_keydown_js_of_ocaml keydown
+    | `Global -> Vdom.Attr.Global_listeners.keydown_js_of_ocaml ~phase:Bubbling ~f:keydown
   in
   let on_keyup =
     match mode with
-    | `Local -> Vdom.Attr.on_keyup keyup
-    | `Global -> Vdom.Attr.Global_listeners.keyup ~phase:Bubbling ~f:keyup
+    | `Local -> Vdom.Attr.on_keyup_js_of_ocaml keyup
+    | `Global -> Vdom.Attr.Global_listeners.keyup_js_of_ocaml ~phase:Bubbling ~f:keyup
   in
   let on_focusin =
     match mode with
-    | `Local -> Vdom.Attr.on_focusin (fun _ -> inject Focus_in)
+    | `Local -> Vdom.Attr.on_focusin_js_of_ocaml (fun _ -> inject Focus_in)
     | `Global ->
-      Vdom.Attr.Global_listeners.focusin ~phase:Capture ~f:(fun _ -> inject Focus_in)
+      Vdom.Attr.Global_listeners.focusin_js_of_ocaml ~phase:Capture ~f:(fun _ ->
+        inject Focus_in)
   in
   let on_focusout =
     match mode with
-    | `Local -> Vdom.Attr.on_focusout (fun _ -> inject Focus_out)
+    | `Local -> Vdom.Attr.on_focusout_js_of_ocaml (fun _ -> inject Focus_out)
     | `Global ->
-      Vdom.Attr.Global_listeners.focusout ~phase:Capture ~f:(fun _ -> inject Focus_out)
+      Vdom.Attr.Global_listeners.focusout_js_of_ocaml ~phase:Capture ~f:(fun _ ->
+        inject Focus_out)
   in
   Vdom.Attr.many [ on_keydown; on_keyup; on_focusin; on_focusout ]
 ;;
@@ -279,7 +281,7 @@ module Dynamic_scope = struct
 end
 
 module Expert = struct
-  let install_listener
+  let install_listener_with_mode
     ?(osx_behavior = Osx_behavior.Treat_meta_as_ctrl)
     ?(hint_trigger_keys = Hint_trigger_keys.default)
     ~mode
@@ -293,6 +295,14 @@ module Expert = struct
       make_shortcut_state ~osx_behavior ~hint_trigger_keys ~parent_inject ~mode graph
     in
     Bonsai.Dynamic_scope.set Dynamic_scope.instance state ~inside graph
+  ;;
+
+  let install_listener ?osx_behavior ?hint_trigger_keys inside (local_ graph) =
+    install_listener_with_mode ?osx_behavior ?hint_trigger_keys ~mode:`Local inside graph
+  ;;
+
+  let install_global_listener ?osx_behavior ?hint_trigger_keys inside (local_ graph) =
+    install_listener_with_mode ?osx_behavior ?hint_trigger_keys ~mode:`Global inside graph
   ;;
 
   let install_manual_listener
@@ -332,16 +342,16 @@ module Expert = struct
   ;;
 end
 
-let install_listener
+let install_listener_with_mode
   ?osx_behavior
   ?hint_trigger_keys
   ~mode
-  (inside : local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+  (inside : Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
   (local_ graph)
   : Vdom.Node.t Bonsai.t
   =
   let%sub view, attr =
-    Expert.install_listener
+    Expert.install_listener_with_mode
       ?osx_behavior
       ?hint_trigger_keys
       ~mode
@@ -360,6 +370,14 @@ let install_listener
   | node -> Vdom.Node.div ~attrs:[ attr ] [ node ]
 ;;
 
+let install_listener ?osx_behavior ?hint_trigger_keys inside (local_ graph) =
+  install_listener_with_mode ?osx_behavior ?hint_trigger_keys ~mode:`Local inside graph
+;;
+
+let install_global_listener ?osx_behavior ?hint_trigger_keys inside (local_ graph) =
+  install_listener_with_mode ?osx_behavior ?hint_trigger_keys ~mode:`Global inside graph
+;;
+
 (* Show hints if any modifier (ctrl or alt) is pressed *)
 let hint_status (local_ graph) =
   let%sub { active_modifiers; _ }, _ =
@@ -376,6 +394,94 @@ let hint_status (local_ graph) =
    [Effect.Prevent_default] within the registered effect is executed after the event has
    already dissapeared because we peek it for correctness, and that happens too late.
 *)
+
+let make_listener ~peeked_effect ~prevent_default =
+  let effect =
+    Effect.Many
+      [ (if prevent_default
+         then Effect.Prevent_default [@alert "-deprecated"]
+         else Effect.Ignore)
+      ; peeked_effect
+      ]
+  in
+  { Listener.effect }
+;;
+
+let register_many
+  ?(prevent_default = Bonsai.return true)
+  (shortcuts : (Keystroke.t * unit Effect.t) list Bonsai.t)
+  (local_ graph)
+  =
+  let base_id = Bonsai.path_id graph in
+  let%sub _, inject = Bonsai.Dynamic_scope.lookup Dynamic_scope.instance graph in
+  (* Internally, we group by keystroke using [of_alist_multi] + [Effect.Many] so that
+     duplicate keystrokes all fire. The map is purely an implementation detail for
+     efficient lookup at dispatch time. *)
+  let shortcuts_map =
+    let%arr shortcuts in
+    shortcuts |> Keystroke.Map.of_alist_multi |> Map.map ~f:Effect.all_parallel_unit
+  in
+  let peeked_shortcuts = Bonsai.peek shortcuts_map graph in
+  let make_id base_id key =
+    [%string "%{base_id}/%{Sexp.to_string (Keystroke.sexp_of_t key)}"]
+  in
+  (* Extract just the key set so we can detect changes with [equal]. *)
+  let key_set =
+    let%arr shortcuts_map in
+    Map.key_set shortcuts_map
+  in
+  let activate_keys =
+    let%arr base_id and inject and peeked_shortcuts and prevent_default in
+    fun (keys : Keystroke.Set.t) ->
+      Set.fold keys ~init:Effect.Ignore ~f:(fun acc key ->
+        let id = make_id base_id key in
+        let peeked_effect =
+          match%bind.Effect peeked_shortcuts with
+          | Active shortcuts ->
+            (match Map.find shortcuts key with
+             | None -> Effect.Ignore
+             | Some effect -> effect)
+          | Inactive -> Effect.Ignore
+        in
+        let listener = make_listener ~peeked_effect ~prevent_default in
+        Effect.Many [ acc; inject (Activate { id; key; listener }) ])
+  in
+  let deactivate_keys =
+    let%arr base_id and inject in
+    fun (keys : Keystroke.Set.t) ->
+      Set.fold keys ~init:Effect.Ignore ~f:(fun acc key ->
+        let id = make_id base_id key in
+        Effect.Many [ acc; inject (Deactivate { id }) ])
+  in
+  let on_activate =
+    let%arr key_set and activate_keys in
+    activate_keys key_set
+  in
+  let on_deactivate =
+    let%arr key_set and deactivate_keys in
+    deactivate_keys key_set
+  in
+  let () =
+    let callback =
+      let%arr activate_keys and deactivate_keys in
+      fun (prev : Keystroke.Set.t option) (curr : Keystroke.Set.t) ->
+        let prev = Option.value prev ~default:Keystroke.Set.empty in
+        let removed = Set.diff prev curr in
+        let added = Set.diff curr prev in
+        Effect.Many [ deactivate_keys removed; activate_keys added ]
+    in
+    (* Using `Before_display so that new registrations take effect in the same frame as
+       the key_set change, rather than one frame later. *)
+    Bonsai.Edge.on_change'
+      ~trigger:`Before_display
+      ~equal:[%equal: Keystroke.Set.t]
+      key_set
+      ~callback
+      graph
+  in
+  Bonsai.Edge.lifecycle ~on_activate ~on_deactivate graph
+;;
+
 let register ?(prevent_default = Bonsai.return true) ~effect keystroke (local_ graph) =
   let id = Bonsai.path_id graph in
   let%sub _, inject = Bonsai.Dynamic_scope.lookup Dynamic_scope.instance graph in
@@ -391,15 +497,8 @@ let register ?(prevent_default = Bonsai.return true) ~effect keystroke (local_ g
       | Active effect -> effect
       | Inactive -> Effect.Ignore
     in
-    let effect =
-      Effect.Many
-        [ (if prevent_default
-           then Effect.Prevent_default [@alert "-deprecated"]
-           else Effect.Ignore)
-        ; peeked_effect
-        ]
-    in
-    inject (Activate { id; key; listener = { effect } })
+    let listener = make_listener ~peeked_effect ~prevent_default in
+    inject (Activate { id; key; listener })
   in
   let on_deactivate =
     let%arr id and inject in

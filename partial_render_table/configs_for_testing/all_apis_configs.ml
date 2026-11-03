@@ -17,15 +17,15 @@ module type S = sig
   type column_id
 
   val first_column : column_id
-  val all : local_ Bonsai.graph -> (int, Row.t, column_id) Table.Columns.t
-  val with_column_groups : local_ Bonsai.graph -> (int, Row.t, column_id) Table.Columns.t
+  val all : Bonsai.graph @ local -> (int, Row.t, column_id) Table.Columns.t
+  val with_column_groups : Bonsai.graph @ local -> (int, Row.t, column_id) Table.Columns.t
 end
 
 let return_opaque_to_constant_fold x = Bonsai.Expert.Var.(create x |> value)
 
 let incr_button value incr =
   Vdom.Node.button
-    ~attrs:[ Vdom.Attr.on_click (fun _ -> incr) ]
+    ~attrs:[ Vdom.Attr.on_click_js_of_ocaml (fun _ -> incr) ]
     [ Vdom.Node.text (Int.to_string value) ]
 ;;
 
@@ -581,7 +581,7 @@ let name =
 module For_component = struct
   type t =
     | T :
-        { columns : local_ Bonsai.graph -> (int, Row.t, 'column_id) Table.Columns.t
+        { columns : Bonsai.graph @ local -> (int, Row.t, 'column_id) Table.Columns.t
         ; first_column : 'column_id
         }
         -> t
@@ -635,8 +635,11 @@ let computation config input (local_ graph) =
       |> Incr_map_collate.Collate_params.of_stable_v1
     in
     Table.collate
-      ~filter_equal:phys_equal
-      ~filter_to_predicate:Fn.id
+      ~filter:
+        (Incr_map_collate.Filter.by_predicate
+           ~filter_equal:phys_equal
+           ~filter_to_predicate:Fn.id
+           ())
       ~order_equal:phys_equal
       ~order_to_compare:Fn.id
       map

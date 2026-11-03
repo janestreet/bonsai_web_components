@@ -65,7 +65,7 @@ module type S = sig
     -> id_prefix:string Bonsai.t
     -> allow_updates_when_focused:[ `Always | `Never ]
     -> per_subwidget Key.Map.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Result.t Bonsai.t
 end
 

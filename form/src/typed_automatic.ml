@@ -16,8 +16,8 @@ module Record = struct
         ]
 
     val form_for_field
-      :  local_ 'a Typed_field.t
-      -> local_ Bonsai.graph
+      :  'a Typed_field.t @ local
+      -> Bonsai.graph @ local
       -> 'a Form.t Bonsai.t
   end
 
@@ -47,7 +47,7 @@ module Record = struct
         ;;
 
         let form_for_field
-          : type a. local_ a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+          : type a. a Typed_field.t @ local -> Bonsai.graph @ local -> a Form.t Bonsai.t
           =
           fun field (local_ graph) ->
           let field = Typed_field.globalize0 field in
@@ -65,7 +65,7 @@ module Record = struct
           let all_fields =
             M.Typed_field.Packed.all
             |> List.map ~f:(fun ({ f = T field } as packed) ->
-              let%map field = f field in
+              let%arr field = f field in
               packed, Form.view field)
             |> Bonsai.all
           in
@@ -128,8 +128,8 @@ module Variant = struct
         ]
 
     val form_for_variant
-      :  local_ 'a Typed_variant.t
-      -> local_ Bonsai.graph
+      :  'a Typed_variant.t @ local
+      -> Bonsai.graph @ local
       -> 'a Form.t Bonsai.t
 
     val initial_choice : [ `First_constructor | `Empty | `This of Typed_variant.Packed.t ]
@@ -149,9 +149,9 @@ module Variant = struct
       : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t @ local -> 'a -> Sexp.t ]
 
     val form_for_variant
-      :  local_ 'a Typed_variant.t
+      :  'a Typed_variant.t @ local
       -> ('a, 'cmp) Comparator.Module.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> ('a, 'cmp) Set.t Form.t Bonsai.t
   end
 
@@ -318,7 +318,7 @@ module Variant = struct
     ?picker_attr
     ?(empty_label = "(none)")
     (module M : S with type Typed_variant.derived_on = a)
-    : local_ Bonsai.graph -> a option Form.t Bonsai.t
+    : Bonsai.graph @ local -> a option Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let module Transformed = struct
@@ -338,7 +338,7 @@ module Variant = struct
           (* The fact we can't sub + arr here is a little bit sad, but note that the
              [let%map] is not doing anything expensive, just wrapping the provided
              function (which is usually constant). *)
-          (let%map to_string =
+          (let%arr to_string =
              match M.label_for_variant with
              | `Inferred ->
                Bonsai.return (fun ({ f = T field } : Original.Typed_variant.Packed.t) ->
@@ -356,7 +356,7 @@ module Variant = struct
       ;;
 
       let form_for_variant
-        : type a. local_ a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+        : type a. a Typed_variant.t @ local -> Bonsai.graph @ local -> a Form.t Bonsai.t
         =
         fun typed_field (local_ graph) ->
         match typed_field with
@@ -389,7 +389,7 @@ module Variant = struct
   let make_set
     (type a cmp)
     (module M : S_set with type t = a and type comparator_witness = cmp)
-    : local_ Bonsai.graph -> (a, cmp) Set.t Form.t Bonsai.t
+    : Bonsai.graph @ local -> (a, cmp) Set.t Form.t Bonsai.t
     =
     fun (local_ graph) ->
     Variant.make_set_without_tagging_errors
@@ -411,9 +411,9 @@ module Variant = struct
 
         let form_for_variant
           : type a cmp.
-            local_ a Typed_variant.t
+            a Typed_variant.t @ local
             -> (a, cmp) Comparator.Module.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> (a, cmp) Set.t Form.t Bonsai.t
           =
           fun variant comparator (local_ graph) ->
@@ -436,7 +436,8 @@ module Variant = struct
           let all_variants =
             M.Typed_variant.Packed.all
             |> List.map ~f:(fun ({ f = T variant } as packed) ->
-              let%map (Variant.Packed_set_form.T { form; _ }) = f variant in
+              let%arr packed_form = f variant in
+              let (Variant.Packed_set_form.T { form; _ }) = packed_form in
               packed, Form.view form)
             |> Bonsai.all
           in

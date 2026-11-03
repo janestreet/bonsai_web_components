@@ -15,6 +15,13 @@ module Dom_html_element = struct
   let t_of_js : Ojs.t -> t = Obj.magic
 end
 
+module Dom_node = struct
+  type t = Dom.node Js.t
+
+  let t_to_js : t -> Ojs.t = Obj.magic
+  let t_of_js : Ojs.t -> t = Obj.magic
+end
+
 module Callback = struct
   type 'a t = 'a Js.callback
 

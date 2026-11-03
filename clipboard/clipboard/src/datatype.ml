@@ -8,7 +8,7 @@ module T = struct
     | Text_html
     | Application_json
     | Other of string
-  [@@deriving compare, sexp]
+  [@@deriving compare ~localize, sexp]
 end
 
 include T

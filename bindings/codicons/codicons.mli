@@ -9,6 +9,15 @@ val svg
   -> t
   -> Vdom.Node.t
 
+(** The same as [svg], but can be used with ppx_html component syntax. *)
+val view
+  :  ?attrs:Vdom.Attr.t list
+  -> ?size:[< Css_gen.Length.t ]
+  -> ?color:[< Css_gen.Color.t ]
+  -> icon:t
+  -> unit
+  -> Vdom.Node.t
+
 val name : t -> string
 val all : t list
 

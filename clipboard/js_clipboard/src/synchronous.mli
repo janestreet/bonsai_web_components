@@ -1,9 +1,9 @@
 (** {2 Synchronous API} *)
 
 open! Core
+open Clipboard
 open Js_of_ocaml
 open Virtual_dom
-open Clipboard
 
 (** Defines Virtual_dom attributes for capturing events related to the system clipboard. *)
 module Vdom_attr : sig

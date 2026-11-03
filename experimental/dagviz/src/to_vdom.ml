@@ -552,15 +552,15 @@ module Make (Name : Types.Name) = struct
   let to_vdom
     ~(curr_id : Name.Count.t Bonsai.t)
     ~(direction : [ `Left_to_right | `Top_to_bottom ])
-    ~(node_to_vdom : Name.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    ~(node_to_vdom : Name.t Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     ~(edge_to_svg :
         edge:Edge.t Bonsai.t
         -> from:Position.t Bonsai.t
         -> to_:Position.t Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> Vdom.Node.t Bonsai.t)
     (computation : Computation.t Bonsai.t)
-    : local_ Bonsai.graph -> (Vdom.Node.t * Name.Count.t) Bonsai.t
+    : Bonsai.graph @ local -> (Vdom.Node.t * Name.Count.t) Bonsai.t
     =
     fun (local_ graph) ->
     let open Bonsai.Let_syntax in
@@ -780,12 +780,12 @@ module Make (Name : Types.Name) = struct
     ~(curr_id : Name.Count.t Bonsai.t)
     ~(direction : [ `Left_to_right | `Top_to_bottom ])
     ~(node_to_vdom :
-        Name.t Bonsai.t -> 'a Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+        Name.t Bonsai.t -> 'a Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     ~(edge_to_svg :
         edge:Edge.t Bonsai.t
         -> from:Position.t Bonsai.t
         -> to_:Position.t Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> Vdom.Node.t Bonsai.t)
     (dag : 'a t Bonsai.t)
     (local_ graph)

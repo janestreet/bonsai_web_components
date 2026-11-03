@@ -88,8 +88,8 @@ let table_form
           [ Style.key_input_textbox
           ; Vdom.Attr.value text
           ; Vdom.Attr.placeholder "key for new row"
-          ; Vdom.Attr.on_input (fun _ s -> set_text s)
-          ; Vdom.Attr.on_keydown (fun evt ->
+          ; Vdom.Attr.on_input_js_of_ocaml (fun _ s -> set_text s)
+          ; Vdom.Attr.on_keydown_js_of_ocaml (fun evt ->
               match Js_of_ocaml.Dom_html.Keyboard_code.of_event evt with
               | Enter -> on_submit ()
               | _ -> Effect.Ignore)
@@ -98,13 +98,13 @@ let table_form
     in
     let button =
       Vdom.Node.button
-        ~attrs:[ Vdom.Attr.on_click (fun _ -> on_submit ()) ]
+        ~attrs:[ Vdom.Attr.on_click_js_of_ocaml (fun _ -> on_submit ()) ]
         [ Vdom.Node.text "+" ]
     in
     Vdom.Node.div ~attrs:[ Style.key_input_container ] [ textbox; button ]
   in
   let columns =
-    let%map columns and set_map and map and textbox in
+    let%arr columns and set_map and map and textbox in
     let editable_columns =
       List.mapi columns ~f:(fun i { Column.name; initial_width } ->
         C.column
@@ -124,7 +124,7 @@ let table_form
             ~header:(header "key")
             ~cell:(fun ~key ~data:_ ->
               let click_handler =
-                Vdom.Attr.on_click (fun _ -> set_map (Map.remove map key))
+                Vdom.Attr.on_click_js_of_ocaml (fun _ -> set_map (Map.remove map key))
               in
               Vdom.Node.div
                 ~attrs:[ Style.key_column ]

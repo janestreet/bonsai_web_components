@@ -35,7 +35,7 @@ type 'item t
 
 val component
   :  (unit, 'item) Item.t list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'item t Bonsai.t
 
 val active_path : 'item t -> string list

@@ -10,12 +10,12 @@ module Codemirror = Bonsai_web_codemirror
 module type Demo = sig
   val name : string
   val description : string
-  val view : local_ Bonsai.graph -> (Vdom.Node.t * string) Bonsai.t
+  val view : Bonsai.graph @ local -> (Vdom.Node.t * string) Bonsai.t
   val selector : string option
   val filter_attrs : (string -> string -> bool) option
 end
 
-val make_demo : (module Demo) -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t
+val make_demo : (module Demo) -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t
 
 type t =
   { code : Vdom.Node.t
@@ -30,20 +30,20 @@ val make_demo'
   -> demo:Vdom.Node.t Bonsai.t
   -> code:string Bonsai.t
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t
 
 val make_sections
   :  theme_picker:Vdom.Node.t Bonsai.t
-  -> (string * string * (local_ Bonsai.graph -> Vdom.Node.t Bonsai.t) list) list
-  -> local_ Bonsai.graph
+  -> (string * string * (Bonsai.graph @ local -> Vdom.Node.t Bonsai.t) list) list
+  -> Bonsai.graph @ local
   -> Vdom.Node.t Bonsai.t
 
 val wrap_application
   :  ?attr:Vdom.Attr.t Bonsai.t
   -> theme_picker:Vdom.Node.t Bonsai.t
   -> Vdom.Node.t list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> Vdom.Node.t Bonsai.t
 
 module Theme_picker = Theme_picker

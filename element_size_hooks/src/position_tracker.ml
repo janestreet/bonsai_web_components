@@ -132,7 +132,7 @@ module Hook = struct
   end
 
   include T
-  include Vdom.Attr.Hooks.Make (T)
+  include Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 end
 
 let component (type key cmp) (key : (key, cmp) Comparator.Module.t) (local_ graph) =
@@ -244,11 +244,11 @@ let component (type key cmp) (key : (key, cmp) Comparator.Module.t) (local_ grap
   let () =
     Bonsai.Edge.lifecycle
       ~on_activate:
-        (let%map inject = apply_action
+        (let%arr inject = apply_action
          and group_key in
          Trackers.set ~inject ~group_key)
       ~on_deactivate:
-        (let%map group_key in
+        (let%arr group_key in
          Trackers.remove ~group_key)
       graph
   in

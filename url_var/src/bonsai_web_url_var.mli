@@ -29,6 +29,10 @@ module type T = sig
   type t [@@deriving sexp, equal]
 end
 
+module type T_plain = sig
+  type t [@@deriving equal]
+end
+
 (** Types that implement [S] can be parsed from a url and unparsed into a url. *)
 module type S = sig
   include T
@@ -46,6 +50,21 @@ end
 module Literally_just_a_gigantic_sexp (M : S_via_sexp) : S with type t = M.t
 
 type 'a t
+
+(** {2 Embedding apps under a base path}
+
+    With an explicit HTML base element:
+
+    {v <base href="/graphs/"> v}
+
+    URL vars parse and write history URLs relative to ["graphs"] when the resolved base
+    URL is a same-origin directory ending in [/]. The app must be loaded under that path.
+    Missing or unsupported bases and DOM lookup errors disable URL-var's prefix handling;
+    they do not change the browser's own handling of [base].
+
+    Relative links such as [view] use the browser's base URL for both normal and
+    intercepted navigation. Root-relative links such as [/view] still refer to the origin
+    root. The base also affects relative assets and fragment-only links. *)
 
 (** Creating a url-var involves passing in a module that implements [S], but also a
     fallback value which will be used if [S.parse_exn] throws. *)
@@ -133,11 +152,13 @@ module Typed : sig
   (** [make (module My_url) my_url_parser ~fallback] is a [My_url.t Url_var] that
       parses/unparses the current url into My_url.t, and when parsing fails it will return
 
-      If [navigation:`Intercept] is passed (default: `Intercept), the URL var will attempt
-      to intercept browser navigation events (e.g. clicking on links, running
-      [Effect.open_url], etc), and update its value instead of reloading the page. If the
-      new URL does not parse, the page will reload normally.
-      https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept
+      If [navigation:(`Intercept _)] is passed (default: [`Intercept `Reset_scroll]), the
+      URL var will attempt to intercept browser navigation events (e.g. clicking on links,
+      running [Effect.open_url], etc), and update its value instead of reloading the page.
+      If [`Intercept `Reset_scroll] is passed, URL var updates will cause the page to
+      scroll back to the top. You can disable the automatic page scrolling by passing
+      [`Intercept `Preserve_scroll]. If the new URL does not parse, the page will reload
+      normally. https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept
 
       [fallback] is used to potentially give out custom error messages if the parser
       fails. Please don't write parsing logic in fallback that might fail since there's no
@@ -156,11 +177,25 @@ module Typed : sig
       Unfortunately the halting problem remains unsolved, so we only have reasonably naive
       limit on the number of redirects before redirects stop. *)
   val make
-    :  ?navigation:[ `Ignore | `Intercept ]
+    :  ?navigation:[ `Ignore | `Intercept of [ `Reset_scroll | `Preserve_scroll ] ]
     -> ?on_fallback_raises:'a
     -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
     -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
     -> (module T with type t = 'a)
+    -> 'a Versioned_parser.t
+    -> fallback:(Exn.t -> Original_components.t -> 'a)
+    -> 'a url_var
+
+  (** Like [make], but doesn't require sexp functions on [t]. Instead, we encode [t] as
+      its corresponding URI. Your parse/unparse functions must roundtrip to avoid losing
+      information when this encoding/decoding is done (e.g. when the browser navigates
+      forwards or backwards in history). *)
+  val make_plain
+    :  ?navigation:[ `Ignore | `Intercept of [ `Reset_scroll | `Preserve_scroll ] ]
+    -> ?on_fallback_raises:'a
+    -> ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
+    -> ?trailing_slash_behavior:Uri_parsing.Trailing_slash_behavior.t
+    -> (module T_plain with type t = 'a)
     -> 'a Versioned_parser.t
     -> fallback:(Exn.t -> Original_components.t -> 'a)
     -> 'a url_var
@@ -178,8 +213,8 @@ module Typed : sig
     -> fallback:(Exn.t -> Original_components.t -> 'a)
     -> (Original_components.t, 'a) Projection.t
 
-  (** Creates a URL of everything after the domain name. This might be useful if you're
-      sending URLs in emails or need to automatically create URLs. *)
+  (** Creates a relative URL, without a leading slash or the page's base path. When used
+      in a link, the browser resolves it against the document's base URL. *)
   val to_url_string
     :  ?encoding_behavior:Uri_parsing.Percent_encoding_behavior.t
     -> 'a Parser.t
@@ -190,25 +225,25 @@ end
 (** [create_exn'] is like [create_exn], but allows for raising if no fallback is
     available.
 
-    If [navigation:`Intercept] is passed (default: `Intercept), the URL var will attempt
-    to intercept browser navigation events (e.g. clicking on links, running
-    [Effect.open_url], etc), and update its value instead of reloading the page. If the
-    new URL does not parse, the page will reload normally.
+    If [navigation:(`Intercept _)] is passed (default: [`Intercept `Reset_scroll]), the
+    URL var will attempt to intercept browser navigation events (e.g. clicking on links,
+    running [Effect.open_url], etc), and update its value instead of reloading the page.
+    If the new URL does not parse, the page will reload normally. Full page reloads (e.g.
+    [window.location.reload()]) are never intercepted.
     https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept *)
 val create_exn'
-  :  ?navigation:[ `Ignore | `Intercept ]
+  :  ?navigation:[ `Ignore | `Intercept of [ `Reset_scroll | `Preserve_scroll ] ]
   -> (module S with type t = 'a)
   -> on_bad_uri:[ `Default_state of 'a | `Raise ]
   -> 'a t
 
-(** [reload_without_intercepting] fully reloads the page by bypassing the intercept
-    handler attached by a [Url_var] that had [navigation:`Intercept] set.
-
-    Reloading behavior is unchanged for [navigation:`Ignore], meaning that this effect
-    will reload the page for [navigation:`Ignore] as well. *)
+(** [reload_without_intercepting] fully reloads the page. It is equivalent to
+    [Effect.reload] or [window.location.reload()], except that this effect only finishes
+    when the page has finished reloading. *)
 val reload_without_intercepting : unit Effect.t
 
 module For_testing : sig
+  module Base_path = Base_path
   module Parse_result = Uri_parsing.Parse_result
 
   module Projection : sig
@@ -255,4 +290,10 @@ module For_testing : sig
       [navigation:`Intercept] and not calling the above functions directly. If you're not
       using [navigation:`Intercept], this function is approximately equivalent to [set]. *)
   val reset : 'a t -> init:'a -> unit
+
+  (** Overrides the base path read from the page's [base] element. *)
+  val set_base_path_for_testing : string -> unit
+
+  (** Restores reads from the page's [base] element. *)
+  val clear_base_path_for_testing : unit -> unit
 end

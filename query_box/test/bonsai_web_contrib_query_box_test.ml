@@ -1242,7 +1242,8 @@ let%expect_test {|key stays on the same item if the list of items changes (colla
 ;;
 
 module%test
-  [@name "optimization: the query box only loads its data when interacted with"] _ =
+  [@name "optimization: the query box only loads its data when interacted with"]
+  _ =
 struct
   let component =
     Bonsai_web_contrib_query_box.create
@@ -1712,6 +1713,49 @@ let%expect_test "inputting text and hitting enter immediately selects the correc
     {|
     ("default prevented" (key Enter))
     (item 2)
+    Focused item: None
+
+    <div>
+      <input/>
+      <div data-test="query-box-item-container">
+        <div> </div>
+      </div>
+    </div>
+    |}]
+;;
+
+let%expect_test "numpad Enter selects the focused item" =
+  let handle =
+    create
+      ~on_hover_item:
+        (Bonsai.return Bonsai_web_contrib_query_box.On_hover_item.Focus_hovered_item)
+      ()
+  in
+  keydown handle ArrowDown;
+  Handle.recompute_view handle;
+  Handle.show handle;
+  [%expect
+    {|
+    ("default prevented" (key ArrowDown))
+    Focused item: 0
+
+    <div>
+      <input/>
+      <div data-test="query-box-item-container">
+        <div>
+          <div class="focused-item"> apple </div>
+          <div> orange </div>
+          <div> kiwi </div>
+        </div>
+      </div>
+    </div>
+    |}];
+  keydown handle NumpadEnter;
+  Handle.show handle;
+  [%expect
+    {|
+    ("default prevented" (key NumpadEnter))
+    (item 0)
     Focused item: None
 
     <div>

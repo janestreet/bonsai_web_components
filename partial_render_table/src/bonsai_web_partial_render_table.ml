@@ -674,10 +674,8 @@ module Expert = struct
 
   let collate
     (type k v cmp filter order)
-    ?operation_order
-    ~filter_equal
+    ~filter
     ~order_equal
-    ~(filter_to_predicate : filter -> _)
     ~(order_to_compare : order -> _)
     (data : (k, v, cmp) Map.t Bonsai.t)
     (collate : (k, filter, order) Collate_params.t Bonsai.t)
@@ -691,14 +689,7 @@ module Expert = struct
           let open Ui_incr.Let_syntax in
           let%pattern_bind data, collate = data_and_collate in
           let collate_result =
-            Incr_map_collate.collate
-              ?operation_order
-              ~filter_equal
-              ~order_equal
-              ~filter_to_predicate
-              ~order_to_compare
-              data
-              collate
+            Incr_map_collate.collate ~filter ~order_equal ~order_to_compare data collate
           in
           Ui_incr.both
             (Incr_map_collate.collated collate_result)
@@ -823,8 +814,11 @@ module Basic = struct
     in
     let collated, key_rank =
       Expert.collate
-        ~filter_equal:phys_equal
-        ~filter_to_predicate:Fn.id
+        ~filter:
+          (Incr_map_collate.Filter.by_predicate
+             ~filter_equal:phys_equal
+             ~filter_to_predicate:Fn.id
+             ())
         ~order_equal:phys_equal
         ~order_to_compare:Fn.id
         map
@@ -882,7 +876,7 @@ module Basic = struct
         ~equal:[%equal: int * int]
         viewed_range
         ~callback:
-          (let%map set_rank_range in
+          (let%arr set_rank_range in
            fun (low, high) ->
              set_rank_range (Collate_params.Which_range.Between (low, high)))
         graph

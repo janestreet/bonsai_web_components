@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 module Form = Form_manual
 module Elements = Elements_manual
@@ -22,14 +23,17 @@ module Record = struct
     type resulting_view
 
     val form_for_field
-      :  local_ 'a Typed_field.t
-      -> local_ Bonsai.graph
+      :  'a Typed_field.t @ local
+      -> Bonsai.graph @ local
       -> ('a, field_view) Form.t Bonsai.t
 
     type form_of_field_fn =
       { f : 'a. 'a Typed_field.t @ local -> ('a, field_view) Form.t Bonsai.t }
 
-    val finalize_view : form_of_field_fn -> local_ Bonsai.graph -> resulting_view Bonsai.t
+    val finalize_view
+      :  form_of_field_fn
+      -> Bonsai.graph @ local
+      -> resulting_view Bonsai.t
   end
 
   module type S' = sig
@@ -48,8 +52,8 @@ module Record = struct
         ]
 
     val form_for_field
-      :  local_ 'a Typed_field.t
-      -> local_ Bonsai.graph
+      :  'a Typed_field.t @ local
+      -> Bonsai.graph @ local
       -> ('a, Vdom.Node.t) Form.t Bonsai.t
   end
 
@@ -62,12 +66,12 @@ module Record = struct
     (local_ graph)
     =
     let module Form_value = struct
-      type 'a t = local_ Bonsai.graph -> ('a, field_view) Form.t Bonsai.t
+      type 'a t = Bonsai.graph @ local -> ('a, field_view) Form.t Bonsai.t
     end
     in
     let module App = struct
       type 'a s = ('a, field_view) Form.t
-      type 'a t = local_ Bonsai.graph -> 'a Bonsai.t
+      type 'a t = Bonsai.graph @ local -> 'a Bonsai.t
 
       let map a ~f (local_ graph) = Bonsai.map (a graph) ~f
       let all x (local_ graph) = Bonsai.all (List.map x ~f:(fun x -> x graph))
@@ -95,7 +99,7 @@ module Record = struct
     let forms_per_field = To_forms.run form_values_per_field graph in
     let lookup field =
       let field = M.Typed_field.globalize0 field in
-      let%map forms_per_field in
+      let%arr forms_per_field in
       The_forms.find forms_per_field field
     in
     let view = M.finalize_view { f = lookup } graph in
@@ -195,7 +199,7 @@ module Record = struct
             let f : type a. a Typed_field.t @ local -> Vdom.Node.t Bonsai.t =
               fun field ->
               let field = M.Typed_field.globalize0 field in
-              let%map form = f field in
+              let%arr form = f field in
               Form.view form
             in
             To_views.run (View_value_by_field.create { f })
@@ -258,18 +262,18 @@ module Variant = struct
     type resulting_view
 
     val form_for_picker
-      :  local_ Bonsai.graph
+      :  Bonsai.graph @ local
       -> (Typed_variant.Packed.t, picker_view) Form.t Bonsai.t
 
     val form_for_variant
-      :  local_ 'a Typed_variant.t
-      -> local_ Bonsai.graph
+      :  'a Typed_variant.t @ local
+      -> Bonsai.graph @ local
       -> ('a, variant_view) Form.t Bonsai.t
 
     val finalize_view
       :  picker_view Bonsai.t
       -> ('a Typed_variant.t * ('a, variant_view) Form.t) Or_error.t Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> resulting_view Bonsai.t
   end
 
@@ -282,18 +286,18 @@ module Variant = struct
     type resulting_view
 
     val form_for_picker
-      :  local_ Bonsai.graph
+      :  Bonsai.graph @ local
       -> (Typed_variant.Packed.t option, picker_view) Form.t Bonsai.t
 
     val form_for_variant
-      :  local_ 'a Typed_variant.t
-      -> local_ Bonsai.graph
+      :  'a Typed_variant.t @ local
+      -> Bonsai.graph @ local
       -> ('a, variant_view) Form.t Bonsai.t
 
     val finalize_view
       :  picker_view Bonsai.t
       -> ('a Typed_variant.t * ('a, variant_view) Form.t) option Or_error.t Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> resulting_view Bonsai.t
   end
 
@@ -319,9 +323,9 @@ module Variant = struct
       : [ `Use_sexp_of_variant | `Custom of 'a Typed_variant.t @ local -> 'a -> Sexp.t ]
 
     val form_for_variant
-      :  local_ 'a Typed_variant.t
+      :  'a Typed_variant.t @ local
       -> ('a, 'cmp) Comparator.Module.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (('a, 'cmp) Set.t, variant_view) Form.t Bonsai.t
 
     type form_of_variant_fn =
@@ -332,7 +336,7 @@ module Variant = struct
 
     val finalize_view
       :  form_of_variant_fn
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> resulting_view Bonsai.t
   end
 
@@ -476,7 +480,7 @@ module Variant = struct
       type resulting_view = M.resulting_view
 
       let form_for_picker
-        : local_ Bonsai.graph -> (Typed_variant.Packed.t, picker_view) Form.t Bonsai.t
+        : Bonsai.graph @ local -> (Typed_variant.Packed.t, picker_view) Form.t Bonsai.t
         =
         fun (local_ graph) ->
         let picker_form = M.form_for_picker graph in
@@ -493,8 +497,8 @@ module Variant = struct
 
       let form_for_variant
         : type a.
-          local_ a Typed_variant.t
-          -> local_ Bonsai.graph
+          a Typed_variant.t @ local
+          -> Bonsai.graph @ local
           -> (a, variant_view) Form.t Bonsai.t
         =
         fun typed_field (local_ graph) ->
@@ -503,7 +507,7 @@ module Variant = struct
           Bonsai.return
             (Form.return () |> Form.map_view ~f:(fun () : variant_view -> None))
         | S variant ->
-          let%map.Bonsai form = M.form_for_variant variant graph in
+          let%arr.Bonsai form = M.form_for_variant variant graph in
           Form.map_view form ~f:Option.some
       ;;
 
@@ -548,7 +552,7 @@ module Variant = struct
       with type t = a
        and type comparator_witness = cmp
        and type resulting_view = resulting_view)
-    : local_ Bonsai.graph -> ((a, cmp) Set.t, resulting_view) Form.t Bonsai.t
+    : Bonsai.graph @ local -> ((a, cmp) Set.t, resulting_view) Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let module Packed = struct
@@ -571,7 +575,7 @@ module Variant = struct
       Typed_field_map.Make
         (M.Typed_variant)
         (struct
-          type 'a t = local_ Bonsai.graph -> 'a Form_with_comparator.t Bonsai.t
+          type 'a t = Bonsai.graph @ local -> 'a Form_with_comparator.t Bonsai.t
         end)
     in
     let module Forms = Typed_field_map.Make (M.Typed_variant) (Form_with_comparator) in
@@ -579,7 +583,7 @@ module Variant = struct
       Form_computations.As_applicative.To_other_map
         (struct
           type 'a s = 'a Form_with_comparator.t
-          type 'a t = local_ Bonsai.graph -> 'a Bonsai.t
+          type 'a t = Bonsai.graph @ local -> 'a Bonsai.t
 
           let map a ~f (local_ graph) = Bonsai.map (a graph) ~f
           let all x (local_ graph) = Bonsai.all (List.map x ~f:(fun x -> x graph))
@@ -628,7 +632,7 @@ module Variant = struct
     let view =
       let lookup variant =
         let variant = M.Typed_variant.globalize0 variant in
-        let%map forms in
+        let%arr forms in
         let (Form_with_comparator.T { form; cmp; _ }) = Forms.find forms variant in
         Packed_set_form.T { form; comparator = cmp }
       in

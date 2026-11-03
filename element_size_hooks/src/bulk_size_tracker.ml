@@ -83,11 +83,17 @@ module Hook = struct
       List.iter changes ~f:(fun (input, dimensions) ->
         Input.to_alist input
         |> List.iter ~f:(fun (T (group_key, keys)) ->
-          List.iter keys ~f:(fun key ->
-            dimension_groups
-            := Event_groups.change !dimension_groups group_key ~f:(fun items ->
-                 let items = Option.value ~default:[] items in
-                 Some (Action.Set (key, dimensions) :: items)))));
+          match Trackers.find !Trackers.the_one_and_only group_key with
+          | None ->
+            (* [on_deactivate] can remove the tracker before [Hook.destroy] runs. Ignore
+               events from hooks whose tracker is no longer registered. *)
+            ()
+          | Some _ ->
+            List.iter keys ~f:(fun key ->
+              dimension_groups
+              := Event_groups.change !dimension_groups group_key ~f:(fun items ->
+                   let items = Option.value ~default:[] items in
+                   Some (Action.Set (key, dimensions) :: items)))));
       let events =
         let f ~key:_ = function
           | `Both (tracker, dimension_group) -> Some (tracker dimension_group)
@@ -95,7 +101,11 @@ module Hook = struct
             (* Some trackers might not have changes, so they don't need to generate an
                event *)
             None
-          | `Right _ -> assert false
+          | `Right _ ->
+            (* We are filtering out the events whose trackers are no longer registered, so
+               this should never happen. Returning [None] to be doubly sure we aren't
+               raising an exception *)
+            None
         in
         Apply_trackers.merge !Trackers.the_one_and_only !dimension_groups ~f:{ f }
         |> Collected_effects.to_alist
@@ -154,7 +164,7 @@ module Hook = struct
   end
 
   include T
-  include Vdom.Attr.Hooks.Make (T)
+  include Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 end
 
 module Options = struct
@@ -211,7 +221,7 @@ let component'
     Bonsai.Edge.lifecycle
       ~on_activate
       ~on_deactivate:
-        (let%map group_key in
+        (let%arr group_key in
          Trackers.remove ~group_key)
       graph
   in

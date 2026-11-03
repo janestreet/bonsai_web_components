@@ -37,17 +37,17 @@ module type Basic = sig
     val build
       :  ?sorts:
            ('column_id Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> ('key, 'data) Sort_kind.t option Bonsai.t)
       -> ('column_id, _) Comparator.Module.t
       -> columns:'column_id list Bonsai.t
       -> render_header:
-           ('column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+           ('column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:
            ('column_id Bonsai.t
             -> 'key Bonsai.t
             -> 'data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
       -> ('key, 'data, 'column_id) columns
 
@@ -81,7 +81,7 @@ module type Basic = sig
       -> cell:
            (key:'key Bonsai.t
             -> data:'data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
            (** [cell] is the function determines the contents of every cell in this
                column. *)
@@ -158,12 +158,12 @@ module type Expert = sig
       :  ('column_id, 'a) Comparator.Module.t
       -> columns:'column_id list Bonsai.t
       -> render_header:
-           ('column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+           ('column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:
            ('column_id Bonsai.t
             -> 'key Bonsai.t
             -> 'data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
       -> ('key, 'data, 'column_id) columns
 
@@ -183,7 +183,7 @@ module type Expert = sig
       -> cell:
            (key:'key Bonsai.t
             -> data:'data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
       -> unit
       -> ('key, 'data) t

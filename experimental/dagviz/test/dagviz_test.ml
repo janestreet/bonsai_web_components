@@ -55,14 +55,14 @@ module Dummy_nodes = struct
   let map_with_ids ids = Id.Map.of_alist_exn (List.map ids ~f:(fun x -> x, ()))
 end
 
-let node_to_vdom (id : Id.t Bonsai.t) _ : local_ Bonsai.graph -> Vdom.Node.t Bonsai.t =
+let node_to_vdom (id : Id.t Bonsai.t) _ : Bonsai.graph @ local -> Vdom.Node.t Bonsai.t =
   fun (local_ _graph) ->
   let%arr id in
   Vdom.Node.text (Id.to_string id)
 ;;
 
 let edge_to_svg ~(edge : Edge.t Bonsai.t) ~from:_ ~to_:_
-  : local_ Bonsai.graph -> Vdom.Node.t Bonsai.t
+  : Bonsai.graph @ local -> Vdom.Node.t Bonsai.t
   =
   fun (local_ _graph) ->
   let%arr edge in

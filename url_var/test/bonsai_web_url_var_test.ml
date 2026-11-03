@@ -572,3 +572,11 @@ let%expect_test "Legacy API allows for setting values within tests" =
   print_s [%message (value : int)];
   [%expect {| (value 3) |}]
 ;;
+
+let%expect_test "to_url_string stays relative when a base path is configured" =
+  Url_var.For_testing.set_base_path_for_testing "graphs";
+  Exn.protect ~finally:Url_var.For_testing.clear_base_path_for_testing ~f:(fun () ->
+    let parser = Parser.Variant.make (module First_url) in
+    print_endline (Url_var.Typed.to_url_string parser (Foo "capybara"));
+    [%expect {| foo/capybara |}])
+;;

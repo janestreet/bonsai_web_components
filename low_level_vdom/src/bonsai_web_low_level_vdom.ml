@@ -125,7 +125,7 @@ module Widget = struct
       let%arr input
       and id
       and all_states, state_tracker = mutable_state_tracker in
-      Vdom.Node.widget
+      Vdom.Node.widget_js_of_ocaml
         ~vdom_for_testing:(lazy (vdom_for_testing input))
         ~id
         ~init:(fun () ->
@@ -252,7 +252,7 @@ module Hook = struct
       and all_states, state_tracker = mutable_state_tracker in
       Vdom.Attr.create_hook
         hook_name
-        (Vdom.Attr.Hooks.unsafe_create
+        (Vdom.Attr.Hooks.unsafe_create_js_of_ocaml
          (* This function's API only allows creating this hook with one input value at a
             time. *)
            ~combine_inputs:(fun _ i -> i)

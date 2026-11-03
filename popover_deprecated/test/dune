@@ -1,6 +1,7 @@
 (library
  (name bonsai_web_contrib_popover_test)
- (libraries bonsai_web bonsai_web_contrib_popover_deprecated bonsai_web_test
-   core js_of_ocaml virtual_dom.vdom_test_helpers)
+ (libraries bonsai_web bonsai_web_contrib_popover_deprecated
+   bonsai_web.ui_view bonsai_web_test core js_of_ocaml
+   virtual_dom.vdom_test_helpers)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai js_of_ocaml-ppx)))

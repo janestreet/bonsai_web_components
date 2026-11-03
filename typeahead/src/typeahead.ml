@@ -95,11 +95,11 @@ let input
                   former only affects initial control state while the latter affects the
                   control state whilst the form is being used. *)
              ; Vdom.Attr.value_attr value
-             ; Vdom.Attr.on_focus (fun _ -> set_focused true)
-             ; Vdom.Attr.on_blur (fun _ -> set_focused false)
+             ; Vdom.Attr.on_focus_js_of_ocaml (fun _ -> set_focused true)
+             ; Vdom.Attr.on_blur_js_of_ocaml (fun _ -> set_focused false)
              ; Vdom.Attr.string_property "value" value
-             ; Vdom.Attr.on_input (fun _ -> on_input)
-             ; Vdom.Attr.on_change (fun _ input ->
+             ; Vdom.Attr.on_input_js_of_ocaml (fun _ -> on_input)
+             ; Vdom.Attr.on_change_js_of_ocaml (fun _ input ->
                  let maybe_t =
                    match input with
                    | "" ->

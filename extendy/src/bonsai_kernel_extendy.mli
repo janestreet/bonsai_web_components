@@ -17,21 +17,21 @@ type 'a t =
 (** Given a computation, builds a new computation that can hold a dynamic number of the
     wrapped computation. *)
 val component
-  :  (local_ Bonsai.graph -> 'a Bonsai.t)
-  -> local_ Bonsai.graph
+  :  (Bonsai.graph @ local -> 'a Bonsai.t)
+  -> Bonsai.graph @ local
   -> 'a t Bonsai.t
 
 (** Like [component], but the computation also takes in a key uniquely identifying each
     computation. *)
 val component_with_key
-  :  (key:int Bonsai.t -> local_ Bonsai.graph -> 'a Bonsai.t)
-  -> local_ Bonsai.graph
+  :  (key:int Bonsai.t -> Bonsai.graph @ local -> 'a Bonsai.t)
+  -> Bonsai.graph @ local
   -> 'a t Bonsai.t
 
 (** Like [component], but with the power to extend the result of the input component with
     an event that removes itself. *)
 val component'
-  :  (local_ Bonsai.graph -> 'a Bonsai.t)
+  :  (Bonsai.graph @ local -> 'a Bonsai.t)
   -> wrap_remove:('a -> unit Effect.t -> 'b)
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'b t Bonsai.t

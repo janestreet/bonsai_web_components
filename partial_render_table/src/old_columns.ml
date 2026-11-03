@@ -22,7 +22,7 @@ module Dynamic_cells_shared (Extra : Extra) = struct
         ; cell :
             key:'key Bonsai.t
             -> data:'data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t
         ; visible : bool Bonsai.t
         ; resizable : bool Bonsai.t
@@ -86,7 +86,7 @@ module Dynamic_cells_shared (Extra : Extra) = struct
         -> (k * v) Opaque_map.t Bonsai.t
         -> (k, cmp) Comparator.Module.t
         -> (k, v) t
-        -> ((local_ Bonsai.graph -> (k * Vdom.Node.t) Opaque_map.t Bonsai.t)
+        -> ((Bonsai.graph @ local -> (k * Vdom.Node.t) Opaque_map.t Bonsai.t)
            * Indexed_column_id.t)
              list
            * int
@@ -285,12 +285,13 @@ module Dynamic_experimental = struct
       { column_id : ('column_id, 'column_id_cmp) Comparator.Module.t
       ; columns : 'column_id list Bonsai.t
       ; columns_as_a_set : ('column_id, 'column_id_cmp) Set.t Bonsai.t
-      ; render_header : 'column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t
+      ; render_header :
+          'column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t
       ; render_cell :
           'column_id Bonsai.t
           -> 'key Bonsai.t
           -> 'data Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> Vdom.Node.t Bonsai.t
       }
 
@@ -298,7 +299,7 @@ module Dynamic_experimental = struct
       : type key data column_id column_id_cmp.
         wrap_header:(column_id:column_id -> Vdom.Node.t -> Vdom.Node.t) Bonsai.t
         -> (key, data, column_id, column_id_cmp) t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> column_id Header_tree.t Bonsai.t
       =
       fun ~wrap_header
@@ -336,7 +337,7 @@ module Dynamic_experimental = struct
         (key, data, column_id, column_id_cmp) t
         -> (key, _) Comparator.Module.t
         -> (key * data) Opaque_map.t Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
       =
       fun { column_id; columns; columns_as_a_set = _; render_header = _; render_cell }
@@ -401,12 +402,12 @@ module Dynamic_experimental = struct
     : type key data column column_cmp.
       (column, column_cmp) Comparator.Module.t
       -> columns:column list Bonsai.t
-      -> render_header:(column Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_header:(column Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:
            (column Bonsai.t
             -> key Bonsai.t
             -> data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
       -> (key, data, column) Column_intf.t
     =
@@ -642,7 +643,7 @@ module Dynamic_experimental_with_sorter = struct
       { shared : ('key, 'data, 'column_id, 'column_id_cmp) Dynamic_experimental.T.t
       ; sorts :
           ('column_id Bonsai.t
-           -> local_ Bonsai.graph
+           -> Bonsai.graph @ local
            -> ('key, 'data) Sort_kind.t option Bonsai.t)
             option
       }
@@ -658,7 +659,7 @@ module Dynamic_experimental_with_sorter = struct
     let sorters
       : type key data column_id column_id_cmp.
         (key, data, column_id, column_id_cmp) t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> (column_id, (key, data) Sort_kind.t, column_id_cmp) Map.t Bonsai.t
       =
       fun { shared = { column_id; columns_as_a_set; _ }; sorts } graph ->
@@ -681,16 +682,17 @@ module Dynamic_experimental_with_sorter = struct
     : type key data column_id column_id_cmp.
       ?sorts:
         (column_id Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> (key, data) Sort_kind.t option Bonsai.t)
       -> (column_id, column_id_cmp) Comparator.Module.t
       -> columns:column_id list Bonsai.t
-      -> render_header:(column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_header:
+           (column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:
            (column_id Bonsai.t
             -> key Bonsai.t
             -> data Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Vdom.Node.t Bonsai.t)
       -> (key, data, column_id) Column_intf.with_sorter
     =

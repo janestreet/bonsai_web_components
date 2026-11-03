@@ -9,7 +9,7 @@ module Make_forms (M : sig
     val create_codemirror
       :  name:string
       -> t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> Codemirror_ui.t Bonsai.t
   end) =
 struct
@@ -27,12 +27,12 @@ struct
   ;;
 
   let stringable (type a) (module M : Stringable with type t = a) ?name t (local_ graph) =
-    let%map.Bonsai form = string ?name t graph in
+    let%arr.Bonsai form = string ?name t graph in
     Form.project form ~parse_exn:M.of_string ~unparse:M.to_string
   ;;
 
   let sexpable (type a) (module M : Sexpable with type t = a) ?name t (local_ graph) =
-    let%map.Bonsai form = string ?name t graph in
+    let%arr.Bonsai form = string ?name t graph in
     Form.project
       form
       ~parse_exn:(fun s -> [%of_sexp: M.t] (Sexp.of_string s))

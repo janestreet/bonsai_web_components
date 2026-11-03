@@ -7,7 +7,7 @@
     ../../../codemirror/vim/block-cursor.js ../../../codemirror/vim/vim.js
     ../../../codemirror/vim/index.js))
  (preprocess
-  (pps ppx_jane))
+  (pps ppx_jane -compare-require-explicit-locality))
  (wasm_of_ocaml
   (javascript_files ../../../codemirror/vim/cm_adapter.js
     ../../../codemirror/vim/block-cursor.js ../../../codemirror/vim/vim.js

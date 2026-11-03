@@ -10,7 +10,7 @@ type t =
   | Text_html
   | Application_json
   | Other of string
-[@@deriving compare, sexp]
+[@@deriving compare ~localize, sexp]
 
 include Comparable.S with type t := t
 include Stringable.S with type t := t

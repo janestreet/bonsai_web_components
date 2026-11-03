@@ -3481,7 +3481,7 @@ let%expect_test "form of nested record of int and float (typed fields)" =
             let label_for_field = `Inferred
 
             let form_for_field
-              : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+              : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -3508,7 +3508,7 @@ let%expect_test "form of nested record of int and float (typed fields)" =
           let label_for_field = `Inferred
 
           let form_for_field
-            : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -3622,7 +3622,7 @@ let%expect_test "typed records labelling overrides defaults" =
             let label_for_field = `Inferred
 
             let form_for_field
-              : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+              : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -3654,7 +3654,7 @@ let%expect_test "typed records labelling overrides defaults" =
           let label_for_field = `Computed field_to_string
 
           let form_for_field
-            : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -3772,7 +3772,7 @@ let%expect_test "typed records: dynamic labelling" =
           module Typed_field = Typed_field
 
           let label_for_field =
-            let%map int_label in
+            let%arr int_label in
             fun ({ f = T field } : Typed_field.Packed.t) ->
               match field with
               | Int -> int_label
@@ -3781,7 +3781,7 @@ let%expect_test "typed records: dynamic labelling" =
           let label_for_field = `Dynamic label_for_field
 
           let form_for_field
-            : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -3864,13 +3864,13 @@ let%expect_test "typed variants recursive" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
             | Nil -> Bonsai.return (Form.return ())
             | Cons ->
-              let%map.Bonsai int =
+              let%arr.Bonsai int =
                 Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
               and me =
                 lazy_deprecated (lazy (fun (local_ graph) -> form () graph)) graph
@@ -3990,7 +3990,7 @@ let%expect_test "typed variants" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4132,7 +4132,7 @@ let%expect_test "typed variants: dynamic labelling" =
           module Typed_variant = Typed_variant
 
           let label_for_variant =
-            let%map int_label in
+            let%arr int_label in
             fun ({ f = T variant } : Typed_variant.Packed.t) ->
               match variant with
               | Integer -> int_label
@@ -4142,7 +4142,7 @@ let%expect_test "typed variants: dynamic labelling" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4235,7 +4235,7 @@ let%expect_test "typed optional variants" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4414,7 +4414,7 @@ let%expect_test "typed variants with custom labels" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4467,7 +4467,7 @@ let%expect_test "typed variants: attr is applied to dropdown" =
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4520,7 +4520,7 @@ let%expect_test "typed variants: radio vertical" =
           let initial_choice = `Empty
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4600,7 +4600,7 @@ let%expect_test "typed variants: radio horizontal" =
           let initial_choice = `Empty
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4676,7 +4676,7 @@ let%expect_test "typed variants: dropdown with initially empty picker" =
           let initial_choice = `Empty
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun String ->
             Form.Elements.Textbox.string ~allow_updates_when_focused:`Never ()
@@ -4721,7 +4721,7 @@ let%expect_test "typed variants: dropdown with example default" =
           let initial_choice = `This Typed_variant.Packed.{ f = T Other_thing }
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -4769,7 +4769,7 @@ let%expect_test "optional typed-variant-form: dropdown with example default" =
           let initial_choice = `This Typed_variant.Packed.{ f = T Other_thing }
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -5703,7 +5703,7 @@ let%expect_test "query box" =
 
 let%expect_test "add tooltip to form" =
   let component (local_ graph) =
-    let%map.Bonsai x =
+    let%arr.Bonsai x =
       Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
     in
     Form.tooltip "tooltip" x
@@ -5779,7 +5779,7 @@ let%expect_test "Bonsai_form.Typed sets groups/labels correctly on nested record
             let label_for_field = `Inferred
 
             let form_for_field
-              : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+              : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -5804,7 +5804,7 @@ let%expect_test "Bonsai_form.Typed sets groups/labels correctly on nested record
           let label_for_field = `Inferred
 
           let form_for_field
-            : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -5997,7 +5997,7 @@ let%expect_test "Adding error hints to the top level of various views" =
   let print_view_with_error ~compute_view =
     let component (local_ graph) =
       let form =
-        let%map.Bonsai form =
+        let%arr.Bonsai form =
           Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
         in
         Form.Expert.create
@@ -6494,7 +6494,7 @@ let%expect_test "Partially settable form via [Form.return] and [Form.return_sett
     [@@deriving typed_fields, sexp_of]
 
     let form_for_field
-      : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+      : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
       =
       fun typed_field (local_ graph) ->
       match typed_field with
@@ -6650,7 +6650,7 @@ let%expect_test "typed variant forms with radio buttons can be initialized to th
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun String ->
             Form.Elements.Textbox.string ~allow_updates_when_focused:`Never ()
@@ -6806,7 +6806,7 @@ module%test [@name "Typed fields monomorphization"] _ = struct
           let label_for_field = `Inferred
 
           let form_for_field
-            : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -6914,7 +6914,7 @@ module%test [@name "Typed fields monomorphization"] _ = struct
           let initial_choice = `First_constructor
 
           let form_for_variant
-            : type a. a Typed_variant.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+            : type a. a Typed_variant.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
             =
             fun typed_field (local_ graph) ->
             match typed_field with
@@ -7549,7 +7549,7 @@ let%expect_test "Form.Typed.Record.make_table adds appropriate error messages" =
         let label_for_field = `Computed label_for_field
 
         let form_for_field
-          : type a. a Typed_field.t -> local_ Bonsai.graph -> a Form.t Bonsai.t
+          : type a. a Typed_field.t -> Bonsai.graph @ local -> a Form.t Bonsai.t
           =
           fun typed_field (local_ graph) ->
           match typed_field with
@@ -7694,7 +7694,7 @@ let%expect_test "Typed variant set form" =
       : type a cmp.
         a Typed_variant.t
         -> (a, cmp) Comparator.Module.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> (a, cmp) Set.t Form.t Bonsai.t
       =
       fun variant comparator ->

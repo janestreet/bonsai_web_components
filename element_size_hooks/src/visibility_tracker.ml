@@ -167,7 +167,7 @@ module T = struct
   let destroy _input (state : State.t) _element = state.observer##disconnect
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let detect
   ?(client_rect_changed = fun _ -> Effect.Ignore)

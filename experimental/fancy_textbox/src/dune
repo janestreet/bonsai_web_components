@@ -1,6 +1,8 @@
 (library
  (name bonsai_experimental_fancy_textbox)
  (public_name bonsai_web_components.experimental_fancy_textbox)
- (libraries core virtual_dom.css_gen virtual_dom.input_widgets virtual_dom)
+ (libraries core virtual_dom.css_gen js_of_ocaml virtual_dom.input_widgets
+   virtual_dom)
  (preprocess
-  (pps ppx_jane ppx_css ppx_html)))
+  (pps ppx_jane -compare-require-explicit-locality ppx_css ppx_html
+    js_of_ocaml-ppx)))

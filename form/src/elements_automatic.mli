@@ -24,7 +24,7 @@ module Non_interactive : sig
   val constant
     :  Vdom.Node.t Bonsai.t
     -> 'a Or_error.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 end
 
@@ -38,7 +38,7 @@ module Textbox : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> string Form.t Bonsai.t
 
   val int
@@ -46,7 +46,7 @@ module Textbox : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> int Form.t Bonsai.t
 
   val float
@@ -54,7 +54,7 @@ module Textbox : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> float Form.t Bonsai.t
 
   val sexpable
@@ -62,7 +62,7 @@ module Textbox : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> (module Sexpable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val stringable
@@ -70,7 +70,7 @@ module Textbox : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> (module Stringable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 end
 
@@ -80,7 +80,7 @@ module Password : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> string Form.t Bonsai.t
 
   val stringable
@@ -88,7 +88,7 @@ module Password : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> (module Stringable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 end
 
@@ -98,7 +98,7 @@ module Textarea : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> string Form.t Bonsai.t
 
   val int
@@ -106,7 +106,7 @@ module Textarea : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> int Form.t Bonsai.t
 
   val float
@@ -114,7 +114,7 @@ module Textarea : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> float Form.t Bonsai.t
 
   val sexpable
@@ -122,7 +122,7 @@ module Textarea : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> (module Sexpable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val stringable
@@ -130,7 +130,7 @@ module Textarea : sig
     -> ?placeholder:string Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> (module Stringable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 end
 
@@ -139,7 +139,7 @@ module Checkbox : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> default:bool
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> bool Form.t Bonsai.t
 
   val set
@@ -150,7 +150,7 @@ module Checkbox : sig
     -> ?layout:[ `Vertical | `Horizontal ]
     -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'cmp) Set.t Form.t Bonsai.t
 
   module Private : sig
@@ -172,7 +172,7 @@ module Toggle : sig
     :  ?extra_attr:Vdom.Attr.t Bonsai.t
     -> default:bool
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> bool Form.t Bonsai.t
 end
 
@@ -200,7 +200,7 @@ module Dropdown : sig
     -> (module Model with type t = 'a)
     -> equal:('a -> 'a -> bool)
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val list_opt
@@ -227,7 +227,7 @@ module Dropdown : sig
     -> (module Model with type t = 'a)
     -> equal:('a -> 'a -> bool)
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a option Form.t Bonsai.t
 
   val enumerable
@@ -251,7 +251,7 @@ module Dropdown : sig
                default value is not in the list, an error will be returned.
              - If this is set to `Error_out, an error will be returned. *)
     -> (module Bonsai.Enum with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val enumerable_opt
@@ -276,7 +276,7 @@ module Dropdown : sig
              - If this is set to `Error_out, an error will be returned. *)
     -> ?placeholder:string
     -> (module Bonsai.Enum with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a option Form.t Bonsai.t
 
   module Private : sig
@@ -327,7 +327,7 @@ module Typeahead : sig
     -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val single_opt
@@ -340,7 +340,7 @@ module Typeahead : sig
     -> sexp_of:('a -> Sexp.t)
     -> equal:('a -> 'a -> bool)
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a option Form.t Bonsai.t
 
   val set
@@ -354,7 +354,7 @@ module Typeahead : sig
     -> ?split:(string -> string list)
     -> ('a, 'cmp) Comparator.Module.t
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'cmp) Set.t Form.t Bonsai.t
 
   val list
@@ -368,7 +368,7 @@ module Typeahead : sig
     -> ?split:(string -> string list)
     -> ('a, _) Comparator.Module.t
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a list Form.t Bonsai.t
 end
 
@@ -386,7 +386,7 @@ module Date_time : sig
     -> ?default:Date.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Date.t Form.t Bonsai.t
 
   val date_opt
@@ -394,7 +394,7 @@ module Date_time : sig
     -> ?default:Date.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Date.t option Form.t Bonsai.t
 
   val time
@@ -402,7 +402,7 @@ module Date_time : sig
     -> ?default:Time_ns.Ofday.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.Ofday.t Form.t Bonsai.t
 
   val time_opt
@@ -410,7 +410,7 @@ module Date_time : sig
     -> ?default:Time_ns.Ofday.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.Ofday.t option Form.t Bonsai.t
 
   val time_span
@@ -420,7 +420,7 @@ module Date_time : sig
     -> ?default:Time_ns.Span.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.Span.t Form.t Bonsai.t
 
   val time_span_opt
@@ -430,21 +430,21 @@ module Date_time : sig
     -> ?default:Time_ns.Span.t option
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.Span.t option Form.t Bonsai.t
 
   val datetime_local
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?allow_updates_when_focused:[ `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.t Form.t Bonsai.t
 
   val datetime_local_opt
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?allow_updates_when_focused:[ `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Time_ns.t option Form.t Bonsai.t
 
   module Range : sig
@@ -453,7 +453,7 @@ module Date_time : sig
       -> ?allow_equal:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Date.t * Date.t) Form.t Bonsai.t
 
     val date_opt
@@ -461,7 +461,7 @@ module Date_time : sig
       -> ?allow_equal:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Date.t option * Date.t option) Form.t Bonsai.t
 
     (** If [enforce_start_before_end] (default: [true]), the form will validate that the
@@ -473,7 +473,7 @@ module Date_time : sig
       -> ?enforce_start_before_end:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Time_ns.Ofday.t * Time_ns.Ofday.t) Form.t Bonsai.t
 
     (** If [enforce_start_before_end] (default: [true]), the form will validate that the
@@ -485,7 +485,7 @@ module Date_time : sig
       -> ?enforce_start_before_end:bool
       -> ?allow_updates_when_focused:[ `Always | `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Time_ns.Ofday.t option * Time_ns.Ofday.t option) Form.t Bonsai.t
 
     val datetime_local
@@ -493,7 +493,7 @@ module Date_time : sig
       -> ?allow_equal:bool
       -> ?allow_updates_when_focused:[ `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Time_ns.t * Time_ns.t) Form.t Bonsai.t
 
     val datetime_local_opt
@@ -501,7 +501,7 @@ module Date_time : sig
       -> ?allow_equal:bool
       -> ?allow_updates_when_focused:[ `Never ]
       -> unit
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (Time_ns.t option * Time_ns.t option) Form.t Bonsai.t
   end
 end
@@ -515,7 +515,7 @@ module Multiselect : sig
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, 'cmp) Comparator.Module.t
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, 'cmp) Set.t Form.t Bonsai.t
 
   val list
@@ -526,7 +526,7 @@ module Multiselect : sig
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> ('a, _) Comparator.Module.t
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a list Form.t Bonsai.t
 end
 
@@ -539,7 +539,7 @@ module Number : sig
     -> step:int
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> int Form.t Bonsai.t
 
   val float
@@ -550,7 +550,7 @@ module Number : sig
     -> step:float
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> float Form.t Bonsai.t
 end
 
@@ -565,7 +565,7 @@ module Range : sig
     -> step:int Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> int Form.t Bonsai.t
 
   val float
@@ -578,7 +578,7 @@ module Range : sig
     -> step:float Bonsai.t
     -> ?allow_updates_when_focused:[ `Always | `Never ]
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> float Form.t Bonsai.t
 end
 
@@ -593,7 +593,7 @@ module Radio_buttons : sig
     -> equal:('a -> 'a -> bool)
     -> layout:[ `Vertical | `Horizontal ]
     -> 'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val enumerable
@@ -604,7 +604,7 @@ module Radio_buttons : sig
     -> ?to_string:('a -> string)
     -> (module Bonsai.Enum with type t = 'a)
     -> layout:[ `Vertical | `Horizontal ]
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 end
 
@@ -613,7 +613,7 @@ module Color_picker : sig
     :  ?default:[ `Hex of string ]
     -> ?extra_attr:Vdom.Attr.t Bonsai.t
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> [ `Hex of string ] Form.t Bonsai.t
 end
 
@@ -628,23 +628,23 @@ module Multiple : sig
     -> ?placeholder:string Bonsai.t
     -> (module Stringable_model with type t = 'a)
     -> equal:('a -> 'a -> bool)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a list Form.t Bonsai.t
 
   val list
     :  ?element_group_label:(delete_button:Vdom.Node.t -> int -> Vdom.Node.t)
     -> ?add_element_text:string Bonsai.t
     -> ?button_placement:[ `Indented | `Inline ]
-    -> (local_ Bonsai.graph -> 'a Form.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> (Bonsai.graph @ local -> 'a Form.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> 'a list Form.t Bonsai.t
 
   val nonempty_list
     :  ?element_group_label:(delete_button:Vdom.Node.t -> int -> Vdom.Node.t)
     -> ?add_element_text:string Bonsai.t
     -> ?button_placement:[ `Indented | `Inline ]
-    -> (local_ Bonsai.graph -> 'a Form.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> (Bonsai.graph @ local -> 'a Form.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> 'a Nonempty_list.t Form.t Bonsai.t
 
   val set
@@ -652,8 +652,8 @@ module Multiple : sig
     -> ?add_element_text:string Bonsai.t
     -> ?button_placement:[ `Indented | `Inline ]
     -> ('a, 'cmp) Comparator.Module.t
-    -> (local_ Bonsai.graph -> 'a Form.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> (Bonsai.graph @ local -> 'a Form.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> ('a, 'cmp) Set.t Form.t Bonsai.t
 
   val map
@@ -661,9 +661,9 @@ module Multiple : sig
     -> ?add_element_text:string Bonsai.t
     -> ?button_placement:[ `Indented | `Inline ]
     -> ('k, 'cmp) Comparator.Module.t
-    -> key:(local_ Bonsai.graph -> 'k Form.t Bonsai.t)
-    -> data:(local_ Bonsai.graph -> 'v Form.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> key:(Bonsai.graph @ local -> 'k Form.t Bonsai.t)
+    -> data:(Bonsai.graph @ local -> 'v Form.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> ('k, 'v, 'cmp) Map.t Form.t Bonsai.t
 end
 
@@ -682,7 +682,7 @@ module File_select : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Bonsai_web_file.t option Form.t Bonsai.t
 
   (** A form where picking a file is mandatory. The form will be in an error state until a
@@ -693,14 +693,14 @@ module File_select : sig
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Bonsai_web_file.t Form.t Bonsai.t
 
   val multiple
     :  ?extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?accept:[ `Extension of string | `Mimetype of string ] list
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Bonsai_web_file.t Filename.Map.t Form.t Bonsai.t
 end
 
@@ -710,7 +710,7 @@ module Freeform_multiselect : sig
     -> ?placeholder:string
     -> ?split:(string -> string list)
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> string list Form.t Bonsai.t
 
   val set
@@ -718,7 +718,7 @@ module Freeform_multiselect : sig
     -> ?placeholder:string
     -> ?split:(string -> string list)
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> String.Set.t Form.t Bonsai.t
 end
 
@@ -730,14 +730,14 @@ module Rank : sig
     -> ?left:Css_gen.Length.t
     -> ?right:Css_gen.Length.t
     -> ?empty_list_placeholder:
-         (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+         (item_is_hovered:bool Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
     -> ?add_drop_target_for_appending:bool
     -> (source:Vdom.Attr.t Bonsai.t
         -> 'a Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a list Form.t Bonsai.t
 end
 
@@ -755,10 +755,10 @@ module Query_box : sig
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'k option Form.t Bonsai.t
 
   val create
@@ -774,10 +774,10 @@ module Query_box : sig
     -> selection_to_string:('k -> string) Bonsai.t
     -> f:
          (string Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> ('k, Vdom.Node.t, 'cmp) Map.t Bonsai.t)
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'k Form.t Bonsai.t
 
   val single
@@ -793,7 +793,7 @@ module Query_box : sig
             the last of the duplicates will be the only one that show up in the list of
             suggestions. *)
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a Form.t Bonsai.t
 
   val single_opt
@@ -809,7 +809,7 @@ module Query_box : sig
             the last of the duplicates will be the only one that show up in the list of
             suggestions. *)
     -> all_options:'a list Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a option Form.t Bonsai.t
 end
 
@@ -820,8 +820,8 @@ module Optional : sig
   val dropdown
     :  ?some_label:string (** default ["Some"] *)
     -> ?none_label:string (** default ["None"] *)
-    -> (local_ Bonsai.graph -> 'a Form.t Bonsai.t)
+    -> (Bonsai.graph @ local -> 'a Form.t Bonsai.t)
        (** shown when the [some_label] option is selected *)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> 'a option Form.t Bonsai.t
 end

@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View := Bonsai_web_legacy_view
 
 val to_vdom
   :  ?theme:View.Theme.t

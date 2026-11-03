@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_contrib_nav_link_test)
  (libraries async_js.async_test async_kernel bonsai_web
-   bonsai_web_contrib_nav_link bonsai_web_test core expect_test_helpers_base)
+   bonsai_web_contrib_nav_link bonsai_web_test core)
  (preprocess
   (pps ppx_jane ppx_quick_test)))

@@ -223,7 +223,7 @@ let%expect_test "Constant folding cols" =
     │ Focus by key (key not present) and unfocus in 1000 element map                           │ -4 (3%)           │ -4 (3%)              │ .                  │
     │ Focus by key (key not present) and unfocus in 10000 element map                          │ -4 (3%)           │ -4 (3%)              │ .                  │
     │ Focus by key (key present) and unfocus in 10 element map                                 │ -4 (2%)           │ -4 (2%)              │ .                  │
-    │ Focus by key (key present) and unfocus in 100 element map                                │ -4 (1%)           │ -4 (1%)              │ .                  │
+    │ Focus by key (key present) and unfocus in 100 element map                                │ .                 │ .                    │ .                  │
     │ Focus by key (key present) and unfocus in 101 element map                                │ .                 │ .                    │ .                  │
     │ Focus by key (key present) and unfocus in 1000 element map                               │ .                 │ .                    │ .                  │
     │ Focus by key (key present) and unfocus in 10000 element map                              │ .                 │ .                    │ .                  │
@@ -242,9 +242,9 @@ let%expect_test "Constant folding cols" =
     │ Page up and down in 101 element map                                                      │ .                 │ .                    │ .                  │
     │ Page up and down in 1000 element map                                                     │ .                 │ .                    │ .                  │
     │ Page up and down in 10000 element map                                                    │ .                 │ .                    │ .                  │
-    │ Scroll 1-wide window from 0 to 9 and back in 100 element map                             │ -52 (2%)          │ -501 (29%)           │ .                  │
+    │ Scroll 1-wide window from 0 to 9 and back in 100 element map                             │ -52 (2%)          │ -501 (28%)           │ .                  │
     │ Scroll 10-wide window from 0 to 9 and back in 100 element map                            │ -52 (2%)          │ -501 (28%)           │ .                  │
-    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map                            │ -52 (2%)          │ -501 (29%)           │ .                  │
+    │ Scroll 1-wide window from 0 to 9 and back in 1000 element map                            │ -52 (2%)          │ -501 (28%)           │ .                  │
     │ Scroll 10-wide window from 0 to 9 and back in 1000 element map                           │ -52 (2%)          │ -501 (28%)           │ .                  │
     │ Scroll 100-wide window from 0 to 9 and back in 1000 element map                          │ -52 (2%)          │ -501 (28%)           │ .                  │
     │ Apply 4 filters and clear with 100 element map using 10 window                           │ -112 (3%)         │ -1_084 (61%)         │ .                  │
@@ -255,8 +255,8 @@ let%expect_test "Constant folding cols" =
     │ Apply 4 filters and clear with 10000 element map using 100 window                        │ -1_192 (4%)       │ -11_884 (81%)        │ .                  │
     │ Invert ordering of 10 element map                                                        │ .                 │ +15 (12%)            │ .                  │
     │ Invert ordering of 100 element map                                                       │ .                 │ +105 (21%)           │ .                  │
-    │ Invert ordering of 101 element map                                                       │ .                 │ +106 (22%)           │ .                  │
-    │ Invert ordering of 1000 element map                                                      │ .                 │ +106 (22%)           │ .                  │
+    │ Invert ordering of 101 element map                                                       │ .                 │ +106 (21%)           │ .                  │
+    │ Invert ordering of 1000 element map                                                      │ .                 │ +106 (21%)           │ .                  │
     │ Randomly select a row out of a table with 10 rows and a window of 10, then change one    │ .                 │ .                    │ .                  │
     │ cell in it.                                                                              │                   │                      │                    │
     │ Randomly select a row out of a table with 100 rows and a window of 10, then change one   │ .                 │ .                    │ .                  │
@@ -269,13 +269,13 @@ let%expect_test "Constant folding cols" =
     │ cells in it.                                                                             │                   │                      │                    │
     │ Randomly select a row out of a table with 10000 rows and a window of 10, then change     │ .                 │ .                    │ .                  │
     │ all cells in it.                                                                         │                   │                      │                    │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ +148 (13%)        │ -337 (31%)           │ .                  │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ +148 (13%)        │ -337 (30%)           │ .                  │
     │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ +436 (23%)        │ -949 (50%)           │ .                  │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ +148 (13%)        │ -337 (31%)           │ .                  │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ +148 (13%)        │ -337 (30%)           │ .                  │
     │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ +436 (23%)        │ -949 (50%)           │ .                  │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ +148 (13%)        │ -337 (31%)           │ .                  │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ +148 (13%)        │ -337 (30%)           │ .                  │
     │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ +436 (23%)        │ -949 (50%)           │ .                  │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ +148 (13%)        │ -337 (31%)           │ .                  │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ +148 (13%)        │ -337 (30%)           │ .                  │
     │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ +436 (23%)        │ -949 (50%)           │ .                  │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window                   │ +1_516 (31%)      │ -3_244 (67%)         │ .                  │
     └──────────────────────────────────────────────────────────────────────────────────────────┴───────────────────┴──────────────────────┴────────────────────┘

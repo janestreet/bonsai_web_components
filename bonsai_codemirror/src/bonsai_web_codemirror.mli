@@ -34,7 +34,7 @@ val of_initial_state
        (** If [name] is provided, attaches a "data-codemirror-editor=NAME" attribute to
            the widget, so it can be selected in tests. *)
   -> State.Editor_state.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t
 
 (** Uses edge-triggering to re-configure the set of extensions whenever the input value
@@ -69,7 +69,7 @@ val with_dynamic_extensions
   -> initial_state:State.Editor_state.t
   -> compute_extensions:('a -> State.Extension.t list) Bonsai.t
   -> 'a Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t
 
 (** Similar functionality as above, but does not provide default extensions and does not
@@ -86,7 +86,7 @@ val with_dynamic_extensions'
            tests. *)
   -> initial_text:string
   -> extensions:State.Extension.t list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t
 
 module For_testing : sig

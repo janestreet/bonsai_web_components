@@ -11,7 +11,7 @@ val state
   :  ?initial_order:'col_id Order.t Bonsai.t
   -> equal:('col_id -> 'col_id -> bool)
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'col_id t Bonsai.t
 
 val order : 'col_id t -> 'col_id Order.t

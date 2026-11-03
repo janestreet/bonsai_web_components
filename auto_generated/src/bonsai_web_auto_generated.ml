@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open Bonsai.Let_syntax
 module N = Vdom.Node
 module A = Vdom.Attr
@@ -14,25 +15,13 @@ end
 type form_transformer =
   Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t
   -> recurse:
-       (Sexp_grammar.grammar Bonsai.t -> local_ Bonsai.graph -> Sexp.t Form.t Bonsai.t)
-  -> local_ Bonsai.graph
+       (Sexp_grammar.grammar Bonsai.t -> Bonsai.graph @ local -> Sexp.t Form.t Bonsai.t)
+  -> Bonsai.graph @ local
   -> Sexp.t Form.t Bonsai.t
 
 let error_hint form (local_ graph) =
   let form = form graph in
   Form.Dynamic.error_hint form graph
-;;
-
-let no_duplicate_clause_names clauses =
-  let rec loop acc = function
-    | [] -> true
-    | hd :: tl ->
-      let { Sexp_grammar.name; _ } = Grammar_helper.Tags.strip_tags hd in
-      (match Set.mem acc name with
-       | false -> loop (Set.add acc name) tl
-       | true -> false)
-  in
-  loop String.Set.empty clauses
 ;;
 
 module Customization = struct
@@ -49,13 +38,13 @@ module Customization = struct
       Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t
       -> recurse:
            (Sexp_grammar.grammar Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Sexp.t Form.t Bonsai.t)
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> a Form.t Bonsai.t)
     =
     let transform grammar ~recurse (local_ graph) =
-      let%map.Bonsai on_match = on_match grammar ~recurse graph in
+      let%arr.Bonsai on_match = on_match grammar ~recurse graph in
       Form.project on_match ~parse_exn:[%sexp_of: M.t] ~unparse:[%of_sexp: M.t]
     in
     { apply_to_tag; on_match = transform }
@@ -67,9 +56,9 @@ module Customization = struct
       Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t
       -> recurse:
            (Sexp_grammar.grammar Bonsai.t
-            -> local_ Bonsai.graph
+            -> Bonsai.graph @ local
             -> Sexp.t Form.t Bonsai.t)
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> Sexp.t Form.t Bonsai.t)
     =
     transform_form' (module Sexp) ~apply_to_tag on_match
@@ -79,7 +68,7 @@ module Customization = struct
     (type a)
     (module M : Sexpable with type t = a)
     ~apply_to_tag
-    (on_match : local_ Bonsai.graph -> a Form.t Bonsai.t)
+    (on_match : Bonsai.graph @ local -> a Form.t Bonsai.t)
     =
     transform_form' (module M) ~apply_to_tag (fun _ ~recurse:_ -> on_match)
   ;;
@@ -162,7 +151,9 @@ module Customization = struct
       let transform_multiple_button_name
         (with_tag : Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t)
         ~(recurse :
-            Sexp_grammar.grammar Bonsai.t -> local_ Bonsai.graph -> Sexp.t Form.t Bonsai.t)
+            Sexp_grammar.grammar Bonsai.t
+            -> Bonsai.graph @ local
+            -> Sexp.t Form.t Bonsai.t)
         (local_ graph)
         =
         let%sub { grammar; value; key = _ } = with_tag in
@@ -288,10 +279,10 @@ module Style =
 let project_to_sexp
   (type a)
   (module M : Sexpable with type t = a)
-  (form : local_ Bonsai.graph -> a Form.t Bonsai.t)
+  (form : Bonsai.graph @ local -> a Form.t Bonsai.t)
   (local_ graph)
   =
-  let%map.Bonsai form = form graph in
+  let%arr.Bonsai form = form graph in
   Form.project form ~parse_exn:M.sexp_of_t ~unparse:M.t_of_sexp
 ;;
 
@@ -308,50 +299,121 @@ let combine_views views =
   | _ -> Form.View.tuple views
 ;;
 
-module Environment = struct
-  type t =
-    { defns : Sexp_grammar.defn String.Map.t
-    ; variables : (Sexp_grammar.grammar * t) String.Map.t
-    }
+module Grammar = struct
+  include Sexp_grammar
 
-  let empty = { defns = String.Map.empty; variables = String.Map.empty }
-  let lookup_variable_and_env env key = Map.find_exn env.variables key
-  let lookup_defn env key = Map.find_exn env.defns key
+  module T = struct
+    type t = grammar [@@deriving sexp_of, compare]
+  end
 
-  let add_variables env ~tyvars ~instances =
-    { env with
-      variables =
-        Map.merge
-          env.variables
-          (String.Map.of_alist_exn (List.zip_exn tyvars instances))
-          ~f:(fun ~key:_ -> function
-            | `Right grammar | `Both (_, grammar) -> Some (grammar, env)
-            | `Left grammar_and_env -> Some grammar_and_env)
-    }
-  ;;
-
-  let add_defns env defns =
-    { env with
-      defns =
-        Map.merge
-          env.defns
-          (String.Map.of_alist_exn
-             (List.map defns ~f:(fun (defn : Sexp_grammar.defn) -> defn.tycon, defn)))
-          ~f:(fun ~key:_ -> function
-            | `Right v | `Both (_, v) -> Some v
-            | `Left v -> Some v)
-    }
-  ;;
+  include T
+  include Comparator.Make (T)
 end
 
-let constant_length_tuple_form ~grammar_form list_of_grammars (local_ graph) =
+type generated_form = Bonsai.graph @ local -> Sexp.t Form.t Bonsai.t
+
+type folded_grammar =
+  { grammar : Sexp_grammar.grammar
+  ; form : generated_form
+  ; find_form : Sexp_grammar.grammar -> generated_form option
+  ; variant : folded_variant option
+  }
+
+and folded_variant =
+  { case_sensitivity : Sexp_grammar.case_sensitivity
+  ; clauses : folded_clause list
+  }
+
+and folded_clause =
+  { name : string
+  ; args : folded_list_grammar option
+  ; tags : (string * Sexp.t) list
+  }
+
+and folded_list_grammar =
+  | Empty
+  | Cons of folded_grammar * folded_list_grammar
+  | Many of folded_grammar
+  | Fields of
+      { fields : folded_field list
+      ; allow_extra_fields : bool
+      }
+
+and folded_field =
+  { name : string
+  ; required : bool
+  ; args : folded_list_grammar
+  ; tags : (string * Sexp.t) list
+  }
+
+let rec find_form_in_list_grammar grammar query =
+  match grammar with
+  | Empty -> None
+  | Cons (grammar, rest) ->
+    (match grammar.find_form query with
+     | Some _ as form -> form
+     | None -> find_form_in_list_grammar rest query)
+  | Many grammar -> grammar.find_form query
+  | Fields { fields; _ } ->
+    List.find_map fields ~f:(fun { args; _ } -> find_form_in_list_grammar args query)
+;;
+
+let find_doc_tag tags =
+  List.find_map (List.rev tags) ~f:(fun (key, value) ->
+    if String.equal key Ppx_sexp_conv_lib.Sexp_grammar.doc_comment_tag
+    then
+      Some
+        (match value with
+         | Sexp.Atom str -> str
+         | List _ -> Sexp.to_string_hum value)
+    else None)
+;;
+
+let rec sexp_grammar_of_folded_list = function
+  | Empty -> Sexp_grammar.Empty
+  | Cons (grammar, rest) ->
+    Sexp_grammar.Cons (grammar.grammar, sexp_grammar_of_folded_list rest)
+  | Many grammar -> Sexp_grammar.Many grammar.grammar
+  | Fields { fields; allow_extra_fields } ->
+    let fields =
+      List.map fields ~f:(fun { name; required; args; tags } ->
+        let field =
+          { Sexp_grammar.name; required; args = sexp_grammar_of_folded_list args }
+        in
+        List.fold_right
+          tags
+          ~init:(Sexp_grammar.No_tag field)
+          ~f:(fun (key, value) grammar -> Sexp_grammar.Tag { key; value; grammar }))
+    in
+    Sexp_grammar.Fields { fields; allow_extra_fields }
+;;
+
+let sexp_grammar_of_folded_variant { case_sensitivity; clauses } =
+  let clauses =
+    List.map clauses ~f:(fun { name; args; tags } ->
+      let clause_kind =
+        match args with
+        | None -> Sexp_grammar.Atom_clause
+        | Some args ->
+          Sexp_grammar.List_clause { args = sexp_grammar_of_folded_list args }
+      in
+      let clause = { Sexp_grammar.name; clause_kind } in
+      List.fold_right
+        tags
+        ~init:(Sexp_grammar.No_tag clause)
+        ~f:(fun (key, value) grammar -> Sexp_grammar.Tag { key; value; grammar }))
+  in
+  Sexp_grammar.Variant { case_sensitivity; clauses }
+;;
+
+let constant_length_tuple_form ~grammar_form grammars (local_ graph) =
   let all_forms =
-    Bonsai.all (List.map list_of_grammars ~f:(fun grammar -> grammar_form grammar graph))
+    Bonsai.all (List.map grammars ~f:(fun grammar -> grammar_form grammar graph))
   in
   let%arr all_forms in
   let value =
     Or_error.all (List.map all_forms ~f:Form.value)
-    |> Or_error.map ~f:(fun l -> Sexp.List l)
+    |> Or_error.map ~f:(fun values -> Sexp.List values)
   in
   let view =
     match all_forms with
@@ -362,8 +424,8 @@ let constant_length_tuple_form ~grammar_form list_of_grammars (local_ graph) =
            Form.view (Form.label (Ordinal_abbreviation.to_string (i + 1)) form)))
   in
   let set = function
-    | Sexp.List l ->
-      (match List.zip l all_forms with
+    | Sexp.List values ->
+      (match List.zip values all_forms with
        | Ok zipped ->
          Effect.Many (List.map zipped ~f:(fun (value, form) -> Form.set form value))
        | Unequal_lengths -> Effect.print_s [%message "BUG"])
@@ -372,50 +434,34 @@ let constant_length_tuple_form ~grammar_form list_of_grammars (local_ graph) =
   Form.Expert.create ~value ~view ~set
 ;;
 
-let form
+let rec generate_form
   ?(allow_updates_when_focused = `Always)
   ?textbox_for_string
-  (grammar : Sexp_grammar.grammar Bonsai.t)
+  (grammar : Sexp_grammar.grammar)
   ~on_set_error
   ~customizations
   ~allow_duplication_of_list_items
   ~tooltip_format_of_doc_string
   (local_ graph)
   =
-  let with_tag_form
-    ~grammar_form
-    (with_tag : Sexp_grammar.grammar Sexp_grammar.with_tag Bonsai.t)
-    (local_ graph)
-    =
-    let customization_to_use =
-      let%arr with_tag in
-      List.find_mapi customizations ~f:(fun i customization ->
-        match Customization.applies customization with_tag with
-        | false -> None
-        | true -> Some i)
-    in
-    Bonsai.enum
-      (module struct
-        type t = int option [@@deriving sexp, equal, compare]
-
-        let all = None :: List.init (List.length customizations) ~f:(fun i -> Some i)
-      end)
-      ~match_:customization_to_use
-      ~with_:(function
-        | None ->
-          fun (local_ graph) ->
-            let grammar =
-              let%arr with_tag in
-              with_tag.grammar
-            in
-            error_hint (grammar_form grammar) graph
-        | Some index ->
-          fun (local_ graph) ->
-            let customization = List.nth_exn customizations index in
-            Customization.apply customization with_tag ~recurse:grammar_form graph)
+  let recurse grammar (local_ graph) =
+    Bonsai.stitch
+      (module Grammar)
+      grammar
+      ~f:(fun grammar (local_ graph) ->
+        generate_form
+          ~allow_updates_when_focused
+          ?textbox_for_string
+          grammar
+          ~on_set_error
+          ~customizations
+          ~allow_duplication_of_list_items
+          ~tooltip_format_of_doc_string
+          graph)
       graph
   in
-  let option_form ~grammar_form (grammar : Sexp_grammar.grammar Bonsai.t) (local_ graph) =
+  let rec grammar_form grammar (local_ graph) = grammar.form graph
+  and option_form grammar (local_ graph) =
     let%sub form, _ =
       Bonsai.wrap
         graph
@@ -448,7 +494,10 @@ let form
             | false -> Bonsai.return (Form.return (Sexp.List []))
             | true -> grammar_form grammar graph
           in
-          let inner_value = Bonsai.map ~f:Form.value inner in
+          let inner_value =
+            let%arr inner in
+            Form.value inner
+          in
           let view =
             let%arr outer and set_outer and path and inner in
             let toggle_view =
@@ -473,7 +522,7 @@ let form
             | true ->
               (match%arr inner_value with
                | Ok inner -> Ok (Sexp.List [ inner ])
-               | Error err -> Error err)
+               | Error _ as err -> err)
           in
           let set =
             let bonk = Bonsai_extra.Effects.bonk graph in
@@ -484,164 +533,14 @@ let form
               (match outer with
                | true -> bonk (inject_outer a)
                | false -> Effect.Many [ set_outer true; bonk (inject_outer a) ])
-            | _ as sexp ->
+            | sexp ->
               on_set_error [%message "expected option sexp, but got" (sexp : Sexp.t)]
           in
           let%arr view and value and set and inner in
           Form.Expert.create ~view ~value ~set, inner)
     in
     form
-  in
-  let fields_grammar_form
-    ~list_grammar_form
-    ~optional_field_grammar_form
-    (fields : Sexp_grammar.record Bonsai.t)
-    (local_ graph)
-    =
-    let%sub { fields; allow_extra_fields } = fields in
-    let original_field_order =
-      let%arr fields in
-      fields
-      |> List.map ~f:Grammar_helper.Tags.strip_tags
-      |> List.map ~f:(fun { name; _ } -> name)
-    in
-    let sexp_dot_bool_fields =
-      let%arr fields in
-      List.filter_map fields ~f:(fun field ->
-        let field, _ = Grammar_helper.Tags.collect_and_strip_tags field in
-        match field.required with
-        | true -> None
-        | false ->
-          (match field.args with
-           | Cons _ | Many _ | Fields _ -> None
-           | Empty -> Some field.name))
-      |> String.Set.of_list
-    in
-    let forms =
-      let fields_by_name =
-        let%arr fields in
-        List.map fields ~f:(fun (field : Sexp_grammar.field Sexp_grammar.with_tag_list) ->
-          let field, tags = Grammar_helper.Tags.collect_and_strip_tags field in
-          let doc = Grammar_helper.Tags.find_doc_tag tags in
-          field.name, (field, doc))
-        |> String.Map.of_alist_exn
-      in
-      Bonsai.assoc
-        (module String)
-        fields_by_name
-        ~f:
-          (fun
-            _
-            field_and_doc
-            (* [args_form] is a [Sexp.t option Form.t] because we need the ability to
-               include or omit the sexp produced by that part of the form depending on if
-               we want to use the default value. [None] indicates that we should just use
-               the default value. *)
-            (local_ graph)
-          ->
-          let%sub field, doc = field_and_doc in
-          let required =
-            let%arr field in
-            field.required
-          in
-          let args =
-            let%arr field in
-            field.args
-          in
-          let args_form =
-            match%sub required with
-            | true ->
-              let%map.Bonsai form = list_grammar_form args graph in
-              Form.project
-                form
-                ~parse_exn:(fun s -> Some s)
-                ~unparse:(fun s -> Option.value_exn s)
-            | false -> optional_field_grammar_form args graph
-          in
-          let%arr args_form and required and doc in
-          args_form, `Required required, `Doc doc)
-        graph
-    in
-    let view =
-      let%arr forms and original_field_order in
-      List.map original_field_order ~f:(fun field_name ->
-        let form, `Required _, `Doc doc = Map.find_exn forms field_name in
-        { Form.View.field_view =
-            form |> Form.view |> maybe_set_tooltip ~tooltip_format_of_doc_string doc
-        ; field_name
-        })
-      |> Form.View.record
-    in
-    let set =
-      let%arr forms and allow_extra_fields and sexp_dot_bool_fields in
-      fun sexp ->
-        let sexp_map =
-          match sexp with
-          | Sexp.Atom _ -> String.Map.empty
-          | List fields ->
-            List.filter_map fields ~f:(function
-              | List [ Atom name; value ] -> Some (name, Sexp.List [ value ])
-              | List [ Atom name ] when Set.mem sexp_dot_bool_fields name ->
-                Some (name, Sexp.Atom "true")
-              | ignored_sexp ->
-                eprint_s
-                  [%message
-                    "Potential BUG in sexp grammar auto-generated forms. Please report \
-                     to bonsai developers. A sub-field of a sexp is getting ignored \
-                     while calling Form.set"
-                      [%here]
-                      (ignored_sexp : Sexp.t)];
-                None)
-            |> String.Map.of_alist_exn
-        in
-        Map.merge sexp_map forms ~f:(fun ~key -> function
-          | `Left args ->
-            (match allow_extra_fields with
-             | true -> None
-             | false ->
-               Some
-                 (on_set_error
-                    [%message
-                      "extra fields are not allowed, but got an extra field"
-                        (key : string)
-                        (args : Sexp.t)]))
-          | `Right (form, `Required false, `Doc _) -> Some (Form.set form None)
-          | `Right (_, `Required true, `Doc _) ->
-            Some (on_set_error [%message "required field is not present" (key : string)])
-          | `Both (args, (form, `Required _, `Doc _)) -> Some (Form.set form (Some args)))
-        |> Map.data
-        (* This reversal of order is important and enables optimization! *)
-        |> List.rev
-        |> Effect.Many
-    in
-    let value =
-      let values =
-        Bonsai.Map.filter_mapi
-          forms
-          ~f:(fun ~key ~data:(form, `Required _, `Doc _) ->
-            match Form.value form with
-            | Error _ as err -> Some err
-            | Ok None -> None
-            | Ok (Some (Sexp.Atom _ as atom)) ->
-              Some
-                (Or_error.error_s
-                   [%message
-                     "expected list of args from subform, but got" (atom : Sexp.t)])
-            | Ok (Some (Sexp.List value)) ->
-              Some (Ok (Sexp.List (Sexp.Atom key :: value))))
-          graph
-      in
-      let%arr values in
-      Map.data values |> Or_error.all |> Or_error.map ~f:(fun list -> Sexp.List list)
-    in
-    let%arr value and view and set in
-    value, set, [ view ]
-  in
-  let optional_field_grammar_form
-    ~list_grammar_form
-    (args : Sexp_grammar.list_grammar Bonsai.t)
-    (local_ graph)
-    =
+  and optional_field_form args (local_ graph) =
     let%sub form, _ =
       Bonsai.wrap
         graph
@@ -662,14 +561,9 @@ let form
             Bonsai.Apply_action_context.schedule_event
               context
               (Form.set inner inner_value))
-        ~f:
-          (fun
-            (_ : unit Bonsai.t)
-            inject_outer
-            (* We can't use toggle here because we need to be able to set the value
-               directly as part of [Form.set] *)
-            (local_ graph)
-          ->
+        ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
+          (* We can't use toggle here because we need to be able to set the value directly
+             as part of [Form.set] *)
           let override, set_override =
             Bonsai.state
               false
@@ -678,7 +572,7 @@ let form
               graph
           in
           let toggle =
-            let%arr override and set_override and args in
+            let%arr override and set_override in
             match args with
             | Empty ->
               Vdom_input_widgets.Checkbox.simple
@@ -687,7 +581,7 @@ let form
                 ~label:""
                 ~on_toggle:(set_override (not override))
                 ()
-            | _ ->
+            | Cons _ | Many _ | Fields _ ->
               let text = if override then "[override]" else "[default]" in
               let override_status =
                 if override then Style.override_showing else Style.override_hidden
@@ -697,7 +591,7 @@ let form
                   [ A.(
                       override_status
                       @ Style.override_text
-                      @ on_click (fun _ -> set_override (not override)))
+                      @ on_click_js_of_ocaml (fun _ -> set_override (not override)))
                   ]
                 [ N.text text ]
           in
@@ -725,26 +619,121 @@ let form
             | false -> Ok None
             | true ->
               (match Form.value inner with
-               | Ok s -> Ok (Some s)
+               | Ok sexp -> Ok (Some sexp)
                | Error _ as err -> err)
           in
           let set = function
             | None -> set_override false
-            | Some s -> Effect.Many [ set_override true; bonk (inject_outer s) ]
+            | Some sexp -> Effect.Many [ set_override true; bonk (inject_outer sexp) ]
           in
           Form.Expert.create ~view ~value ~set, inner)
     in
     form
-  in
-  let list_form_with_duplication
-    ~grammar_form
-    (grammar : Sexp_grammar.grammar Bonsai.t)
-    (local_ graph)
-    =
-    let list_form =
-      let form = grammar_form grammar in
-      Form2.Elements.Multiple.list form graph
+  and fields_grammar_form fields ~allow_extra_fields (local_ graph) =
+    let sexp_dot_bool_fields =
+      List.filter_map fields ~f:(fun { name; required; args; tags = _ } ->
+        match required, args with
+        | false, Empty -> Some name
+        | true, _ | false, (Cons _ | Many _ | Fields _) -> None)
+      |> String.Set.of_list
     in
+    let field_forms =
+      List.map fields ~f:(fun { name; required; args; tags } ->
+        let doc = find_doc_tag tags in
+        (* [form] is a [Sexp.t option Form.t] because we need the ability to include or
+           omit the sexp produced by that part of the form depending on if we want to use
+           the default value. [None] indicates that we should just use the default value. *)
+        let form =
+          match required with
+          | true ->
+            let form = list_grammar_form args graph in
+            let%arr form in
+            Form.project
+              form
+              ~parse_exn:(fun sexp -> Some sexp)
+              ~unparse:(fun value -> Option.value_exn value)
+          | false -> optional_field_form args graph
+        in
+        name, required, doc, form)
+    in
+    let all_forms =
+      Bonsai.all
+        (List.map field_forms ~f:(fun (name, required, doc, form) ->
+           let%arr form in
+           name, required, doc, form))
+    in
+    let%arr all_forms in
+    let forms =
+      String.Map.of_alist_exn
+        (List.map all_forms ~f:(fun (name, required, doc, form) ->
+           name, (form, required, doc)))
+    in
+    let view =
+      List.map fields ~f:(fun { name; _ } ->
+        let form, _, doc = Map.find_exn forms name in
+        { Form.View.field_view =
+            form |> Form.view |> maybe_set_tooltip ~tooltip_format_of_doc_string doc
+        ; field_name = name
+        })
+      |> Form.View.record
+    in
+    let set sexp =
+      let sexp_map =
+        match sexp with
+        | Sexp.Atom _ -> String.Map.empty
+        | List fields ->
+          List.filter_map fields ~f:(function
+            | List [ Atom name; value ] -> Some (name, Sexp.List [ value ])
+            | List [ Atom name ] when Set.mem sexp_dot_bool_fields name ->
+              Some (name, Sexp.Atom "true")
+            | ignored_sexp ->
+              eprint_s
+                [%message
+                  "Potential BUG in sexp grammar auto-generated forms. Please report to \
+                   bonsai developers. A sub-field of a sexp is getting ignored while \
+                   calling Form.set"
+                    [%here]
+                    (ignored_sexp : Sexp.t)];
+              None)
+          |> String.Map.of_alist_exn
+      in
+      Map.merge sexp_map forms ~f:(fun ~key -> function
+        | `Left args ->
+          (match allow_extra_fields with
+           | true -> None
+           | false ->
+             Some
+               (on_set_error
+                  [%message
+                    "extra fields are not allowed, but got an extra field"
+                      (key : string)
+                      (args : Sexp.t)]))
+        | `Right (form, false, _) -> Some (Form.set form None)
+        | `Right (_, true, _) ->
+          Some (on_set_error [%message "required field is not present" (key : string)])
+        | `Both (args, (form, _, _)) -> Some (Form.set form (Some args)))
+      |> Map.data
+      (* This reversal of order is important and enables optimization! *)
+      |> List.rev
+      |> Effect.Many
+    in
+    let values =
+      Map.filter_mapi forms ~f:(fun ~key ~data:(form, _, _) ->
+        match Form.value form with
+        | Error _ as err -> Some err
+        | Ok None -> None
+        | Ok (Some (Sexp.Atom _ as atom)) ->
+          Some
+            (Or_error.error_s
+               [%message "expected list of args from subform, but got" (atom : Sexp.t)])
+        | Ok (Some (Sexp.List value)) -> Some (Ok (Sexp.List (Sexp.Atom key :: value))))
+      |> Map.data
+      |> Or_error.all
+      |> Or_error.map ~f:(fun fields -> Sexp.List fields)
+    in
+    Form.Expert.create ~value:values ~view ~set
+  and list_form_with_duplication grammar (local_ graph) =
+    let list_form = Form2.Elements.Multiple.list grammar.form graph in
     let theme = View.Theme.current graph in
     let%arr list_form and theme in
     let duplicate idx =
@@ -756,42 +745,40 @@ let form
           (List.concat_mapi value ~f:(fun i value ->
              if i = idx then [ value; value ] else [ value ]))
     in
-    let view =
-      let render_button ~theme ~enabled ~on_click text =
-        let color =
-          match enabled with
-          | true -> Css_gen.color (`Name "blue")
-          | false -> Css_gen.color (`Name "gray")
+    let render_button ~theme ~enabled ~on_click text =
+      let color =
+        match enabled with
+        | true -> Css_gen.color (`Name "blue")
+        | false -> Css_gen.color (`Name "gray")
+      in
+      View.button
+        theme
+        ~attrs:[ Vdom.Attr.type_ "button"; Vdom.Attr.style color ]
+        ~disabled:(not enabled)
+        ~on_click
+        text
+    in
+    let ({ items; add_element } : _ Form2.Elements.Multiple.t) = Form2.view list_form in
+    let items =
+      List.mapi items ~f:(fun i { form; remove } ->
+        let remove_view =
+          View.hbox
+            ~gap:(`Em_float 0.5)
+            [ View.textf "%d - " i
+            ; render_button ~theme ~enabled:true ~on_click:remove "remove"
+            ; render_button
+                ~theme
+                ~enabled:(Or_error.is_ok (Form2.value list_form))
+                ~on_click:(duplicate i)
+                "duplicate"
+            ]
         in
-        View.button
-          theme
-          ~attrs:[ Vdom.Attr.type_ "button"; Vdom.Attr.style color ]
-          ~disabled:(not enabled)
-          ~on_click
-          text
-      in
-      let ({ items; add_element } : _ Form2.Elements.Multiple.t) = Form2.view list_form in
-      let items =
-        List.mapi items ~f:(fun i { form; remove } ->
-          let remove_view =
-            View.hbox
-              ~gap:(`Em_float 0.5)
-              [ View.textf "%d - " i
-              ; render_button ~theme ~enabled:true ~on_click:remove "remove"
-              ; render_button
-                  ~theme
-                  ~enabled:(Or_error.is_ok (Form2.value list_form))
-                  ~on_click:(duplicate i)
-                  "duplicate"
-              ]
-          in
-          Form.View.list_item
-            ~view:(Form.view form)
-            ~remove_item:(Remove_view remove_view))
-      in
-      let append_view =
-        render_button ~theme ~enabled:true ~on_click:add_element "Add new element"
-      in
+        Form.View.list_item ~view:(Form.view form) ~remove_item:(Remove_view remove_view))
+    in
+    let append_view =
+      render_button ~theme ~enabled:true ~on_click:add_element "Add new element"
+    in
+    let view =
       Form.View.list
         ~append_item:(Append_view append_view)
         ~legacy_button_position:`Indented
@@ -802,206 +789,136 @@ let form
       Sexp.List value
     in
     let set = function
-      | Sexp.List l -> Form2.set list_form l
+      | Sexp.List values -> Form2.set list_form values
       | Sexp.Atom _ as atom ->
         on_set_error [%message "attempted to set atom into list grammar" (atom : Sexp.t)]
     in
-    value, set, view
-  in
-  let list_form_without_duplication
-    ~grammar_form
-    (grammar : Sexp_grammar.grammar Bonsai.t)
-    (local_ graph)
-    =
-    let%map.Bonsai list_form = (grammar_form grammar |> E.Multiple.list) graph in
-    let view = Form.view list_form in
+    Form.Expert.create ~value ~set ~view
+  and list_form_without_duplication grammar (local_ graph) =
+    let%arr list_form = E.Multiple.list grammar.form graph in
     let value =
       let%map.Or_error value = Form.value list_form in
       Sexp.List value
     in
     let set = function
-      | Sexp.List l -> Form.set list_form l
+      | Sexp.List values -> Form.set list_form values
       | Sexp.Atom _ as atom ->
         on_set_error [%message "attempted to set atom into list grammar" (atom : Sexp.t)]
     in
-    value, set, view
-  in
-  let annotate_with_ordinals
-    ~grammar_form
-    ~fields_grammar_form
-    (grammar : Sexp_grammar.list_grammar Bonsai.t)
-    :  local_ Bonsai.graph
-    -> (Sexp.t Or_error.t * (Sexp.t -> unit Effect.t) * Form.View.t list) Bonsai.t
-    =
-    fun (local_ graph) ->
-    let open struct
-      type context =
-        { grammar : Sexp_grammar.list_grammar
-        ; depth : int
-        }
-    end in
-    let initial_context =
-      let%arr grammar in
-      { grammar; depth = 1 }
-    in
-    Bonsai.fix
-      initial_context
-      ~f:(fun ~recurse context (local_ graph) ->
-        let list_form_without_duplication = list_form_without_duplication ~grammar_form in
-        let list_form_with_duplication = list_form_with_duplication ~grammar_form in
-        match%sub context with
-        | { grammar = Empty; depth = _ } ->
-          Bonsai.return (Ok (Sexp.List []), (fun _ -> Effect.Ignore), [])
-        | { grammar = Many grammar; depth = _ } ->
-          let value_set_and_view =
-            match allow_duplication_of_list_items with
-            | false -> list_form_without_duplication grammar graph
-            | true -> list_form_with_duplication grammar graph
-          in
-          let%arr value_set_and_view in
-          let value, set, view = value_set_and_view in
-          value, set, [ view ]
-        | { grammar = Fields fields; depth = _ } -> fields_grammar_form fields graph
-        | { grammar = Cons (g, rest); depth } ->
-          let g_form = grammar_form g graph in
-          let rest_value_set_and_views =
-            let context =
-              let%arr depth and rest in
-              { grammar = rest; depth = depth + 1 }
-            in
-            recurse context graph
-          in
-          let g_form =
-            error_hint
-              (fun (local_ _graph) ->
-                let%arr g_form and depth in
-                Form.label (Ordinal_abbreviation.to_string depth) g_form)
-              graph
-          in
-          let%arr g_form and rest_value_set_and_views and grammar in
-          let rest_value, rest_set, rest_views = rest_value_set_and_views in
-          let value =
-            let%bind.Or_error g = Form.value g_form
-            and rest = rest_value in
-            match rest with
-            | Sexp.Atom _ as atom ->
-              Or_error.error_s
-                [%message
-                  "got unexpected atom for list grammar"
-                    (grammar : Sexp_grammar.list_grammar)
-                    (atom : Sexp.t)]
-            | List l -> Ok (Sexp.List (g :: l))
-          in
-          let set = function
-            | Sexp.List (g :: rest) ->
-              (* The order of these sets is important and enables optimization! *)
-              Effect.Many [ rest_set (Sexp.List rest); Form.set g_form g ]
-            | sexp ->
-              on_set_error
-                [%message
-                  "attempted to set atom into list grammar"
-                    (grammar : Sexp_grammar.list_grammar)
-                    (sexp : Sexp.t)]
-          in
-          let views = Form.view g_form :: rest_views in
-          value, set, views)
-      graph
-  in
-  let fields_grammar_form ~list_grammar_form =
-    fields_grammar_form
-      ~list_grammar_form
-      ~optional_field_grammar_form:(optional_field_grammar_form ~list_grammar_form)
-  in
-  let list_grammar_form
-    ~grammar_form
-    (grammar : Sexp_grammar.list_grammar Bonsai.t)
-    (local_ graph)
-    =
-    Bonsai.fix
-      grammar
-      ~f:(fun ~recurse grammar (local_ graph) ->
-        let fields_grammar_form = fields_grammar_form ~list_grammar_form:recurse in
-        let list_form_without_duplication = list_form_without_duplication ~grammar_form in
-        let list_form_with_duplication = list_form_with_duplication ~grammar_form in
-        match%sub grammar with
-        | Empty ->
-          Bonsai.return
-            (Form.Expert.create
-               ~value:(Ok (Sexp.List []))
-               ~set:(fun _ -> Effect.Ignore)
-               ~view:Form.View.empty)
-        | Cons (first, Empty) -> constant_length_tuple_form ~grammar_form [ first ] graph
-        | Cons (first, Cons (second, Empty)) ->
-          constant_length_tuple_form ~grammar_form [ first; second ] graph
-        | Cons (first, Cons (second, Cons (third, Empty))) ->
-          constant_length_tuple_form ~grammar_form [ first; second; third ] graph
-        | Cons (first, Cons (second, Cons (third, Cons (fourth, Empty)))) ->
-          constant_length_tuple_form ~grammar_form [ first; second; third; fourth ] graph
-        | Cons (first, Cons (second, Cons (third, Cons (fourth, Cons (fifth, Empty))))) ->
-          constant_length_tuple_form
-            ~grammar_form
-            [ first; second; third; fourth; fifth ]
-            graph
-        | Cons
-            ( first
-            , Cons (second, Cons (third, Cons (fourth, Cons (fifth, Cons (sixth, Empty)))))
-            ) ->
-          constant_length_tuple_form
-            ~grammar_form
-            [ first; second; third; fourth; fifth; sixth ]
-            graph
-        | Cons
-            ( first
+    Form.Expert.create ~value ~set ~view:(Form.view list_form)
+  and annotate_with_ordinals grammar ~depth (local_ graph) =
+    match grammar with
+    | Empty -> Bonsai.return (Ok (Sexp.List []), (fun _ -> Effect.Ignore), [])
+    | Many grammar ->
+      let form =
+        match allow_duplication_of_list_items with
+        | true -> list_form_with_duplication grammar graph
+        | false -> list_form_without_duplication grammar graph
+      in
+      let%arr form in
+      Form.value form, Form.set form, [ Form.view form ]
+    | Fields { fields; allow_extra_fields } ->
+      let form = fields_grammar_form fields ~allow_extra_fields graph in
+      let%arr form in
+      Form.value form, Form.set form, [ Form.view form ]
+    | Cons (grammar, rest) ->
+      let list_grammar = Cons (grammar, rest) in
+      let grammar_form = grammar_form grammar graph in
+      let rest = annotate_with_ordinals rest ~depth:(depth + 1) graph in
+      let grammar_form =
+        error_hint
+          (fun (local_ _graph) ->
+            let%arr grammar_form in
+            Form.label (Ordinal_abbreviation.to_string depth) grammar_form)
+          graph
+      in
+      let%arr grammar_form and rest in
+      let rest_value, rest_set, rest_views = rest in
+      let value =
+        let%bind.Or_error value = Form.value grammar_form
+        and rest = rest_value in
+        match rest with
+        | Sexp.Atom _ as atom ->
+          Or_error.error_s
+            [%message
+              "got unexpected atom for list grammar"
+                ~grammar:
+                  (sexp_grammar_of_folded_list list_grammar : Sexp_grammar.list_grammar)
+                (atom : Sexp.t)]
+        | List rest -> Ok (Sexp.List (value :: rest))
+      in
+      let set = function
+        | Sexp.List (value :: rest) ->
+          (* The order of these sets is important and enables optimization! *)
+          Effect.Many [ rest_set (Sexp.List rest); Form.set grammar_form value ]
+        | sexp ->
+          on_set_error
+            [%message
+              "attempted to set atom into list grammar"
+                ~grammar:
+                  (sexp_grammar_of_folded_list list_grammar : Sexp_grammar.list_grammar)
+                (sexp : Sexp.t)]
+      in
+      value, set, Form.view grammar_form :: rest_views
+  and list_grammar_form grammar (local_ graph) =
+    match grammar with
+    | Empty ->
+      Bonsai.return
+        (Form.Expert.create
+           ~value:(Ok (Sexp.List []))
+           ~set:(fun _ -> Effect.Ignore)
+           ~view:Form.View.empty)
+    | Cons (first, Empty) -> constant_length_tuple_form ~grammar_form [ first ] graph
+    | Cons (first, Cons (second, Empty)) ->
+      constant_length_tuple_form ~grammar_form [ first; second ] graph
+    | Cons (first, Cons (second, Cons (third, Empty))) ->
+      constant_length_tuple_form ~grammar_form [ first; second; third ] graph
+    | Cons (first, Cons (second, Cons (third, Cons (fourth, Empty)))) ->
+      constant_length_tuple_form ~grammar_form [ first; second; third; fourth ] graph
+    | Cons (first, Cons (second, Cons (third, Cons (fourth, Cons (fifth, Empty))))) ->
+      constant_length_tuple_form
+        ~grammar_form
+        [ first; second; third; fourth; fifth ]
+        graph
+    | Cons
+        ( first
+        , Cons (second, Cons (third, Cons (fourth, Cons (fifth, Cons (sixth, Empty))))) )
+      ->
+      constant_length_tuple_form
+        ~grammar_form
+        [ first; second; third; fourth; fifth; sixth ]
+        graph
+    | Cons
+        ( first
+        , Cons
+            ( second
             , Cons
-                ( second
-                , Cons
-                    ( third
-                    , Cons (fourth, Cons (fifth, Cons (sixth, Cons (seventh, Empty)))) )
-                ) ) ->
-          constant_length_tuple_form
-            ~grammar_form
-            [ first; second; third; fourth; fifth; sixth; seventh ]
-            graph
-        | Many grammar ->
-          let value_set_and_view =
-            match allow_duplication_of_list_items with
-            | false -> list_form_without_duplication grammar graph
-            | true -> list_form_with_duplication grammar graph
-          in
-          let%arr value_set_and_view in
-          let value, set, view = value_set_and_view in
-          Form.Expert.create ~value ~set ~view
-        | Fields fields ->
-          let value_set_and_views = fields_grammar_form fields graph in
-          let%arr value_set_and_views in
-          let value, set, views = value_set_and_views in
-          let view = combine_views views in
-          Form.Expert.create ~value ~set ~view
-        | Cons _ ->
-          (* Tuples don't have labels, so we annotate their arguments with ordinals. The
-             special-case check for a singleton list is because we don't want to add an
-             ordinal to variants/fields that take a single argument. *)
-          let%map.Bonsai value, set, views =
-            annotate_with_ordinals ~grammar_form ~fields_grammar_form grammar graph
-          in
-          let view = combine_views views in
-          Form.Expert.create ~value ~set ~view)
-      graph
-  in
-  let constant_clauses_form
-    (clauses : Sexp_grammar.clause Sexp_grammar.with_tag_list list Bonsai.t)
-    (local_ graph)
-    =
-    let clauses =
-      let%arr clauses in
-      List.map clauses ~f:(fun clause -> (Grammar_helper.Tags.strip_tags clause).name)
-    in
+                (third, Cons (fourth, Cons (fifth, Cons (sixth, Cons (seventh, Empty)))))
+            ) ) ->
+      constant_length_tuple_form
+        ~grammar_form
+        [ first; second; third; fourth; fifth; sixth; seventh ]
+        graph
+    | Many grammar ->
+      (match allow_duplication_of_list_items with
+       | true -> list_form_with_duplication grammar graph
+       | false -> list_form_without_duplication grammar graph)
+    | Fields { fields; allow_extra_fields } ->
+      fields_grammar_form fields ~allow_extra_fields graph
+    | Cons _ ->
+      (* Tuples don't have labels, so we annotate their arguments with ordinals. The
+         special-case check for a singleton list is because we don't want to add an
+         ordinal to variants/fields that take a single argument. *)
+      let%arr value, set, views = annotate_with_ordinals grammar ~depth:1 graph in
+      Form.Expert.create ~value ~set ~view:(combine_views views)
+  and constant_clauses_form clauses (local_ graph) =
+    let names = List.map clauses ~f:(fun { name; _ } -> name) in
     let form =
       Form.Elements.Dropdown.list
         (module String)
         ~to_string:Fn.id
         ~equal:String.equal
-        clauses
+        (Bonsai.return names)
         graph
     in
     let%arr form in
@@ -1013,25 +930,19 @@ let form
         | List _ ->
           raise_s
             [%message "BUG: invalid non-atom constructor set into constant clause form"])
-  in
-  let clauses_form
-    ~grammar_form
-    (clauses : (Sexp_grammar.grammar * 'a) Bonsai.t)
-    (local_ graph)
-    =
-    let list_grammar_form = list_grammar_form ~grammar_form in
-    let f (clauses : Sexp_grammar.clause Sexp_grammar.with_tag_list list) =
-      let open Grammar_helper in
-      List.for_all clauses ~f:(fun clause ->
-        let clause, tags = Tags.collect_and_strip_tags clause in
-        match Tags.is_empty tags, clause.clause_kind with
-        | true, Atom_clause -> true
-        | false, Atom_clause | false, List_clause _ | true, List_clause _ -> false)
+  and clauses_form { case_sensitivity = _; clauses } (local_ graph) =
+    let has_only_untagged_atom_clauses =
+      List.for_all clauses ~f:(fun { args; tags; _ } ->
+        Option.is_none args && List.is_empty tags)
     in
-    match%sub clauses with
-    | Variant { case_sensitivity = _; clauses }, _ when f clauses ->
-      constant_clauses_form clauses graph
-    | Variant _, _ ->
+    match clauses, has_only_untagged_atom_clauses with
+    | [], _ ->
+      (* There's no value that a form can produce for a variant type with no clauses. So,
+         we just produce a form that errors. *)
+      Bonsai.return
+        (Form.return_error (Error.create_s [%message "no clauses in variant"]))
+    | _ :: _, true -> constant_clauses_form clauses graph
+    | _ :: _, false ->
       let%sub form, _ =
         Bonsai.wrap
           graph
@@ -1051,27 +962,10 @@ let form
             | Active (_, inner) ->
               Bonsai.Apply_action_context.schedule_event context (Form.set inner sexp))
           ~f:(fun (_ : unit Bonsai.t) inject_outer (local_ graph) ->
-            let%sub clauses_names, clauses_as_map, clauses_and_docs =
-              let%arr clauses in
-              let clauses =
-                match clauses with
-                | Variant { clauses; _ }, _ -> clauses
-                | _ -> assert false
-              in
-              let clauses_and_docs =
-                List.map clauses ~f:(fun clause ->
-                  let clause, tags = Grammar_helper.Tags.collect_and_strip_tags clause in
-                  clause, Grammar_helper.Tags.find_doc_tag tags)
-              in
-              let as_map =
-                String.Map.of_alist_exn
-                  (List.map clauses_and_docs ~f:(fun ((clause, _doc) as clause_and_tag) ->
-                     clause.name, clause_and_tag))
-              in
-              let just_the_names =
-                List.map clauses_and_docs ~f:(fun (clause, _doc) -> clause.name)
-              in
-              just_the_names, as_map, clauses_and_docs
+            let clause_names = List.map clauses ~f:(fun { name; _ } -> name) in
+            let clauses_as_map =
+              String.Map.of_alist_exn
+                (List.map clauses ~f:(fun clause -> clause.name, clause))
             in
             let%sub outer, set_outer, outer_view =
               let open E.Dropdown.Private in
@@ -1091,11 +985,7 @@ let form
               in
               let path = Bonsai.path_id graph in
               let theme = View.Theme.current graph in
-              let%arr path
-              and outer_and_set_outer
-              and clause_names = clauses_names
-              and clauses_as_map
-              and theme in
+              let%arr path and outer_and_set_outer and theme in
               let outer, set_outer = outer_and_set_outer in
               let dropdown =
                 make_input
@@ -1114,21 +1004,13 @@ let form
                   ~extra_option_attrs:(Fn.const [])
               in
               let info =
-                Map.fold
-                  clauses_as_map
-                  ~init:[]
-                  ~f:(fun ~key:name ~data:(_clause, doc) acc ->
-                    match doc with
-                    | None -> acc
-                    | Some doc ->
-                      View.vbox
-                        [ Vdom.Node.span
-                            ~attrs:[ Style.bold_text ]
-                            [ Vdom.Node.text name ]
-                        ; Vdom.Node.text doc
-                        ]
-                      :: acc)
-                |> List.rev
+                List.filter_map clauses ~f:(fun { name; tags; _ } ->
+                  let doc = find_doc_tag tags in
+                  Option.map doc ~f:(fun doc ->
+                    View.vbox
+                      [ Vdom.Node.span ~attrs:[ Style.bold_text ] [ Vdom.Node.text name ]
+                      ; Vdom.Node.text doc
+                      ]))
               in
               let view =
                 match info with
@@ -1154,47 +1036,41 @@ let form
                   | Some outer -> set_outer (Set outer))
               , view )
             in
-            let clauses_forms =
-              Bonsai.assoc
-                (module String)
-                clauses_as_map
-                ~f:(fun name clause (local_ graph) ->
-                  let%sub { Sexp_grammar.clause_kind; _ }, _doc = clause in
-                  let is_active =
-                    let%arr outer and name in
-                    match outer with
-                    | None -> false
-                    | Some clause_name when String.equal clause_name name -> true
-                    | Some _ -> false
-                  in
-                  if%sub is_active
-                  then (
-                    match%sub clause_kind with
-                    | Atom_clause -> Bonsai.return (Form.return (Sexp.List []))
-                    | List_clause { args : Sexp_grammar.list_grammar } ->
-                      list_grammar_form args graph)
-                  else Bonsai.return (Form.return (Sexp.List [])))
+            let selected_clause =
+              let%arr outer in
+              Option.bind outer ~f:(Map.find clauses_as_map)
+            in
+            let module Clause_index = struct
+              type t = int option [@@deriving sexp, equal, compare]
+
+              let all = None :: List.mapi clauses ~f:(fun i _ -> Some i)
+            end
+            in
+            let selected_index =
+              let%arr selected_clause in
+              Option.bind selected_clause ~f:(fun selected_clause ->
+                List.find_mapi clauses ~f:(fun i clause ->
+                  Option.some_if (String.equal clause.name selected_clause.name) i))
+            in
+            let inner =
+              Bonsai.enum
+                (module Clause_index)
+                ~match_:selected_index
+                ~with_:(function
+                  | None -> fun _graph -> Bonsai.return (Form.return (Sexp.List []))
+                  | Some index ->
+                    (match (List.nth_exn clauses index).args with
+                     | None -> fun _graph -> Bonsai.return (Form.return (Sexp.List []))
+                     | Some args -> fun graph -> list_grammar_form args graph))
                 graph
             in
             let bonk = Bonsai_extra.Effects.bonk graph in
             let%arr outer
-            and clauses_forms
+            and inner
             and bonk
             and set_outer
             and inject_outer
-            and clauses_and_docs
             and outer_view in
-            let inner =
-              match outer with
-              | None -> Form.return (Sexp.List [])
-              | Some selected_name ->
-                (match Map.find clauses_forms selected_name with
-                 | Some form -> form
-                 | None ->
-                   {| BUG: auto-generated forms could not find a form with the selected variant name |}
-                   |> Error.of_string
-                   |> Form.return_error)
-            in
             let view =
               match outer with
               | None ->
@@ -1206,11 +1082,8 @@ let form
             in
             let set = function
               | Sexp.List (Sexp.Atom clause_name :: args) ->
-                (match
-                   List.find clauses_and_docs ~f:(fun (clause, _docs) ->
-                     String.equal clause.name clause_name)
-                 with
-                 | Some (clause, _docs) ->
+                (match Map.find clauses_as_map clause_name with
+                 | Some clause ->
                    (match outer with
                     | Some name when String.equal name clause.name ->
                       bonk (inject_outer (Sexp.List args))
@@ -1225,11 +1098,8 @@ let form
                        "unknown clause_name while setting a clause form"
                          (clause_name : string)])
               | Sexp.Atom clause_name ->
-                (match
-                   List.find clauses_and_docs ~f:(fun (clause, _docs) ->
-                     String.equal clause.name clause_name)
-                 with
-                 | Some (clause, _docs) -> set_outer (Some clause.name)
+                (match Map.find clauses_as_map clause_name with
+                 | Some clause -> set_outer (Some clause.name)
                  | None ->
                    on_set_error
                      [%message
@@ -1253,147 +1123,203 @@ let form
             Form.Expert.create ~view ~value ~set, inner)
       in
       form
-    | _ -> Bonsai.return (Form.return (Sexp.List []))
   in
-  let grammar_form (grammar : Sexp_grammar.grammar Bonsai.t)
-    : local_ Bonsai.graph -> Sexp.t Form.t Bonsai.t
-    =
-    fun (local_ graph) ->
-    Bonsai.fix
-      (Bonsai.both grammar (Bonsai.return Environment.empty))
-      ~f:(fun ~recurse grammar_and_environment (local_ graph) ->
-        let grammar_form grammar (local_ graph) =
-          let grammar_and_environment =
-            let%arr grammar and grammar_and_environment in
-            let _, environment = grammar_and_environment in
-            grammar, environment
-          in
-          recurse grammar_and_environment graph
+  let module Callbacks = struct
+    type t = folded_grammar
+    type list_t = folded_list_grammar
+
+    let create ?variant ?(find_descendant = fun _ -> None) grammar form =
+      let find_form query =
+        if phys_equal query grammar then Some form else find_descendant query
+      in
+      { grammar; form; find_form; variant }
+    ;;
+
+    let any name =
+      create
+        (Sexp_grammar.Any name)
+        (E.Textarea.sexpable ~allow_updates_when_focused (module Sexp))
+    ;;
+
+    let bool =
+      create
+        Sexp_grammar.Bool
+        (error_hint (E.Checkbox.bool ~default:false () |> project_to_sexp (module Bool)))
+    ;;
+
+    let char =
+      create
+        Sexp_grammar.Char
+        (error_hint
+           (E.Textbox.stringable ~allow_updates_when_focused (module Char)
+            |> project_to_sexp (module Char)))
+    ;;
+
+    let integer =
+      create
+        Sexp_grammar.Integer
+        (error_hint
+           (E.Number.int ~default:0 ~step:1 ~allow_updates_when_focused ()
+            |> project_to_sexp (module Int)))
+    ;;
+
+    let float =
+      create
+        Sexp_grammar.Float
+        (error_hint
+           (E.Number.float ~default:0. ~step:1. ~allow_updates_when_focused ()
+            |> project_to_sexp (module Float)))
+    ;;
+
+    let string =
+      let form =
+        match textbox_for_string with
+        | None ->
+          E.Textarea.string ~allow_updates_when_focused ()
+          |> project_to_sexp (module String)
+        | Some () ->
+          E.Textbox.string ~allow_updates_when_focused ()
+          |> project_to_sexp (module String)
+      in
+      create Sexp_grammar.String (error_hint form)
+    ;;
+
+    let option grammar =
+      create
+        ~find_descendant:grammar.find_form
+        (Sexp_grammar.Option grammar.grammar)
+        (option_form grammar)
+    ;;
+
+    let union grammars =
+      let grammar =
+        Sexp_grammar.Union (List.map grammars ~f:(fun grammar -> grammar.grammar))
+      in
+      let find_descendant query =
+        List.find_map grammars ~f:(fun grammar -> grammar.find_form query)
+      in
+      match grammars with
+      | [] ->
+        create ~find_descendant grammar (fun _graph ->
+          Bonsai.return
+            (Form.return_error (Error.create_s [%message "no grammars in union"])))
+      (* This is a special form of union that's pretty easy to construct and used widely
+         in [Css_gen], which are often inputs into Bonsai components. Special casing this
+         case to have better support for those, but the general case below should still
+         probably be thought about. *)
+      | [ { variant = Some a; _ }; { variant = Some b; _ } ]
+        when let names =
+               List.map (a.clauses @ b.clauses) ~f:(fun clause -> clause.name)
+             in
+             Set.length (String.Set.of_list names) = List.length names ->
+        let case_sensitivity =
+          match a.case_sensitivity, b.case_sensitivity with
+          | Case_sensitive, _ | _, Case_sensitive -> Sexp_grammar.Case_sensitive
+          | Case_sensitive_except_first_character, _
+          | _, Case_sensitive_except_first_character ->
+            Case_sensitive_except_first_character
+          | Case_insensitive, Case_insensitive -> Case_insensitive
         in
-        let list_grammar_form = list_grammar_form ~grammar_form in
-        let option_form = option_form ~grammar_form in
-        let with_tag_form = with_tag_form ~grammar_form in
-        let clauses_form = clauses_form ~grammar_form in
-        match%sub grammar_and_environment with
-        | Bool, _ ->
-          error_hint
-            (E.Checkbox.bool ~default:false () |> project_to_sexp (module Bool))
-            graph
-        | String, _ ->
-          error_hint
-            (match textbox_for_string with
-             | None ->
-               E.Textarea.string ~allow_updates_when_focused ()
-               |> project_to_sexp (module String)
-             | Some () ->
-               E.Textbox.string ~allow_updates_when_focused ()
-               |> project_to_sexp (module String))
-            graph
-        | Integer, _ ->
-          error_hint
-            (E.Number.int ~default:0 ~step:1 ~allow_updates_when_focused ()
-             |> project_to_sexp (module Int))
-            graph
-        | Char, _ ->
-          error_hint
-            (E.Textbox.stringable ~allow_updates_when_focused (module Char)
-             |> project_to_sexp (module Char))
-            graph
-        | Float, _ ->
-          error_hint
-            (E.Number.float ~default:0. ~step:1. ~allow_updates_when_focused ()
-             |> project_to_sexp (module Float))
-            graph
-        | Option g, _ -> option_form g graph
-        | List l, _ -> list_grammar_form l graph
-        | Lazy g, _ ->
-          (* Fearlessly force the lazy; it's not used for recursion *)
-          let g =
-            let%arr g in
-            Portable_lazy.force g
+        let clauses =
+          List.merge a.clauses b.clauses ~compare:(fun a b ->
+            String.compare a.name b.name)
+        in
+        let variant = { case_sensitivity; clauses } in
+        create ~variant ~find_descendant grammar (error_hint (clauses_form variant))
+      | _ ->
+        create
+          ~find_descendant
+          grammar
+          (E.Textarea.sexpable ~allow_updates_when_focused (module Sexp))
+    ;;
+
+    let list grammar =
+      create
+        ~find_descendant:(find_form_in_list_grammar grammar)
+        (Sexp_grammar.List (sexp_grammar_of_folded_list grammar))
+        (list_grammar_form grammar)
+    ;;
+
+    let empty = Empty
+    let cons grammar rest = Cons (grammar, rest)
+    let many grammar = Many grammar
+
+    let record fields ~allow_extra_fields =
+      let fields =
+        List.map fields ~f:(fun (name, (field, tags)) ->
+          let required, args =
+            match (field : _ Sexp_grammar.Field.t) with
+            | Optional args -> false, args
+            | Required args -> true, args
           in
-          grammar_form g graph
-        | Tagged with_tag, _ -> with_tag_form with_tag graph
-        | Variant { case_sensitivity = _; clauses = [] }, _ ->
-          (* There's no value that a form can produce for a variant type with no clauses.
-             So, we just produce a form that errors. *)
-          Bonsai.return
-            (Form.return_error (Error.create_s [%message "no clauses in variant"]))
-        | Variant _, _ -> error_hint (clauses_form grammar_and_environment) graph
-        | Union [], _ ->
-          Bonsai.return
-            (Form.return_error (Error.create_s [%message "no grammars in union"]))
-        (* This is a special form of union that's pretty easy to construct and used widely
-           in [Css_gen], which are often inputs into Bonsai components. Special casing
-           this case to have better support for those, but the general case below should
-           still probably be thought about. *)
-        | ( Union
-              [ Variant { case_sensitivity = sens_a; clauses = clauses_a }
-              ; Variant { case_sensitivity = sens_b; clauses = clauses_b }
-              ]
-          , _ )
-          when no_duplicate_clause_names (clauses_a @ clauses_b) ->
-          let open Sexp_grammar in
-          let merged_variant =
-            let%arr sens_a and sens_b and clauses_a and clauses_b in
-            let strictest_case_sensitivity =
-              match sens_a, sens_b with
-              | Case_sensitive, _ | _, Case_sensitive -> Case_sensitive
-              | Case_sensitive_except_first_character, _
-              | _, Case_sensitive_except_first_character ->
-                Case_sensitive_except_first_character
-              | Case_insensitive, Case_insensitive -> Case_insensitive
-            in
-            Variant
-              { case_sensitivity = strictest_case_sensitivity
-              ; clauses =
-                  List.merge
-                    clauses_a
-                    clauses_b
-                    ~compare:(compare_with_tag_list compare_clause)
-              }
+          { name; required; args; tags })
+      in
+      Fields { fields; allow_extra_fields }
+    ;;
+
+    let variant clauses ~case_sensitivity =
+      let clauses =
+        List.map clauses ~f:(fun (name, (args, tags)) -> { name; args; tags })
+      in
+      let variant = { case_sensitivity; clauses } in
+      let find_descendant query =
+        List.find_map clauses ~f:(fun { args; _ } ->
+          Option.bind args ~f:(fun args -> find_form_in_list_grammar args query))
+      in
+      create
+        ~variant
+        ~find_descendant
+        (sexp_grammar_of_folded_variant variant)
+        (error_hint (clauses_form variant))
+    ;;
+
+    (* Forcing [grammar] here (or reconstructing the real [Sexp_grammar.grammar] it
+       describes) isn't allowed: [Fold_recursive] requires that lazies are not forced
+       during the fold, so we use a placeholder grammar and delay building the form. *)
+    let lazy_ grammar =
+      create (Sexp_grammar.Any "lazy grammar") (fun graph ->
+        Bonsai.delay ~f:(fun graph -> grammar_form (Lazy.force grammar) graph) graph)
+    ;;
+
+    let tag grammar key value =
+      let tagged = { Sexp_grammar.key; value; grammar = grammar.grammar } in
+      let form graph =
+        match
+          List.find customizations ~f:(fun customization ->
+            Customization.applies customization tagged)
+        with
+        | None -> error_hint grammar.form graph
+        | Some customization ->
+          let recurse_within_customization child (local_ graph) =
+            Bonsai.stitch
+              (module Grammar)
+              child
+              ~f:(fun child (local_ graph) ->
+                match grammar.find_form child with
+                | Some form -> form graph
+                | None -> recurse (Bonsai.return child) graph)
+              graph
           in
-          grammar_form merged_variant graph
-        | (Any _ | Union _), _ ->
-          E.Textarea.sexpable ~allow_updates_when_focused (module Sexp) graph
-        | Tyvar variable, environment ->
-          (* We need to interpret the looked up variable in its original environment, not
-             the current environment *)
-          let grammar_and_environment =
-            let%arr variable and environment in
-            Environment.lookup_variable_and_env environment variable
-          in
-          recurse grammar_and_environment graph
-        | Tycon (_, _, _), _ ->
-          let grammar_and_environment_with_defns =
-            let%arr grammar_and_environment in
-            let key, instances, defns, environment =
-              match grammar_and_environment with
-              | Tycon (key, instances, defns), environment ->
-                key, instances, defns, environment
-              | _ -> assert false
-            in
-            ( Sexp_grammar.Recursive (key, instances)
-            , Environment.add_defns environment defns )
-          in
-          recurse grammar_and_environment_with_defns graph
-        | Recursive (_, _), _ ->
-          let grammar_and_environment =
-            let%arr grammar_and_environment in
-            let tycon, instances, environment =
-              match grammar_and_environment with
-              | Recursive (tycon, instances), environment -> tycon, instances, environment
-              | _ -> assert false
-            in
-            let ({ tycon = _; tyvars; grammar } : Sexp_grammar.defn) =
-              Environment.lookup_defn environment tycon
-            in
-            grammar, Environment.add_variables environment ~tyvars ~instances
-          in
-          recurse grammar_and_environment graph)
-      graph
+          Customization.apply
+            customization
+            (Bonsai.return tagged)
+            ~recurse:recurse_within_customization
+            graph
+      in
+      create ~find_descendant:grammar.find_form (Sexp_grammar.Tagged tagged) form
+    ;;
+
+    (* [Bonsai.delay] is what ties the knot for recursive grammars: eagerly building the
+       form here would recurse forever. *)
+    let of_lazy_recursive grammar =
+      create (Sexp_grammar.Any "recursive grammar") (fun graph ->
+        Bonsai.delay ~f:(fun graph -> grammar_form (Lazy.force grammar) graph) graph)
+    ;;
+  end
   in
-  grammar_form grammar graph
+  let module Fold = Sexp_grammar.Fold_recursive (Callbacks) in
+  let folded = Fold.of_grammar_exn grammar in
+  grammar_form folded graph
 ;;
 
 let form'
@@ -1406,29 +1332,34 @@ let form'
   sexp_grammar
   (local_ graph)
   =
-  let form =
-    form
-      ?allow_updates_when_focused
-      ?textbox_for_string
-      sexp_grammar
-      ~on_set_error
-      ~customizations
-      ~allow_duplication_of_list_items
-      ~tooltip_format_of_doc_string
-      graph
-  in
-  let%arr form and sexp_grammar in
-  let validate_sexp = Sexp_grammar.validate_sexp_untyped sexp_grammar in
-  Form.Expert.create ~view:(Form.view form) ~value:(Form.value form) ~set:(fun sexp ->
-    match unstage validate_sexp sexp with
-    | Ok () -> Form.set form sexp
-    | Error error ->
-      on_set_error
-        [%message
-          "BUG: Sexp representation of set form value does not match sexp grammar. Does \
-           your sexp_of_t function match your sexp grammar?"
-            ~value:(sexp : Sexp.t)
-            (error : Error.t)])
+  Bonsai.stitch
+    (module Grammar)
+    sexp_grammar
+    ~f:(fun sexp_grammar (local_ graph) ->
+      let form =
+        generate_form
+          ?allow_updates_when_focused
+          ?textbox_for_string
+          sexp_grammar
+          ~on_set_error
+          ~customizations
+          ~allow_duplication_of_list_items
+          ~tooltip_format_of_doc_string
+          graph
+      in
+      let validate_sexp = Sexp_grammar.validate_sexp_untyped sexp_grammar in
+      let%arr form in
+      Form.Expert.create ~view:(Form.view form) ~value:(Form.value form) ~set:(fun sexp ->
+        match unstage validate_sexp sexp with
+        | Ok () -> Form.set form sexp
+        | Error error ->
+          on_set_error
+            [%message
+              "BUG: Sexp representation of set form value does not match sexp grammar. \
+               Does your sexp_of_t function match your sexp grammar?"
+                ~value:(sexp : Sexp.t)
+                (error : Error.t)]))
+    graph
 ;;
 
 let form
@@ -1440,10 +1371,10 @@ let form
   ?customizations
   ?textbox_for_string
   ?allow_duplication_of_list_items
-  : local_ Bonsai.graph -> a Form.t Bonsai.t
+  : Bonsai.graph @ local -> a Form.t Bonsai.t
   =
   fun (local_ graph) ->
-  let%map.Bonsai form =
+  let%arr form =
     form'
       ?tooltip_format_of_doc_string
       ?allow_updates_when_focused

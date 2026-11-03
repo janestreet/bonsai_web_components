@@ -155,7 +155,7 @@ let make
   : type a.
     fallback:a Bonsai.t
     -> interpolate:(a -> a -> float -> a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> a t Bonsai.t
   =
   fun ~fallback ~interpolate (local_ graph) ->
@@ -207,7 +207,7 @@ let make
         | None -> Bonsai.return ()
         | Some callback ->
           let callback =
-            let%map callback and set_callback in
+            let%arr callback and set_callback in
             fun prev new_ ->
               let remove_callback = set_callback None in
               match prev, new_ with
@@ -297,7 +297,7 @@ let smooth
   let%sub { value; animate } = make ~fallback:v ~interpolate graph in
   let () =
     let callback =
-      let%map animate and duration in
+      let%arr animate and duration in
       fun new_ -> animate (`For duration) ~with_ new_
     in
     Bonsai.Edge.on_change ~trigger:`After_display ?sexp_of_model ~equal v ~callback graph

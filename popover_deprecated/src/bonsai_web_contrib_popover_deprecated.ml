@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View = Bonsai_web_legacy_view
 open Bonsai.Let_syntax
 open Js_of_ocaml
 
@@ -152,11 +153,15 @@ let component
             | _ -> Effect.Ignore
           in
           Vdom.Attr.many
-            [ Vdom.Attr.Global_listeners.click ~phase:Capture ~f:(f ~source:`Left_click)
-            ; Vdom.Attr.Global_listeners.contextmenu
+            [ Vdom.Attr.Global_listeners.click_js_of_ocaml
+                ~phase:Capture
+                ~f:(f ~source:`Left_click)
+            ; Vdom.Attr.Global_listeners.contextmenu_js_of_ocaml
                 ~phase:Capture
                 ~f:(f ~source:`Right_click)
-            ; Vdom.Attr.Global_listeners.keydown ~phase:Capture ~f:handle_if_escape
+            ; Vdom.Attr.Global_listeners.keydown_js_of_ocaml
+                ~phase:Capture
+                ~f:handle_if_escape
             ]
       in
       let popover = popover ~close graph in

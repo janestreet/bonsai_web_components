@@ -196,7 +196,7 @@ let component
   ~(leaves : col Header_tree.leaf list Bonsai.t)
   ~(assoc :
       (key * data) Opaque_map.t Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (key * (col * Vdom.Node.t) list) Opaque_map.t Bonsai.t)
   ~column_widths
   ~(visually_focused : (key, col, kind) Focus.focused Bonsai.t)
@@ -204,7 +204,7 @@ let component
   ~extra_row_attrs
   (collated : (key, data) Collated.t Bonsai.t)
   (input : (key * data) Opaque_map.t Bonsai.t)
-  : local_ Bonsai.graph -> (Table_view.Body.t * For_testing.t Lazy.t) Bonsai.t
+  : Bonsai.graph @ local -> (Table_view.Body.t * For_testing.t Lazy.t) Bonsai.t
   =
   fun (local_ graph) ->
   let padding_top_and_bottom =

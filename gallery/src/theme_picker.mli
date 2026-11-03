@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View := Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 
 module Theme_id : sig
@@ -14,5 +15,5 @@ val component
   :  ?default:Theme_id.t
   -> ?standalone:bool
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> (View.Theme.t * Vdom.Node.t) Bonsai.t

@@ -301,7 +301,7 @@ module Read_on_change = struct
         ~equal:[%equal: File.t option]
         file
         ~callback:
-          (let%map inject in
+          (let%arr inject in
            function
            | None -> inject Reset
            | Some file ->

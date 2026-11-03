@@ -12,14 +12,14 @@ module Basic : sig
     :  ?name:string
     -> ?extensions:Codemirror.State.Extension.t list
     -> unit
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
     :  ?name:string
     -> ?extensions:Codemirror.State.Extension.t list
     -> (module Stringable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   (** Consider using [Codemirror_sexp.extension] to enable sexp-specific editing features. *)
@@ -27,7 +27,7 @@ module Basic : sig
     :  ?name:string
     -> ?extensions:Codemirror.State.Extension.t list
     -> (module Sexpable with type t = 'a)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end
 
@@ -40,7 +40,7 @@ module Dynamic_extensions : sig
     -> equal:('model -> 'model -> bool)
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (string, Vdom.Node.t) Form.t Bonsai.t
 
   val stringable
@@ -50,7 +50,7 @@ module Dynamic_extensions : sig
     -> equal:('model -> 'model -> bool)
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 
   (** Consider using [Codemirror_sexp.extension] to enable sexp-specific editing features,
@@ -62,6 +62,6 @@ module Dynamic_extensions : sig
     -> equal:('model -> 'model -> bool)
     -> compute_extensions:('model -> Codemirror.State.Extension.t list) Bonsai.t
     -> 'model Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a, Vdom.Node.t) Form.t Bonsai.t
 end

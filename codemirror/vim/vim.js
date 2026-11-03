@@ -44,7 +44,7 @@ function initVim(CM) {
  * @typedef { import("./cm_adapter").CodeMirror } CodeMirror
  * @typedef { import("./types").CodeMirrorV} CodeMirrorV
  * @typedef { import("./types").Pos } Pos
- * @typedef { import("./types").vimState } vimState 
+ * @typedef { import("./types").vimState } vimState
  * @typedef { import("./types").ExFn } ExFn
  * @typedef { import("./types").MotionArgs } MotionArgs
  * @typedef { import("./types").ActionArgs } ActionArgs
@@ -59,7 +59,7 @@ function initVim(CM) {
 
   /** @arg {CodeMirror} cm @arg {Pos} curStart @arg {Pos} curEnd */
   function updateSelectionForSurrogateCharacters(cm, curStart, curEnd) {
-    // start and character position when no selection 
+    // start and character position when no selection
     // is the same in visual mode, and differs in 1 character in normal mode
     if (curStart.line === curEnd.line && curStart.ch >= curEnd.ch - 1) {
       var text = cm.getLine(curStart.line);
@@ -408,37 +408,37 @@ function initVim(CM) {
   var options = {};
   /**
    * @overload
-   * @arg {string} name 
-   * @arg {boolean|null|undefined} defaultValue 
-   * @arg {'boolean'} type 
-   * @arg {string[]|null} [aliases] 
-   * @arg {import("./types").booleanOptionCallback} [callback] 
+   * @arg {string} name
+   * @arg {boolean|null|undefined} defaultValue
+   * @arg {'boolean'} type
+   * @arg {string[]|null} [aliases]
+   * @arg {import("./types").booleanOptionCallback} [callback]
    * @returns {void}
    */
   /**
    * @overload
-   * @arg {string} name 
-   * @arg {number|null|undefined} defaultValue 
-   * @arg {'number'} type 
-   * @arg {string[]|null} [aliases] 
+   * @arg {string} name
+   * @arg {number|null|undefined} defaultValue
+   * @arg {'number'} type
+   * @arg {string[]|null} [aliases]
    * @arg {import("./types").numberOptionCallback} [callback]
-   * @returns {void} 
+   * @returns {void}
    */
   /**
    * @overload
-   * @arg {string} name 
-   * @arg {string|null|undefined} defaultValue 
-   * @arg {'string'} type 
-   * @arg {string[]|null} [aliases] 
+   * @arg {string} name
+   * @arg {string|null|undefined} defaultValue
+   * @arg {'string'} type
+   * @arg {string[]|null} [aliases]
    * @arg {import("./types").stringOptionCallback} [callback]
    * @returns {void}
    */
-  /** 
-   * @arg {string} name 
-   * @arg {any} defaultValue 
-   * @arg {'string'} type 
-   * @arg {string[]|null} [aliases] 
-   * @arg {import("./types").optionCallback} [callback] 
+  /**
+   * @arg {string} name
+   * @arg {any} defaultValue
+   * @arg {'string'} type
+   * @arg {string[]|null} [aliases]
+   * @arg {import("./types").optionCallback} [callback]
    * */
   function defineOption(name, defaultValue, type, aliases, callback) {
     if (defaultValue === undefined && !callback) {
@@ -461,9 +461,9 @@ function initVim(CM) {
   }
 
   /**
-   * @arg {string} name 
-   * @arg {any} value 
-   * @arg {CodeMirrorV} [cm] 
+   * @arg {string} name
+   * @arg {any} value
+   * @arg {CodeMirrorV} [cm]
    * @arg {{ scope?: any; } | undefined} [cfg] */
   function setOption(name, value, cm, cfg) {
     var option = options[name];
@@ -497,9 +497,9 @@ function initVim(CM) {
     }
   }
 
-  /** 
-   * @arg {string} name 
-   * @arg {CodeMirrorV} [cm] 
+  /**
+   * @arg {string} name
+   * @arg {CodeMirrorV} [cm]
    * @arg {{ scope?: any; } | undefined} [cfg] */
   function getOption(name, cm, cfg) {
     var option = options[name];
@@ -559,7 +559,7 @@ function initVim(CM) {
     var pointer = -1;
     var head = 0;
     var tail = 0;
-    
+
     var buffer = /**@type {(Marker|undefined)[]} */ (new Array(size));
     /** @arg {CodeMirror} cm  @arg {Pos} oldCur @arg {Pos} newCur */
     function add(cm, oldCur, newCur) {
@@ -633,12 +633,12 @@ function initVim(CM) {
     };
   };
 
-  /** 
+  /**
    * Returns an object to track the changes associated insert mode.  It
    * clones the object that is passed in, or creates an empty object one if
    * none is provided.
    * @arg {import("./types").InsertModeChanges | undefined} [c]
-   * @returns {import("./types").InsertModeChanges} 
+   * @returns {import("./types").InsertModeChanges}
    */
   var createInsertModeChanges = function(c) {
     if (c) {
@@ -742,19 +742,19 @@ function initVim(CM) {
     return cm.state.vim;
   }
   /**
-   * @type { 
+   * @type {
       {
         macroModeState: MacroModeState;
         registerController: RegisterController;
         searchHistoryController: HistoryController;
         jumpList: ReturnType<createCircularJumpList>;
-        exCommandHistoryController: HistoryController; 
-        lastCharacterSearch: {increment: number, forward: boolean, selectedCharacter: string}; 
+        exCommandHistoryController: HistoryController;
+        lastCharacterSearch: {increment: number, forward: boolean, selectedCharacter: string};
         query?: any;
         isReversed?: boolean;
         lastSubstituteReplacePart: any;
-        searchQuery?: null; 
-        searchIsReversed?: boolean; 
+        searchQuery?: null;
+        searchIsReversed?: boolean;
       }
     }
   */
@@ -789,7 +789,7 @@ function initVim(CM) {
      * @arg {string} keyName
      * @arg {KeyboardEvent} e
      * @returns
-     */    
+     */
     constructor(keyName, e) {
       this.keyName = keyName;
       this.key = e.key;
@@ -986,7 +986,7 @@ function initVim(CM) {
           var selections = cm.listSelections();
           for (var i = 0; i < selections.length; i++) {
             var here = selections[i].head;
-            cm.replaceRange(changeQueue.removed[i] || "", 
+            cm.replaceRange(changeQueue.removed[i] || "",
               offsetCursor(here, 0, -changeQueue.inserted.length), here, '+input');
           }
           vimGlobalState.macroModeState.lastInsertModeChanges.changes.pop();
@@ -1046,7 +1046,7 @@ function initVim(CM) {
             cm.curOp.isVimOp = true;
             try {
               if (typeof command != 'object') return;
-              
+
               if (command.type == 'keyToKey') {
                 doKeyToKey(cm, command.toKeys, command);
               } else {
@@ -1265,7 +1265,7 @@ function initVim(CM) {
     }
     langmap.remapCtrl = remapCtrl;
   }
-  /** 
+  /**
    *  From :help langmap
    *  The 'langmap' option is a list of parts, separated with commas.  Each
    *      part can be in one of two forms:
@@ -1800,10 +1800,10 @@ function initVim(CM) {
       function pcreLabel() {
         return getOption('pcre') ? '(JavaScript regexp: set pcre)' : '(Vim regexp: set nopcre)'
       }
-      /** 
-       * @arg {KeyboardEvent&{target:HTMLInputElement}} e 
-       * @arg {any} query 
-       * @arg {(arg0: any) => void} close 
+      /**
+       * @arg {KeyboardEvent&{target:HTMLInputElement}} e
+       * @arg {any} query
+       * @arg {(arg0: any) => void} close
        */
       function onPromptKeyUp(e, query, close) {
         var keyName = vimKeyFromEvent(e), up, offset;
@@ -1869,7 +1869,7 @@ function initVim(CM) {
                 desc: dom(
                   'span',
                   {
-                    $cursor: 'pointer', 
+                    $cursor: 'pointer',
                     onmousedown: function(/** @type {MouseEvent} */ e) {
                       e.preventDefault()
                       setOption('pcre', !getOption('pcre'));
@@ -1878,7 +1878,7 @@ function initVim(CM) {
                     }
                   },
                   pcreLabel()
-                ),  
+                ),
                 onKeyUp: onPromptKeyUp,
                 onKeyDown: onPromptKeyDown
             });
@@ -2259,7 +2259,7 @@ function initVim(CM) {
         showConfirm(cm, 'No match found ' + query +
           (getOption('pcre') ? ' (set nopcre to use Vim regexps)' : ''));
       }
-      return result; 
+      return result;
     },
     /**
      * Find and select the next occurrence of the search query. If the cursor is currently
@@ -3236,7 +3236,7 @@ function initVim(CM) {
             text = " ";
           }
         }
-        cm.replaceRange(text, 
+        cm.replaceRange(text,
           new Pos(curStart.line, finalCh),
           new Pos(curStart.line + 1, nextStartCh));
       }
@@ -3272,6 +3272,7 @@ function initVim(CM) {
           actionArgs.registerName);
       if (actionArgs.registerName === '+') {
         navigator.clipboard.readText().then((value) => {
+          value = value.replace(/\r\n?/g, '\n');
           this.continuePaste(cm, actionArgs, vim, value, register);
         })
       } else {
@@ -3583,8 +3584,8 @@ function initVim(CM) {
    * Clips cursor to ensure that line is within the buffer's range
    * and is not inside surrogate pair
    * If includeLineBreak is true, then allow cur.ch == lineLength.
-   * @arg {CodeMirrorV} cm 
-   * @arg {Pos} cur 
+   * @arg {CodeMirrorV} cm
+   * @arg {Pos} cur
    * @arg {Pos} [oldCur]
    * @return {Pos}
    */
@@ -3736,7 +3737,7 @@ function initVim(CM) {
     }
     return cursorIsBefore(cur1, cur2) ? cur2 : cur1;
   }
-  /** @arg {Pos} cur1   @arg {Pos} cur2  @arg {Pos} cur3  @return {boolean}*/ 
+  /** @arg {Pos} cur1   @arg {Pos} cur2  @arg {Pos} cur3  @return {boolean}*/
   function cursorIsBetween(cur1, cur2, cur3) {
     // returns true if cur2 is between cur1 and cur3.
     var cur1before2 = cursorIsBefore(cur1, cur2);
@@ -3884,8 +3885,8 @@ function initVim(CM) {
   /**
    * Updates the CodeMirror selection to match the provided vim selection.
    * If no arguments are given, it uses the current vim selection state.
-   * @arg {CodeMirrorV} cm 
-   * @arg {vimState["sel"]} [sel] 
+   * @arg {CodeMirrorV} cm
+   * @arg {vimState["sel"]} [sel]
    * @arg {"char"|"line"|"block" | undefined} [mode]
    */
   function updateCmSelection(cm, sel, mode) {
@@ -3898,10 +3899,10 @@ function initVim(CM) {
     cm.setSelections(cmSel.ranges, cmSel.primary);
   }
   /**
-   * @arg {CodeMirror} cm 
+   * @arg {CodeMirror} cm
    * @arg {import("./types").CM5RangeInterface} sel
-   * @arg {"char"|"line"|"block"} mode 
-   * @arg {boolean|undefined} [exclusive] 
+   * @arg {"char"|"line"|"block"} mode
+   * @arg {boolean|undefined} [exclusive]
    */
   function makeCmSelection(cm, sel, mode, exclusive) {
     var head = copyCursor(sel.head);
@@ -3970,7 +3971,7 @@ function initVim(CM) {
    * If moveHead is set to false, the CodeMirror selection will not be
    * touched. The caller assumes the responsibility of putting the cursor
    * in the right place.
-   * @arg {CodeMirrorV} cm 
+   * @arg {CodeMirrorV} cm
    * @arg {boolean} [moveHead]
    */
   function exitVisualMode(cm, moveHead) {
@@ -3985,7 +3986,7 @@ function initVim(CM) {
     if (!vim.insertMode) CM.signal(cm, "vim-mode-change", {mode: "normal"});
   }
 
-  /** 
+  /**
    * Remove any trailing newlines from the selection. For
    * example, with the caret at the start of the last word on the line,
    * 'dw' should word, but not the newline, while 'w' should advance the
@@ -4038,8 +4039,8 @@ function initVim(CM) {
     return firstNonWS == -1 ? text.length : firstNonWS;
   }
 
-  /** 
-   * @arg {CodeMirror} cm 
+  /**
+   * @arg {CodeMirror} cm
    * @arg {{inclusive?: boolean, innerWord?: boolean, bigWord?: boolean, noSymbol?: boolean, multiline?: boolean}} options
    * @arg {Pos} [cursor]
    **/
@@ -4133,8 +4134,8 @@ function initVim(CM) {
    *   ```
    *   <div><brok><en></div>
    *   ```
-   * @arg {CodeMirror} cm 
-   * @arg {Pos} head 
+   * @arg {CodeMirror} cm
+   * @arg {Pos} head
    * @arg {boolean} [inclusive]
    */
   function expandTagUnderCursor(cm, head, inclusive) {
@@ -4177,7 +4178,7 @@ function initVim(CM) {
       '#': 'preprocess'
   };
 
-  /** 
+  /**
     @typedef { {
     lineText: string,
     nextCh: string,
@@ -4189,10 +4190,10 @@ function initVim(CM) {
     depth: number,
     curMoveThrough: boolean
   } } findSymbolState */
-  /** 
-   * @type {Record<string, { 
+  /**
+   * @type {Record<string, {
    *  isComplete(state: findSymbolState): boolean,
-   *  init?(state: findSymbolState): void 
+   *  init?(state: findSymbolState): void
    * }>} */
   var findSymbolModes = {
     bracket: {
@@ -4257,7 +4258,7 @@ function initVim(CM) {
         }
         return false;
       }
-    }      
+    }
   };
   /** @arg {CodeMirrorV} cm  @arg {number} repeat  @arg {boolean|undefined} forward  @arg {string} symb */
   function findSymbol(cm, repeat, forward, symb) {
@@ -4444,10 +4445,10 @@ function initVim(CM) {
   }
 
   /**
-   * @arg {CodeMirror} cm 
-   * @arg {Pos} head 
-   * @arg {MotionArgs} motionArgs 
-   * @arg {vimState} vim 
+   * @arg {CodeMirror} cm
+   * @arg {Pos} head
+   * @arg {MotionArgs} motionArgs
+   * @arg {vimState} vim
    * @arg {boolean} keepHPos */
   function moveToEol(cm, head, motionArgs, vim, keepHPos) {
     var cur = head;
@@ -4461,9 +4462,9 @@ function initVim(CM) {
     return retval;
   }
 
-  /** 
-   * @arg {CodeMirror} cm 
-   * @arg {number} repeat 
+  /**
+   * @arg {CodeMirror} cm
+   * @arg {number} repeat
    * @arg {boolean} [forward]
    * @arg {string} [character]
    * @arg {Pos} [head]
@@ -4494,9 +4495,9 @@ function initVim(CM) {
   }
 
   /**
-   * @arg {CodeMirror} cm 
-   * @arg {vimState} vim 
-   * @arg {string} markName 
+   * @arg {CodeMirror} cm
+   * @arg {vimState} vim
+   * @arg {string} markName
    * @arg {Pos} pos */
   function updateMark(cm, vim, markName, pos) {
     if (!inArray(markName, validMarks) && !latinCharRegex.test(markName)) {
@@ -4509,10 +4510,10 @@ function initVim(CM) {
   }
 
   /**
-   * @arg {number} start 
-   * @arg {string | any[]} line 
-   * @arg {any} character 
-   * @arg {boolean} [forward] 
+   * @arg {number} start
+   * @arg {string | any[]} line
+   * @arg {any} character
+   * @arg {boolean} [forward]
    * @arg {boolean} [includeChar] */
   function charIdxInLine(start, line, character, forward, includeChar) {
     // Search for char in line.
@@ -4535,10 +4536,10 @@ function initVim(CM) {
     return idx;
   }
 
-  /** @arg {CodeMirrorV} cm 
-   * @arg {Pos} head 
-   * @arg {number} repeat 
-   * @arg {number} dir 
+  /** @arg {CodeMirrorV} cm
+   * @arg {Pos} head
+   * @arg {number} repeat
+   * @arg {number} dir
    * @arg {boolean} [inclusive] */
   function findParagraph(cm, head, repeat, dir, inclusive) {
     var line = head.line;
@@ -4592,9 +4593,9 @@ function initVim(CM) {
 
   /**
    * Based on {@link findSentence}. The internal functions have the same names,
-   * but their behaviour is different. findSentence() crosses line breaks and 
-   * is used for jumping to sentence beginnings before or after the current cursor position, 
-   * whereas getSentence() is for getting the beginning or end of the sentence 
+   * but their behaviour is different. findSentence() crosses line breaks and
+   * is used for jumping to sentence beginnings before or after the current cursor position,
+   * whereas getSentence() is for getting the beginning or end of the sentence
    * at the current cursor position, either including (a) or excluding (i) whitespace.
    * @arg {CodeMirror} cm
    * @arg {Pos} cur
@@ -4657,14 +4658,14 @@ function initVim(CM) {
         if (isEndOfSentenceSymbol(curr.line[curr.pos])) {
           if (!inclusive) {
             return { ln: curr.ln, pos: curr.pos + 1 };
-          } 
+          }
           else {
             nextChar(curr);
             while (curr.line !== null ) {
               if (isWhiteSpaceString(curr.line[curr.pos])) {
                 lastSentencePos = curr.pos;
                 nextChar(curr)
-              } 
+              }
               else {
                 break;
               }
@@ -4677,12 +4678,12 @@ function initVim(CM) {
       return { ln: curr.ln, pos: lastSentencePos + 1 };
     }
 
-    /** 
+    /**
      * Performs one iteration of traversal in reverse direction
      * Returns an index object of the sentence start
-     * @arg {CodeMirror} cm  
-     * @arg {number} ln  
-     * @arg {number} pos  
+     * @arg {CodeMirror} cm
+     * @arg {number} ln
+     * @arg {number} pos
      * @arg {1|-1} dir
      */
     function reverse(cm, ln, pos, dir) {
@@ -4712,11 +4713,11 @@ function initVim(CM) {
         else if (isEndOfSentenceSymbol(curr.line[curr.pos]) ) {
           if (!inclusive) {
             return { ln: curr.ln, pos: lastSentencePos };
-          } 
+          }
           else {
             if (isWhiteSpaceString(curr.line[curr.pos + 1])) {
               return { ln: curr.ln, pos: curr.pos + 1 };
-            } 
+            }
             else {
               return { ln: curr.ln, pos: lastSentencePos };
             }
@@ -4728,7 +4729,7 @@ function initVim(CM) {
       curr.line = line
       if (inclusive && isWhiteSpaceString(curr.line[curr.pos])) {
         return { ln: curr.ln, pos: curr.pos };
-      } 
+      }
       else {
         return { ln: curr.ln, pos: lastSentencePos };
       }
@@ -4958,7 +4959,7 @@ function initVim(CM) {
 
     if (!startBracket || !endBracket) return null;
 
-    var start = startBracket.pos; 
+    var start = startBracket.pos;
     var end = endBracket.pos;
 
     if ((start.line == end.line && start.ch > end.ch)
@@ -5044,7 +5045,7 @@ function initVim(CM) {
 
   // Search functions
   defineOption('pcre', true, 'boolean');
-  
+
   /**@type {SearchStateInterface} */
   class SearchState {
     constructor() {
@@ -5153,7 +5154,7 @@ function initVim(CM) {
         return match;
       } else {
         if (specials.indexOf(match) != -1) {
-          return escapes[match] || '\\' + match; 
+          return escapes[match] || '\\' + match;
         }
         return match;
       }
@@ -5342,8 +5343,8 @@ function initVim(CM) {
               desc && dom('span', {$color: '#888'}, desc));
   }
   /**
-   * @arg {CodeMirror} cm 
-   * @arg {import("./types").PromptOptions} options 
+   * @arg {CodeMirror} cm
+   * @arg {import("./types").PromptOptions} options
    */
   function showPrompt(cm, options) {
     if (keyToKeyStack.length) {
@@ -5375,9 +5376,9 @@ function initVim(CM) {
   }
   // Returns true if the query is valid.
   /**
-   * @arg {CodeMirrorV} cm 
-   * @arg {string } rawQuery 
-   * @arg {boolean | undefined} [ignoreCase] 
+   * @arg {CodeMirrorV} cm
+   * @arg {string } rawQuery
+   * @arg {boolean | undefined} [ignoreCase]
    * @arg {boolean | undefined} [smartCase]
   */
   function updateSearchQuery(cm, rawQuery, ignoreCase, smartCase) {
@@ -6548,7 +6549,7 @@ function initVim(CM) {
   /**
    * @arg {CodeMirrorV} cm CodeMirror instance we are in.
    * @arg {boolean} confirm Whether to confirm each replace.
-   * @arg {boolean} global 
+   * @arg {boolean} global
    * @arg {number} lineStart Line to start replacing from.
    * @arg {number} lineEnd Line to stop replacing at.
    * TODO: find a way for typescript to understand that when match is found searchCursor.from() is not null
@@ -6564,7 +6565,7 @@ function initVim(CM) {
     cm.state.vim.exMode = true;
     var done = false;
     var matches = 0;
-    
+
     /** @type {Pos}*/ var lastPos;
     /** @type {number}*/ var modifiedLineNumber
     /** @type {boolean}*/var joined;
@@ -6638,7 +6639,7 @@ function initVim(CM) {
       }
       if (callback) { callback(); }
       else if (done) {
-        showConfirm(cm, 
+        showConfirm(cm,
           (matches ? 'Found ' + matches + ' matches' : 'No matches found') +
           ' for pattern: ' + query +
           (getOption('pcre') ? ' (set nopcre to use Vim regexps)' : '')
@@ -6754,12 +6755,12 @@ function initVim(CM) {
     });
   }
 
-  /** 
+  /**
    * @arg {string} keys
-   * @arg {string} type   
+   * @arg {string} type
    * @arg {string} name
    * @arg {any} args
-   * @arg {{ [x: string]: any; }} extra 
+   * @arg {{ [x: string]: any; }} extra
    **/
   function mapCommand(keys, type, name, args, extra) {
     /**@type{any} */
@@ -6777,9 +6778,9 @@ function initVim(CM) {
 
 
   /**
-   * @arg {CodeMirrorV} cm 
-   * @arg {vimState} vim 
-   * @arg {MacroModeState} macroModeState 
+   * @arg {CodeMirrorV} cm
+   * @arg {vimState} vim
+   * @arg {MacroModeState} macroModeState
    * @arg {string} registerName
    */
   function executeMacroRegister(cm, vim, macroModeState, registerName) {
@@ -6963,7 +6964,7 @@ function initVim(CM) {
     var lastChange = macroModeState.lastInsertModeChanges;
     var keyName = CM.keyName ? CM.keyName(e) : e.key;
     if (!keyName) { return; }
-    
+
     if (keyName.indexOf('Delete') != -1 || keyName.indexOf('Backspace') != -1) {
       if (lastChange.maybeReset) {
         lastChange.changes = [];
@@ -6981,9 +6982,9 @@ function initVim(CM) {
    * If repeatForInsert is true, then the function was called by
    * exitInsertMode to repeat the insert mode changes the user just made. The
    * corresponding enterInsertMode call was made with a count.
-   * @arg {CodeMirrorV} cm 
-   * @arg {vimState} vim 
-   * @arg {number} repeat  
+   * @arg {CodeMirrorV} cm
+   * @arg {vimState} vim
+   * @arg {number} repeat
    * @arg {boolean} repeatForInsert
    */
   function repeatLastEdit(cm, vim, repeat, repeatForInsert) {

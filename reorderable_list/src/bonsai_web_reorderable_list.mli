@@ -10,15 +10,18 @@ end
 type ('k, 'cmp) comparator =
   (module Comparator with type t = 'k and type comparator_witness = 'cmp)
 
-(** A vertical list component which moves items into their proper place during drag and
-    drop. Items use absolute positioning for explicit layout; that is, the nth item is
-    [n * item_height] pixels from the top of the container. Items outside the list may be
-    dragged into the list to extend it. *)
+(** A list component which moves items into their proper place during drag and drop.
+    Vertical lists stack items from top to bottom. Horizontal lists pack items from left
+    to right and wrap them based on the measured container width. Items outside the list
+    may be dragged into the list to extend it. *)
 val list
   :  ('source, 'cmp) comparator
   -> dnd:('source, int) Bonsai_web_drag_and_drop.t Bonsai.t
        (** The drag-and-drop universe the list should operate in; other items in the
            universe may be dragged into the list *)
+  -> ?direction:[ `Horizontal | `Vertical ]
+       (** The direction in which items are laid out. Horizontal lists wrap based on the
+           measured container width. (Default: [Vertical]) *)
   -> ?enable_debug_overlay:bool
        (** Display a transparent overlay on targets to make it clear where an item may be
            dropped. *)
@@ -37,13 +40,14 @@ val list
   -> ?right:Css_gen.Length.t
        (** The space between the right edge of an item and the list container *)
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
        (** What to display when there are no items in the list. [item_is_hovered] is
            provided in case you wish to change the placeholder based on whether an item is
            being hovered above the empty list. *)
   -> ?default_item_height:int
-       (** The items and drop targets are spaced evenly every item_height. In order to
-           look natural, each item should have height [item_height]. *)
+       (** The fallback size used before items are measured and for the append drop
+           target. In horizontal lists it is used for both dimensions of an unmeasured
+           item. *)
   -> ?add_drop_target_for_appending:bool
        (** If true, an additional [default_item_height] of space at the end of the list
            will be added. Items dragged into that space will be appended to the list.
@@ -52,7 +56,7 @@ val list
      (** The items that should be displayed in the list. Each item should have its view
          and its current rank. Updating the rank of an item must be done via the [on_drop]
          callback of the drag-and-drop universe. *)
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> Vdom.Node.t Bonsai.t
 
 (** Similar to [list], but creates the drag-and-drop universe and handles the [on_drop]
@@ -60,22 +64,23 @@ val list
 val simple
   :  ('key, 'cmp) comparator
   -> ?sentinel_name:string
+  -> ?direction:[ `Horizontal | `Vertical ]
   -> ?enable_debug_overlay:bool
   -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
   -> ?left:Css_gen.Length.t
   -> ?right:Css_gen.Length.t
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
   -> ?default_item_height:int
   -> ?add_drop_target_for_appending:bool
   -> render:
        (index:int Bonsai.t
         -> source:Vdom.Attr.t Bonsai.t
         -> 'key Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> ('data * Vdom.Node.t) Bonsai.t)
   -> ('key, 'cmp) Set.t Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> (('key * 'data) list * Vdom.Node.t) Bonsai.t
 
 module Action : sig
@@ -94,20 +99,21 @@ end
 val with_inject
   :  ('key, 'cmp) comparator
   -> ?sentinel_name:string
+  -> ?direction:[ `Horizontal | `Vertical ]
   -> ?enable_debug_overlay:bool
   -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
   -> ?left:Css_gen.Length.t
   -> ?right:Css_gen.Length.t
   -> ?empty_list_placeholder:
-       (item_is_hovered:bool Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+       (item_is_hovered:bool Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
   -> ?default_item_height:int
   -> ?add_drop_target_for_appending:bool
   -> (index:int Bonsai.t
       -> source:Vdom.Attr.t Bonsai.t
       -> 'key Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> ('data * Vdom.Node.t) Bonsai.t)
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> (('key * 'data) list * Vdom.Node.t * ('key Action.t -> unit Effect.t)) Bonsai.t
 
 module Multi : sig
@@ -121,6 +127,7 @@ module Multi : sig
     :  ('key, 'cmp) comparator
     -> ('which, 'which_cmp) comparator
     -> ?sentinel_name:string
+    -> ?direction:[ `Horizontal | `Vertical ]
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t
@@ -128,7 +135,7 @@ module Multi : sig
     -> ?empty_list_placeholder:
          (item_is_hovered:bool Bonsai.t
           -> 'which Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
     -> ?add_drop_target_for_appending:bool
@@ -137,14 +144,14 @@ module Multi : sig
           -> source:Vdom.Attr.t Bonsai.t
           -> 'which Bonsai.t (** The current list an item is rendered inside. *)
           -> 'key Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> ('data * Vdom.Node.t) Bonsai.t)
     -> lists:('which, 'which_cmp) Set.t Bonsai.t
          (** The set of lists that items can be placed in. *)
     -> default_list:'which Bonsai.t
          (** Initially, all items are placed in [default_list]. *)
     -> ('key, 'cmp) Set.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (('which, ('key * 'data) list * Vdom.Node.t, 'which_cmp) Map.t * Vdom.Node.t)
          Bonsai.t
 
@@ -162,6 +169,7 @@ module Multi : sig
     :  ('key, 'cmp) comparator
     -> ('which, 'which_cmp) comparator
     -> ?sentinel_name:string
+    -> ?direction:[ `Horizontal | `Vertical ]
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t
@@ -169,7 +177,7 @@ module Multi : sig
     -> ?empty_list_placeholder:
          (item_is_hovered:bool Bonsai.t
           -> 'which Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> Vdom.Node.t Bonsai.t)
     -> ?default_item_height:int
     -> ?add_drop_target_for_appending:bool
@@ -178,9 +186,9 @@ module Multi : sig
         -> source:Vdom.Attr.t Bonsai.t
         -> 'which Bonsai.t
         -> 'key Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> ('data * Vdom.Node.t) Bonsai.t)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> (('which, ('key * 'data) list * Vdom.Node.t, 'which_cmp) Map.t
        * Vdom.Node.t
        * (('key, 'which, 'which_cmp) Action.t -> unit Effect.t))

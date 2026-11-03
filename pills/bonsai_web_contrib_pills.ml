@@ -38,8 +38,8 @@ let component
             extra_pill_attr
             @ tab_index
             @ create "data-value" (to_string option)
-            @ on_click remove_option
-            @ on_keyup (fun ev ->
+            @ on_click_js_of_ocaml remove_option
+            @ on_keyup_js_of_ocaml (fun ev ->
               match Js_of_ocaml.Dom_html.Keyboard_code.of_event ev with
               | Space | Enter | NumpadEnter | Backspace | Delete -> remove_option ev
               | _ -> Ui_effect.Ignore))

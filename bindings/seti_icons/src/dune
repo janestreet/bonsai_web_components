@@ -3,4 +3,4 @@
  (public_name bonsai_web_components.seti_icons)
  (libraries core virtual_dom.css_gen virtual_dom)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane -compare-require-explicit-locality)))

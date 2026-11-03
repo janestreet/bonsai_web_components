@@ -10,5 +10,5 @@ val create
   -> ?on_set_change:(String.Set.t -> unit Ui_effect.t) Bonsai.t
   -> ?split:(string -> string list)
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> (String.Set.t * Vdom.Node.t * (String.Set.t -> unit Ui_effect.t)) Bonsai.t

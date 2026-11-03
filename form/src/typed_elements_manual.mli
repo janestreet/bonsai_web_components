@@ -13,8 +13,8 @@ module Optional : sig
     -> ?initial_picker:[ `None | `Some ]
          (** Default [`None]. Determines the variant order in the dropdown and which
              variant is selected by default on form creation. *)
-    -> (local_ Bonsai.graph -> ('a, 'view) Form.t Bonsai.t)
+    -> (Bonsai.graph @ local -> ('a, 'view) Form.t Bonsai.t)
        (** shown when the [some_label] option is selected *)
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('a option, Vdom.Node.t * 'view option) Form.t Bonsai.t
 end

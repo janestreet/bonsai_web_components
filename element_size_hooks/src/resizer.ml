@@ -90,7 +90,7 @@ module State = struct
       (match event, state with
        | Pointer_event.Down, { on_drag_start = Some effect; _ }
        | Pointer_event.Up, { on_drag_stop = Some effect; _ } ->
-         Effect.Expert.handle pointer_event effect ~on_exn:(fun exn ->
+         Effect.Expert.handle_js_of_ocaml pointer_event effect ~on_exn:(fun exn ->
            Exn.reraise exn "Unhandled exception raised in effect")
        | _ -> ());
       f event_target pointer_event
@@ -347,7 +347,7 @@ module T = struct
   ;;
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let attr
   ?on_drag_start

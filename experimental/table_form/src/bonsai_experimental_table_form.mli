@@ -30,7 +30,7 @@ end
 val table_form
   :  ?key_column_initial_width:Css_gen.Length.t
   -> ('key, 'cmp) comparator
-  -> (local_ Bonsai.graph -> 'a Form.t Bonsai.t)
+  -> (Bonsai.graph @ local -> 'a Form.t Bonsai.t)
   -> columns:Column.t list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> ('key, 'a, 'cmp) Base.Map.t Form.t Bonsai.t

@@ -41,13 +41,13 @@ module Render_cell : sig
     | Stateful_rows of
         ('key Bonsai.t
          -> 'data Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> ('column_id -> Vdom.Node.t) Bonsai.t)
     | Stateful_cells of
         ('column_id Bonsai.t
          -> 'key Bonsai.t
          -> 'data Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> Vdom.Node.t Bonsai.t)
 end
 
@@ -55,11 +55,11 @@ module Basic : sig
   val build
     :  ?sorts:
          ('column_id Bonsai.t
-          -> local_ Bonsai.graph
+          -> Bonsai.graph @ local
           -> ('key, 'data) Sort_kind.t option Bonsai.t)
     -> ('column_id, _) Comparator.Module.t
     -> columns:'column_id Column_structure.t
-    -> render_header:('column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> render_header:('column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     -> render_cell:('key, 'data, 'column_id) Render_cell.t
     -> ('key, 'data, 'column_id) Column_intf.with_sorter
 
@@ -70,7 +70,7 @@ module Expert : sig
   val build
     :  ('column_id, _) Comparator.Module.t
     -> columns:'column_id Column_structure.t
-    -> render_header:('column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> render_header:('column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     -> render_cell:('key, 'data, 'column_id) Render_cell.t
     -> ('key, 'data, 'column_id) Column_intf.t
 

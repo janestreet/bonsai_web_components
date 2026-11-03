@@ -108,7 +108,7 @@ module Scroll_tracker = struct
   ;;
 end
 
-module Hook = Vdom.Attr.Hooks.Make (Scroll_tracker)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (Scroll_tracker)
 
 let on_change f = Vdom.Attr.create_hook "scroll_tracker" (Hook.create f)
 

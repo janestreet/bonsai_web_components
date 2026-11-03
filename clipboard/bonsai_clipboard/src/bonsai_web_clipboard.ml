@@ -2,11 +2,13 @@ open! Core
 open! Bonsai_web
 open! Bonsai.Let_syntax
 
-let html_blob value =
-  [ Js_of_ocaml.File.blob_from_string ~contentType:"text/html" value
-  ; Js_of_ocaml.File.blob_from_string ~contentType:"text/plain" value
+let html_with_plain_text_fallback_blob ~html ~plain_text =
+  [ Js_of_ocaml.File.blob_from_string ~contentType:"text/plain" plain_text
+  ; Js_of_ocaml.File.blob_from_string ~contentType:"text/html" html
   ]
 ;;
+
+let html_blob value = html_with_plain_text_fallback_blob ~html:value ~plain_text:value
 
 let link_blob ~url ~title =
   [ Js_of_ocaml.File.blob_from_string ~contentType:"text/plain" url
@@ -34,6 +36,14 @@ let copy_html value =
 let copy_link ~url ~title =
   let%map.Effect (_ : unit Or_error.t) =
     Js_clipboard.Asynchronous.copy_blob (link_blob ~url ~title)
+  in
+  ()
+;;
+
+let copy_html_with_plain_text_fallback ~html ~plain_text =
+  let%map.Effect (_ : unit Or_error.t) =
+    Js_clipboard.Asynchronous.copy_blob
+      (html_with_plain_text_fallback_blob ~html ~plain_text)
   in
   ()
 ;;
@@ -106,6 +116,14 @@ module With_status = struct
     let value =
       let%arr url and title in
       link_blob ~url ~title
+    in
+    with_confirmation Js_clipboard.Asynchronous.copy_blob value graph
+  ;;
+
+  let copy_html_with_plain_text_fallback ~html ~plain_text (local_ graph) =
+    let value =
+      let%arr html and plain_text in
+      html_with_plain_text_fallback_blob ~html ~plain_text
     in
     with_confirmation Js_clipboard.Asynchronous.copy_blob value graph
   ;;

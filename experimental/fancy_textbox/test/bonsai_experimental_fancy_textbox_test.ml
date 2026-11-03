@@ -14,6 +14,46 @@ let run_test ~text ~process () =
   |> print_endline
 ;;
 
+let%expect_test "forwards placeholder / disabled / textarea attrs to the <textarea>" =
+  let vdom =
+    Fancy.Expert.create
+      ~text:"hi"
+      ~set_text:(fun _ -> Effect.return ())
+      ~placeholder:"type here"
+      ~disabled:true
+      ~textarea_attrs:[ Vdom.Attr.id "my-textarea" ]
+      ~process:(fun s -> [ Vdom.Node.text s ])
+      ()
+  in
+  vdom
+  |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
+  |> Virtual_dom_test_helpers.Node_helpers.select_first ~selector:"textarea"
+  |> Option.value_exn
+  |> Virtual_dom_test_helpers.Node_helpers.to_string_html
+       ~filter_printed_attributes:(fun ~key ~data:_ -> not (String.equal key "class"))
+  |> print_endline;
+  [%expect
+    {| <textarea disabled="" placeholder="type here" id="my-textarea" value:normalized=hi @on_input> </textarea> |}]
+;;
+
+let%expect_test "forwards container attrs to the wrapping element" =
+  let vdom =
+    Fancy.Expert.create
+      ~text:"hi"
+      ~set_text:(fun _ -> Effect.return ())
+      ~container_attrs:[ Vdom.Attr.id "my-wrapper" ]
+      ~process:(fun s -> [ Vdom.Node.text s ])
+      ()
+  in
+  vdom
+  |> Virtual_dom_test_helpers.Node_helpers.unsafe_convert_exn
+  |> Virtual_dom_test_helpers.Node_helpers.select_first ~selector:"#my-wrapper"
+  |> Option.is_some
+  |> [%sexp_of: bool]
+  |> print_s;
+  [%expect {| true |}]
+;;
+
 let%expect_test "fancy textbox with no highlighting" =
   run_test ~text:"foo bar" ~process:(fun s -> [ s, Fancy.Decoration.create () ]) ();
   [%expect

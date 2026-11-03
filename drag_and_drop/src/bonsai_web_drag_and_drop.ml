@@ -254,7 +254,7 @@ let create_with_drop_position
     let%arr inject and universe_suffix in
     fun ~id ->
       Vdom.Attr.many
-        [ Vdom.Attr.on_pointerdown (fun event ->
+        [ Vdom.Attr.on_pointerdown_js_of_ocaml (fun event ->
             let position =
               { Position.x = event##.clientX |> Js.to_float |> Int.of_float
               ; y = event##.clientY |> Js.to_float |> Int.of_float
@@ -381,7 +381,7 @@ let create_with_drop_position
     let%arr inject and universe_suffix in
     fun ~id ->
       Vdom.Attr.many
-        [ Vdom.Attr.on_pointerup (fun event ->
+        [ Vdom.Attr.on_pointerup_js_of_ocaml (fun event ->
             match Bonsai_web.am_within_disabled_fieldset event with
             | true -> inject [ Set_target None; Finished_drag ]
             | false -> inject [ Finished_drag ])

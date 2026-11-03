@@ -76,15 +76,17 @@ let dragging_over_state ?mime_types data_transfer =
 ;;
 
 (* File objects aren't always available in a data transfer object! For example, they won't
-   be present during [dragenter], [dragover], and [dragleave] events. *)
-let get_files_guaranteed_present_exn ?mime_types data_transfer ~f =
-  let get_file (_file_name, file_opt) = Option.value_exn file_opt in
+   be present during [dragenter], [dragover], and [dragleave] events.
+
+   We're filtering out any [None] values, which means the event may not have all the files
+   requested *)
+let get_files_guaranteed_present ?mime_types data_transfer ~f =
   let good_files, files_not_matching_mime_type =
     data_transfer_files data_transfer |> partition_valid_mime_type ?mime_types
   in
   f
-    (List.map good_files ~f:get_file)
-    ~files_not_matching_mime_type:(List.map files_not_matching_mime_type ~f:get_file)
+    (List.filter_map good_files ~f:snd)
+    ~files_not_matching_mime_type:(List.filter_map files_not_matching_mime_type ~f:snd)
 ;;
 
 module Drop = struct
@@ -109,7 +111,7 @@ let on_drop ~(here : [%call_pos]) ?mime_types ~f (local_ graph) =
            For an element to be a valid drop target, the [dragenter], [dragover], and
            [drop] events all need to explicitly be handled:
            https://html.spec.whatwg.org/multipage/dnd.html#event-drag *)
-        Vdom.Attr.on_dragenter (fun e ->
+        Vdom.Attr.on_dragenter_js_of_ocaml (fun e ->
           Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
             (* We set to [copy], because uploading files to a web UI can't change them in
                the OS. *)
@@ -120,11 +122,11 @@ let on_drop ~(here : [%call_pos]) ?mime_types ~f (local_ graph) =
               [ (Effect.Prevent_default [@alert "-deprecated"])
               ; set_dragging_over (Some dragging_over)
               ]))
-      ; Vdom.Attr.on_dragover (fun e ->
+      ; Vdom.Attr.on_dragover_js_of_ocaml (fun e ->
           Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
             data_transfer##.dropEffect := Js_of_ocaml.Js.string "copy";
             Effect.Prevent_default [@alert "-deprecated"]))
-      ; Vdom.Attr.on_dragleave (fun e ->
+      ; Vdom.Attr.on_dragleave_js_of_ocaml (fun e ->
           match Js.Opt.to_option e##.relatedTarget with
           | None -> set_dragging_over None
           | Some new_target ->
@@ -146,11 +148,11 @@ let on_drop ~(here : [%call_pos]) ?mime_types ~f (local_ graph) =
                if not (List.exists targets ~f:(contains ~descendant:new_target))
                then set_dragging_over None
                else Effect.Ignore))
-      ; Vdom.Attr.on_drop (fun e ->
+      ; Vdom.Attr.on_drop_js_of_ocaml (fun e ->
           Js.Opt.case e##.dataTransfer const_ignore (fun data_transfer ->
             Effect.Many
               [ (Effect.Prevent_default [@alert "-deprecated"])
-              ; get_files_guaranteed_present_exn ?mime_types data_transfer ~f
+              ; get_files_guaranteed_present ?mime_types data_transfer ~f
               ; set_dragging_over None
               ]))
       ]
@@ -159,9 +161,9 @@ let on_drop ~(here : [%call_pos]) ?mime_types ~f (local_ graph) =
 ;;
 
 let on_paste ?mime_types f =
-  Vdom.Attr.on_paste (fun e ->
+  Vdom.Attr.on_paste_js_of_ocaml (fun e ->
     Js.Opt.case e##.clipboardData const_ignore (fun clipboard_data ->
-      get_files_guaranteed_present_exn ?mime_types clipboard_data ~f))
+      get_files_guaranteed_present ?mime_types clipboard_data ~f))
 ;;
 
 let read_file (file : File.file Js.t) : bytes Or_error.t Effect.t =

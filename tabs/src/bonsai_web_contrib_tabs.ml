@@ -56,7 +56,7 @@ let tab_ui
       ~default:(default_additional_button_attributes ())
   in
   let tab_to_button =
-    let%map state and decorate and additional_button_attributes in
+    let%arr state and decorate and additional_button_attributes in
     fun kind ->
       let is_selected = equal kind (State.current state) in
       let selected_attr =
@@ -64,7 +64,7 @@ let tab_ui
       in
       let attr =
         Vdom.Attr.(
-          on_click (fun _ -> State.set state kind)
+          on_click_js_of_ocaml (fun _ -> State.set state kind)
           @ selected_attr
           @ class_ "bonsai_ui_tab"
           @ name (kind |> sexp_of |> Sexp.to_string_mach)
@@ -73,7 +73,7 @@ let tab_ui
       Vdom.Node.button ~attrs:[ attr ] [ decorate kind ]
   in
   let tabs =
-    let%map all_tabs and tab_to_button in
+    let%arr all_tabs and tab_to_button in
     List.map all_tabs ~f:tab_to_button
   in
   let result =

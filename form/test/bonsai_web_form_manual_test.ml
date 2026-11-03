@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai_web_test
 open! Bonsai.Let_syntax
 open Js_of_ocaml
@@ -4283,7 +4284,7 @@ let%expect_test _ =
 
         let form_for_field
           : type a.
-            a Typed_field.t -> local_ Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+            a Typed_field.t -> Bonsai.graph @ local -> (a, field_view) Form.t Bonsai.t
           =
           fun typed_field (local_ graph) ->
           match typed_field with
@@ -4467,7 +4468,7 @@ module%test Typed = struct
 
             let form_for_field
               : type a.
-                a Typed_field.t -> local_ Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+                a Typed_field.t -> Bonsai.graph @ local -> (a, field_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -4645,7 +4646,7 @@ module%test Typed = struct
 
             let form_for_field
               : type a.
-                a Typed_field.t -> local_ Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+                a Typed_field.t -> Bonsai.graph @ local -> (a, field_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -4708,7 +4709,7 @@ module%test Typed = struct
 
             let form_for_field
               : type a.
-                a Typed_field.t -> local_ Bonsai.graph -> (a, field_view) Form.t Bonsai.t
+                a Typed_field.t -> Bonsai.graph @ local -> (a, field_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
               match typed_field with
@@ -4984,7 +4985,7 @@ module%test Typed = struct
             let form_for_variant
               : type a.
                 a Typed_variant.t
-                -> local_ Bonsai.graph
+                -> Bonsai.graph @ local
                 -> (a, variant_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
@@ -5108,7 +5109,7 @@ module%test Typed = struct
             let form_for_variant
               : type a.
                 a Typed_variant.t
-                -> local_ Bonsai.graph
+                -> Bonsai.graph @ local
                 -> (a, variant_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
@@ -5214,7 +5215,7 @@ module%test Typed = struct
             let form_for_variant
               : type a.
                 a Typed_variant.t
-                -> local_ Bonsai.graph
+                -> Bonsai.graph @ local
                 -> (a, variant_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
@@ -5284,7 +5285,7 @@ module%test Typed = struct
             let form_for_variant
               : type a.
                 a Typed_variant.t
-                -> local_ Bonsai.graph
+                -> Bonsai.graph @ local
                 -> (a, variant_view) Form.t Bonsai.t
               =
               fun typed_field (local_ graph) ->
@@ -6500,14 +6501,14 @@ let%expect_test "a textbox customized with themes" =
                       ?key:(Option.map key ~f:(fun k -> [%string "%{k}-1"]))
                       ~attrs:
                         [ placeholder
-                        ; Vdom.Attr.on_input (fun _ s ->
+                        ; Vdom.Attr.on_input_js_of_ocaml (fun _ s ->
                             Effect.print_s [%message "ignoring input:" ~_:(s : string)])
                         ]
                       ()
                   ; Vdom.Node.input
                       ?key:(Option.map key ~f:(fun k -> [%string "%{k}-2"]))
                       ~attrs:
-                        [ Vdom.Attr.on_input (fun _ s -> set_value s)
+                        [ Vdom.Attr.on_input_js_of_ocaml (fun _ s -> set_value s)
                         ; Vdom.Attr.value value
                         ]
                       ()
@@ -6726,7 +6727,7 @@ module%test [@name "Form.Typed.Record.make_table"] _ = struct
 
         let form_for_field
           : type a.
-            a Typed_field.t -> local_ Bonsai.graph -> (a, Vdom.Node.t) Form.t Bonsai.t
+            a Typed_field.t -> Bonsai.graph @ local -> (a, Vdom.Node.t) Form.t Bonsai.t
           =
           fun typed_field (local_ graph) ->
           match typed_field with

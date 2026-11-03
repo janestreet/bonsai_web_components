@@ -47,7 +47,7 @@ val create
   -> sexp_of:('a -> Sexp.t)
   -> equal:('a -> 'a -> bool)
   -> all_options:'a list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'a option t Bonsai.t
 
 val create_multi
@@ -65,7 +65,7 @@ val create_multi
   -> ?attr_merge_behavior:Attr_merge_behavior.t
   -> ('a, 'cmp) Comparator.Module.t
   -> all_options:'a list Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> ('a, 'cmp) Set.t t Bonsai.t
 
 module Private : sig
@@ -82,7 +82,7 @@ module Private : sig
       -> sexp_of:('a -> Sexp.t)
       -> equal:('a -> 'a -> bool)
       -> all_options:'a list Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> 'a option t Bonsai.t
 
     val create_multi_with_browser_behavior_in_test
@@ -100,7 +100,7 @@ module Private : sig
       -> ?attr_merge_behavior:Attr_merge_behavior.t
       -> ('a, 'cmp) Comparator.Module.t
       -> all_options:'a list Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> ('a, 'cmp) Set.t t Bonsai.t
   end
 end

@@ -11,8 +11,8 @@ module Optional = struct
     ?(none_label = "None")
     ?extra_attrs
     ?(initial_picker = `None)
-    (form : local_ Bonsai.graph -> (a, view) Form.t Bonsai.t)
-    : local_ Bonsai.graph -> (a option, Vdom.Node.t * view option) Form.t Bonsai.t
+    (form : Bonsai.graph @ local -> (a, view) Form.t Bonsai.t)
+    : Bonsai.graph @ local -> (a option, Vdom.Node.t * view option) Form.t Bonsai.t
     =
     fun (local_ graph) ->
     let module M = struct
@@ -32,7 +32,7 @@ module Optional = struct
       ;;
     end
     in
-    let%map.Bonsai form =
+    let%arr.Bonsai form =
       Typed_manual.Variant.make
         (module struct
           module Typed_variant = M.Typed_variant
@@ -43,7 +43,9 @@ module Optional = struct
 
           let form_for_variant
             : type a.
-              a Typed_variant.t -> local_ Bonsai.graph -> (a, view option) Form.t Bonsai.t
+              a Typed_variant.t
+              -> Bonsai.graph @ local
+              -> (a, view option) Form.t Bonsai.t
             =
             fun typed_variant (local_ graph) ->
             match typed_variant with

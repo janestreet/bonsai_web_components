@@ -69,7 +69,7 @@ let widget ?with_graph ?on_zoom data options ~graph_tracker =
     | Some _, Some (width, height) | None, Some (width, height) ->
       Graph.resize_explicit graph ~width ~height
   in
-  Vdom.Node.widget
+  Vdom.Node.widget_js_of_ocaml
     ()
     ~id
     ~destroy:(fun (_, _, _, graph, animation_id, graph_tracker_id) _el ->

@@ -118,7 +118,7 @@ module T = struct
   ;;
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let on_change f = Vdom.Attr.create_hook "size_tracker" (Hook.create f)
 

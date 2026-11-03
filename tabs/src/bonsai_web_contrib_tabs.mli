@@ -39,7 +39,7 @@ val tab_state
   :  ?sexp_of:('a -> Sexp.t)
   -> ?equal:('a -> 'a -> bool)
   -> initial:'a
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'a State.t Bonsai.t
 
 (** [tab_ui] takes a state and evaluates a computation-returning function that can match
@@ -59,7 +59,7 @@ val tab_ui
   -> f:
        (change_tab:('a -> unit Vdom.Effect.t) Bonsai.t
         -> 'a Bonsai.t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> 'result Bonsai.t)
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> 'result Result.t Bonsai.t

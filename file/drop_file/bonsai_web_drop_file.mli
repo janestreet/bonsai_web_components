@@ -31,7 +31,7 @@ val on_drop
         -> files_not_matching_mime_type:File.file Js.t list
         -> unit Vdom.Effect.t)
          Bonsai.t
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> Drop.t
 
 (** [on_paste] allows you to handle native OS files being pasted while the DOM element to

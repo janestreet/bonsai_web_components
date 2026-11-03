@@ -12,7 +12,7 @@ type t [@@deriving sexp]
     If [reset_when_deactivated] is true, then the result will go back to its initial value
     if it is de-activated. This may be useful to ensure that putting this computation
     inside an [assoc] does not contribute to a memory-leak. *)
-val model_resetter_generation : local_ Bonsai.graph -> t Bonsai.t
+val model_resetter_generation : Bonsai.graph @ local -> t Bonsai.t
 
 (** Basically the opposite of [equal]. The point of a [t] is to notice when it is
     different, not when it is the same, as something else. This function might sometimes

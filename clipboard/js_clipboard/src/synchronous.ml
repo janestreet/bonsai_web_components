@@ -1,7 +1,7 @@
 open! Core
+open Clipboard
 open Js_of_ocaml
 open Virtual_dom
-open Clipboard
 
 module Vdom_attr = struct
   let event_stop_and_prevent =
@@ -11,9 +11,9 @@ module Vdom_attr = struct
       ]
   ;;
 
-  let on_copy f = Vdom.Attr.on_copy f
-  let on_cut f = Vdom.Attr.on_cut f
-  let on_paste f = Vdom.Attr.on_paste f
+  let on_copy f = Vdom.Attr.on_copy_js_of_ocaml f
+  let on_cut f = Vdom.Attr.on_cut_js_of_ocaml f
+  let on_paste f = Vdom.Attr.on_paste_js_of_ocaml f
   let const_ignore () = Vdom.Effect.Ignore
 
   let intercept_copy_type type_ f =

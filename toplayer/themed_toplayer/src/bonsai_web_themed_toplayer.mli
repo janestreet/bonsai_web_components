@@ -166,7 +166,7 @@ module Autoclose : sig
     -> ?close_on_click_outside:Close_on_click_outside.t Bonsai.t
     -> ?close_on_right_click_outside:Close_on_click_outside.t Bonsai.t
     -> ?close_on_esc:bool Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> t Bonsai.t
 end
 
@@ -264,8 +264,8 @@ module Popover : sig
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
     -> content:
-         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+         (close:unit Effect.t Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> Vdom.Attr.t Bonsai.t * Controls.t
 
   (** [create_css] doesn't use auto-positioning: these popovers will appear in the top
@@ -280,8 +280,8 @@ module Popover : sig
     -> ?close_on_esc:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> content:
-         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+         (close:unit Effect.t Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> Controls.t
 
   (** Like [create], but uses a virtual anchor (e.g. a bounding box or a coordinate pair)
@@ -300,9 +300,9 @@ module Popover : sig
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
     -> content:
-         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+         (close:unit Effect.t Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     -> Anchor.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Controls.t
 
   (** Like [Popover.create], but always open when active. Use by computing / storing your
@@ -335,8 +335,8 @@ module Popover : sig
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
-    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> content:(Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> Vdom.Attr.t Bonsai.t
 
   (** Like [always_open], but for [create_css].
@@ -346,8 +346,8 @@ module Popover : sig
     :  extra_attrs:Vdom.Attr.t list Bonsai.t
     -> ?autoclose:Autoclose.t Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
-    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> content:(Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> unit
 
   val always_open_virtual
@@ -361,9 +361,9 @@ module Popover : sig
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?has_arrow:bool Bonsai.t
-    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+    -> content:(Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
     -> Anchor.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> unit
 end
 
@@ -415,8 +415,8 @@ module Modal : sig
     -> ?focus_on_open:bool Bonsai.t
     -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
     -> content:
-         (close:unit Effect.t Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+         (close:unit Effect.t Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> Controls.t
 
   (** Like [Modal.create], but always open when active. Use by computing / storing your
@@ -448,7 +448,7 @@ module Modal : sig
     -> ?overflow_auto_wrapper:bool Bonsai.t
     -> ?focus_on_open:bool Bonsai.t
     -> ?restore_focus_on_close:Restore_focus_on_close.t Bonsai.t
-    -> content:(local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
-    -> local_ Bonsai.graph
+    -> content:(Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
+    -> Bonsai.graph @ local
     -> unit
 end

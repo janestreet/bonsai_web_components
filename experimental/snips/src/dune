@@ -3,7 +3,7 @@
  (public_name bonsai_web_components.experimental_snips)
  (libraries core virtual_dom.css_gen virtual_dom)
  (preprocess
-  (pps ppx_jane bonsai.ppx_bonsai ppx_css))
+  (pps ppx_jane -compare-require-explicit-locality bonsai.ppx_bonsai ppx_css))
  (flags :standard -alert -private_bonsai_view_library))
 
 (rule

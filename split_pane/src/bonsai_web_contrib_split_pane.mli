@@ -179,7 +179,7 @@ val create
   -> first_panel:Vdom.Node.t Bonsai.t
   -> second_panel:Vdom.Node.t Bonsai.t
   -> unit
-  -> local_ Bonsai.graph
+  -> Bonsai.graph @ local
   -> t Bonsai.t
 
 (** Renders the split pane as a vdom node. The split pane will expand to fill the size of
@@ -222,7 +222,7 @@ module For_testing : sig
     :  Parameters.t Bonsai.t
     -> first_panel:Vdom.Node.t Bonsai.t
     -> second_panel:Vdom.Node.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> t Bonsai.t
 
   module Container_dimensions : sig
@@ -259,6 +259,6 @@ module For_testing : sig
 
   val state_machine
     :  parameters:Parameters.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> State.t Bonsai.t * (Action.t -> unit Effect.t) Bonsai.t
 end

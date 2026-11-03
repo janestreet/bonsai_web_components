@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 
 type t =
@@ -39,7 +40,7 @@ let component
       and click_event_propagation_behavior in
       let constants = View.constants theme in
       [ Style.title
-      ; Vdom.Attr.on_click (fun event ->
+      ; Vdom.Attr.on_click_js_of_ocaml (fun event ->
           let () =
             match click_event_propagation_behavior with
             | `Stop -> Js_of_ocaml.Dom_html.stopPropagation event

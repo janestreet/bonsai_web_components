@@ -78,7 +78,9 @@ let columns ~is_column_b_visible () =
         and state
         and set_state in
         Vdom.Node.div
-          [ Vdom.Node.input ~attrs:[ Vdom.Attr.on_input (fun _ -> set_state) ] ()
+          [ Vdom.Node.input
+              ~attrs:[ Vdom.Attr.on_input_js_of_ocaml (fun _ -> set_state) ]
+              ()
           ; Vdom.Node.textf "%s %s" a state
           ])
       ()
@@ -252,7 +254,7 @@ module Test = struct
 
   module Component = struct
     type ('a, 'focus, 'column_id) t =
-      { component : local_ Bonsai.graph -> 'a Bonsai.t
+      { component : Bonsai.graph @ local -> 'a Bonsai.t
       ; get_vdom : 'a -> Vdom.Node.t
       ; get_inject : 'a -> 'column_id Action.t -> unit Ui_effect.t
       ; get_testing : 'a -> Bonsai_web_partial_render_table.For_testing.t Lazy.t
@@ -496,9 +498,12 @@ module Test = struct
       let component (local_ graph) =
         let collation, actual_key_rank =
           Table_expert.collate
-            ~filter_equal:[%compare.equal: unit]
+            ~filter:
+              (Incr_map_collate.Filter.by_predicate
+                 ~filter_equal:[%compare.equal: unit]
+                 ~filter_to_predicate:(fun () -> None)
+                 ())
             ~order_equal:[%compare.equal: unit]
-            ~filter_to_predicate:(fun () -> None)
             ~order_to_compare:(fun () -> Unchanged)
             input
             collate

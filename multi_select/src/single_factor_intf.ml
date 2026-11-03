@@ -93,7 +93,7 @@ module type S = sig
              show initially selected. *)
     -> view_config:View_config.t Bonsai.t
     -> Item.Set.t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> Result.t Bonsai.t
 end
 

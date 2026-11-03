@@ -64,7 +64,7 @@ module Dropdown : sig
   val of_enum_dynamic_model
     :  (module Enum with type t = 't)
     -> default:'t Bonsai.t
-    -> local_ Bonsai.graph
+    -> Bonsai.graph @ local
     -> ('t Product.With_view.t, 't) Product.t Bonsai.t
 
   (** Same as [of_enum], but includes a blank first entry to represent [None]. *)

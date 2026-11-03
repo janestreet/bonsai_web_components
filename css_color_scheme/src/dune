@@ -1,0 +1,12 @@
+(library
+ (name bonsai_web_css_color_scheme)
+ (public_name bonsai_web_components.css_color_scheme)
+ (preprocess
+  (pps ppx_jane js_of_ocaml-ppx bonsai.ppx_bonsai))
+ (libraries am_running_how_js bonsai bonsai_web browser.expert core
+   js_of_ocaml))
+
+(env
+ (_
+  (env-vars
+   (OCAMLPARAM w=-46,keywords=5.2,_))))

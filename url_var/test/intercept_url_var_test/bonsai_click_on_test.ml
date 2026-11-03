@@ -18,7 +18,7 @@ end
    of every test in order for [navigation:`Intercept] to work properly. *)
 let url_var =
   Url_var.Typed.make
-    ~navigation:`Intercept
+    ~navigation:(`Intercept `Reset_scroll)
     (module Page)
     ~fallback:(fun _ _ -> Page.Error)
     Page.parser
@@ -29,9 +29,10 @@ let anchor ?on_click ~href (local_ _graph) =
   | Page.Home ->
     {%html|
       <div>
-        #{" I'm on the home page! "}<a href=%{href} ?{on_click}
-          >#{"home page link"}</a
-        >
+        #{" I'm on the home page! "}
+        <a href=%{href} ?{on_click}>
+          #{"home page link"}
+        </a>
       </div>
     |}
   | Other_page -> {%html|<div>I'm on another page!</div>|}
@@ -98,7 +99,9 @@ let%expect_test "ctrl clicking on <a>" =
 let%expect_test "clicking on <a> that prevents default" =
   test_click_on_anchor
     ~href:"/other-page"
-    ~on_click:(Vdom.Attr.on_click (Effect.of_sync_fun (fun evt -> evt##preventDefault)))
+    ~on_click:
+      (Vdom.Attr.on_click_js_of_ocaml
+         (Effect.of_sync_fun (fun evt -> evt##preventDefault)))
     ();
   [%expect
     {|
@@ -114,9 +117,8 @@ let effect_open effect_open (local_ _graph) =
   | Page.Home ->
     {%html|
       <div>
-        #{" I'm on the home page! "}<span on_click=%{effect_open}
-          >#{"home page link"}</span
-        >
+        #{" I'm on the home page! "}
+        <span on_click_js_of_ocaml=%{effect_open}>#{"home page link"}</span>
       </div>
     |}
   | Other_page -> {%html|<div>I'm on another page!</div>|}

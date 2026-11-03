@@ -280,7 +280,7 @@ module Make (Item : Item) = struct
           ~attrs:
             [ Attr.many_without_merge
                 [ Attr.href "about:blank"
-                ; Attr.on_click (fun ev ->
+                ; Attr.on_click_js_of_ocaml (fun ev ->
                     match Bonsai_web.am_within_disabled_fieldset ev with
                     | true -> Effect.Prevent_default [@alert "-deprecated"]
                     | false ->
@@ -313,7 +313,7 @@ module Make (Item : Item) = struct
         List.map (Set.to_list input.items_matching_search) ~f:(fun item ->
           let checkbox =
             let on_change =
-              Attr.on_change (fun ev _new_value ->
+              Attr.on_change_js_of_ocaml (fun ev _new_value ->
                 let status =
                   match Js_of_ocaml.Js.Opt.to_option ev##.target with
                   | None ->
@@ -350,7 +350,7 @@ module Make (Item : Item) = struct
             else extra_attrs
           in
           let on_click =
-            Attr.on_click (fun ev ->
+            Attr.on_click_js_of_ocaml (fun ev ->
               match Bonsai_web.am_within_disabled_fieldset ev with
               | true -> Effect.Ignore
               | false ->
@@ -479,7 +479,7 @@ module Make (Item : Item) = struct
       Searcher.bonsai ~initial:initial_model_settings.search_string all_items graph
     in
     let input_for_t =
-      let%map all_items
+      let%arr all_items
       and view_config
       and default_selection_status
       and { Searcher.Result.items_matching_search; update_search; current_search } =

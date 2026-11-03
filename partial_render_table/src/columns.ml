@@ -77,13 +77,13 @@ module Render_cell = struct
     | Stateful_rows of
         ('key Bonsai.t
          -> 'data Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> ('column_id -> Vdom.Node.t) Bonsai.t)
     | Stateful_cells of
         ('column_id Bonsai.t
          -> 'key Bonsai.t
          -> 'data Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> Vdom.Node.t Bonsai.t)
 end
 
@@ -105,7 +105,7 @@ module Expert = struct
     ; initial_widths : ('column_id -> Css_gen.Length.t) Bonsai.t
     ; resizable : ('column_id -> bool) Bonsai.t
     ; render_cell : ('key, 'data, 'column_id) Render_cell.t
-    ; render_header : 'column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t
+    ; render_header : 'column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t
     }
 
   let create
@@ -113,7 +113,7 @@ module Expert = struct
       (column, column_cmp) Comparator.Module.t
       -> column Column_structure.t
       -> render_cell:(key, data, column) Render_cell.t
-      -> render_header:(column Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_header:(column Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> (key, data, column, column_cmp) t
     =
     fun column_id
@@ -159,7 +159,7 @@ module Expert = struct
     : type key data column_id column_id_cmp.
       wrap_header:(column_id:column_id -> Vdom.Node.t -> Vdom.Node.t) Bonsai.t
       -> (key, data, column_id, column_id_cmp) t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> column_id Header_tree.t Bonsai.t
     =
     fun ~wrap_header
@@ -227,7 +227,7 @@ module Expert = struct
       (key, data, column_id, column_id_cmp) t
       -> (key, _) Comparator.Module.t
       -> (key * data) Opaque_map.t Bonsai.t
-      -> local_ Bonsai.graph
+      -> Bonsai.graph @ local
       -> (key * (column_id * Vdom.Node.t) list) Opaque_map.t Bonsai.t
     =
     fun { column_id; columns; render_cell; _ } key_cmp rows ->
@@ -337,7 +337,7 @@ module Expert = struct
     : type key data column column_cmp.
       (column, column_cmp) Comparator.Module.t
       -> columns:column Column_structure.t
-      -> render_header:(column Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_header:(column Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:(key, data, column) Render_cell.t
       -> (key, data, column) Column_intf.t
     =
@@ -366,7 +366,7 @@ module Basic = struct
       { from_expert : ('key, 'data, 'column_id, 'column_id_cmp) Expert.t
       ; sorts :
           ('column_id Bonsai.t
-           -> local_ Bonsai.graph
+           -> Bonsai.graph @ local
            -> ('key, 'data) Sort_kind.t option Bonsai.t)
             option
       }
@@ -380,7 +380,7 @@ module Basic = struct
     let sorters
       : type key data column_id column_id_cmp.
         (key, data, column_id, column_id_cmp) t
-        -> local_ Bonsai.graph
+        -> Bonsai.graph @ local
         -> (column_id, (key, data) Sort_kind.t, column_id_cmp) Map.t Bonsai.t
       =
       fun { sorts; from_expert } (local_ graph) ->
@@ -414,11 +414,12 @@ module Basic = struct
     : type key data column_id column_id_cmp.
       ?sorts:
         (column_id Bonsai.t
-         -> local_ Bonsai.graph
+         -> Bonsai.graph @ local
          -> (key, data) Sort_kind.t option Bonsai.t)
       -> (column_id, column_id_cmp) Comparator.Module.t
       -> columns:column_id Column_structure.t
-      -> render_header:(column_id Bonsai.t -> local_ Bonsai.graph -> Vdom.Node.t Bonsai.t)
+      -> render_header:
+           (column_id Bonsai.t -> Bonsai.graph @ local -> Vdom.Node.t Bonsai.t)
       -> render_cell:(key, data, column_id) Render_cell.t
       -> (key, data, column_id) Column_intf.with_sorter
     =

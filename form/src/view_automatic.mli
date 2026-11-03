@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View := Bonsai_web_legacy_view
 
 include module type of struct
   include Bonsai_web_form_view
