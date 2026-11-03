@@ -18,6 +18,53 @@ end
 
 let empty_extension = Codemirror.State.Extension.of_list []
 
+(* On scaled displays the browser truncates the fractional px heights CodeMirror sets on
+   line-number elements; with the whole document rendered, the gutter drifts. Clearing the
+   height on normal lines sizes them exactly like [.cm-line]. *)
+let fix_gutter_alignment () =
+  let open Codemirror.View in
+  let line_number_elements view : Dom_html.element Js.t list =
+    (Editor_view.dom view)##querySelectorAll
+      (Js.string ".cm-lineNumbers .cm-gutterElement")
+    |> Dom.list_of_nodeList
+  in
+  let px_to_float px =
+    Float.of_string_opt (String.chop_suffix_if_exists (Js.to_string px) ~suffix:"px")
+  in
+  let clear_default_heights view =
+    let default_height = Editor_view.default_line_height view in
+    (* The inline style reads back rounded to 6 significant digits (18.196428px ->
+       "18.1963px"), so compare with a tolerance. Anything well below 1/64px (the layout
+       engine's smallest real height difference) works. *)
+    let has_default_height el =
+      match px_to_float el##.style##.height with
+      | None -> false
+      | Some height -> Float.(abs (height - default_height) < 0.001)
+    in
+    List.iter (line_number_elements view) ~f:(fun el ->
+      if has_default_height el then el##.style##.height := Js.string "")
+  in
+  (* Measure writes run after the gutter plugin has set its heights. *)
+  let request =
+    Editor_view.Measure_request.create
+      ~read:ignore
+      ~write:(fun () -> clear_default_heights)
+      ()
+  in
+  View_plugin.define
+    ~create:(fun view ->
+      { Plugin_value.update =
+          Some
+            (fun update ->
+              if View_update.geometry_changed update
+              then Editor_view.request_measure view request)
+      ; destroy = None
+      ; custom_state = ()
+      })
+    ()
+  |> View_plugin.extension
+;;
+
 (** This extension forces the entire document to be displayed in Codemirror.
 
     By default, Codemirror only renders the visible lines, which improves performance but
@@ -61,15 +108,18 @@ let print_full_document_extension () =
          called multiple times. *)
       Js_of_ocaml.Js.Unsafe.meth_call editor_view "requestMeasure" [||]
   in
-  Codemirror.View.View_plugin.define
-    ~create:(fun editor_view ->
-      set_printing_value editor_view true;
-      { Codemirror.View.Plugin_value.update = None
-      ; destroy = Some (fun () -> set_printing_value editor_view false)
-      ; custom_state = (fun () -> ())
-      })
-    ()
-  |> Codemirror.View.View_plugin.extension
+  let printing =
+    Codemirror.View.View_plugin.define
+      ~create:(fun editor_view ->
+        set_printing_value editor_view true;
+        { Codemirror.View.Plugin_value.update = None
+        ; destroy = Some (fun () -> set_printing_value editor_view false)
+        ; custom_state = (fun () -> ())
+        })
+      ()
+    |> Codemirror.View.View_plugin.extension
+  in
+  Codemirror.State.Extension.of_list [ printing; fix_gutter_alignment () ]
 ;;
 
 module Language = struct
@@ -175,14 +225,19 @@ module Text = struct
 end
 
 module Line_numbers = struct
-  let line_numbers_css ~on_line_number_click =
+  let clickable_gutter_theme =
     let open Gen_js_api in
+    lazy
+      (Codemirror.View.Editor_view.theme
+         ~spec:
+           (Ojs.obj
+              [| ".cm-gutter", Ojs.obj [| "cursor", Ojs.string_to_js "pointer" |] |])
+         ())
+  ;;
+
+  let line_numbers_css ~on_line_number_click =
     match on_line_number_click with
-    | Some _ ->
-      let spec =
-        Ojs.obj [| ".cm-gutter", Ojs.obj [| "cursor", Ojs.string_to_js "pointer" |] |]
-      in
-      Codemirror.View.Editor_view.theme ~spec ()
+    | Some _ -> force clickable_gutter_theme
     | None -> empty_extension
   ;;
 
@@ -522,7 +577,9 @@ module Simple_widget = struct
   ;;
 end
 
-let create = unstage (Virtual_dom.Vdom.Node.widget_of_module (module Simple_widget))
+let create =
+  unstage (Virtual_dom.Vdom.Node.widget_of_module_js_of_ocaml (module Simple_widget))
+;;
 
 let make
   ?(extension = empty_extension)

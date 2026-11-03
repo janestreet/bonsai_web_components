@@ -27,7 +27,11 @@ let dynamic_cells ~input which_column : (int, Row.t, _) Table.Columns.t =
         then (
           let%arr data and input in
           let data_str = M.to_string (Field.get field data) in
-          {%html|<div>#{data_str} (%{input#Int})</div>|})
+          {%html|
+            <div>
+              #{data_str} (%{input#Int})
+            </div>
+          |})
         else (
           let%arr data in
           let data_str = M.to_string (Field.get field data) in
@@ -70,7 +74,11 @@ let dynamic_cols ~input which_column : (int, Row.t, _) Table.Columns.t =
           if depend_on_input
           then (
             let data_str = M.to_string (Field.get field data) in
-            {%html|<div>#{data_str} (%{input#Int})</div>|})
+            {%html|
+              <div>
+                #{data_str} (%{input#Int})
+              </div>
+            |})
           else (
             let data_str = M.to_string (Field.get field data) in
             {%html|<div>#{data_str}</div>|}))

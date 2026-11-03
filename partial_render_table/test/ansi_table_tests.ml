@@ -356,7 +356,7 @@ let%expect_test "BUG: In basic tables with dynamic columns, the sorted column ca
     let column_a = int_column "a" (fun (data : Record.t) -> data.a) in
     let column_b = int_column "b" (fun (data : Record.t) -> data.b) in
     let ordered =
-      let%map a_before_b = Bonsai.Expert.Var.value a_before_b in
+      let%arr a_before_b = Bonsai.Expert.Var.value a_before_b in
       if a_before_b then [ column_a; column_b ] else [ column_b; column_a ]
     in
     Table.Basic.Columns.Dynamic_columns.lift ordered
@@ -2965,7 +2965,7 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
   let component graph =
     let collate, key_rank =
       let collate =
-        let%map rank_range = Bonsai.Expert.Var.value rank_range in
+        let%arr rank_range = Bonsai.Expert.Var.value rank_range in
         { Collate_params.Stable.V1.filter = None
         ; order = Compare.Unchanged
         ; key_range = Collate_params.Which_range.All_rows
@@ -2974,8 +2974,11 @@ let%expect_test "Pseudo-BUG: setting rank_range does not change the which rows t
         |> Collate_params.of_stable_v1
       in
       Table_expert.collate
-        ~filter_equal:phys_equal
-        ~filter_to_predicate:Fn.id
+        ~filter:
+          (Incr_map_collate.Filter.by_predicate
+             ~filter_equal:phys_equal
+             ~filter_to_predicate:Fn.id
+             ())
         ~order_equal:phys_equal
         ~order_to_compare:Fn.id
         map
@@ -3685,7 +3688,7 @@ let%expect_test "show that scrolling out of a custom table will execute the pres
   in
   let rank = Bonsai.Expert.Var.create (Between (0, 10)) in
   let collate =
-    let%map rank_range = Bonsai.Expert.Var.value rank in
+    let%arr rank_range = Bonsai.Expert.Var.value rank in
     { Incr_map_collate.Collate_params.Stable.V1.filter = ()
     ; order = ()
     ; key_range = All_rows
@@ -4007,8 +4010,11 @@ module%test [@name "dynamic columns with visibility"] _ = struct
           }
         in
         Table_expert.collate
-          ~filter_equal:phys_equal
-          ~filter_to_predicate:Fn.id
+          ~filter:
+            (Incr_map_collate.Filter.by_predicate
+               ~filter_equal:phys_equal
+               ~filter_to_predicate:Fn.id
+               ())
           ~order_equal:phys_equal
           ~order_to_compare:Fn.id
           map
@@ -4021,7 +4027,7 @@ module%test [@name "dynamic columns with visibility"] _ = struct
           ~focus:Table_expert.Focus.None
           ~row_height:(Bonsai.return (`Px 20))
           ~columns:
-            ((let%map visibility_of_first_column =
+            ((let%arr visibility_of_first_column =
                 Bonsai.Expert.Var.value visibility_of_first_column
               in
               [ Table_expert.Columns.Dynamic_columns.column

@@ -63,7 +63,7 @@ module Model = struct
             ~attrs:
               [ Vdom.Attr.many_without_merge
                   [ Vdom.Attr.type_ "checkbox"
-                  ; Vdom.Attr.on_click (fun _ev -> on_toggle ())
+                  ; Vdom.Attr.on_click_js_of_ocaml (fun _ev -> on_toggle ())
                   ; Vdom.Attr.bool_property "checked" is_visible
                   ]
               ]
@@ -105,7 +105,7 @@ module Model = struct
           ~attrs:
             [ Vdom.Attr.many_without_merge
                 [ Attr.href "about:blank"
-                ; Attr.on_click (fun _ev ->
+                ; Attr.on_click_js_of_ocaml (fun _ev ->
                     Effect.Many
                       [ action (); (Effect.Prevent_default [@alert "-deprecated"]) ])
                 ; Attr.class_ class_

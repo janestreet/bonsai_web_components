@@ -2,8 +2,12 @@ open! Core
 open! Bonsai_web
 
 module Position : sig
+  (** [Auto] chooses the placement with the most available space. [Auto_vertical] does the
+      same but only considers [Top] and [Bottom]. The other options prefer the given
+      position and fall back to the opposite side when necessary. *)
   type t =
     | Auto
+    | Auto_vertical
     | Top
     | Bottom
     | Left
@@ -85,7 +89,15 @@ end
 
     Prefer using the Bonsai stateful [Popover.*] functions when possible, since that
     correctly handles closing on clicks outside, emitting lifecycle events on open/close,
-    etc. *)
+    etc.
+
+    [positioning_strategy] (default [`Absolute]) sets the popover's CSS [position], which
+    determines whether it is positioned in the document/"Page" or viewport/"Client"
+    coordinate system:
+    https://developer.mozilla.org/en-US/docs/Web/CSS/CSSOM_view/Coordinate_systems. Use
+    [`Fixed] for a popover that can stay mounted while its anchor is scrolled out of view.
+    [`Absolute] popovers contribute to the document's scrollable overflow, so they can add
+    blank space below the page's content. *)
 val vdom_popover
   :  ?popover_attrs:Vdom.Attr.t list
   -> ?position:Position.t
@@ -94,23 +106,42 @@ val vdom_popover
   -> ?match_anchor_side_length:Match_anchor_side.t
   -> ?restore_focus_on_close:Restore_focus_on_close.t
   -> ?overflow_auto_wrapper:bool
+  -> ?positioning_strategy:[ `Absolute | `Fixed ]
   -> ?arrow:Vdom.Node.t
   -> Vdom.Node.t
   -> Vdom.Attr.t
 
+(** Like [vdom_popover], but applies no automatic positioning. Use [popover_attrs] to
+    provide positioning.
+
+    The popover's visibility MUST be controlled by attaching / detaching the attr to/from
+    the anchor; the browser-level `showPopover()` and `hidePopover()` functions MUST NOT
+    be used.
+
+    Prefer using the Bonsai stateful [Popover.*] functions when possible, since that
+    correctly handles closing on clicks outside, emitting lifecycle events on open/close,
+    etc. *)
+val vdom_popover_css
+  :  popover_attrs:Vdom.Attr.t list
+  -> ?restore_focus_on_close:Restore_focus_on_close.t
+  -> Vdom.Node.t
+  -> Vdom.Attr.t
+
 module Expert : sig
-  (** An attr to include in [vdom_popover]'s [popover_attrs]. Every time the popover
-      opens, if nothing inside it is already focused, the popover root will be focused.
-      This is the vdom-level equivalent of [Popover.always_open]'s [?focus_on_open]. *)
+  (** An attr to include in [vdom_popover] / [vdom_popover_css]'s [popover_attrs]. Every
+      time the popover opens, if nothing inside it is already focused, the popover root
+      will be focused. This is the vdom-level equivalent of [Popover.always_open]'s
+      [?focus_on_open]. *)
   val focus_popover_on_open : Vdom.Attr.t
 
   (** An alias for [Bonsai_web_portal.ensure_global_toplayer_root_mounted].
 
       The Bonsai-level [Popover.*] / [Modal.*] functions call this for you at
-      graph-construction time. If you build popovers directly out of [vdom_popover], call
-      this yourself when constructing your graph: the toplayer root is otherwise created
-      lazily when the first popover opens, and appending it to the document root at that
-      point causes an expensive whole-document style recalculation. *)
+      graph-construction time. If you build popovers directly out of [vdom_popover] or
+      [vdom_popover_css], call this yourself when constructing your graph: the toplayer
+      root is otherwise created lazily when the first popover opens, and appending it to
+      the document root at that point causes an expensive whole-document style
+      recalculation. *)
   val ensure_global_toplayer_root_mounted : unit -> unit
 end
 

@@ -105,7 +105,7 @@ module T = struct
   let on_mount = `Do_nothing
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let attr inject = Vdom.Attr.create_hook "visibility-tracker" (Hook.create inject)
 
@@ -215,7 +215,7 @@ let only_when_visible' ?visible_attr ?hidden_attr c graph =
           ~equal:[%equal: Vdom_model.t]
           vdom
           ~callback:
-            (let%map set_prev_vdom in
+            (let%arr set_prev_vdom in
              fun v -> set_prev_vdom (Some v))
           graph
       in

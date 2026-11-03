@@ -23,17 +23,24 @@ let if_empty_then_none constructor text =
 ;;
 
 let wrap_application ?(attr = Bonsai.return Vdom.Attr.empty) ~theme_picker nodes graph =
-  let theme = View.Theme.current graph in
+  let theme = Bonsai_web_legacy_view.Theme.current graph in
   let%arr nodes and theme_picker and theme and attr in
   Vdom.Node.div
     ~attrs:
       [ Style.app
       ; Style.Variables.set
-          ~bg:(Css_gen.Color.to_string_css (View.primary_colors theme).background)
-          ~fg:(Css_gen.Color.to_string_css (View.primary_colors theme).foreground)
+          ~bg:
+            (Css_gen.Color.to_string_css
+               (Bonsai_web_legacy_view.primary_colors theme).background)
+          ~fg:
+            (Css_gen.Color.to_string_css
+               (Bonsai_web_legacy_view.primary_colors theme).foreground)
           ~extreme_primary_border:
-            (Css_gen.Color.to_string_css (View.extreme_primary_border_color theme))
-          ~extreme_bg:(Css_gen.Color.to_string_css (View.extreme_colors theme).background)
+            (Css_gen.Color.to_string_css
+               (Bonsai_web_legacy_view.extreme_primary_border_color theme))
+          ~extreme_bg:
+            (Css_gen.Color.to_string_css
+               (Bonsai_web_legacy_view.extreme_colors theme).background)
           ()
       ; attr
       ]
@@ -79,8 +86,8 @@ let codemirror ~language ~content graph =
   in
   let codemirror =
     let codemirror_theme =
-      let%map.Bonsai theme = Bonsai_web.View.Theme.current graph in
-      Bonsai_web.View.For_components.Codemirror.theme theme
+      let%arr.Bonsai theme = Bonsai_web_legacy_view.Theme.current graph in
+      Bonsai_web_legacy_view.For_components.Codemirror.theme theme
     in
     Codemirror.with_dynamic_extensions
       ~sexp_of:[%sexp_of: Codemirror_themes.t option]
@@ -105,7 +112,7 @@ let codemirror ~language ~content graph =
       ~equal:[%equal: String.t]
       content
       ~callback:
-        (let%map codemirror in
+        (let%arr codemirror in
          fun demo -> Codemirror.set_lines codemirror (String.split_lines demo))
       graph
   in

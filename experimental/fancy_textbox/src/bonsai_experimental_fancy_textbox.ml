@@ -12,25 +12,25 @@ module Style =
         height: fit-content;
 
         /* overflow shouldn't happen, but if it does,
-           allow the user to still interact with it. */
+                 allow the user to still interact with it. */
         overflow: visible;
 
         /* The <textarea> and <pre> elements are absolutely
-           positioned, so make the wrapper position:relative
-           so that they're absolute with respect to the wrapper.  */
+                 positioned, so make the wrapper position:relative
+                 so that they're absolute with respect to the wrapper.  */
         position: relative;
       }
 
       .textarea,
       .pre {
         /* The textbox and pre elements need to share ~all of their
-           properties so that they line up correctly.  Inherit all
-           these properties from the parent to allow the user to
-           style the component by styling a container node. */
+                 properties so that they line up correctly.  Inherit all
+                 these properties from the parent to allow the user to
+                 style the component by styling a container node. */
         all: inherit;
 
         /* Regardless of the parents values, we want to revert
-           these properties back to the defaults. */
+                 these properties back to the defaults. */
         background: transparent;
         display: block;
         border-radius: 0;
@@ -43,14 +43,44 @@ module Style =
         height: unset;
       }
 
+      .wrapper > .textarea,
+      .wrapper > .pre {
+        /* Host pages sometimes ship element-level rules that restyle bare
+                 <pre> or <textarea> elements (e.g. JupyterLab >= 4.3 has a
+                 `.jp-ThemedContainer pre { font-family: ...; font-size: ...;
+                 line-height: ...; }` rule that applies to the whole page). Such a
+                 rule has (0,1,1) specificity, which beats the (0,1,0) `all: inherit`
+                 rule above on just one of the two layers, breaking the invariant
+                 that the <textarea> and <pre> share identical text metrics and
+                 making the caret/selection drift away from the visible text.
+
+                 Re-assert inheritance of the layout-critical text metrics at
+                 (0,2,0) specificity so both layers always agree, no matter what the
+                 host page does to bare `pre`/`textarea` elements.
+
+                 Deliberately do NOT raise the specificity of the `all: inherit`
+                 rule itself: consumers style the layers with single-class (0,1,0)
+                 rules via [textarea_attrs] (and style highlight spans the same
+                 way), and those must keep winning over the base rule. */
+        font: inherit;
+        letter-spacing: inherit;
+        word-spacing: inherit;
+        text-transform: inherit;
+        tab-size: inherit;
+
+        /* Ligatures can cause the "fake" styled layer to diverge in sizing from the
+           invisible textarea layer.  */
+        font-variant-ligatures: none;
+      }
+
       .pre {
         /* overflow shouldn't be possible due to the wrapper
-           node growing to fit the content, but if something unexpected
-           happens, a visible overflow is preferred. */
+                 node growing to fit the content, but if something unexpected
+                 happens, a visible overflow is preferred. */
         overflow: visible;
 
         /* The user can select things from the textbox, so prevent
-           them from selecting things from the <pre> */
+                 them from selecting things from the <pre> */
         user-select: none;
       }
 
@@ -59,11 +89,11 @@ module Style =
         color: transparent;
 
         /* The text being invisible means that the caret will
-           also be invisible unless we set it to something */
+                 also be invisible unless we set it to something */
         caret-color: var(--caret-color);
 
         /* This node is absolutely positioned, so it can't influence
-           the size of the wrapper node.  Clip it! */
+                 the size of the wrapper node.  Clip it! */
         overflow: clip;
 
         /* fill the wrapper node */
@@ -78,17 +108,22 @@ module Style =
       .pre,
       .pre > * {
         /* pre-wrap means that whitespace isn't auto-collapsed,
-           but it can still wrap long lines if necessary */
+                 but it can still wrap long lines if necessary */
         white-space: pre-wrap;
       }
     |}]
 
-let filler = {%html|<span style="color: transparent">.</span>|}
+let filler = {%html|<span css="color: transparent">.</span>|}
 
 module Expert = struct
   let create
     ?(min_width = (`Ch 12.0 : Css_gen.Length.t))
     ?(caret_color = (`Name "black" : Css_gen.Color.t))
+    ?(container_attrs = [])
+    ?(textarea_attrs = [])
+    ?on_click
+    ?placeholder
+    ?disabled
     ~text
     ~set_text
     ~process
@@ -96,9 +131,39 @@ module Expert = struct
     =
     let min_width = Css_gen.Length.to_string_css min_width in
     let caret_color = Css_gen.Color.to_string_css caret_color in
+    (* The textarea sits on top of (and hides) the highlight [<pre>], so it - not the
+       [<pre>] - receives clicks. To let callers make regions of the text interactive
+       (e.g. links), we translate a click into the byte offset it landed on and hand that
+       to [on_click], which the caller can map back onto whatever it rendered. *)
+    let on_click_attrs =
+      match on_click with
+      | None -> []
+      | Some on_click ->
+        let handle event =
+          let open Js_of_ocaml in
+          match Js.Opt.to_option event##.target with
+          | None -> Vdom.Effect.Ignore
+          | Some target ->
+            (match Dom_html.CoerceTo.textarea target |> Js.Opt.to_option with
+             | None -> Vdom.Effect.Ignore
+             | Some textarea ->
+               (* By click time the browser has already moved the caret to the click, so
+                  [selectionStart] is the click position in UTF-16 code units; converting
+                  the prefix to an OCaml (UTF-8) string gives the byte offset. *)
+               let byte_offset =
+                 let selection_start = textarea##.selectionStart in
+                 String.length
+                   (Js.to_string (textarea##.value##substring 0 selection_start))
+               in
+               on_click ~byte_offset event)
+        in
+        [ Vdom.Attr.on_click_js_of_ocaml handle ]
+    in
     let textbox =
       Vdom_input_widgets.Entry.text_area
-        ~extra_attrs:[ Style.textarea ]
+        ?placeholder
+        ?disabled
+        ~extra_attrs:((Style.textarea :: on_click_attrs) @ textarea_attrs)
         ~value:text
         ~on_input:set_text
         ()
@@ -116,13 +181,20 @@ module Expert = struct
       let should_append = String.is_suffix text ~suffix:"\n" in
       let prepend = if should_prepend then Some filler else None
       and append = if should_append then Some filler else None in
-      {%html|<pre %{Style.pre}>?{prepend}*{process text}?{append}</pre>|}
+      {%html|
+        <pre %{Style.pre}>
+          ?{prepend}
+          *{process text}
+          ?{append}
+        </pre>
+      |}
     in
     {%html|
       <div
         %{Style.wrapper}
         %{Style.Variables.set_all ~caret_color}
-        style="min-width: %{min_width}"
+        %{Vdom.Attr.many container_attrs}
+        css="min-width: #{min_width}"
       >
         %{pre_content} %{textbox}
       </div>
@@ -280,7 +352,7 @@ let lower ~text ~decorated =
              , [] )
            | true ->
              let decorated =
-               {%html|<span %{Decoration.to_attr decoration}>#{ decorated_text }</span>|}
+               {%html|<span %{Decoration.to_attr decoration}>#{decorated_text}</span>|}
              in
              let leading_whitespace =
                if String.is_empty leading_whitespace
@@ -312,12 +384,28 @@ let lower ~text ~decorated =
 let create
   ?min_width
   ?caret_color
+  ?container_attrs
+  ?textarea_attrs
+  ?on_click
+  ?placeholder
+  ?disabled
   ~text
   ~set_text
   ~(process : string -> (string * Decoration.t) list)
   ()
   =
-  Expert.create () ?min_width ?caret_color ~text ~set_text ~process:(fun text ->
-    let decorated = process text in
-    lower ~text ~decorated)
+  Expert.create
+    ()
+    ?min_width
+    ?caret_color
+    ?container_attrs
+    ?textarea_attrs
+    ?on_click
+    ?placeholder
+    ?disabled
+    ~text
+    ~set_text
+    ~process:(fun text ->
+      let decorated = process text in
+      lower ~text ~decorated)
 ;;

@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 module Styling = Bonsai_web_partial_render_table_styling
 
@@ -403,7 +404,7 @@ module Cell = struct
     content
     =
     let shared_attrs =
-      Vdom.Attr.on_click (fun _ -> on_cell_click)
+      Vdom.Attr.on_click_js_of_ocaml (fun _ -> on_cell_click)
       :: (if is_focused then themed_attrs.cell_focused else Vdom.Attr.empty)
       :: col_styles
     in

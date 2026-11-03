@@ -10,15 +10,18 @@ end
 type ('k, 'cmp) comparator =
   (module Comparator with type t = 'k and type comparator_witness = 'cmp)
 
-(** A vertical list component which moves items into their proper place during drag and
-    drop. Items use absolute positioning for explicit layout; that is, the nth item is
-    [n * item_height] pixels from the top of the container. Items outside the list may be
-    dragged into the list to extend it. *)
+(** A list component which moves items into their proper place during drag and drop.
+    Vertical lists stack items from top to bottom. Horizontal lists pack items from left
+    to right and wrap them based on the measured container width. Items outside the list
+    may be dragged into the list to extend it. *)
 val list
   :  ('source, 'cmp) comparator
   -> dnd:('source, int) Bonsai_web_drag_and_drop.t Bonsai.t
        (** The drag-and-drop universe the list should operate in; other items in the
            universe may be dragged into the list *)
+  -> ?direction:[ `Horizontal | `Vertical ]
+       (** The direction in which items are laid out. Horizontal lists wrap based on the
+           measured container width. (Default: [Vertical]) *)
   -> ?enable_debug_overlay:bool
        (** Display a transparent overlay on targets to make it clear where an item may be
            dropped. *)
@@ -42,8 +45,9 @@ val list
            provided in case you wish to change the placeholder based on whether an item is
            being hovered above the empty list. *)
   -> ?default_item_height:int
-       (** The items and drop targets are spaced evenly every item_height. In order to
-           look natural, each item should have height [item_height]. *)
+       (** The fallback size used before items are measured and for the append drop
+           target. In horizontal lists it is used for both dimensions of an unmeasured
+           item. *)
   -> ?add_drop_target_for_appending:bool
        (** If true, an additional [default_item_height] of space at the end of the list
            will be added. Items dragged into that space will be appended to the list.
@@ -60,6 +64,7 @@ val list
 val simple
   :  ('key, 'cmp) comparator
   -> ?sentinel_name:string
+  -> ?direction:[ `Horizontal | `Vertical ]
   -> ?enable_debug_overlay:bool
   -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
   -> ?left:Css_gen.Length.t
@@ -94,6 +99,7 @@ end
 val with_inject
   :  ('key, 'cmp) comparator
   -> ?sentinel_name:string
+  -> ?direction:[ `Horizontal | `Vertical ]
   -> ?enable_debug_overlay:bool
   -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
   -> ?left:Css_gen.Length.t
@@ -121,6 +127,7 @@ module Multi : sig
     :  ('key, 'cmp) comparator
     -> ('which, 'which_cmp) comparator
     -> ?sentinel_name:string
+    -> ?direction:[ `Horizontal | `Vertical ]
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t
@@ -162,6 +169,7 @@ module Multi : sig
     :  ('key, 'cmp) comparator
     -> ('which, 'which_cmp) comparator
     -> ?sentinel_name:string
+    -> ?direction:[ `Horizontal | `Vertical ]
     -> ?enable_debug_overlay:bool
     -> ?extra_item_attrs:Vdom.Attr.t Bonsai.t
     -> ?left:Css_gen.Length.t

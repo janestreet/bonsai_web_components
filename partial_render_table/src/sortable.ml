@@ -43,7 +43,7 @@ module Header = struct
       f
       =
       let handle_click =
-        Vdom.Attr.on_click (fun mouse_event ->
+        Vdom.Attr.on_click_js_of_ocaml (fun mouse_event ->
           let shift = Js_of_ocaml.Js.to_bool mouse_event##.shiftKey in
           let ctrl = Js_of_ocaml.Js.to_bool mouse_event##.ctrlKey in
           let should_multisort =

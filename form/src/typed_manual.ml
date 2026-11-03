@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 module Form = Form_manual
 module Elements = Elements_manual
@@ -95,7 +96,7 @@ module Record = struct
     let forms_per_field = To_forms.run form_values_per_field graph in
     let lookup field =
       let field = M.Typed_field.globalize0 field in
-      let%map forms_per_field in
+      let%arr forms_per_field in
       The_forms.find forms_per_field field
     in
     let view = M.finalize_view { f = lookup } graph in
@@ -195,7 +196,7 @@ module Record = struct
             let f : type a. a Typed_field.t -> Vdom.Node.t Bonsai.t =
               fun field ->
               let field = M.Typed_field.globalize0 field in
-              let%map form = f field in
+              let%arr form = f field in
               Form.view form
             in
             To_views.run (View_value_by_field.create { f })
@@ -494,7 +495,7 @@ module Variant = struct
           Bonsai.return
             (Form.return () |> Form.map_view ~f:(fun () : variant_view -> None))
         | S variant ->
-          let%map.Bonsai form = M.form_for_variant variant graph in
+          let%arr.Bonsai form = M.form_for_variant variant graph in
           Form.map_view form ~f:Option.some
       ;;
 
@@ -619,7 +620,7 @@ module Variant = struct
     let view =
       let lookup variant =
         let variant = M.Typed_variant.globalize0 variant in
-        let%map forms in
+        let%arr forms in
         let (Form_with_comparator.T { form; cmp; _ }) = Forms.find forms variant in
         Packed_set_form.T { form; comparator = cmp }
       in

@@ -5,7 +5,7 @@ let make' ?(attrs = []) ~set_url ~page_to_string page children =
   let attrs =
     attrs
     @ [ Vdom.Attr.href (page_to_string page)
-      ; Vdom.Attr.on_click (fun event ->
+      ; Vdom.Attr.on_click_js_of_ocaml (fun event ->
           if List.exists
                [ event##.ctrlKey; event##.shiftKey; event##.altKey; event##.metaKey ]
                ~f:Js_of_ocaml.Js.to_bool

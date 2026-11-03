@@ -5,13 +5,71 @@ module Drag_and_drop = Bonsai_web_drag_and_drop
 module Node = Vdom.Node
 module Attr = Vdom.Attr
 
-let transform_xy ~left ~right x y =
+module Dimensions = struct
+  type t =
+    { width : int
+    ; height : int
+    }
+end
+
+module Position = struct
+  type t =
+    { x : int
+    ; y : int
+    }
+end
+
+module Layout_cursor = struct
+  type t =
+    { x : int
+    ; y : int
+    ; row_height : int
+    }
+
+  let origin = { x = 0; y = 0; row_height = 0 }
+
+  let place ~direction ~container_width ({ x; y; row_height } as cursor) dimensions =
+    match direction with
+    | `Vertical ->
+      { Position.x = 0; y }, { cursor with y = y + dimensions.Dimensions.height }
+    | `Horizontal ->
+      let { Dimensions.width; height } = dimensions in
+      let x, y, row_height =
+        match container_width with
+        | Some container_width when x > 0 && x + width > container_width ->
+          0, y + row_height, 0
+        | None | Some _ -> x, y, row_height
+      in
+      { Position.x; y }, { x = x + width; y; row_height = Int.max row_height height }
+  ;;
+
+  let height ~direction { x = _; y; row_height } =
+    match direction with
+    | `Vertical -> y
+    | `Horizontal -> y + row_height
+  ;;
+end
+
+module Layout = struct
+  type t =
+    { height : int
+    ; height_with_append_target : int
+    ; append_target_position : Position.t
+    }
+end
+
+let transform_xy ~direction ~left ~right x y =
+  let position =
+    match direction with
+    | `Vertical -> Css_gen.position ~top:(`Px 0) ~left ~right `Absolute
+    | `Horizontal -> Css_gen.position ~top:(`Px 0) ~left:(`Px 0) `Absolute
+  in
   Attr.many
     [ Attr.style
         (Css_gen.create
            ~field:"transform"
            ~value:[%string "translateY(%{y#Int}px) translateX(%{x#Int}px)"])
-    ; Attr.style (Css_gen.position ~top:(`Px 0) ~left ~right `Absolute)
+    ; Attr.style position
     ]
 ;;
 
@@ -42,12 +100,12 @@ end
 type 'a item_positioning_info =
   { data : 'a
   ; index : int
-  ; y_position : int
+  ; position : Position.t
   ; adjusted_idx : int
       (* Had to name this adjusted_idx because the compiler thought that I was referring
          to the model_info_at_index object when trying to destructure *)
-  ; adjusted_y_position : int
-  ; size : int
+  ; adjusted_position : Position.t
+  ; dimensions : Dimensions.t
   ; is_dragged_item : bool
   ; is_target_of_external_item : bool
   }
@@ -83,6 +141,7 @@ let list
   (type src cmp)
   (key : (src, cmp) comparator)
   ~(dnd : (src, int) Bonsai_web_drag_and_drop.t Bonsai.t)
+  ?(direction = `Vertical)
   ?(enable_debug_overlay = false)
   ?(extra_item_attrs = Bonsai.return Attr.empty)
   ?(container_extra_attrs = Bonsai.return Attr.empty)
@@ -102,6 +161,25 @@ let list
       (module Key)
       Prune_stale
       graph
+  in
+  let container_width, container_size_attr =
+    match direction with
+    | `Vertical -> Bonsai.return None, Bonsai.return Attr.empty
+    | `Horizontal ->
+      let container_width, set_container_width =
+        Bonsai.state
+          None
+          ~sexp_of_model:[%sexp_of: int option]
+          ~equal:[%equal: int option]
+          graph
+      in
+      let container_size_attr =
+        let%arr set_container_width in
+        Bonsai_web_element_size_hooks.Size_tracker.on_change
+          (fun { content_box = { width; height = _ }; border_box = _ } ->
+             set_container_width (Some (Int.max 0 (Int.of_float width))))
+      in
+      container_width, container_size_attr
   in
   let historical_min_index =
     let historical_min_index, set_historical_min_index =
@@ -198,38 +276,59 @@ let list
         ; is_target_of_external_item = index = target
         }
   in
-  let%sub total_height, alist_for_targets =
-    let%arr input and sizes in
+  let default_dimensions =
+    { Dimensions.width = default_item_height; height = default_item_height }
+  in
+  let%sub original_layout, alist_for_targets =
+    let%arr input and sizes and container_width in
     let items =
       Array.of_list_map (Map.to_alist input) ~f:(fun (key, (data, index)) ->
-        let size =
+        let dimensions =
           match Map.find sizes key with
-          | Some size -> Int.of_float size.height
-          | None -> default_item_height
+          | Some { width; height } ->
+            { Dimensions.width = Int.max 0 (Float.iround_up_exn width)
+            ; height = Int.max 0 (Float.iround_up_exn height)
+            }
+          | None -> default_dimensions
         in
         ( key
         , { data
           ; index
-          ; y_position = 0
-          ; adjusted_y_position = 0
+          ; position = { Position.x = 0; y = 0 }
+          ; adjusted_position = { Position.x = 0; y = 0 }
           ; adjusted_idx = 0
-          ; size
+          ; dimensions
           ; is_target_of_external_item = false
           ; is_dragged_item = false
           } ))
     in
     Array.sort items ~compare:(fun a b ->
       Comparable.lift Int.compare ~f:(fun (_, { index; _ }) -> index) a b);
-    let (total_height : int) =
-      Array.fold_map_inplace items ~init:0 ~f:(fun acc (key, item) ->
-        acc + item.size, (key, { item with y_position = acc }))
+    let cursor =
+      Array.fold_map_inplace
+        items
+        ~init:Layout_cursor.origin
+        ~f:(fun cursor (key, item) ->
+          let position, cursor =
+            Layout_cursor.place ~direction ~container_width cursor item.dimensions
+          in
+          cursor, (key, { item with position }))
     in
-    total_height, Array.to_list items
+    let append_target_position, cursor_with_append_target =
+      Layout_cursor.place ~direction ~container_width cursor default_dimensions
+    in
+    ( { Layout.height = Layout_cursor.height ~direction cursor
+      ; height_with_append_target =
+          Layout_cursor.height ~direction cursor_with_append_target
+      ; append_target_position
+      }
+    , Array.to_list items )
   in
   let map_for_targets = alist_for_targets >>| Map.of_alist_exn (module Key) in
-  let map_for_items =
+  let%sub adjusted_height, map_for_items =
     let%arr items = alist_for_targets
-    and model_info_at_index in
+    and model_info_at_index
+    and container_width in
     let items = Array.of_list items in
     Array.map_inplace items ~f:(fun (key, item) ->
       let { adjusted_index; is_target_of_external_item; is_dragged_item } =
@@ -237,23 +336,31 @@ let list
       in
       ( key
       , { item with
-          adjusted_y_position = adjusted_index
+          adjusted_position = { Position.x = 0; y = 0 }
         ; adjusted_idx = adjusted_index
         ; is_dragged_item
         ; is_target_of_external_item
         } ));
     Array.sort items ~compare:(fun a b ->
       Comparable.lift Int.compare ~f:(fun (_, { adjusted_idx; _ }) -> adjusted_idx) a b);
-    Array.fold
-      items
-      ~init:(0, Map.empty (module Key))
-      ~f:(fun (acc, items) (key, item) ->
-        let adjusted_y_position =
-          if item.is_target_of_external_item then acc + default_item_height else acc
-        in
-        ( adjusted_y_position + item.size
-        , Map.add_exn items ~key ~data:{ item with adjusted_y_position } ))
-    |> snd
+    let cursor, items =
+      Array.fold
+        items
+        ~init:(Layout_cursor.origin, Map.empty (module Key))
+        ~f:(fun (cursor, items) (key, item) ->
+          let cursor =
+            if item.is_target_of_external_item
+            then
+              Layout_cursor.place ~direction ~container_width cursor default_dimensions
+              |> snd
+            else cursor
+          in
+          let adjusted_position, cursor =
+            Layout_cursor.place ~direction ~container_width cursor item.dimensions
+          in
+          cursor, Map.add_exn items ~key ~data:{ item with adjusted_position })
+    in
+    Layout_cursor.height ~direction cursor, items
   in
   let is_dragging =
     let%arr dnd in
@@ -279,20 +386,12 @@ let list
           let%arr size_attr and key in
           size_attr key
         in
-        let%sub { data
-                ; adjusted_y_position = y_position
-                ; adjusted_idx
-                ; is_dragged_item
-                ; _
-                }
-          =
-          data
-        in
+        let%sub { data; adjusted_position; adjusted_idx; is_dragged_item; _ } = data in
         let%arr data
         and key
         and drop_target
         and is_dragging
-        and y_position
+        and adjusted_position
         and is_dragged_item
         and extra_item_attrs
         and size_attr
@@ -300,6 +399,7 @@ let list
         and dragged_item_attrs
         and get_extra_item_attrs
         and key_sexp in
+        let { Position.x; y } = adjusted_position in
         let dragged_item_attrs =
           if is_dragged_item
           then Attr.(Attr.style (Css_gen.opacity 0.0) @ dragged_item_attrs)
@@ -316,7 +416,7 @@ let list
             [ Attr.(
                 size_attr
                 @ (if is_dragging then Attr.empty else drop_target ~id:adjusted_idx)
-                @ transform_xy ~left ~right 0 y_position
+                @ transform_xy ~direction ~left ~right x y
                 @ extra_item_attrs
                 @ dragged_item_attrs
                 @ item_specific_extra_attrs)
@@ -330,34 +430,41 @@ let list
       Map.fold ~init:(-1) map ~f:(fun ~key:_ ~data:(_, rank) acc -> Int.max rank acc) + 1
     in
     let drop_target = dnd >>| Drag_and_drop.drop_target in
-    let single_target ~is_the_extra_target index size y_position _graph =
+    let single_target ~is_the_extra_target index dimensions position _graph =
       let is_the_extra_target =
         let%arr should_render_extra_target and index and num_items in
         ((not should_render_extra_target) && index = num_items - 1) || is_the_extra_target
       in
-      let%arr index and size and y_position and is_the_extra_target and drop_target in
-      let the_height =
-        if is_the_extra_target
-        then
-          Css_gen.create
-            ~field:"height"
-            ~value:[%string "calc(100% - %{y_position#Int}px)"]
-        else Css_gen.height (`Px size)
+      let%arr index and dimensions and position and is_the_extra_target and drop_target in
+      let { Dimensions.width = target_width; height = target_height } = dimensions in
+      let { Position.x; y } = position in
+      let target_size =
+        match direction with
+        | `Vertical ->
+          if is_the_extra_target
+          then Css_gen.create ~field:"height" ~value:[%string "calc(100% - %{y#Int}px)"]
+          else Css_gen.height (`Px target_height)
+        | `Horizontal ->
+          Css_gen.(
+            height (`Px target_height)
+            @>
+            if is_the_extra_target
+            then create ~field:"width" ~value:[%string "calc(100% - %{x#Int}px)"]
+            else width (`Px target_width))
       in
       Node.div
         ~key:[%string "target-%{index#Int}"]
         ~attrs:
           [ Attr.(
               drop_target ~id:index
-              @ transform_xy ~left ~right 0 y_position
-              @ style (Css_gen.position ~top:(`Px 0) ~left ~right `Absolute)
+              @ transform_xy ~direction ~left ~right x y
               @ (if enable_debug_overlay
                  then
                    style
                      Css_gen.(
                        background_color (`Hex "#10000010") @> border ~style:`Dotted ())
                  else empty)
-              @ style the_height)
+              @ style target_size)
           ]
         []
     in
@@ -366,20 +473,24 @@ let list
         (module Key)
         map_for_targets
         ~f:(fun _ data graph ->
-          let%sub { index; size; y_position; _ } = data in
-          single_target ~is_the_extra_target:false index size y_position graph)
+          let%sub { index; dimensions; position; _ } = data in
+          single_target ~is_the_extra_target:false index dimensions position graph)
         graph
     in
     let extra_target =
-      if%sub should_render_extra_target
-      then
-        single_target
-          ~is_the_extra_target:true
-          num_items
-          (Bonsai.return default_item_height)
-          total_height
-          graph
-      else Bonsai.return (Vdom.Node.none_deprecated [@alert "-deprecated"])
+      match add_drop_target_for_appending with
+      | false -> Bonsai.return Vdom.Node.none
+      | true ->
+        if%sub should_render_extra_target
+        then
+          single_target
+            ~is_the_extra_target:true
+            num_items
+            (Bonsai.return default_dimensions)
+            (original_layout
+             >>| fun { append_target_position; _ } -> append_target_position)
+            graph
+        else Bonsai.return (Vdom.Node.none_deprecated [@alert "-deprecated"])
     in
     let%arr item_targets and extra_target in
     extra_target :: Map.data item_targets
@@ -394,26 +505,46 @@ let list
   let%arr items
   and targets
   and is_dragging
-  and total_height
+  and original_layout
+  and adjusted_height
   and empty_list_placeholder
-  and container_extra_attrs in
+  and container_extra_attrs
+  and container_size_attr in
   let items = if Map.is_empty items then [ empty_list_placeholder ] else Map.data items in
   let items = if is_dragging then items @ targets else items in
-  Node.div
-    ~attrs:
-      [ Attr.(
-          style
-            Css_gen.(
-              position `Relative
-              @> flex_container ~direction:`Column ()
-              @> height (`Percent (Percent.of_percentage 100.0))
-              @> min_height
-                   (`Px
-                     (total_height
-                      + if add_drop_target_for_appending then default_item_height else 0))))
-      ; container_extra_attrs
-      ]
-    items
+  match direction with
+  | `Vertical ->
+    let layout_style =
+      Css_gen.(
+        position `Relative
+        @> flex_container ~direction:`Column ()
+        @> height (`Percent (Percent.of_percentage 100.0))
+        @> min_height
+             (`Px
+               (original_layout.height
+                + if add_drop_target_for_appending then default_item_height else 0)))
+    in
+    Node.div ~attrs:[ Attr.style layout_style; container_extra_attrs ] items
+  | `Horizontal ->
+    let min_height =
+      Int.max
+        adjusted_height
+        (if add_drop_target_for_appending
+         then original_layout.height_with_append_target
+         else original_layout.height)
+    in
+    let lane_style =
+      Css_gen.concat
+        [ Css_gen.position `Relative
+        ; Css_gen.margin
+            ~left:(left :> Css_gen.Auto_or_length.t)
+            ~right:(right :> Css_gen.Auto_or_length.t)
+            ()
+        ; Css_gen.min_height (`Px min_height)
+        ]
+    in
+    let lane = Node.div ~attrs:[ Attr.style lane_style; container_size_attr ] items in
+    Node.div ~attrs:[ container_extra_attrs ] [ lane ]
 ;;
 
 module Reorderable_list (Key : Comparator) : sig
@@ -476,6 +607,7 @@ let with_inject
   (type src cmp)
   (key : (src, cmp) comparator)
   ?(sentinel_name = "dnd")
+  ?direction
   ?enable_debug_overlay
   ?extra_item_attrs
   ?left
@@ -519,7 +651,7 @@ let with_inject
       ~source_id:(module Key)
       ~target_id:(module Int)
       ~on_drop:
-        (let%map inject in
+        (let%arr inject in
          fun key i -> inject [ Move (key, i) ])
       graph
   in
@@ -550,6 +682,7 @@ let with_inject
     list
       (module Key)
       ~dnd
+      ?direction
       ?enable_debug_overlay
       ?extra_item_attrs
       ?left
@@ -633,6 +766,7 @@ let simple
   (type src cmp)
   (key : (src, cmp) comparator)
   ?sentinel_name
+  ?direction
   ?enable_debug_overlay
   ?extra_item_attrs
   ?left
@@ -648,6 +782,7 @@ let simple
     with_inject
       key
       ?sentinel_name
+      ?direction
       ?enable_debug_overlay
       ?extra_item_attrs
       ?left
@@ -724,6 +859,7 @@ module Multi = struct
     (key : (src, cmp) comparator)
     (which : (which, which_cmp) comparator)
     ?(sentinel_name = "dnd")
+    ?direction
     ?enable_debug_overlay
     ?extra_item_attrs
     ?left
@@ -784,7 +920,7 @@ module Multi = struct
             type t = Which.t * Int.t [@@deriving equal, sexp]
           end)
         ~on_drop:
-          (let%map inject in
+          (let%arr inject in
            fun source (target_which, target) ->
              inject [ Move (source, target_which, target) ])
         graph
@@ -855,6 +991,7 @@ module Multi = struct
             list
               (module Key)
               ~dnd
+              ?direction
               ?enable_debug_overlay
               ?extra_item_attrs
               ?left
@@ -918,6 +1055,7 @@ module Multi = struct
     (key : (src, cmp) comparator)
     (which : (which, which_cmp) comparator)
     ?sentinel_name
+    ?direction
     ?enable_debug_overlay
     ?extra_item_attrs
     ?left
@@ -942,6 +1080,7 @@ module Multi = struct
         key
         which
         ?sentinel_name
+        ?direction
         ?enable_debug_overlay
         ?extra_item_attrs
         ?left

@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_css_color_scheme_test)
+ (libraries bonsai bonsai_test bonsai_web bonsai_web_css_color_scheme
+   bonsai_web_test core expect_test_helpers_core)
+ (preprocess
+  (pps ppx_jane bonsai.ppx_bonsai)))

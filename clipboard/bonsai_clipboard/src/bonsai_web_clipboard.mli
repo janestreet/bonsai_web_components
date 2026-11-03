@@ -12,6 +12,11 @@ val copy_html : string -> unit Effect.t
     fallback. *)
 val copy_link : url:string -> title:string -> unit Effect.t
 
+(** An effect that copies [html] as [text/html] with [plain_text] as the [text/plain]
+    fallback. Use this over [copy_html] when the html's markup isn't an acceptable
+    plain-text rendering of the content (e.g. text containing several links). *)
+val copy_html_with_plain_text_fallback : html:string -> plain_text:string -> unit Effect.t
+
 (** [With_status] variants of all the copy functions. These return whether a copy was
     recently performed so UI components can display a status indicator. *)
 module With_status : sig
@@ -32,6 +37,15 @@ module With_status : sig
   val copy_link
     :  url:string Bonsai.t
     -> title:string Bonsai.t
+    -> Bonsai.graph
+    -> t Bonsai.t
+
+  (** An effect that copies [html] as [text/html] with [plain_text] as the [text/plain]
+      fallback. Use this over [copy_html] when the html's markup isn't an acceptable
+      plain-text rendering of the content (e.g. text containing several links). *)
+  val copy_html_with_plain_text_fallback
+    :  html:string Bonsai.t
+    -> plain_text:string Bonsai.t
     -> Bonsai.graph
     -> t Bonsai.t
 

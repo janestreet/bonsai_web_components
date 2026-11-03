@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View = Bonsai_web_legacy_view
 open Bonsai_web_test
 open Bonsai.Let_syntax
 module Node_helpers = Virtual_dom_test_helpers.Node_helpers
@@ -151,49 +152,49 @@ module Helper = struct
       in
       let open Vdom.Attr in
       match strip_on key with
-      | "input" -> on_input |> make2
-      | "change" -> on_change |> make2
-      | "cancel" -> on_cancel |> make1
-      | "click" -> on_click |> make1
-      | "toggle" -> on_toggle |> make1
-      | "close" -> on_close |> make1
-      | "contextmenu" -> on_contextmenu |> make1
-      | "dblclick" -> on_double_click |> make1
-      | "drag" -> on_drag |> make1
-      | "dragstart" -> on_dragstart |> make1
-      | "dragend" -> on_dragend |> make1
-      | "dragenter" -> on_dragenter |> make1
-      | "dragleave" -> on_dragleave |> make1
-      | "dragover" -> on_dragover |> make1
-      | "drop" -> on_drop |> make1
-      | "mousemove" -> on_mousemove |> make1
-      | "mouseup" -> on_mouseup |> make1
-      | "mousedown" -> on_mousedown |> make1
-      | "mouseenter" -> on_mouseenter |> make1
-      | "mouseleave" -> on_mouseleave |> make1
-      | "mouseover" -> on_mouseover |> make1
-      | "mouseout" -> on_mouseout |> make1
-      | "keyup" -> on_keyup |> make1
-      | "keypress" -> on_keypress |> make1
-      | "keydown" -> on_keydown |> make1
-      | "scroll" -> on_scroll |> make1
-      | "load" -> on_load |> make1
-      | "error" -> on_error |> make1
-      | "submit" -> on_submit |> make1
-      | "pointerdown" -> on_pointerdown |> make1
-      | "pointerup" -> on_pointerup |> make1
-      | "pointermove" -> on_pointermove |> make1
-      | "mousewheel" -> on_mousewheel |> make1
-      | "wheel" -> on_wheel |> make1
-      | "copy" -> on_copy |> make1
-      | "cut" -> on_cut |> make1
-      | "paste" -> on_paste |> make1
-      | "reset" -> on_reset |> make1
-      | "animationend" -> on_animationend |> make1
-      | "focus" -> on_focus |> make1
-      | "focusin" -> on_focusin |> make1
-      | "focusout" -> on_focusout |> make1
-      | "blur" -> on_blur |> make1
+      | "input" -> on_input_js_of_ocaml |> make2
+      | "change" -> on_change_js_of_ocaml |> make2
+      | "cancel" -> on_cancel_js_of_ocaml |> make1
+      | "click" -> on_click_js_of_ocaml |> make1
+      | "toggle" -> on_toggle_js_of_ocaml |> make1
+      | "close" -> on_close_js_of_ocaml |> make1
+      | "contextmenu" -> on_contextmenu_js_of_ocaml |> make1
+      | "dblclick" -> on_double_click_js_of_ocaml |> make1
+      | "drag" -> on_drag_js_of_ocaml |> make1
+      | "dragstart" -> on_dragstart_js_of_ocaml |> make1
+      | "dragend" -> on_dragend_js_of_ocaml |> make1
+      | "dragenter" -> on_dragenter_js_of_ocaml |> make1
+      | "dragleave" -> on_dragleave_js_of_ocaml |> make1
+      | "dragover" -> on_dragover_js_of_ocaml |> make1
+      | "drop" -> on_drop_js_of_ocaml |> make1
+      | "mousemove" -> on_mousemove_js_of_ocaml |> make1
+      | "mouseup" -> on_mouseup_js_of_ocaml |> make1
+      | "mousedown" -> on_mousedown_js_of_ocaml |> make1
+      | "mouseenter" -> on_mouseenter_js_of_ocaml |> make1
+      | "mouseleave" -> on_mouseleave_js_of_ocaml |> make1
+      | "mouseover" -> on_mouseover_js_of_ocaml |> make1
+      | "mouseout" -> on_mouseout_js_of_ocaml |> make1
+      | "keyup" -> on_keyup_js_of_ocaml |> make1
+      | "keypress" -> on_keypress_js_of_ocaml |> make1
+      | "keydown" -> on_keydown_js_of_ocaml |> make1
+      | "scroll" -> on_scroll_js_of_ocaml |> make1
+      | "load" -> on_load_js_of_ocaml |> make1
+      | "error" -> on_error_js_of_ocaml |> make1
+      | "submit" -> on_submit_js_of_ocaml |> make1
+      | "pointerdown" -> on_pointerdown_js_of_ocaml |> make1
+      | "pointerup" -> on_pointerup_js_of_ocaml |> make1
+      | "pointermove" -> on_pointermove_js_of_ocaml |> make1
+      | "mousewheel" -> on_mousewheel_js_of_ocaml |> make1
+      | "wheel" -> on_wheel_js_of_ocaml |> make1
+      | "copy" -> on_copy_js_of_ocaml |> make1
+      | "cut" -> on_cut_js_of_ocaml |> make1
+      | "paste" -> on_paste_js_of_ocaml |> make1
+      | "reset" -> on_reset_js_of_ocaml |> make1
+      | "animationend" -> on_animationend_js_of_ocaml |> make1
+      | "focus" -> on_focus_js_of_ocaml |> make1
+      | "focusin" -> on_focusin_js_of_ocaml |> make1
+      | "focusout" -> on_focusout_js_of_ocaml |> make1
+      | "blur" -> on_blur_js_of_ocaml |> make1
       | evt_name ->
         raise_s
           [%message
@@ -304,7 +305,10 @@ module Helper = struct
           >
             *{virtual_vdom}
           </div>
-          <div id=%{Selectors.modals_id} %{Bonsai.Test_selector.attr Test_selectors.modals}>
+          <div
+            id=%{Selectors.modals_id}
+            %{Bonsai.Test_selector.attr Test_selectors.modals}
+          >
             *{modal_vdom}
           </div>
         </html>
@@ -323,23 +327,23 @@ module Helper = struct
     | Some [] ->
       failwith "Invalid state[anchored]: popover hook exists, but contains no popovers."
     | Some inputs ->
-      List.map
-        inputs
-        ~f:
-          (fun
-            { content; arrow; position; alignment; offset; match_anchor_side_length; _ }
-          ->
-          let content_helper = Node_helpers.unsafe_convert_exn content in
-          { content_vdom = content
-          ; arrow_vdom = arrow
-          ; inputs =
-              { content = content_helper
-              ; arrow = Option.map arrow ~f:Node_helpers.unsafe_convert_exn
-              ; positioning =
-                  Some { position; alignment; offset; match_anchor_side_length }
-              ; nested_anchored_popovers = get_all_anchored content_helper
-              }
-          })
+      List.map inputs ~f:(fun { content; arrow; positioning; _ } ->
+        let positioning =
+          match positioning with
+          | Floating { position; alignment; offset; match_anchor_side_length; _ } ->
+            Some { position; alignment; offset; match_anchor_side_length }
+          | Css -> None
+        in
+        let content_helper = Node_helpers.unsafe_convert_exn content in
+        { content_vdom = content
+        ; arrow_vdom = arrow
+        ; inputs =
+            { content = content_helper
+            ; arrow = Option.map arrow ~f:Node_helpers.unsafe_convert_exn
+            ; positioning
+            ; nested_anchored_popovers = get_all_anchored content_helper
+            }
+        })
     | None -> []
 
   and get_all_anchored root_helper =
@@ -566,8 +570,9 @@ module%test [@name "vdom output"] _ = struct
       "toggle-" ^ Capitalization.apply_to_words Kebab_case (String.split ~on:' ' label)
     in
     {%html|
-      <button id=%{formatted_id} on_click=%{fun _ -> on_click}>
-        #{" Toggle popover "}%{formatted_id#String}
+      <button id=%{formatted_id} on_click_js_of_ocaml=%{fun _ -> on_click}>
+        #{" Toggle popover "}
+        %{formatted_id#String}
       </button>
     |}
   ;;
@@ -677,7 +682,8 @@ module%test [@name "vdom output"] _ = struct
             %{anchored2}
             %{anchored3}
           ></div>
-          %{toggle_anchored1} %{toggle_anchored2} %{toggle_anchored3} %{toggle_virtual1}
+          %{toggle_anchored1} %{toggle_anchored2} %{toggle_anchored3}#{" "}
+          %{toggle_virtual1}
           %{toggle_virtual2} %{toggle_virtual3}
         </div>
       |}
@@ -950,7 +956,11 @@ module%test [@name "vdom output"] _ = struct
     in
     let app_root =
       let%arr toggle_modal1 and toggle_modal2 and toggle_modal3 in
-      {%html|<div>%{toggle_modal1} %{toggle_modal2} %{toggle_modal3}</div>|}
+      {%html|
+        <div>
+          %{toggle_modal1} %{toggle_modal2} %{toggle_modal3}
+        </div>
+      |}
     in
     Helper.wrap_app_vdom app_root
   ;;
@@ -1057,7 +1067,11 @@ module%test [@name "vdom output"] _ = struct
       in
       let app_root =
         let%arr toggle in
-        {%html|<button id="toggle-button" on_click=%{fun _ -> toggle}>Toggle</button>|}
+        {%html|
+          <button id="toggle-button" on_click_js_of_ocaml=%{fun _ -> toggle}>
+            Toggle
+          </button>
+        |}
       in
       let result = Helper.get_toplayer_elements app_root in
       let modal_desc =
@@ -1101,8 +1115,12 @@ module%test [@name "vdom output"] _ = struct
           let%arr open_ and close in
           {%html|
             <div>
-              <button on_click=%{fun _ -> open_} id="open">Open</button
-              ><button on_click=%{fun _ -> close} id="close">Close</button>
+              <button on_click_js_of_ocaml=%{fun _ -> open_} id="open">
+                Open
+              </button>
+              <button on_click_js_of_ocaml=%{fun _ -> close} id="close">
+                Close
+              </button>
             </div>
           |}
         in
@@ -1402,7 +1420,9 @@ module _ = struct
           [ View.text "Popover!"
           ; Vdom.Node.button
               ~attrs:
-                [ Vdom.Attr.on_click (fun _ -> close); Vdom.Attr.class_ "close_button" ]
+                [ Vdom.Attr.on_click_js_of_ocaml (fun _ -> close)
+                ; Vdom.Attr.class_ "close_button"
+                ]
               [ View.text "Close" ]
           ])
     in
@@ -1444,7 +1464,7 @@ module _ = struct
         let%arr count and set_count in
         Vdom.Node.button
           ~attrs:
-            [ Vdom.Attr.on_click (fun _ -> set_count (count + 1))
+            [ Vdom.Attr.on_click_js_of_ocaml (fun _ -> set_count (count + 1))
             ; Vdom.Attr.class_ "increment"
             ]
           [ View.text (string_of_int count) ])
@@ -1538,13 +1558,13 @@ module _ = struct
             Vdom.Node.div
               [ Vdom.Node.button
                   ~attrs:
-                    [ Vdom.Attr.on_click (fun _ -> set_count (count + 1))
+                    [ Vdom.Attr.on_click_js_of_ocaml (fun _ -> set_count (count + 1))
                     ; Vdom.Attr.class_ "increment"
                     ]
                   [ View.text (string_of_int count) ]
               ; Vdom.Node.button
                   ~attrs:
-                    [ Vdom.Attr.on_click (fun _ -> reset)
+                    [ Vdom.Attr.on_click_js_of_ocaml (fun _ -> reset)
                     ; Vdom.Attr.class_ "reset_contents"
                     ]
                   [ Vdom.Node.text "reset" ]
@@ -1622,7 +1642,12 @@ module%test [@name "tooltips"] _ = struct
   let%expect_test "description" =
     let handle =
       Handle.create (Result_spec.vdom Fn.id) (fun _ ->
-        return {%html|<div><p %{Tooltip.text "hello"}>Hello!</p></div>|})
+        return
+          {%html|
+            <div>
+              <p %{Tooltip.text "hello"}>Hello!</p>
+            </div>
+          |})
     in
     Handle.show handle;
     [%expect

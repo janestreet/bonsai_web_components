@@ -6,6 +6,6 @@
  (js_of_ocaml
   (javascript_files ./syntax_highlighting.js))
  (preprocess
-  (pps ppx_jane))
+  (pps ppx_jane -compare-require-explicit-locality))
  (wasm_of_ocaml
   (javascript_files ./syntax_highlighting.js)))

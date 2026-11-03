@@ -6,7 +6,7 @@
   (javascript_files ../../../codemirror/emacs/block-cursor.js
     ../../../codemirror/emacs/index.js))
  (preprocess
-  (pps ppx_jane))
+  (pps ppx_jane -compare-require-explicit-locality))
  (wasm_of_ocaml
   (javascript_files ../../../codemirror/emacs/block-cursor.js
     ../../../codemirror/emacs/index.js)))

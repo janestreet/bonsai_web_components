@@ -68,7 +68,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
     let view_with_keydown_handler t =
       let open Vdom in
       let on_keydown =
-        Attr.on_keydown (fun ev ->
+        Attr.on_keydown_js_of_ocaml (fun ev ->
           Vdom_keyboard.Keyboard_event_handler.handle_or_ignore_event t.key_handler ev)
       in
       Node.div ~attrs:[ on_keydown ] [ t.view ]
@@ -85,7 +85,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
           ~attrs:
             [ Attr.many_without_merge
                 [ Attr.href "about:blank"
-                ; Attr.on_click (fun _ev ->
+                ; Attr.on_click_js_of_ocaml (fun _ev ->
                     Effect.Many
                       [ inject action; (Effect.Prevent_default [@alert "-deprecated"]) ])
                 ]
@@ -111,7 +111,8 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
                        then "multi-factor-focused-subwidget"
                        else "multi-factor-unfocused-subwidget")
                     ]
-                ; Attr.on_click (fun _ev -> inject (Set_focused_subwidget key))
+                ; Attr.on_click_js_of_ocaml (fun _ev ->
+                    inject (Set_focused_subwidget key))
                 ; Attr.id (sprintf !"%s-%{Key}" id_prefix key)
                 ]
             ]
@@ -231,7 +232,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
         |> Option.value ~default:(Single_factor.Initial_model_settings.create ())
       in
       let view_config =
-        let%map id_prefix in
+        let%arr id_prefix in
         Single_factor.View_config.create
           ~id:(search_box_id key ~id_prefix)
           ~header:(Vdom.Node.text (Key.to_string key))
@@ -265,7 +266,7 @@ module Make (Item : Single_factor.Item) (Key : Key) = struct
     in
     let () =
       let callback =
-        let%map id_prefix in
+        let%arr id_prefix in
         fun prev new_focus ->
           match prev with
           | Some prev_focus when Key.equal prev_focus new_focus -> Effect.Ignore

@@ -909,9 +909,12 @@ let%expect_test "table body is not recomputed more often than necessary" =
       let component graph =
         let collation, key_rank =
           Table_expert.collate
-            ~filter_equal:[%compare.equal: unit]
+            ~filter:
+              (Incr_map_collate.Filter.by_predicate
+                 ~filter_equal:[%compare.equal: unit]
+                 ~filter_to_predicate:(fun () -> None)
+                 ())
             ~order_equal:[%compare.equal: unit]
-            ~filter_to_predicate:(fun () -> None)
             ~order_to_compare:(fun () -> Unchanged)
             input
             (Bonsai.return

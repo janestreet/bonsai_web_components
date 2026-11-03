@@ -431,6 +431,11 @@ module State : sig
     val doc : t -> Text.Text.t [@@js.get]
     val selection : t -> Editor_selection.t [@@js.get]
     val field : t -> 'a State_field.t -> 'a option [@@js.call "field"]
+
+    (** Like [field], but exposes CodeMirror's [require] argument *)
+    val field' : t -> 'a State_field.t -> require:bool -> 'a option
+    [@@js.call "field"]
+
     val update : t -> (Transaction_spec.t list[@js.variadic]) -> Transaction.t [@@js.call]
 
     (* Codemirror also accepts a string instead of a Text.t, but that seems unnecessary to
@@ -556,6 +561,7 @@ module View : sig
     val state : t -> State.Editor_state.t [@@js.get]
     val view : t -> editor_view [@@js.get]
     val viewport_changed : t -> bool [@@js.get]
+    val geometry_changed : t -> bool [@@js.get]
     val doc_changed : t -> bool [@@js.get]
     val focus_changed : t -> bool [@@js.get]
     val t_of_js : Ojs.t -> t
@@ -672,6 +678,8 @@ module View : sig
     val create : Config.t -> t [@@js.create]
     val dom : t -> Dom_html_element.t [@@js.get]
     val content_dom : t -> Dom_html_element.t [@@js.get "contentDOM"]
+    val scroll_dom : t -> Dom_html_element.t [@@js.get "scrollDOM"]
+    val default_line_height : t -> float [@@js.get "defaultLineHeight"]
     val update_listener : (View_update.t -> unit) State.Facet.multi_out [@@js.global]
     val update : t -> State.Transaction.t list -> unit [@@js.call]
     val dispatch : t -> State.Transaction.t -> unit [@@js.call]
@@ -691,7 +699,23 @@ module View : sig
       val create : x:float -> y:float -> unit -> t [@@js.builder]
     end
 
+    module Rect : sig
+      type t
+
+      val top : t -> float [@@js.get]
+      val bottom : t -> float [@@js.get]
+    end
+
     val pos_at_coords : t -> Coords.t -> int option [@@js.call]
+
+    val coords_at_pos : t -> int -> ?side:int -> unit -> Rect.t option
+    [@@js.call "coordsAtPos"]
+
+    (** Find the document position of the given DOM node. [offset] is a child offset
+        within the node, as used by e.g. DOM selection endpoints (defaults to 0). *)
+    val pos_at_dom : t -> Dom_node.t -> ?offset:int -> unit -> int
+    [@@js.call "posAtDOM"]
+
     val destroy : t -> unit [@@js.call]
     val line_wrapping : State.Extension.t [@@js.global]
     val dom_event_handlers : Dom_event_handlers.t -> State.Extension.t [@@js.global]
@@ -707,6 +731,13 @@ module View : sig
 
     val content_attributes : (Ojs.t, Ojs.t) State.Facet.t [@@js.global]
 
+    (** Like [content_attributes] (including the caveat above), but for attributes of the
+        editor's outer element. Useful for keeping a class on the editor: classes added to
+        the editor element directly don't stick, since Codemirror manages its [class]
+        attribute and overwrites external changes. *)
+    val editor_attributes : (Ojs.t, Ojs.t) State.Facet.t
+    [@@js.global]
+
     module Viewport : sig
       type t
 
@@ -715,6 +746,54 @@ module View : sig
     end
 
     val viewport : t -> Viewport.t [@@js.get]
+
+    module Block_info : sig
+      (** Vertical extents are in document coordinates: pixels from the top of the
+          document. *)
+      type t
+
+      val from : t -> int [@@js.get]
+      val to_ : t -> int [@@js.get "to"]
+      val top : t -> float [@@js.get]
+      val bottom : t -> float [@@js.get]
+      val height : t -> float [@@js.get]
+    end
+
+    (** The extent of the line block (line plus any block widgets around it) containing
+        the given position. For positions outside the viewport this is based on
+        Codemirror's estimated line heights. *)
+    val line_block_at : t -> int -> Block_info.t
+    [@@js.call]
+
+    module Document_padding : sig
+      type t
+
+      val top : t -> float [@@js.get]
+      val bottom : t -> float [@@js.get]
+    end
+
+    (** The padding around the document, e.g. for converting [Block_info] document
+        coordinates into scroll-space coordinates. *)
+    val document_padding : t -> Document_padding.t
+    [@@js.get]
+
+    module Measure_request : sig
+      type 'a t
+
+      (** Requests with the same [key] are coalesced. *)
+      val create
+        :  read:(editor_view -> 'a)
+        -> ?write:('a -> editor_view -> unit)
+        -> ?key:Ojs.t
+        -> unit
+        -> 'a t
+      [@@js.builder]
+    end
+
+    (** Schedules [read] to run during the editor's next DOM-reading phase, and [write] to
+        run with its result during the subsequent DOM-writing phase. *)
+    val request_measure : t -> 'a Measure_request.t -> unit
+    [@@js.call]
 
     module Scroll_into_view_options : sig
       type t
@@ -1113,12 +1192,24 @@ module Lint : sig
       [@@js.enum]
     end
 
+    module Action : sig
+      type t
+
+      val create
+        :  name:string
+        -> apply:(View.Editor_view.t -> from:int -> to_:int -> unit)
+        -> unit
+        -> t
+      [@@js.builder]
+    end
+
     val create
       :  from:int
       -> to_:int
       -> severity:Severity.t
       -> ?mark_class:string
       -> ?source:string
+      -> ?actions:Action.t list
       -> message:string
       -> unit
       -> t
@@ -1250,6 +1341,11 @@ module Gutter : sig
       -> ?render_empty_elements:bool
       -> ?markers:(View.Editor_view.t -> Gutter_marker.t State.Range_set.t)
       -> ?line_marker:(View.Editor_view.t -> Block_info.t -> Gutter_marker.t option)
+      -> ?widget_marker:
+           (View.Editor_view.t
+            -> View.Widget_type.t
+            -> Block_info.t
+            -> Gutter_marker.t option)
       -> ?line_marker_change:(View.View_update.t -> bool)
       -> ?initial_spacer:(View.Editor_view.t -> Gutter_marker.t)
       -> ?update_spacer:
@@ -1450,6 +1546,13 @@ module Scheme : sig
   type t
 
   val scheme : Stream_parser.t [@@js.global]
+end
+
+module Shell : sig
+  [@@@js.scope "codemirror"]
+  [@@@js.scope "Legacy_modes_shell"]
+
+  val shell : Stream_parser.Stream_parser.t [@@js.global]
 end
 
 module Lezer_highlight : sig

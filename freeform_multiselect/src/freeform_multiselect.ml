@@ -19,7 +19,7 @@ let input ~placeholder:placeholder_ ~value:value_ ~extra_attr ~id:id_ ~on_input:
              whilst the form is being used. *)
           @ value_attr value_
           @ value value_
-          @ on_change (fun _ input -> on_input_ input))
+          @ on_change_js_of_ocaml (fun _ input -> on_input_ input))
       ]
     ()
 ;;
@@ -36,8 +36,8 @@ let pills ~selected_options ~on_set_change ~inject_selected_options =
         [ Vdom.Attr.(
             tabindex 0
             @ create "data-value" option
-            @ on_click remove_option
-            @ on_keyup (fun ev ->
+            @ on_click_js_of_ocaml remove_option
+            @ on_keyup_js_of_ocaml (fun ev ->
               match Js_of_ocaml.Dom_html.Keyboard_code.of_event ev with
               | Space | Enter | NumpadEnter | Backspace | Delete -> remove_option ev
               | _ -> Effect.Ignore))

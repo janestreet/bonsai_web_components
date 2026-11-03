@@ -1,6 +1,5 @@
 open! Core
 
 include struct
-  open Virtual_dom
-  module Vdom = Vdom
+  module Vdom = Virtual_dom.Vdom
 end

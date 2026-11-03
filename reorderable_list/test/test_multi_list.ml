@@ -4,11 +4,12 @@ open Bonsai_web_test
 open Bonsai.Let_syntax
 module Reorderable_list = Bonsai_web_reorderable_list
 
-let component render graph =
+let component ?direction render graph =
   let%sub lists, dragged_element =
     Reorderable_list.Multi.simple
       (module Int)
       (module Int)
+      ?direction
       ~default_item_height:40
       ~render
       ~lists:(Bonsai.return (Int.Set.of_list [ 0; 1; 2 ]))
@@ -152,6 +153,84 @@ let%expect_test "simple usage" =
     |}]
 ;;
 
+let%expect_test "horizontal direction is forwarded to every list" =
+  let item ~index:_ ~source _which data _graph =
+    let%arr source and data in
+    let view = Vdom.Node.div ~attrs:[ source ] [ Vdom.Node.text (Int.to_string data) ] in
+    (), view
+  in
+  let handle = create_handle (component ~direction:`Horizontal item) in
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div>
+        <div>
+          <h3> List 0 </h3>
+          <div>
+            <div> </div>
+          </div>
+        </div>
+        <div>
+          <h3> List 1 </h3>
+          <div>
+            <div> </div>
+          </div>
+        </div>
+        <div>
+          <h3> List 2 </h3>
+          <div>
+            <div> </div>
+          </div>
+        </div>
+      </div>
+      <div> </div>
+    </div>
+    |}];
+  Handle.show handle;
+  [%expect
+    {|
+    <div>
+      <div>
+        <div>
+          <h3> List 0 </h3>
+          <div>
+            <div>
+              <div data-drag-target="(0 0)" style={ transform: translateY(0px) translateX(0px); }>
+                <div> 0 </div>
+              </div>
+              <div data-drag-target="(0 1)" style={ transform: translateY(0px) translateX(40px); }>
+                <div> 1 </div>
+              </div>
+              <div data-drag-target="(0 2)" style={ transform: translateY(0px) translateX(80px); }>
+                <div> 2 </div>
+              </div>
+              <div data-drag-target="(0 3)" style={ transform: translateY(0px) translateX(120px); }>
+                <div> 3 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3> List 1 </h3>
+          <div>
+            <div> </div>
+          </div>
+        </div>
+        <div>
+          <h3> List 2 </h3>
+          <div>
+            <div> </div>
+          </div>
+        </div>
+      </div>
+      <div> </div>
+    </div>
+    |}]
+;;
+
 let%expect_test "stateful items" =
   let item ~index:_ ~source _which data graph =
     let is_true, toggle = Bonsai.toggle ~default_model:false graph in
@@ -160,7 +239,7 @@ let%expect_test "stateful items" =
       Vdom.Node.button
         ~attrs:
           [ source
-          ; Vdom.Attr.on_click (fun _ -> toggle)
+          ; Vdom.Attr.on_click_js_of_ocaml (fun _ -> toggle)
           ; Vdom.Attr.id (Int.to_string data)
           ]
         [ Vdom.Node.textf "%d: %s" data (Bool.to_string is_true) ]

@@ -11,18 +11,7 @@ type t =
 
 let name t = t.name
 
-let render_test_icon ?size ?color ?stroke_width ~attrs (t : t) =
-  let test_attr ~name ~to_string value =
-    Option.value_map value ~default:Vdom.Attr.empty ~f:(fun v ->
-      Vdom.Attr.create name (to_string v))
-  in
-  let attrs =
-    [ test_attr ~name:"size" ~to_string:Css_gen.Length.to_string_css size
-    ; test_attr ~name:"color" ~to_string:Css_gen.Color.to_string_css color
-    ; test_attr ~name:"stroke-width" ~to_string:Css_gen.Length.to_string_css stroke_width
-    ; Vdom.Attr.many attrs
-    ]
-  in
+let render_test_icon ~attrs (t : t) =
   Vdom.Node.create ~attrs [%string "icon-%{t.name}"] []
 ;;
 
@@ -86,8 +75,7 @@ let render_icon ?size ?color ?stroke_width ?(attrs = []) (icon : t) =
 
 let view ?size ?color ?stroke_width ?(attrs = []) ~(icon : t) () =
   match Am_running_how_js.am_running_how with
-  | `Node_test | `Node_jsdom_test ->
-    render_test_icon ?size ?color ?stroke_width ~attrs icon
+  | `Node_test | `Node_jsdom_test -> render_test_icon ~attrs icon
   | `Browser | `Browser_test | `Browser_benchmark | `Node | `Node_benchmark ->
     render_icon ?size ?color ?stroke_width ~attrs icon
 ;;
@@ -119,4 +107,5 @@ end
 
 module For_testing = struct
   let render_icon = render_icon
+  let svg_path t = t.svg_path
 end

@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_icon_codicons)
+ (public_name bonsai_web_components.bonsai_web_icon_codicons)
+ (preprocess
+  (pps ppx_jane))
+ (libraries bonsai_web_icon core virtual_dom))

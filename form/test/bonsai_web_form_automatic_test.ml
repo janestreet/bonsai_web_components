@@ -3772,7 +3772,7 @@ let%expect_test "typed records: dynamic labelling" =
           module Typed_field = Typed_field
 
           let label_for_field =
-            let%map int_label in
+            let%arr int_label in
             fun ({ f = T field } : Typed_field.Packed.t) ->
               match field with
               | Int -> int_label
@@ -3870,7 +3870,7 @@ let%expect_test "typed variants recursive" =
             match typed_field with
             | Nil -> Bonsai.return (Form.return ())
             | Cons ->
-              let%map.Bonsai int =
+              let%arr.Bonsai int =
                 Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
               and me = lazy_deprecated (lazy (fun graph -> form () graph)) graph in
               Form.both int me
@@ -4130,7 +4130,7 @@ let%expect_test "typed variants: dynamic labelling" =
           module Typed_variant = Typed_variant
 
           let label_for_variant =
-            let%map int_label in
+            let%arr int_label in
             fun ({ f = T variant } : Typed_variant.Packed.t) ->
               match variant with
               | Integer -> int_label
@@ -5701,7 +5701,7 @@ let%expect_test "query box" =
 
 let%expect_test "add tooltip to form" =
   let component graph =
-    let%map.Bonsai x =
+    let%arr.Bonsai x =
       Form.Elements.Textbox.string ~allow_updates_when_focused:`Never () graph
     in
     Form.tooltip "tooltip" x
@@ -5995,7 +5995,7 @@ let%expect_test "Adding error hints to the top level of various views" =
   let print_view_with_error ~compute_view =
     let component graph =
       let form =
-        let%map.Bonsai form =
+        let%arr.Bonsai form =
           Form.Elements.Textbox.int ~allow_updates_when_focused:`Never () graph
         in
         Form.Expert.create

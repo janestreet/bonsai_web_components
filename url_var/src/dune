@@ -1,7 +1,8 @@
 (library
  (name bonsai_web_url_var)
  (public_name bonsai_web_components.url_var)
- (libraries bonsai_web core_kernel.bus core virtual_dom.html5_history
+ (libraries am_running_how_js bonsai_web browser.enums browser.expert
+   browser.js_types core_kernel.bus core virtual_dom.html5_history
    js_of_ocaml bonsai_web_test.mock_navigation_for_url_var re
    bonsai_concrete.ui_incr uri uri_parsing)
  (preprocess

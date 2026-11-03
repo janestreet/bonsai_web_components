@@ -4,12 +4,17 @@
  (preprocess
   (pps bonsai.ppx_bonsai ppx_css ppx_jane js_of_ocaml-ppx))
  (libraries bonsai.extra bonsai_web bonsai_web_codemirror bonsai_web_form
-   bonsai_web.proc codemirror codemirror_ocaml codemirror_themes core
-   virtual_dom.css_gen gen_js_api ppx_css.inline_css bonsai_web.kado
-   virtual_dom.vdom_test_helpers))
+   bonsai_web.ui_view bonsai_web.proc codemirror codemirror_ocaml
+   codemirror_themes core virtual_dom.css_gen gen_js_api ppx_css.inline_css
+   bonsai_web.kado virtual_dom.vdom_test_helpers))
 
 (rule
  (targets style.ml style.mli style__generated.ml style__generated.mli)
  (deps style.css)
  (action
   (bash "%{bin:css_inliner} %{deps} \"((dont_hash (cm-editor)))\"")))
+
+(env
+ (_
+  (env-vars
+   (OCAMLPARAM w=-46,keywords=5.2,_))))

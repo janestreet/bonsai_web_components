@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View := Bonsai_web_legacy_view
 open! Bonsai.Let_syntax
 
 module Theme_id : sig

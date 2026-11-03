@@ -304,17 +304,10 @@ module Expert : sig
   (** [collate] is useful for tests, and other situations where you want to use a
       [Server_side] collated table, but you have all the data on the client. *)
   val collate
-    :  ?operation_order:[ `Filter_first | `Sort_first ]
-    -> filter_equal:('filter -> 'filter -> bool)
-         (** [filter_equal] is used to decide when the filters have actually changed,
-             requiring a recomputation of the collation. *)
+    :  filter:('k, 'v, 'filter, 'cmp, Ui_incr.state_witness) Incr_map_collate.Filter.t
     -> order_equal:('order -> 'order -> bool)
          (** [order_equal] is used to decide when the sorting params have actually
              changed, requiring a recomputation of the collation. *)
-    -> filter_to_predicate:('filter -> (key:'k -> data:'v -> bool) option)
-         (** [filter_to_predicate] takes the current set of filters ['filter] and
-             optionally returns a function that can apply those filters to each row. When
-             [filter_to_predicate] returns [None], no filtering is done. *)
     -> order_to_compare:('order -> ('k, 'v, 'cmp) Compare.t)
          (** [order_to_compare] takes the current set of sort params ['order] and uses the
              [Compare] specification to decide how to apply them. Return [Unchanged] to

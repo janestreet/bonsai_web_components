@@ -1,0 +1,8 @@
+(library
+ (name bonsai_web_fetch)
+ (public_name bonsai_web_components.fetch)
+ (libraries async_kernel core gen_js_api js_of_ocaml virtual_dom.ui_effect
+   virtual_dom.ui_effect_of_deferred)
+ (preprocess
+  (pps ppx_jane -compare-require-explicit-locality js_of_ocaml-ppx
+    gen_js_api.ppx)))

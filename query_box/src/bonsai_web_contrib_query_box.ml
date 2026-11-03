@@ -343,14 +343,14 @@ let create
         let on_mouseenter =
           match on_hover_item with
           | On_hover_item.Focus_hovered_item ->
-            Attr.on_mouseenter (fun _ -> move_to_effect)
+            Attr.on_mouseenter_js_of_ocaml (fun _ -> move_to_effect)
           | Do_nothing -> Vdom.Attr.empty
         in
         let attr =
           Attr.many
             [ focused_attr
             ; on_mouseenter
-            ; Attr.on_click (fun _ ->
+            ; Attr.on_click_js_of_ocaml (fun _ ->
                 Effect.Many
                   [ on_select key
                   ; inject (Set_query (modify_input_on_select key query))
@@ -402,7 +402,7 @@ let create
         (match suggestion_list_state with
          | Closed -> blur_input
          | First_item | Focused _ -> inject Action.Close_suggestions)
-      | Enter ->
+      | Enter | NumpadEnter ->
         (* The text in the input field might have changed between the last stabilize and
            this keydown event, so we need to force a stabilize to ensure we select the
            correct key. *)
@@ -477,7 +477,7 @@ let create
     | Permanent_fixture -> Attr.empty, Attr.empty, true
   in
   let on_blur =
-    Attr.on_blur
+    Attr.on_blur_js_of_ocaml
       (let open Js_of_ocaml in
        fun (ev : Dom_html.focusEvent Js.t) ->
          (* Blurring usually means that we want to close the suggestion list. However, if
@@ -497,7 +497,7 @@ let create
     match on_focus with
     | Do_nothing -> Vdom.Attr.empty
     | Focus_first_item ->
-      Attr.on_focus (fun _ ->
+      Attr.on_focus_js_of_ocaml (fun _ ->
         Effect.all_unit [ inject_initialize_suggestion_list; inject Open_suggestions ])
   in
   let input =
@@ -506,9 +506,9 @@ let create
         [ Attr.id input_id
         ; Attr.type_ "text"
         ; Attr.string_property "value" query
-        ; Attr.on_keydown (fun ev ->
+        ; Attr.on_keydown_js_of_ocaml (fun ev ->
             Effect.all_unit [ inject_initialize_suggestion_list; handle_keydown ev ])
-        ; Attr.on_input (fun _ query ->
+        ; Attr.on_input_js_of_ocaml (fun _ query ->
             (* It may seem weird to set the query first and then initialize the suggestion
                list, but injecting the suggestion list will call the user's provided
                [f:(query -> options)] function. Thus, if we initialize the suggestions
@@ -543,7 +543,7 @@ let create
         [ Attr.create "data-test" "query-box-item-container"
         ; Attr.id suggestion_container_id
         ; Attr.tabindex (-1)
-        ; Attr.on_wheel
+        ; Attr.on_wheel_js_of_ocaml
             (let open Js_of_ocaml in
              fun (ev : Dom_html.wheelEvent Js.t) ->
                let comparison =
@@ -702,6 +702,7 @@ let stringable
   ?extra_list_container_attr
   ?extra_input_attr
   ?extra_attr
+  ?on_blur
   ?(to_view = fun _ string -> Vdom.Node.text string)
   ?modify_input_on_blur
   ?(modify_input_on_select = Bonsai.return `Reset)
@@ -740,6 +741,7 @@ let stringable
       ?extra_list_container_attr
       ?extra_input_attr
       ?extra_attr
+      ?on_blur
       ?modify_input_on_blur
       ~modify_input_on_select
       ~on_select
@@ -772,6 +774,7 @@ let stringable
         ?extra_list_container_attr
         ?extra_input_attr
         ?extra_attr
+        ?on_blur
         ?modify_input_on_blur
         ~modify_input_on_select
         ~on_select

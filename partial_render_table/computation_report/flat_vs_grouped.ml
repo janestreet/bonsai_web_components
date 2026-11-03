@@ -261,13 +261,13 @@ let%expect_test "Flat -> Grouped" =
     │ Randomly select a row out of a table with 10000 rows and a window of 10, then change     │ .                   │ .                      │ .                  │ .                         │
     │ all cells in it.                                                                         │                     │                        │                    │                           │
     │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ +489 (11%)          │ .                      │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ +489 (11%)          │ .                      │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ +489 (11%)          │ .                      │ .                  │ .                         │
     │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ +165 (7%)           │ -13 (1%)               │ .                  │ .                         │
-    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ +489 (11%)          │ -13 (1%)               │ .                  │ .                         │
+    │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ +489 (11%)          │ .                      │ .                  │ .                         │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window                   │ +1_704 (14%)        │ .                      │ .                  │ .                         │
     └──────────────────────────────────────────────────────────────────────────────────────────┴─────────────────────┴────────────────────────┴────────────────────┴───────────────────────────┘
 

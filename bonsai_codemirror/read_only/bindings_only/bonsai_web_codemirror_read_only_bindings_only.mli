@@ -21,6 +21,9 @@ module Language : sig
     | Xml
     | FSharp
   [@@deriving sexp_of]
+
+  (** The memoized syntax-highlighting extension for [t]. *)
+  val to_extension : t -> Codemirror.State.Extension.t
 end
 
 module Theme : sig

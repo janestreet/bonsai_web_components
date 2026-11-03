@@ -108,7 +108,7 @@ end
     multiselect, and removing items using the pills in typeahead-multi for don't currently
     respect this and can be modified anyway. Work is underway to fix these. *)
 val view_as_vdom
-  :  ?theme:View.Theme.t
+  :  ?theme:Bonsai_web_legacy_view.Theme.t
   -> ?on_submit:'a Submit.t
   -> ?editable:Form_view.editable
   -> 'a t

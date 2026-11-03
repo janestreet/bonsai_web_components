@@ -168,7 +168,7 @@ module Dynamic = struct
     let label =
       Vdom.Node.div
         ~attrs:
-          [ Vdom.Attr.on_click (fun _ -> toggle_is_open)
+          [ Vdom.Attr.on_click_js_of_ocaml (fun _ -> toggle_is_open)
           ; Vdom.Attr.style
               Css_gen.(
                 user_select `None @> Css_gen.create ~field:"cursor" ~value:"pointer")
@@ -223,7 +223,7 @@ module Dynamic = struct
 
     let field' t ~label_of_field fieldslib_field =
       let for_profunctor =
-        let%map t in
+        let%arr t in
         let t =
           { t with value = Record_builder.attach_fieldname_to_error t fieldslib_field }
         in

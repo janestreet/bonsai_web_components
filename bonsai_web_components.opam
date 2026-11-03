@@ -20,6 +20,7 @@ depends: [
   "bonsai_concrete"
   "bonsai_web"
   "bonsai_web_test"
+  "browser"
   "core"
   "core_extended"
   "core_kernel"
@@ -53,9 +54,8 @@ depends: [
   "uri"                      {>= "3.0.0"}
 ]
 available: arch != "x86_32"
-synopsis: "Examples for bonsai_web, a library for building dynamic webapps, using Js_of_ocaml"
+synopsis: "A collection of relatively unopinionated components for bonsai_web."
 description: "
-A collection of bonsai_web examples. Bonsai is a library for building
-    reusable UI components inside an Incremental-style UI framework such as
-    Incr_dom or React. This repository contains its examples.
+A collection of components for bonsai_web, from low-level utilities (e.g. url_var)
+     to higher-level UI components (e.g. partial render table).
 "

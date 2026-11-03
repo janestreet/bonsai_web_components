@@ -149,7 +149,7 @@ let%expect_test "you can switch the tab from inside the inner component" =
              ~attrs:
                [ Vdom.Attr.many_without_merge
                    [ Vdom.Attr.id "my-button"
-                   ; Vdom.Attr.on_click (fun _ -> change_tab C)
+                   ; Vdom.Attr.on_click_js_of_ocaml (fun _ -> change_tab C)
                    ]
                ]
              [ Vdom.Node.text "click to move to tab c!" ])

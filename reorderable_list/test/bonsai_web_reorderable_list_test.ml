@@ -8,7 +8,7 @@ module Node = Vdom.Node
 
 let small_list = List.range 0 3 |> List.map ~f:(fun x -> x, x) |> Int.Map.of_alist_exn
 
-let component list graph =
+let component ?direction ?add_drop_target_for_appending list graph =
   let dnd =
     Drag_and_drop.create
       ~source_id:(module Int)
@@ -40,14 +40,24 @@ let component list graph =
       graph
   in
   let source = dnd >>| Drag_and_drop.source in
-  let list = Reorderable_list.list (module Int) ~dnd ~default_item_height:1 data graph in
+  let list =
+    Reorderable_list.list
+      (module Int)
+      ~dnd
+      ?direction
+      ?add_drop_target_for_appending
+      ~container_extra_attrs:(Bonsai.return (Vdom.Attr.id "reorderable-list"))
+      ~default_item_height:1
+      data
+      graph
+  in
   let%arr sentinel and dragged_element and source and list in
   Node.div
     ~attrs:[ sentinel ~name:"dnd" ]
     [ Node.div ~attrs:[ source ~id:10 ] [ Node.text "10" ]; list; dragged_element ]
 ;;
 
-let create_handle list =
+let create_handle ?direction ?add_drop_target_for_appending list =
   Handle.create
     (Result_spec.vdom
        ~path_censoring_message:""
@@ -57,7 +67,7 @@ let create_handle list =
          | key when String.is_prefix key ~prefix:"data-drag-target" -> true
          | _ -> false)
        Fn.id)
-    (component list)
+    (component ?direction ?add_drop_target_for_appending list)
 ;;
 
 let%expect_test "how is it printed" =
@@ -300,6 +310,226 @@ let%expect_test "re-arrange" =
     +|    <div data-drag-target="2" style={ transform: translateY(6px) translateX(0px); }> 2 </div>
         </div>
       </div>
+    |}]
+;;
+
+let set_container_width handle width =
+  Handle.trigger_hook
+    handle
+    ~selector:"#reorderable-list > div"
+    ~name:"size_tracker"
+    Bonsai_web_element_size_hooks.Size_tracker.For_testing.type_id
+    { border_box = { width; height = 100. }; content_box = { width; height = 100. } }
+    ~get_vdom:Fn.id
+;;
+
+let set_horizontal_item_sizes handle =
+  Bonsai_web_element_size_hooks_testing.Bulk_size_tracker.change_sizes
+    handle
+    ~get_vdom:Fn.id
+    [ { selector = "#reorderable-list > div > div:nth-child(1)"
+      ; width = 40.
+      ; height = 10.
+      }
+    ; { selector = "#reorderable-list > div > div:nth-child(2)"
+      ; width = 35.
+      ; height = 20.
+      }
+    ; { selector = "#reorderable-list > div > div:nth-child(3)"
+      ; width = 50.
+      ; height = 15.
+      }
+    ; { selector = "#reorderable-list > div > div:nth-child(4)"
+      ; width = 45.
+      ; height = 12.
+      }
+    ]
+;;
+
+let create_horizontal_handle ?add_drop_target_for_appending () =
+  let input =
+    List.range 0 4 |> List.map ~f:(fun x -> x, x) |> Int.Map.of_alist_exn |> Bonsai.return
+  in
+  let handle =
+    create_handle ~direction:`Horizontal ?add_drop_target_for_appending input
+  in
+  Handle.store_view handle;
+  set_container_width handle 100.;
+  set_horizontal_item_sizes handle;
+  handle
+;;
+
+let%expect_test "horizontal lists wrap and respond to container resizes" =
+  let handle = create_horizontal_handle () in
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div> 10 </div>
+      <div>
+        <div>
+          <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+          <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> 1 </div>
+          <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> 2 </div>
+          <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> 3 </div>
+        </div>
+      </div>
+    </div>
+    |}];
+  set_container_width handle 80.;
+  Handle.show_diff ~diff_context:0 handle;
+  [%expect
+    {|
+    -|      <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> 3 </div>
+    +|      <div data-drag-target="3" style={ transform: translateY(35px) translateX(0px); }> 3 </div>
+    |}]
+;;
+
+let%expect_test "horizontal lists reflow while dragging across rows" =
+  let handle = create_horizontal_handle () in
+  dnd_action handle (Start_drag "0");
+  dnd_action handle (Set_target (Some "2"));
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div> 10 </div>
+      <div>
+        <div>
+          <div style={ transform: translateY(20px) translateX(0px); }> 0 </div>
+          <div style={ transform: translateY(0px) translateX(0px); }> 1 </div>
+          <div style={ transform: translateY(0px) translateX(35px); }> 2 </div>
+          <div style={ transform: translateY(20px) translateX(40px); }> 3 </div>
+          <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> </div>
+          <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> </div>
+          <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> </div>
+          <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> </div>
+        </div>
+      </div>
+      <div style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+    </div>
+    |}];
+  dnd_action handle Finish_drag;
+  Handle.show_diff handle;
+  [%expect
+    {|
+    (drag (source 0) (target 2))
+
+      <div>
+        <div> 10 </div>
+        <div>
+          <div>
+    -|      <div style={ transform: translateY(20px) translateX(0px); }> 0 </div>
+    -|      <div style={ transform: translateY(0px) translateX(0px); }> 1 </div>
+    -|      <div style={ transform: translateY(0px) translateX(35px); }> 2 </div>
+    -|      <div style={ transform: translateY(20px) translateX(40px); }> 3 </div>
+    -|      <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> </div>
+    +|      <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+    -|      <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> </div>
+    +|      <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> 1 </div>
+    -|      <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> </div>
+    +|      <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> 2 </div>
+    -|      <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> </div>
+    +|      <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> 3 </div>
+          </div>
+        </div>
+    -|  <div style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+      </div>
+    |}]
+;;
+
+let%expect_test "horizontal lists make space for an external item" =
+  let handle = create_horizontal_handle () in
+  dnd_action handle (Start_drag "10");
+  dnd_action handle (Set_target (Some "3"));
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div> 10 </div>
+      <div>
+        <div>
+          <div style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+          <div style={ transform: translateY(0px) translateX(40px); }> 1 </div>
+          <div style={ transform: translateY(20px) translateX(0px); }> 2 </div>
+          <div style={ transform: translateY(20px) translateX(51px); }> 3 </div>
+          <div data-drag-target="4" style={ transform: translateY(20px) translateX(95px); }> </div>
+          <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> </div>
+          <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> </div>
+          <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> </div>
+          <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> </div>
+        </div>
+      </div>
+      <div style={ transform: translateY(0px) translateX(0px); }> 10 </div>
+    </div>
+    |}]
+;;
+
+let%expect_test "horizontal list omits the external append target when disabled" =
+  let handle = create_horizontal_handle ~add_drop_target_for_appending:false () in
+  dnd_action handle (Start_drag "10");
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div> 10 </div>
+      <div>
+        <div>
+          <div style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+          <div style={ transform: translateY(0px) translateX(40px); }> 1 </div>
+          <div style={ transform: translateY(20px) translateX(0px); }> 2 </div>
+          <div style={ transform: translateY(20px) translateX(50px); }> 3 </div>
+          <Vdom.Node.none-widget> </Vdom.Node.none-widget>
+          <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> </div>
+          <div data-drag-target="1" style={ transform: translateY(0px) translateX(40px); }> </div>
+          <div data-drag-target="2" style={ transform: translateY(20px) translateX(0px); }> </div>
+          <div data-drag-target="3" style={ transform: translateY(20px) translateX(50px); }> </div>
+        </div>
+      </div>
+      <div style={ transform: translateY(0px) translateX(0px); }> 10 </div>
+    </div>
+    |}]
+;;
+
+let%expect_test "horizontal layout rounds item dimensions up" =
+  let input = [ 0, 0; 1, 1 ] |> Int.Map.of_alist_exn |> Bonsai.return in
+  let handle = create_handle ~direction:`Horizontal input in
+  Handle.store_view handle;
+  set_container_width handle 100.9;
+  Bonsai_web_element_size_hooks_testing.Bulk_size_tracker.change_sizes
+    handle
+    ~get_vdom:Fn.id
+    [ { selector = "#reorderable-list > div > div:nth-child(1)"
+      ; width = 50.1
+      ; height = 10.1
+      }
+    ; { selector = "#reorderable-list > div > div:nth-child(2)"
+      ; width = 50.1
+      ; height = 10.1
+      }
+    ];
+  Handle.show handle;
+  [%expect
+    {|
+    adding window event listener
+    adding window event listener
+    <div>
+      <div> 10 </div>
+      <div>
+        <div>
+          <div data-drag-target="0" style={ transform: translateY(0px) translateX(0px); }> 0 </div>
+          <div data-drag-target="1" style={ transform: translateY(11px) translateX(0px); }> 1 </div>
+        </div>
+      </div>
+    </div>
     |}]
 ;;
 

@@ -345,7 +345,7 @@ module Dynamic = struct
     end
     in
     let callback =
-      let%map f and on_error in
+      let%arr f and on_error in
       function
       | Error e -> on_error e
       | Ok new_value -> f new_value

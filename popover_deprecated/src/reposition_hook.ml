@@ -2,7 +2,7 @@ open! Core
 open Virtual_dom
 open Js_of_ocaml
 
-include Vdom.Attr.Hooks.Make (struct
+include Vdom.Attr.Hooks.Make_js_of_ocaml (struct
     module State = struct
       type t =
         { mutable current_transform : int

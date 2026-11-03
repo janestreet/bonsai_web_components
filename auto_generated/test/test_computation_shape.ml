@@ -32,33 +32,23 @@ let test_form (type a) (module M : S with type t = a) (ts : a list) =
       Handle.recompute_view handle)
   in
   let computation = Auto_generated.form (module M) ~allow_updates_when_focused:`Never in
-  let no_opt_count =
-    let raw_computation = Private.top_level_handle computation in
-    run (fun graph -> Private.perform graph raw_computation) ~optimize:false;
-    count_computation_nodes "no optimization" (fun graph ->
-      Private.perform graph raw_computation)
-  in
-  let with_opt_count =
-    let raw_computation = Private.top_level_handle computation |> Private.pre_process in
-    run (fun graph -> Private.perform graph raw_computation) ~optimize:true;
-    count_computation_nodes "with optimization" (fun graph ->
-      Private.perform graph raw_computation)
-  in
-  print_endline
-    (sprintf
-       "reduced to %.1f%%"
-       (100.0 *. (Int.to_float with_opt_count /. Int.to_float no_opt_count)));
-  ()
+  (* We reuse the `Computation.t` for a run through an unoptimized and an optimized
+     version of the test in order to shake out any `Lazy` computations that would get
+     forced. This allows us to report a more accurate count of the computations since we
+     can look through the lazy. *)
+  let raw_computation = Private.top_level_handle computation in
+  run (fun graph -> Private.perform graph raw_computation) ~optimize:false;
+  let preprocessed_computation = Private.pre_process raw_computation in
+  run (fun graph -> Private.perform graph preprocessed_computation) ~optimize:true;
+  ignore
+    (count_computation_nodes "after preprocessing" (fun graph ->
+       Private.perform graph preprocessed_computation)
+     : int)
 ;;
 
 let%expect_test "int" =
   test_form (module Int) [ 5 ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 33 nodes |}]
 ;;
 
 let%expect_test "option>variant>record form" =
@@ -78,12 +68,7 @@ let%expect_test "option>variant>record form" =
   end
   in
   test_form (module T) [ None; Some A; Some (B { a = 5; b = "hello" }) ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 162 nodes |}]
 ;;
 
 let%expect_test "option>variant form" =
@@ -97,12 +82,7 @@ let%expect_test "option>variant form" =
   end
   in
   test_form (module T) [ None; Some A; Some (B 5) ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 116 nodes |}]
 ;;
 
 let%expect_test "variant form" =
@@ -114,12 +94,7 @@ let%expect_test "variant form" =
   end
   in
   test_form (module T) [ A; B 5 ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 79 nodes |}]
 ;;
 
 let%expect_test "record form" =
@@ -132,12 +107,7 @@ let%expect_test "record form" =
   end
   in
   test_form (module T) [ { a = 5; b = "hello" } ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 79 nodes |}]
 ;;
 
 let%expect_test "option form" =
@@ -146,10 +116,5 @@ let%expect_test "option form" =
   end
   in
   test_form (module T) [ None; Some 5 ];
-  [%expect
-    {|
-    no optimization: 1472 nodes
-    with optimization: 1470 nodes
-    reduced to 99.9%
-    |}]
+  [%expect {| after preprocessing: 70 nodes |}]
 ;;

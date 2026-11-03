@@ -78,7 +78,9 @@ let columns ~is_column_b_visible () =
         and state
         and set_state in
         Vdom.Node.div
-          [ Vdom.Node.input ~attrs:[ Vdom.Attr.on_input (fun _ -> set_state) ] ()
+          [ Vdom.Node.input
+              ~attrs:[ Vdom.Attr.on_input_js_of_ocaml (fun _ -> set_state) ]
+              ()
           ; Vdom.Node.textf "%s %s" a state
           ])
       ()
@@ -496,9 +498,12 @@ module Test = struct
       let component graph =
         let collation, actual_key_rank =
           Table_expert.collate
-            ~filter_equal:[%compare.equal: unit]
+            ~filter:
+              (Incr_map_collate.Filter.by_predicate
+                 ~filter_equal:[%compare.equal: unit]
+                 ~filter_to_predicate:(fun () -> None)
+                 ())
             ~order_equal:[%compare.equal: unit]
-            ~filter_to_predicate:(fun () -> None)
             ~order_to_compare:(fun () -> Unchanged)
             input
             collate

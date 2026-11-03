@@ -4,7 +4,7 @@
  (libraries am_running_how_js core virtual_dom.css_gen feather_icon_common
    virtual_dom)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane -compare-require-explicit-locality)))
 
 (rule
  (targets paths.ml paths.mli)

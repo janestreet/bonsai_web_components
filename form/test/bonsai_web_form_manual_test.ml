@@ -1,5 +1,6 @@
 open! Core
 open! Bonsai_web
+module View = Bonsai_web_legacy_view
 open! Bonsai_web_test
 open! Bonsai.Let_syntax
 open Js_of_ocaml
@@ -6488,14 +6489,14 @@ let%expect_test "a textbox customized with themes" =
                       ?key:(Option.map key ~f:(fun k -> [%string "%{k}-1"]))
                       ~attrs:
                         [ placeholder
-                        ; Vdom.Attr.on_input (fun _ s ->
+                        ; Vdom.Attr.on_input_js_of_ocaml (fun _ s ->
                             Effect.print_s [%message "ignoring input:" ~_:(s : string)])
                         ]
                       ()
                   ; Vdom.Node.input
                       ?key:(Option.map key ~f:(fun k -> [%string "%{k}-2"]))
                       ~attrs:
-                        [ Vdom.Attr.on_input (fun _ s -> set_value s)
+                        [ Vdom.Attr.on_input_js_of_ocaml (fun _ s -> set_value s)
                         ; Vdom.Attr.value value
                         ]
                       ()

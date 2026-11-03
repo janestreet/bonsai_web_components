@@ -6,3 +6,8 @@
    virtual_dom.ui_effect virtual_dom)
  (preprocess
   (pps js_of_ocaml-ppx ppx_jane gen_js_api.ppx bonsai.ppx_bonsai)))
+
+(env
+ (_
+  (env-vars
+   (OCAMLPARAM w=-46,keywords=5.2,_))))

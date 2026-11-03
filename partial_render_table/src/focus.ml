@@ -624,7 +624,7 @@ module Cell_machine = struct
         ~equal:[%equal: Model.t * (Key.t * Column_id.t) option]
         (Bonsai.both current visually_focused)
         ~callback:
-          (let%map inject in
+          (let%arr inject in
            fun ( { Model.current_focus; locked = _; pending_select_id = _ }
                , visually_focused ) ->
              (* If we ever notice that the state machine is focused at an index for which
@@ -782,17 +782,17 @@ let get_on_cell_click
   | None -> Bonsai.return (fun _ _ -> Effect.Ignore)
   | By_row _ ->
     let focus =
-      let%map control = value in
+      let%arr control = value in
       By_row.focus control
     in
-    let%map focus in
+    let%arr focus in
     fun key _ -> focus key ()
   | By_cell _ ->
     let focus =
-      let%map control = value in
+      let%arr control = value in
       By_cell.focus control
     in
-    let%map focus in
+    let%arr focus in
     fun key column -> focus key column
 ;;
 
@@ -806,6 +806,6 @@ let get_focused_column
   | None -> Bonsai.return None
   | By_row _ -> Bonsai.return None
   | By_cell _ ->
-    let%map control = value in
+    let%arr control = value in
     By_cell.raw_focused control |> Option.map ~f:snd
 ;;

@@ -27,10 +27,12 @@ module Test : sig
     -> unit
 
   val show_sizes : t -> unit
+  val show_pixels : t -> unit
 
   (* To make the symmetric tests work, this sets the container to a square so the
      dimensions in the Horizontal and Vertical case are the same *)
   val set_container_size : t -> float -> unit
+  val set_axis_sizes : t -> main:float -> cross:float -> unit
   val simulate_drag : t -> delta:int -> unit
   val update_parameters : t -> (Parameters.t -> Parameters.t) -> unit
   val action : t -> Split_pane.For_testing.Action.t -> unit
@@ -103,15 +105,40 @@ end = struct
 
   let show_sizes t = Handle.show t.handle
 
-  let set_container_size t size =
+  let show_pixels t =
+    Handle.recompute_view t.handle;
+    let { Result_spec.state; parameters; _ } = Handle.last_result t.handle in
+    let pixels =
+      Option.both
+        (Split_pane.For_testing.State.first_panel_px state)
+        (Split_pane.For_testing.State.container_dimensions state)
+      |> Option.map ~f:(fun (first, dimensions) ->
+        let container =
+          Split_pane.For_testing.Container_dimensions.for_direction
+            dimensions
+            ~direction:parameters.direction
+        in
+        (* Rendering converts pixel sizes to ints, so this also reproduces NaN crashes. *)
+        ( Float.to_int first
+        , Float.to_int (container -. Float.of_int parameters.separator_size_px -. first) ))
+    in
+    print_s [%sexp (pixels : (int * int) option)]
+  ;;
+
+  let set_axis_sizes t ~main ~cross =
+    let width, height =
+      match (Bonsai.Expert.Var.get t.parameters).direction with
+      | Horizontal -> main, cross
+      | Vertical -> cross, main
+    in
     Handle.do_actions
       t.handle
       [ Container_resized
-          (Split_pane.For_testing.Container_dimensions.Fields.create
-             ~width:size
-             ~height:size)
+          (Split_pane.For_testing.Container_dimensions.Fields.create ~width ~height)
       ]
   ;;
+
+  let set_container_size t size = set_axis_sizes t ~main:size ~cross:size
 
   let simulate_drag t ~delta =
     Handle.recompute_view t.handle;
@@ -160,6 +187,76 @@ let%expect_test "at startup, sizes are not calculated until the container size i
       │  50%   │   -   │  50%   │
       └────────┴───────┴────────┘
       |}])
+;;
+
+let%expect_test "initially zero-sized containers wait for a usable measurement" =
+  Test.run ~initial_container_size:0. (fun t ->
+    Test.show_pixels t;
+    [%expect {| () |}];
+    Test.set_container_size t 510.;
+    Test.show_pixels t;
+    [%expect {| ((250 250)) |}])
+;;
+
+let%expect_test "zero-sized measurements preserve the last usable split" =
+  Test.run ~initial_container_size:510. (fun t ->
+    Test.simulate_drag t ~delta:100;
+    Test.show_pixels t;
+    [%expect {| ((350 150)) |}];
+    Test.set_container_size t 0.;
+    Test.set_container_size t 0.;
+    Test.show_pixels t;
+    [%expect {| ((350 150)) |}];
+    Test.set_container_size t 1020.;
+    Test.show_pixels t;
+    [%expect {| ((705 305)) |}])
+;;
+
+let%expect_test "zero-width separators and collapsed panes survive zero measurements" =
+  let parameters =
+    { Parameters.default with
+      separator_size_px = 0
+    ; constraints =
+        [ Constraint.min_px ~panel:First 28.; Constraint.max_px ~panel:First 28. ]
+    }
+  in
+  Test.run ~parameters ~initial_container_size:0. (fun t ->
+    Test.show_pixels t;
+    [%expect {| () |}];
+    Test.set_container_size t 500.;
+    Test.show_pixels t;
+    [%expect {| ((28 472)) |}];
+    Test.set_container_size t 0.;
+    Test.set_container_size t 1000.;
+    Test.show_pixels t;
+    [%expect {| ((28 972)) |}])
+;;
+
+let%expect_test "non-finite and negative measurements are ignored" =
+  Test.run ~initial_container_size:510. (fun t ->
+    List.iter [ Float.nan; Float.infinity; -1. ] ~f:(Test.set_container_size t);
+    Test.show_pixels t;
+    [%expect {| ((250 250)) |}];
+    Test.set_container_size t 1020.;
+    Test.show_pixels t;
+    [%expect {| ((505 505)) |}])
+;;
+
+let%expect_test "switching to a previously zero-sized axis uses the initial split" =
+  Test.run (fun t ->
+    Test.set_axis_sizes t ~main:510. ~cross:0.;
+    Test.show_pixels t;
+    [%expect {| ((250 250)) |}];
+    Test.update_parameters t (fun parameters ->
+      { parameters with
+        direction =
+          (match parameters.direction with
+           | Horizontal -> Vertical
+           | Vertical -> Horizontal)
+      });
+    Test.set_container_size t 500.;
+    Test.show_pixels t;
+    [%expect {| ((245 245)) |}])
 ;;
 
 let%expect_test "Dragging works" =

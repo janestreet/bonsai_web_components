@@ -1,5 +1,6 @@
 open! Core
 open Bonsai_web
+module View = Bonsai_web_legacy_view
 open Bonsai_web_test
 open Bonsai.Let_syntax
 module Popover = Bonsai_web_contrib_popover_deprecated
@@ -182,7 +183,7 @@ let%expect_test "Popover changing directions" =
 
 let button ~on_click s =
   Vdom.Node.button
-    ~attrs:[ Vdom.Attr.id s; Vdom.Attr.on_click (fun _ -> on_click) ]
+    ~attrs:[ Vdom.Attr.id s; Vdom.Attr.on_click_js_of_ocaml (fun _ -> on_click) ]
     [ Vdom.Node.text s ]
 ;;
 
@@ -262,7 +263,8 @@ let%expect_test "Opening from base and closing from dialog" =
         ~popover:(fun ~close _graph ->
           let%arr close in
           Vdom.Node.button
-            ~attrs:[ Vdom.Attr.id "close"; Vdom.Attr.on_click (fun _ -> close) ]
+            ~attrs:
+              [ Vdom.Attr.id "close"; Vdom.Attr.on_click_js_of_ocaml (fun _ -> close) ]
             [ Vdom.Node.text "close" ])
         ()
         graph
@@ -273,7 +275,7 @@ let%expect_test "Opening from base and closing from dialog" =
     in
     ( wrap
         (Vdom.Node.button
-           ~attrs:[ Vdom.Attr.id "open"; Vdom.Attr.on_click (fun _ -> open_) ]
+           ~attrs:[ Vdom.Attr.id "open"; Vdom.Attr.on_click_js_of_ocaml (fun _ -> open_) ]
            [ Vdom.Node.text "open" ])
     , popover )
   in
@@ -337,10 +339,10 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
        of the element has the same behavior. *)
     [ click_fake_hook_action
         ~hook_name:"global-click-listener"
-        ~hook_id:Vdom.Attr.Global_listeners.For_testing.click_type_id
+        ~hook_id:Vdom.Attr.Global_listeners.For_testing.click_type_id_js_of_ocaml
     ; click_fake_hook_action
         ~hook_name:"global-contextmenu-listener"
-        ~hook_id:Vdom.Attr.Global_listeners.For_testing.contextmenu_type_id
+        ~hook_id:Vdom.Attr.Global_listeners.For_testing.contextmenu_type_id_js_of_ocaml
     ; (fun handle ->
         let fake_event =
           object%js
@@ -355,7 +357,7 @@ let%expect_test "Opening from returned effect and closing by clicking outside." 
           ~get_vdom
           ~selector:[%string "[data-test=%{id}]"]
           ~name:"global-keydown-listener"
-          Vdom.Attr.Global_listeners.For_testing.keydown_type_id
+          Vdom.Attr.Global_listeners.For_testing.keydown_type_id_js_of_ocaml
           ~f:(fun input event ->
             (Vdom.Attr.Global_listeners.For_testing.combine_capture_and_bubbling input)
               event)

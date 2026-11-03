@@ -65,6 +65,7 @@ let svg ?size ?color ?(extra_attrs = []) icon =
     ()
 ;;
 
+let view ?attrs ?size ?color ~icon () = svg ?extra_attrs:attrs ?size ?color icon
 let all = Svg.all
 
 let to_bonsai_web_icon t =

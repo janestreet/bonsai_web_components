@@ -249,7 +249,9 @@ module%test [@name "generic notification test"] _ = struct
             let%arr element and close in
             Vdom.Node.div
               ~attrs:
-                [ Notification_type.to_attr element; Vdom.Attr.on_click (fun _ -> close) ]
+                [ Notification_type.to_attr element
+                ; Vdom.Attr.on_click_js_of_ocaml (fun _ -> close)
+                ]
               [ Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)] ])
           graph
       in
@@ -563,7 +565,9 @@ module%test [@name "generic notification test"] _ = struct
             let%arr element and close in
             Vdom.Node.div
               ~attrs:
-                [ Notification_type.to_attr element; Vdom.Attr.on_click (fun _ -> close) ]
+                [ Notification_type.to_attr element
+                ; Vdom.Attr.on_click_js_of_ocaml (fun _ -> close)
+                ]
               [ Vdom.Node.sexp_for_debugging [%message (element : Notification_type.t)] ])
           graph
       in

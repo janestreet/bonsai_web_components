@@ -145,10 +145,11 @@ module T = struct
   let on_mount = `Schedule_animation_frame on_mount
 
   let update ~old_input ~new_input state _element =
-    if [%equal: Input.t] old_input new_input then ();
-    state.behavior <- new_input;
-    set_width_property ~state;
-    adjust ~state
+    if not ([%equal: Input.t] old_input new_input)
+    then (
+      state.behavior <- new_input;
+      set_width_property ~state;
+      adjust ~state)
   ;;
 
   let destroy _old_input state =
@@ -157,7 +158,7 @@ module T = struct
   ;;
 end
 
-module Hook = Vdom.Attr.Hooks.Make (T)
+module Hook = Vdom.Attr.Hooks.Make_js_of_ocaml (T)
 
 let attr ?(behavior = Behavior.Shrink_to_avoid_overflow) () =
   Vdom.Attr.many

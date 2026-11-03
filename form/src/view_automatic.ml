@@ -1,5 +1,5 @@
 open! Core
-open Bonsai_web
+module View = Bonsai_web_legacy_view
 module Form_view = Bonsai_web_form_view
 include Form_view
 

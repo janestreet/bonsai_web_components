@@ -248,8 +248,8 @@ let%expect_test "Old -> New, no col groups" =
     │ Apply 4 filters and clear with 1000 element map using 10 window                          │ -2_128 (41%)  │ .               │ .            │
     │ Apply 4 filters and clear with 1000 element map using 50 window                          │ -10_448 (41%) │ .               │ .            │
     │ Apply 4 filters and clear with 10000 element map using 50 window                         │ -10_448 (41%) │ .               │ .            │
-    │ Apply 4 filters and clear with 10000 element map using 100 window                        │ -20_848 (42%) │ .               │ .            │
-    │ Invert ordering of 10 element map                                                        │ -246 (66%)    │ .               │ .            │
+    │ Apply 4 filters and clear with 10000 element map using 100 window                        │ -20_848 (41%) │ .               │ .            │
+    │ Invert ordering of 10 element map                                                        │ -246 (65%)    │ .               │ .            │
     │ Invert ordering of 100 element map                                                       │ -2_406 (83%)  │ .               │ .            │
     │ Invert ordering of 101 element map                                                       │ -2_430 (83%)  │ .               │ .            │
     │ Invert ordering of 1000 element map                                                      │ -2_430 (83%)  │ .               │ .            │
@@ -559,13 +559,13 @@ let%expect_test "Old -> New, col groups" =
     │ cells in it.                                                                             │               │                 │              │
     │ Randomly select a row out of a table with 10000 rows and a window of 10, then change     │ .             │ .               │ .            │
     │ all cells in it.                                                                         │               │                 │              │
-    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ -1_029 (47%)  │ .               │ .            │
+    │ Perform 10 sets of 1 items in a 10 element map with 10-wide window                       │ -1_029 (46%)  │ .               │ .            │
     │ Perform 10 sets of 5 items in a 10 element map with 10-wide window                       │ -2_217 (51%)  │ .               │ .            │
-    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ -1_029 (47%)  │ .               │ .            │
+    │ Perform 10 sets of 1 items in a 11 element map with 10-wide window                       │ -1_029 (46%)  │ .               │ .            │
     │ Perform 10 sets of 5 items in a 11 element map with 10-wide window                       │ -2_217 (51%)  │ .               │ .            │
-    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ -1_029 (47%)  │ .               │ .            │
+    │ Perform 10 sets of 1 items in a 100 element map with 10-wide window                      │ -1_029 (46%)  │ .               │ .            │
     │ Perform 10 sets of 5 items in a 100 element map with 10-wide window                      │ -2_217 (51%)  │ .               │ .            │
-    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ -1_029 (47%)  │ .               │ .            │
+    │ Perform 10 sets of 1 items in a 1000 element map with 10-wide window                     │ -1_029 (46%)  │ .               │ .            │
     │ Perform 10 sets of 5 items in a 1000 element map with 10-wide window                     │ -2_217 (51%)  │ .               │ .            │
     │ Perform 10 sets of 10 items in a 1000 element map with 100-wide window                   │ -6_672 (54%)  │ .               │ .            │
     └──────────────────────────────────────────────────────────────────────────────────────────┴───────────────┴─────────────────┴──────────────┘

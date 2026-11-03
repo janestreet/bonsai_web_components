@@ -19,6 +19,20 @@ end
     - [?min_width] will be applied to the textbox's css. Defaults to `12ch.
     - [?caret_color] sets the color of the caret. Sadly this value can not be inferred
       from the text color. Defaults to "black".
+    - [?container_attrs] are attributes applied to the wrapping element. Use these to
+      style the textbox (e.g. to make it fill its parent instead of the default
+      fit-content width), since the [<textarea>] and highlight [<pre>] inherit most of
+      their layout from the wrapper.
+    - [?textarea_attrs] are extra attributes applied to the underlying [<textarea>]. Use
+      these to attach behaviour that must live on the input element itself, such as an
+      [id], focus/blur handlers, or key handlers.
+    - [?on_click], if given, is called when the textbox is clicked, with [byte_offset]:
+      the UTF-8 byte offset into [text] that the click landed on. The highlight [<pre>]
+      sits behind the [<textarea>] and can't be clicked directly, so this is how a caller
+      makes rendered regions (e.g. links) interactive: map [byte_offset] back onto the
+      regions it produced in [process]. The raw event is passed too, e.g. to inspect
+      modifier keys or [preventDefault].
+    - [?placeholder] / [?disabled] are forwarded to the underlying [<textarea>].
     - [~text] is the raw text contained in the textbox. You must track this state
       yourself.
     - [~set_text] is the setter that the textbox will call when its content is updated.
@@ -33,6 +47,14 @@ end
 val create
   :  ?min_width:Css_gen.Length.t
   -> ?caret_color:Css_gen.Color.t
+  -> ?container_attrs:Vdom.Attr.t list
+  -> ?textarea_attrs:Vdom.Attr.t list
+  -> ?on_click:
+       (byte_offset:int
+        -> Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml.Js.t
+        -> unit Vdom.Effect.t)
+  -> ?placeholder:string
+  -> ?disabled:bool
   -> text:string
   -> set_text:(string -> unit Vdom.Effect.t)
   -> process:(string -> (string * Decoration.t) list)
@@ -46,6 +68,14 @@ module Expert : sig
   val create
     :  ?min_width:Css_gen.Length.t
     -> ?caret_color:Css_gen.Color.t
+    -> ?container_attrs:Vdom.Attr.t list
+    -> ?textarea_attrs:Vdom.Attr.t list
+    -> ?on_click:
+         (byte_offset:int
+          -> Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml.Js.t
+          -> unit Vdom.Effect.t)
+    -> ?placeholder:string
+    -> ?disabled:bool
     -> text:string
     -> set_text:(string -> unit Vdom.Effect.t)
     -> process:(string -> Vdom.Node.t list)

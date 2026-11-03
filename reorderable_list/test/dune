@@ -1,7 +1,8 @@
 (library
  (name bonsai_web_reorderable_list_test)
  (libraries bonsai_web bonsai_web_drag_and_drop
-   bonsai_web_drag_and_drop_testing bonsai_web_element_size_hooks_testing
-   bonsai_web_reorderable_list bonsai_web_test core virtual_dom.ui_effect)
+   bonsai_web_drag_and_drop_testing bonsai_web_element_size_hooks
+   bonsai_web_element_size_hooks_testing bonsai_web_reorderable_list
+   bonsai_web_test core virtual_dom.ui_effect)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

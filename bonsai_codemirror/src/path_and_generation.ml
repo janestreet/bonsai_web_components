@@ -48,7 +48,7 @@ let model_resetter_generation graph =
         (* this callback will only get called in two scenarios:
            1. when the component becomes active for the first time
            2. when its model is cleared *)
-        (let%map path in
+        (let%arr path in
          fun () -> bump_generation path)
       graph
   in

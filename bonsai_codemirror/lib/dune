@@ -5,6 +5,6 @@
   (javascript_files ../../codemirror/lib/for_ocaml_bindings.js))
  (libraries codemirror_bindings)
  (preprocess
-  (pps ppx_jane))
+  (pps ppx_jane -compare-require-explicit-locality))
  (wasm_of_ocaml
   (javascript_files ../../codemirror/lib/for_ocaml_bindings.js)))

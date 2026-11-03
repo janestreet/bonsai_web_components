@@ -313,7 +313,7 @@ let of_initial_state ?name initial_state graph =
   let () =
     Bonsai.Edge.lifecycle
       ~on_deactivate:
-        (let%map inject in
+        (let%arr inject in
          inject Reset)
       graph
   in

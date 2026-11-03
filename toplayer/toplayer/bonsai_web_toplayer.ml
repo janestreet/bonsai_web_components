@@ -22,8 +22,8 @@ let arrow_helper ~attrs ~arrow_len () =
     ~attrs:
       ([%css
          {|
-           height: %{side_len#Css_gen.Length};
-           width: %{side_len#Css_gen.Length};
+           height: #{side_len#Css_gen.Length};
+           width: #{side_len#Css_gen.Length};
            transform: rotate(45deg);
            border-bottom: none;
            border-right: none;
@@ -34,6 +34,7 @@ let arrow_helper ~attrs ~arrow_len () =
 
 let tooltip = Bonsai_web_toplayer_private_vdom.tooltip
 let vdom_popover = Bonsai_web_toplayer_private_vdom.popover
+let vdom_popover_css = Bonsai_web_toplayer_private_vdom.popover_css
 
 module Expert = struct
   let focus_popover_on_open =
@@ -104,10 +105,10 @@ module Autoclose = struct
          | Some _ -> inner_eff)
       | _ -> Effect.Ignore
     in
-    [ Vdom.Attr.Global_listeners.keydown
+    [ Vdom.Attr.Global_listeners.keydown_js_of_ocaml
         ~phase:Bubbling
         ~f:(run_if_esc ~inner_eff:(eff ~focus_inside:false))
-    ; Vdom.Attr.on_keydown (fun ev ->
+    ; Vdom.Attr.on_keydown_js_of_ocaml (fun ev ->
         if element_contains ev##.currentTarget ev##.target
         then
           run_if_esc
@@ -131,7 +132,7 @@ module Autoclose = struct
     in
     let monitor_mousedowns_attr =
       let%arr set_last_mousedown_was_inside and root_id in
-      Vdom.Attr.Global_listeners.mousedown
+      Vdom.Attr.Global_listeners.mousedown_js_of_ocaml
         ~phase:Vdom.Attr.Global_listeners.Phase.Capture
         ~f:(fun (ev : mouse_event) ->
           match Js_of_ocaml.Dom_html.getElementById_opt root_id with
@@ -163,8 +164,8 @@ module Autoclose = struct
         | Some f ->
           let listener_f =
             match kind with
-            | `Click -> Vdom.Attr.Global_listeners.click
-            | `Right_click -> Vdom.Attr.Global_listeners.contextmenu
+            | `Click -> Vdom.Attr.Global_listeners.click_js_of_ocaml
+            | `Right_click -> Vdom.Attr.Global_listeners.contextmenu_js_of_ocaml
           in
           let close_effect ~target:click_event_target =
             match kind with

@@ -1,0 +1,6 @@
+(library
+ (name bonsai_web_element_size_hooks_jsdom_test)
+ (libraries bonsai_web bonsai_web_element_size_hooks core js_of_ocaml
+   bonsai_web_test.jsdom)
+ (preprocess
+  (pps bonsai.ppx_bonsai ppx_jane js_of_ocaml-ppx)))

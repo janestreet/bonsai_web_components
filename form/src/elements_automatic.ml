@@ -5,7 +5,7 @@ open Bonsai.Let_syntax
 module View = Private_view
 
 let path graph =
-  let%map.Bonsai path_id = Bonsai.path_id graph in
+  let%arr.Bonsai path_id = Bonsai.path_id graph in
   path_id, Vdom.Attr.id path_id
 ;;
 

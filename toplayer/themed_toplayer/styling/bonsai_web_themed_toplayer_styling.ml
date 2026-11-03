@@ -8,8 +8,8 @@ let arrow_helper ~attrs ~arrow_len () =
     ~attrs:
       ([%css
          {|
-           height: %{side_len#Css_gen.Length};
-           width: %{side_len#Css_gen.Length};
+           height: #{side_len#Css_gen.Length};
+           width: #{side_len#Css_gen.Length};
            transform: rotate(45deg);
            border-bottom: none;
            border-right: none;

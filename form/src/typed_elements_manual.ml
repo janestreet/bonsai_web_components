@@ -32,7 +32,7 @@ module Optional = struct
       ;;
     end
     in
-    let%map.Bonsai form =
+    let%arr.Bonsai form =
       Typed_manual.Variant.make
         (module struct
           module Typed_variant = M.Typed_variant

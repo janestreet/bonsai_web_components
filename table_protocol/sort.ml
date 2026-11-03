@@ -9,7 +9,7 @@ module Stable = struct
         [ `Asc
         | `Desc
         ]
-      [@@deriving sexp, bin_io, equal, compare, stable_witness]
+      [@@deriving sexp, bin_io, equal, compare, hash, stable_witness]
 
       let%expect_test _ =
         print_endline [%bin_digest: t];
@@ -21,7 +21,7 @@ module Stable = struct
   module Order = struct
     module V1 = struct
       type 'col_id t = ('col_id * Dir.V1.t) list
-      [@@deriving sexp, bin_io, equal, compare, stable_witness]
+      [@@deriving sexp, bin_io, equal, compare, hash, stable_witness]
 
       let%expect_test _ =
         print_endline [%bin_digest: int t];

@@ -1,10 +1,10 @@
 (executables
- (modes byte exe)
  (names bonsai_form_example)
  (libraries bonsai_form_experimental bonsai_web bonsai_web.arrow_deprecated
    core virtual_dom.layout)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane))
+ (modes js wasm byte exe))
 
 (rule
  (targets jane-web-style.css)

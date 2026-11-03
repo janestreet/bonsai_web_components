@@ -2,8 +2,13 @@
  (name bonsai_web_form_test)
  (public_name bonsai_web_components.form_test)
  (libraries bonsai_web bonsai_web_contrib_query_box bonsai_web_file
-   bonsai_web_form bonsai_web.proc bonsai_web_test core
+   bonsai_web_form bonsai_web.ui_view bonsai_web.proc bonsai_web_test core
    expect_test_helpers_base patdiff.expect_test_patdiff js_of_ocaml
    virtual_dom.ui_effect)
  (preprocess
   (pps ppx_jane js_of_ocaml-ppx bonsai.ppx_bonsai)))
+
+(env
+ (_
+  (env-vars
+   (OCAMLPARAM w=-46,keywords=5.2,_))))

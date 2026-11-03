@@ -3,9 +3,9 @@ open Bonsai_web
 
 (** A textbox with suggested results, modeled off of Chrome's address bar.
 
-    - "Enter" invokes [on_select] with the focused suggestion. If the suggestion list is
-      closed, the callback is not invoked, because of course nothing is focused; instead
-      the suggestion list is opened.
+    - "Enter" or "Numpad Enter" invokes [on_select] with the focused suggestion. If the
+      suggestion list is closed, the callback is not invoked, because of course nothing is
+      focused; instead the suggestion list is opened.
     - "Clicking" on the suggestion list invokes [on_select].
     - "Escape" or unfocusing the text input closes the suggestion list
     - "Tab" and "Down Arrow" move the focused item down. If the suggestion list is closed,
@@ -166,6 +166,7 @@ val stringable
   -> ?extra_list_container_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_input_attr:Vdom.Attr.t Bonsai.t
   -> ?extra_attr:Vdom.Attr.t Bonsai.t
+  -> ?on_blur:unit Ui_effect.t Bonsai.t
   -> ?to_view:('k -> string -> Vdom.Node.t)
        (** The value defaults to [None] which does nothing. This is so that the user can
            either reset/clear/modify the input text on blur. This only fires when focus

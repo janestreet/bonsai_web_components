@@ -1,6 +1,6 @@
 (library
  (name bonsai_web_codemirror_form)
  (libraries bonsai bonsai_web bonsai_web_codemirror bonsai_web_form
-   codemirror core virtual_dom)
+   codemirror core)
  (preprocess
   (pps ppx_jane bonsai.ppx_bonsai)))

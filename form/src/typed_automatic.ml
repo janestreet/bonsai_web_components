@@ -60,7 +60,7 @@ module Record = struct
           let all_fields =
             M.Typed_field.Packed.all
             |> List.map ~f:(fun ({ f = T field } as packed) ->
-              let%map field = f field in
+              let%arr field = f field in
               packed, Form.view field)
             |> Bonsai.all
           in
@@ -325,7 +325,7 @@ module Variant = struct
           (* The fact we can't sub + arr here is a little bit sad, but note that the
              [let%map] is not doing anything expensive, just wrapping the provided
              function (which is usually constant). *)
-          (let%map to_string =
+          (let%arr to_string =
              match M.label_for_variant with
              | `Inferred ->
                Bonsai.return (fun ({ f = T field } : Original.Typed_variant.Packed.t) ->
@@ -422,7 +422,8 @@ module Variant = struct
           let all_variants =
             M.Typed_variant.Packed.all
             |> List.map ~f:(fun ({ f = T variant } as packed) ->
-              let%map (Variant.Packed_set_form.T { form; _ }) = f variant in
+              let%arr packed_form = f variant in
+              let (Variant.Packed_set_form.T { form; _ }) = packed_form in
               packed, Form.view form)
             |> Bonsai.all
           in

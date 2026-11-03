@@ -34,3 +34,18 @@ val component
   -> on_change:(bool -> unit Effect.t)
   -> Vdom.Node.t list
   -> Vdom.Node.t
+
+(** Like [component], but [on_change] is also given whether a shift key was held when the
+    checkbox was toggled. *)
+val component'
+  :  ?test_selector:Bonsai.Test_selector.t
+  -> ?indeterminate:bool
+  -> ?attrs:Vdom.Attr.t list
+  -> ?disabled:bool
+  -> ?tab_index:int
+  -> ?disable_space_key_to_toggle_temp_param_for_skyline:bool
+  -> ?ignore_clicks:bool
+  -> checked:bool
+  -> on_change:(bool -> shift_key_pressed:bool -> unit Effect.t)
+  -> Vdom.Node.t list
+  -> Vdom.Node.t

@@ -17,7 +17,7 @@ module Dir : sig
     [ `Asc
     | `Desc
     ]
-  [@@deriving sexp, bin_io, equal, compare]
+  [@@deriving sexp, bin_io, equal, compare, hash]
 end
 
 module Sort_state : sig
@@ -32,7 +32,7 @@ module Sort_state : sig
 end
 
 module Order : sig
-  type 'col_id t = ('col_id * Dir.t) list [@@deriving sexp, bin_io, equal, compare]
+  type 'col_id t = ('col_id * Dir.t) list [@@deriving sexp, bin_io, equal, compare, hash]
 
   (** Describes the behavior when cycling the sort direction of a column. *)
   module Cycle_behavior : sig

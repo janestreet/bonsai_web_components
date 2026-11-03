@@ -52,4 +52,7 @@ module For_testing : sig
     -> ?attrs:Vdom.Attr.t list
     -> t
     -> Vdom.Node.t
+
+  (** The raw svg path data the icon was created with. *)
+  val svg_path : t -> string
 end

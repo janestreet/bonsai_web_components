@@ -4,7 +4,7 @@ open! Bonsai_web
 
 let handle () =
   let component graph =
-    let%map.Bonsai codemirror =
+    let%arr.Bonsai codemirror =
       Bonsai_web_codemirror.of_initial_state
         ~name:"editor"
         (Codemirror.State.Editor_state.create
